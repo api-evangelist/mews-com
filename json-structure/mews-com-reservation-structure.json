@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-structure.org/draft/2025-09/schema",
+  "name": "MewsReservationStructure",
+  "description": "JSON Structure documentation of the core Mews Connector reservation domain. Aligns reservations, customers, bills, services, and resources for downstream code generation.",
+  "type": "object",
+  "abstract": false,
+  "definitions": {
+    "Reservation": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string", "format": "uuid"},
+        "groupId": {"type": "string", "format": "uuid"},
+        "number": {"type": "string"},
+        "state": {"type": "string", "enum": ["Enquired", "Requested", "Optional", "Confirmed", "Started", "Processed", "Canceled"]},
+        "origin": {"type": "string", "enum": ["BookingEngine", "ChannelManager", "Connector", "Distributor", "Operator", "Import"]},
+        "startUtc": {"type": "string", "format": "date-time"},
+        "endUtc": {"type": "string", "format": "date-time"},
+        "customer": {"$ref": "#/definitions/Customer"},
+        "assignedResource": {"$ref": "#/definitions/Resource"},
+        "service": {"$ref": "#/definitions/Service"},
+        "rate": {"$ref": "#/definitions/Rate"},
+        "adultCount": {"type": "integer"},
+        "childCount": {"type": "integer"}
+      }
+    },
+    "Customer": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string", "format": "uuid"},
+        "firstName": {"type": "string"},
+        "lastName": {"type": "string"},
+        "email": {"type": "string", "format": "email"},
+        "phone": {"type": "string"},
+        "nationalityCode": {"type": "string"},
+        "languageCode": {"type": "string"}
+      }
+    },
+    "Resource": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string", "format": "uuid"},
+        "name": {"type": "string"},
+        "categoryId": {"type": "string", "format": "uuid"},
+        "state": {"type": "string"}
+      }
+    },
+    "Service": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string", "format": "uuid"},
+        "name": {"type": "string"}
+      }
+    },
+    "Rate": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string", "format": "uuid"},
+        "name": {"type": "string"},
+        "groupId": {"type": "string", "format": "uuid"}
+      }
+    },
+    "Bill": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string", "format": "uuid"},
+        "number": {"type": "string"},
+        "state": {"type": "string", "enum": ["Open", "Closed", "Revoked"]},
+        "totalValue": {"type": "number"},
+        "currencyCode": {"type": "string"},
+        "items": {"type": "array", "items": {"$ref": "#/definitions/AccountingItem"}}
+      }
+    },
+    "AccountingItem": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "string", "format": "uuid"},
+        "name": {"type": "string"},
+        "amount": {"type": "number"},
+        "currencyCode": {"type": "string"},
+        "type": {"type": "string", "enum": ["ServiceRevenue", "ProductRevenue", "AdditionalRevenue", "Payment", "Other"]},
+        "accountingCategoryId": {"type": "string", "format": "uuid"}
+      }
+    }
+  }
+}

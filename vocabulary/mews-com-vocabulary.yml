@@ -1,0 +1,106 @@
+vocabulary: Mews Open API
+vocabularyVersion: '1.0'
+provider: Mews
+providerId: mews-com
+created: '2026-05-25'
+modified: '2026-05-25'
+description: Domain vocabulary mapping Mews-specific hospitality concepts to broader industry terminology
+  and schema.org. Sourced from the Mews Glossary, Connector API concepts, and the Open API documentation.
+sources:
+  - https://docs.mews.com/connector-api/concepts
+  - https://docs.mews.com/glossary
+  - https://www.mews.com/en/products/api
+
+terms:
+  - term: Enterprise
+    aliases: [Property, Hotel, Account]
+    schemaOrg: schema:LodgingBusiness
+    definition: A single property managed in Mews — a hotel, hostel, vacation rental, or apartment building. The unit of access for AccessToken.
+
+  - term: Chain
+    aliases: [Portfolio, Group, Brand]
+    schemaOrg: schema:Organization
+    definition: A collection of enterprises owned or managed together. Accessed via Portfolio Access Tokens and ChainIds.
+
+  - term: Resource
+    aliases: [Room, Space, Unit]
+    schemaOrg: schema:Accommodation
+    definition: An individual bookable space — typically a guest room, but can also be parking spots, meeting rooms, lockers, or any service-specific inventory.
+
+  - term: Resource Category
+    aliases: [Room Type, Room Category]
+    schemaOrg: schema:Accommodation
+    definition: A class of resources that share rate plans and availability — e.g. "Standard Double" or "Deluxe Suite".
+
+  - term: Reservation
+    aliases: [Booking]
+    schemaOrg: schema:LodgingReservation
+    definition: A commitment by a customer to consume a service over a date range; lifecycle covers Enquired, Requested, Optional, Confirmed, Started, Processed, and Canceled states.
+
+  - term: Reservation Group
+    aliases: [Booking]
+    schemaOrg: schema:ReservationPackage
+    definition: One or more reservations created together — used by Booking Engine and Distributor when a single booker creates multiple linked reservations.
+
+  - term: Service
+    aliases: [Product Line]
+    schemaOrg: schema:Service
+    definition: A bookable line of business at the enterprise — most commonly "Stay" but also Parking, Meal Plans, Wellness, Meeting Rooms, etc.
+
+  - term: Rate
+    aliases: [Rate Plan]
+    definition: A pricing plan for a service — base rates, derived rates, and corporate rates all hang off a Rate Group.
+
+  - term: Restriction
+    aliases: [MinLOS, MaxLOS, CTA, CTD]
+    definition: A constraint on bookability for a date range — minimum length of stay, maximum length of stay, closed to arrival, closed to departure.
+
+  - term: Customer
+    aliases: [Guest, Profile]
+    schemaOrg: schema:Person
+    definition: A guest profile in Mews — distinct from a Booker (the contact who created the reservation) and from a Company (B2B counterparty).
+
+  - term: Bill
+    aliases: [Folio, Invoice]
+    schemaOrg: schema:Invoice
+    definition: A statement of charges and payments tied to a customer or company; lifecycle covers Open, Closed, and Revoked.
+
+  - term: Accounting Item
+    aliases: [Posting, Line Item]
+    definition: A single revenue, payment, or adjustment entry that posts to a bill.
+
+  - term: Cashier
+    aliases: [Till]
+    definition: A virtual or physical cash drawer used for payment reconciliation.
+
+  - term: Counter
+    aliases: [Sequence, Number Series]
+    definition: A monotonically increasing number generator used to issue bill numbers and reservation numbers.
+
+  - term: Voucher
+    aliases: [Gift Card, Promo]
+    schemaOrg: schema:Voucher
+    definition: A discount or prepaid instrument that a booker can apply to a reservation.
+
+  - term: Booking Engine Configuration
+    definition: A public-facing identifier scoping the Booking Engine API to a specific property and channel.
+
+  - term: ClientToken
+    definition: Long-lived partner credential identifying the integration to Mews.
+
+  - term: AccessToken
+    definition: Per-property credential authorizing a ClientToken to act on a specific enterprise.
+
+  - term: Portfolio Access Token
+    definition: Multi-property access token enabling a partner to make chain-scoped API calls in a single request.
+
+  - term: API Event
+    aliases: [Webhook]
+    definition: An HTTPS push notification Mews sends to a partner-registered callback when domain entities change.
+
+  - term: Channel Manager
+    schemaOrg: schema:Organization
+    definition: A third-party distribution platform that aggregates OTA, GDS, and metasearch demand and integrates with Mews via the Channel Manager API.
+
+  - term: Distributor
+    definition: The Mews-hosted booking widget surface; backed by the Distributor API.

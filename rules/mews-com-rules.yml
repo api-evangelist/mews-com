@@ -1,0 +1,81 @@
+extends:
+  - spectral:oas
+formats:
+  - oas3
+documentationUrl: https://docs.mews.com/connector-api/guidelines
+description: >
+  Spectral ruleset that captures Mews Open API conventions observed across the Connector, Booking Engine, and
+  Distributor specs. Mews uses a JSON-over-HTTPS verb-style RPC pattern under /api/{surface}/v1/{resource}/{action},
+  authenticates via JSON body tokens, and tags every operation with the API surface name.
+rules:
+  mews-info-contact:
+    description: Mews specs must declare a partner-success contact.
+    given: $.info
+    severity: warn
+    then:
+      field: contact
+      function: truthy
+  mews-server-base-url:
+    description: Mews APIs use https://api.mews.com as the production server.
+    given: $.servers[*].url
+    severity: warn
+    then:
+      function: pattern
+      functionOptions:
+        match: '^https://api\.mews(-demo)?\.com$'
+  mews-paths-are-rpc-style:
+    description: Mews paths follow /api/{surface}/v{n}/{resource}/{action} (RPC over HTTPS); reject pure REST collection paths.
+    given: $.paths
+    severity: warn
+    then:
+      function: pattern
+      field: '@key'
+      functionOptions:
+        match: '^/api/(connector|bookingEngine|distributor|channelManager|pos|loyaltyPartner)/v\d+/[a-zA-Z0-9]+/[a-zA-Z0-9]+$'
+  mews-operations-use-post:
+    description: All Mews Open API operations are HTTP POST.
+    given: $.paths[*][?(@property !== 'parameters' && @property !== 'summary' && @property !== 'description')]
+    severity: error
+    then:
+      function: enumeration
+      field: '@key'
+      functionOptions:
+        values:
+          - post
+  mews-operation-id-is-camel:
+    description: Mews operationIds use resource_action camelCase (e.g. reservations_getAll).
+    given: $.paths[*][*].operationId
+    severity: warn
+    then:
+      function: pattern
+      functionOptions:
+        match: '^[a-zA-Z][a-zA-Z0-9]*_[a-zA-Z][a-zA-Z0-9]*$'
+  mews-operation-has-tag:
+    description: Every Mews operation must be tagged with the surface name (Reservations, Customers, Bills, Services, etc.).
+    given: $.paths[*][*].tags
+    severity: warn
+    then:
+      function: length
+      functionOptions:
+        min: 1
+  mews-operation-summary-title-case:
+    description: Operation summaries use Title Case.
+    given: $.paths[*][*].summary
+    severity: hint
+    then:
+      function: pattern
+      functionOptions:
+        match: '^[A-Z][^a-z]*[A-Z]?'
+  mews-request-body-required:
+    description: Every Mews operation has a JSON request body containing ClientToken/AccessToken/Client (Connector + POS + Loyalty) or ConfigurationId (Booking Engine + Distributor).
+    given: $.paths[*][*].requestBody
+    severity: error
+    then:
+      function: truthy
+  mews-response-200-defined:
+    description: Mews operations document a 200 response.
+    given: $.paths[*][*].responses
+    severity: error
+    then:
+      field: '200'
+      function: truthy

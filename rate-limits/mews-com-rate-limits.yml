@@ -1,0 +1,43 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Mews
+providerId: mews-com
+created: '2026-05-25'
+modified: '2026-05-25'
+reconciled: false
+tags:
+  - Hospitality
+  - PMS
+  - Rate Limiting
+  - Quotas
+description: Reconciled rate-limit posture for the Mews Connector API and adjacent surfaces. Mews enforces
+  per-partner concurrency and per-endpoint throttling, with `429 Too Many Requests` plus a `Retry-After`
+  header on overage. Specific numeric thresholds are partner-confidential and adjusted per integration; this
+  file captures the published guidance from the Usage Guidelines and best-practices documentation.
+sources:
+  - https://docs.mews.com/connector-api/guidelines
+  - https://docs.mews.com/connector-api/guidelines/best-practices
+  - https://docs.mews.com/connector-api/guidelines/responses
+headers:
+  retryAfter: Retry-After
+responseCodes:
+  throttled: 429
+  serverBusy: 503
+algorithm: per-partner-concurrency-plus-per-endpoint-throttle
+limits:
+  - scope: Per partner (ClientToken)
+    description: Mews enforces a global concurrency cap per partner ClientToken across all properties. Partners exceeding the cap receive HTTP 429 with Retry-After.
+  - scope: Per endpoint
+    description: High-fan-out endpoints (getAll variants on reservations, customers, bills) are throttled more aggressively and require pagination via cursors plus exponential backoff.
+  - scope: Per property (AccessToken)
+    description: Per-property throttling protects individual hotels from noisy neighbors; recommended pattern is to fan out across properties rather than parallelize within a single property.
+guidance:
+  - Use cursor pagination (Limitation.Cursor) rather than offset; the spec mandates it for high-volume getAll calls.
+  - Implement exponential backoff with jitter on 429 and 503 responses; honor Retry-After when present.
+  - Prefer webhooks (API Events) over polling — Mews surfaces reservation, customer, bill, and payment changes via push so partners can avoid `getAll` loops.
+  - Batch reservation, accounting-item, and customer fetches using `getAllByIds` with up-to-1000 ids per call rather than per-id calls.
+  - Multi-property partners should use Portfolio Access Tokens and the `ChainIds` filter to fold many properties into one call instead of fanning out N calls.
+notes:
+  - Mews does not publish hard numeric per-minute or per-hour rate limits in the public docs. Concrete thresholds are negotiated with partner success during onboarding and may be increased for production traffic.
+  - The demo environment (api.mews-demo.com) has stricter limits than production to discourage load testing on shared sandbox infrastructure.

@@ -1,0 +1,102 @@
+specification: FinOps Framework
+specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
+provider: Mews
+providerId: mews-com
+created: '2026-05-25'
+modified: '2026-05-25'
+reconciled: false
+tags:
+  - FinOps
+  - Cost Management
+  - FOCUS
+  - Hospitality
+  - PMS
+description: FOCUS-aligned FinOps view of Mews. Two commercial surfaces — (1) Hospitality SaaS subscription
+  metered per-property/per-room/per-module, and (2) Mews Payments processing fees metered per transaction.
+  The Mews Open API itself is included with the SaaS subscription (no per-call fee), so FinOps tracking
+  centers on subscription seats and payment volume rather than API consumption.
+sources:
+  - https://www.mews.com/en/pricing
+  - https://www.mews.com/en/products/api
+  - https://www.mews.com/en/partnerships
+alignedWith:
+  framework: FinOps Foundation Framework
+  frameworkUrl: https://www.finops.org/framework/
+  dataSpec: FOCUS
+  dataSpecVersion: '1.3'
+  dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
+publisherName: Mews Systems s.r.o.
+serviceCategory: Hospitality Software
+billingModel:
+  pricingCategory: Subscription + Usage-Based
+  billingFrequency: Monthly
+  billingCurrency: EUR
+  chargeCategories:
+    - Usage
+    - Purchase
+    - Tax
+    - Credit
+    - Adjustment
+  primaryUnit: property-month
+  secondaryUnits:
+    - room-month
+    - transaction
+    - module-month
+focusColumns:
+  ServiceName: Mews Hospitality Cloud
+  ServiceCategory: Hospitality Software
+  ProviderName: Mews
+  PublisherName: Mews Systems s.r.o.
+  InvoiceIssuerName: Mews Systems s.r.o.
+  PricingCategory: Subscription + Usage-Based
+  PricingUnit: property-month
+  BillingCurrency: EUR
+meters:
+  - name: pms_subscription
+    unit: property-month
+    aggregation: count
+    dimensions:
+      - property
+      - tier
+      - module
+  - name: payment_volume
+    unit: transaction
+    aggregation: sum
+    dimensions:
+      - property
+      - currency
+      - card_scheme
+      - region
+  - name: payment_authorized_amount
+    unit: monetary
+    aggregation: sum
+    dimensions:
+      - property
+      - currency
+  - name: module_addon
+    unit: module-month
+    aggregation: count
+    dimensions:
+      - property
+      - module
+        # POS, RMS, Booking Engine, BI, etc.
+costAllocation:
+  primaryDimensions:
+    - property
+    - chain
+    - region
+    - module
+  recommendedTags:
+    - cost-center
+    - brand
+    - region
+    - property-id
+  invoicingCadence: Monthly
+notes:
+  - Mews does not publish per-property pricing; FinOps consumers should reconcile against their executed
+    Mews Order Form or quote.
+  - Mews Payments fees are interchange-plus; downstream FinOps allocation should split scheme fees, Mews
+    markup, and chargeback adjustments where the Mews statement provides them.
+  - API consumption is not metered; partners and customers do not see API-call line items on the Mews
+    invoice. Cost attribution for Open API integrations should be done internally by the integrator.

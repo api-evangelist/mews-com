@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/mews-com/main/json-schema/mews-reservation-schema.json",
+  "title": "MewsReservation",
+  "description": "Schema for a Mews Connector API Reservation as returned by reservations/getAll.",
+  "type": "object",
+  "required": ["Id", "GroupId", "Number", "State", "StartUtc", "EndUtc"],
+  "properties": {
+    "Id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique reservation identifier."
+    },
+    "GroupId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identifier of the reservation group this reservation belongs to."
+    },
+    "ServiceId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identifier of the booked service (e.g. stay, parking)."
+    },
+    "Number": {
+      "type": "string",
+      "description": "Human-readable reservation confirmation number."
+    },
+    "ChannelNumber": {
+      "type": ["string", "null"],
+      "description": "External reservation number from the originating channel (OTA, GDS, channel manager)."
+    },
+    "ChannelManagerNumber": {
+      "type": ["string", "null"],
+      "description": "Channel manager confirmation number, if applicable."
+    },
+    "ChannelManagerGroupNumber": {
+      "type": ["string", "null"]
+    },
+    "ChannelManager": {
+      "type": ["string", "null"],
+      "description": "Origin channel manager name."
+    },
+    "State": {
+      "type": "string",
+      "enum": ["Enquired", "Requested", "Optional", "Confirmed", "Started", "Processed", "Canceled"],
+      "description": "Lifecycle state of the reservation."
+    },
+    "Origin": {
+      "type": "string",
+      "enum": ["BookingEngine", "ChannelManager", "Connector", "Distributor", "Operator", "Import"]
+    },
+    "CreatedUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "UpdatedUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "StartUtc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Reservation arrival (check-in) time in UTC."
+    },
+    "EndUtc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Reservation departure (check-out) time in UTC."
+    },
+    "ReleasedUtc": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "CancelledUtc": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "RequestedCategoryId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "AssignedResourceId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "AssignedResourceLocked": {
+      "type": "boolean"
+    },
+    "BusinessSegmentId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "CompanyId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "TravelAgencyId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "AdultCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "ChildCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "CustomerId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "RateId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "VoucherId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "Purpose": {
+      "type": ["string", "null"],
+      "enum": ["Leisure", "Business", null]
+    },
+    "CancellationReason": {
+      "type": ["string", "null"]
+    },
+    "Notes": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,173 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Mews Booking Engine API — Availability and Pricing
+  description: Self-contained Naftiko capability for service availability, pricing, products, and promotions
+    in the Mews Booking Engine — the data behind a direct-booking widget.
+  tags:
+  - Mews
+  - Hospitality
+  - Booking Engine
+  - Availability
+  - Pricing
+  - Direct Bookings
+  created: '2026-05-25'
+  modified: '2026-05-25'
+binds:
+- namespace: env
+  keys:
+    MEWS_BOOKING_ENGINE_CONFIGURATION_ID: MEWS_BOOKING_ENGINE_CONFIGURATION_ID
+capability:
+  consumes:
+  - type: http
+    namespace: booking-engine-availability
+    baseUri: https://api.mews.com
+    description: Mews Booking Engine — availability and content surface.
+    resources:
+    - name: services
+      path: /api/bookingEngine/v1/services
+      operations:
+      - name: getAvailability
+        method: POST
+        description: Returns service availability and rate pricing for a given configuration, service, occupancy, and date range.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          required: true
+      - name: getPricing
+        method: POST
+        description: Returns granular per-rate, per-category pricing.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          required: true
+      - name: getPromotions
+        method: POST
+        description: Returns active promotions applicable to a service.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          required: true
+      - name: getCalendarData
+        method: POST
+        description: Returns calendar-level availability and lead price by date.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          required: true
+    - name: products
+      path: /api/bookingEngine/v1/products
+      operations:
+      - name: getAll
+        method: POST
+        description: Returns products and ancillaries the booker can add to a stay.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          required: true
+      - name: getPrices
+        method: POST
+        description: Returns prices for selected products and occupancy.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          required: true
+    - name: restrictions
+      path: /api/bookingEngine/v1/restrictions
+      operations:
+      - name: getAll
+        method: POST
+        description: Returns booking restrictions (MLOS, CTA, CTD, MaxLOS) applicable to the date range.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          required: true
+    authentication:
+      type: body
+      description: Mews Booking Engine availability and content endpoints are anonymous beyond the public ConfigurationId.
+      keys:
+        ConfigurationId: '{{env.MEWS_BOOKING_ENGINE_CONFIGURATION_ID}}'
+  exposes:
+  - type: mcp
+    namespace: booking-engine-availability-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Mews Booking Engine availability/content.
+    tools:
+    - name: mews-be-get-availability
+      description: Fetch Mews Booking Engine availability and pricing.
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: booking-engine-availability.getAvailability
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: mews-be-list-products
+      description: List Mews Booking Engine products/ancillaries.
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: booking-engine-availability.getAll
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: mews-be-list-restrictions
+      description: List Mews Booking Engine date-range restrictions.
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: booking-engine-availability.getAll
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

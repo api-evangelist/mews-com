@@ -1,0 +1,144 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Mews Booking Engine API — Reservations
+  description: Self-contained Naftiko capability for the Mews Booking Engine reservation surface — pricing,
+    payment-card authorization, and reservation-group creation for direct booking widgets.
+  tags:
+  - Mews
+  - Hospitality
+  - Booking Engine
+  - Reservations
+  - Direct Bookings
+  created: '2026-05-25'
+  modified: '2026-05-25'
+binds:
+- namespace: env
+  keys:
+    MEWS_BOOKING_ENGINE_CONFIGURATION_ID: MEWS_BOOKING_ENGINE_CONFIGURATION_ID
+capability:
+  consumes:
+  - type: http
+    namespace: booking-engine-reservations
+    baseUri: https://api.mews.com
+    description: Mews Booking Engine — reservation pricing and creation.
+    resources:
+    - name: reservations
+      path: /api/bookingEngine/v1/reservations
+      operations:
+      - name: getPricing
+        method: POST
+        description: Returns reservation pricing for selected rates, dates, and occupancy.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          required: true
+      - name: getPrices
+        method: POST
+        description: Returns daily prices for a reservation configuration.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          required: true
+      - name: price
+        method: POST
+        description: Re-prices a reservation taking promotions, vouchers, and products into account.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          required: true
+    - name: reservationGroups
+      path: /api/bookingEngine/v1/reservationGroups
+      operations:
+      - name: create
+        method: POST
+        description: Creates a reservation group (one or more reservations) from a booking widget.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          required: true
+      - name: getAll
+        method: POST
+        description: Lists reservation groups for a booker.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          required: true
+      - name: get
+        method: POST
+        description: Retrieves a reservation group by Id.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          required: true
+    authentication:
+      type: body
+      description: Mews Booking Engine requests are scoped to a public ConfigurationId; payment-card and group operations additionally require a BookerToken minted via paymentCards/authorize.
+      keys:
+        ConfigurationId: '{{env.MEWS_BOOKING_ENGINE_CONFIGURATION_ID}}'
+  exposes:
+  - type: mcp
+    namespace: booking-engine-reservations-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Mews Booking Engine reservations.
+    tools:
+    - name: mews-be-price-reservation
+      description: Price a reservation in the Mews Booking Engine.
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: booking-engine-reservations.getPricing
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: mews-be-create-reservation-group
+      description: Create a reservation group via the Mews Booking Engine.
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: booking-engine-reservations.create
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.

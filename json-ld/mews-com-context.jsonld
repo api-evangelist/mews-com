@@ -1,0 +1,119 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@vocab": "https://schema.org/",
+    "mews": "https://api.mews.com/api/connector/v1/",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+
+    "Enterprise": {
+      "@id": "mews:Enterprise",
+      "@context": {
+        "id": {"@id": "mews:Enterprise/id", "@type": "xsd:string"},
+        "name": {"@id": "schema:legalName", "@type": "xsd:string"},
+        "address": {"@id": "schema:address"},
+        "defaultLanguageCode": {"@id": "mews:Enterprise/defaultLanguageCode", "@type": "xsd:string"},
+        "timeZoneIdentifier": {"@id": "mews:Enterprise/timeZoneIdentifier", "@type": "xsd:string"}
+      }
+    },
+
+    "Resource": {
+      "@id": "mews:Resource",
+      "@type": "schema:Accommodation",
+      "@context": {
+        "id": {"@id": "mews:Resource/id", "@type": "xsd:string"},
+        "name": {"@id": "schema:name", "@type": "xsd:string"},
+        "categoryId": {"@id": "mews:Resource/categoryId", "@type": "xsd:string"},
+        "parentResourceId": {"@id": "mews:Resource/parentResourceId", "@type": "xsd:string"},
+        "state": {"@id": "mews:Resource/state", "@type": "xsd:string"}
+      }
+    },
+
+    "Reservation": {
+      "@id": "mews:Reservation",
+      "@type": "schema:LodgingReservation",
+      "@context": {
+        "id": {"@id": "mews:Reservation/id", "@type": "xsd:string"},
+        "groupId": {"@id": "mews:Reservation/groupId", "@type": "xsd:string"},
+        "number": {"@id": "schema:reservationNumber", "@type": "xsd:string"},
+        "state": {"@id": "schema:reservationStatus", "@type": "xsd:string"},
+        "checkinTime": {"@id": "schema:checkinTime", "@type": "xsd:dateTime"},
+        "checkoutTime": {"@id": "schema:checkoutTime", "@type": "xsd:dateTime"},
+        "customerId": {"@id": "mews:Reservation/customerId", "@type": "xsd:string"},
+        "rateId": {"@id": "mews:Reservation/rateId", "@type": "xsd:string"},
+        "adultCount": {"@id": "schema:numAdults", "@type": "xsd:integer"},
+        "childCount": {"@id": "schema:numChildren", "@type": "xsd:integer"},
+        "assignedResourceId": {"@id": "mews:Reservation/assignedResourceId", "@type": "xsd:string"},
+        "origin": {"@id": "mews:Reservation/origin", "@type": "xsd:string"}
+      }
+    },
+
+    "Customer": {
+      "@id": "mews:Customer",
+      "@type": "schema:Person",
+      "@context": {
+        "id": {"@id": "mews:Customer/id", "@type": "xsd:string"},
+        "firstName": {"@id": "schema:givenName", "@type": "xsd:string"},
+        "lastName": {"@id": "schema:familyName", "@type": "xsd:string"},
+        "email": {"@id": "schema:email", "@type": "xsd:string"},
+        "phone": {"@id": "schema:telephone", "@type": "xsd:string"},
+        "nationalityCode": {"@id": "schema:nationality", "@type": "xsd:string"},
+        "languageCode": {"@id": "schema:knowsLanguage", "@type": "xsd:string"},
+        "birthDate": {"@id": "schema:birthDate", "@type": "xsd:date"},
+        "address": {"@id": "schema:address"},
+        "loyaltyCode": {"@id": "mews:Customer/loyaltyCode", "@type": "xsd:string"}
+      }
+    },
+
+    "Bill": {
+      "@id": "mews:Bill",
+      "@type": "schema:Invoice",
+      "@context": {
+        "id": {"@id": "mews:Bill/id", "@type": "xsd:string"},
+        "number": {"@id": "schema:identifier", "@type": "xsd:string"},
+        "state": {"@id": "mews:Bill/state", "@type": "xsd:string"},
+        "issuedUtc": {"@id": "mews:Bill/issuedUtc", "@type": "xsd:dateTime"},
+        "dueUtc": {"@id": "schema:scheduledPaymentDate", "@type": "xsd:dateTime"},
+        "customerId": {"@id": "mews:Bill/customerId", "@type": "xsd:string"},
+        "companyId": {"@id": "mews:Bill/companyId", "@type": "xsd:string"},
+        "totalValue": {"@id": "schema:totalPrice", "@type": "xsd:decimal"},
+        "currencyCode": {"@id": "schema:priceCurrency", "@type": "xsd:string"}
+      }
+    },
+
+    "Service": {
+      "@id": "mews:Service",
+      "@type": "schema:Service",
+      "@context": {
+        "id": {"@id": "mews:Service/id", "@type": "xsd:string"},
+        "name": {"@id": "schema:name", "@type": "xsd:string"},
+        "isActive": {"@id": "mews:Service/isActive", "@type": "xsd:boolean"},
+        "promotions": {"@id": "mews:Service/promotions"}
+      }
+    },
+
+    "Rate": {
+      "@id": "mews:Rate",
+      "@context": {
+        "id": {"@id": "mews:Rate/id", "@type": "xsd:string"},
+        "name": {"@id": "schema:name", "@type": "xsd:string"},
+        "groupId": {"@id": "mews:Rate/groupId", "@type": "xsd:string"},
+        "isActive": {"@id": "mews:Rate/isActive", "@type": "xsd:boolean"},
+        "baseRateId": {"@id": "mews:Rate/baseRateId", "@type": "xsd:string"}
+      }
+    },
+
+    "Voucher": {
+      "@id": "mews:Voucher",
+      "@type": "schema:Voucher",
+      "@context": {
+        "id": {"@id": "mews:Voucher/id", "@type": "xsd:string"},
+        "code": {"@id": "schema:identifier", "@type": "xsd:string"},
+        "discount": {"@id": "mews:Voucher/discount"},
+        "validFromUtc": {"@id": "schema:validFrom", "@type": "xsd:dateTime"},
+        "validUntilUtc": {"@id": "schema:validThrough", "@type": "xsd:dateTime"}
+      }
+    }
+  }
+}

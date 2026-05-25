@@ -1,0 +1,113 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Mews
+providerId: mews-com
+created: '2026-05-25'
+modified: '2026-05-25'
+reconciled: false
+tags:
+  - Hospitality
+  - PMS
+  - Hotel
+  - SaaS
+description: Mews packages its hospitality OS as quote-based subscriptions per property/room with optional
+  modules (POS, RMS, Payments, Booking Engine, Marketplace). Public price list is not published — Mews lists
+  three named tiers on its pricing page (Essentials, Professional, Enterprise) and routes prospects through
+  a sales/demo flow. The Mews Open API itself is included with the PMS subscription; partners pay no
+  per-call fee, though embedded Mews Payments is metered.
+sources:
+  - https://www.mews.com/en/pricing
+  - https://www.mews.com/en/products/api
+  - https://www.mews.com/en/partnerships
+plans:
+  - id: mews-essentials
+    name: Mews Essentials
+    type: subscription
+    description: Core PMS subscription for independent properties and small portfolios. Includes Open API access (Connector, Booking Engine, Distributor).
+    entries:
+      - label: Per property / month
+        name: subscription
+        type: flat
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: quote
+        userMultiplied: false
+        description: Quote-based per property and per room volume. Pricing not published.
+    elements:
+      - Cloud PMS — reservations, front desk, housekeeping
+      - Mews Open API (Connector, Booking Engine, Distributor)
+      - Marketplace integrations
+      - Standard support
+  - id: mews-professional
+    name: Mews Professional
+    type: subscription
+    description: PMS plus revenue management, payments, and advanced reporting for growing hotels and small chains.
+    entries:
+      - label: Per property / month
+        name: subscription
+        type: flat
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: quote
+        userMultiplied: false
+    elements:
+      - Everything in Essentials
+      - Mews Operations — extended workflows, housekeeping, tasks
+      - Mews Payments (embedded; usage-based payment processing fees apply)
+      - Revenue Management module
+      - Business Intelligence
+  - id: mews-enterprise
+    name: Mews Enterprise
+    type: subscription
+    description: Multi-property chains, hostels, and serviced-apartment groups. Adds Portfolio Access Tokens, dedicated success management, and SSO.
+    entries:
+      - label: Per property / month
+        name: subscription
+        type: flat
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: quote
+        userMultiplied: false
+    elements:
+      - Everything in Professional
+      - Portfolio Access Tokens (multi-property API access)
+      - SSO and advanced security controls
+      - Dedicated Customer Success Manager
+      - Custom SLAs
+  - id: mews-payments
+    name: Mews Payments
+    type: usage-based
+    description: Embedded payment processing — card-not-present, terminal, tokenization, multi-currency. Priced per transaction; rates vary by region and card scheme.
+    entries:
+      - label: Card transaction fee
+        name: transaction
+        type: metered
+        metric: transaction
+        timeFrame: usage
+        geo: global
+        unit: 1
+        price: quote
+        userMultiplied: false
+        description: Per-transaction interchange-plus rate; varies by card scheme, currency, and region.
+  - id: mews-marketplace-partner
+    name: Marketplace Partner Listing
+    type: partner-program
+    description: Third-party integration vendors apply to the Mews Marketplace. Partners do not pay a per-call API fee; commercial terms are agreed individually (revenue share, listing fee, or no fee depending on partner tier).
+    entries:
+      - label: Marketplace listing
+        name: listing
+        type: flat
+        timeFrame: year
+        geo: global
+        unit: 1
+        price: quote
+        userMultiplied: false
+    elements:
+      - Mews Marketplace listing
+      - Connector API + webhook access
+      - Sandbox (mews-demo.com) credentials
+      - Partner success contact

@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/mews-com/main/json-schema/mews-customer-schema.json",
+  "title": "MewsCustomer",
+  "description": "Schema for a Mews Connector API Customer (guest profile).",
+  "type": "object",
+  "required": ["Id", "FirstName", "LastName"],
+  "properties": {
+    "Id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "Number": {
+      "type": "string",
+      "description": "Sequential customer number assigned by Mews."
+    },
+    "FirstName": {
+      "type": "string"
+    },
+    "LastName": {
+      "type": "string"
+    },
+    "SecondLastName": {
+      "type": ["string", "null"]
+    },
+    "Title": {
+      "type": ["string", "null"],
+      "enum": ["Mister", "Miss", "Misses", "Mix", null]
+    },
+    "Gender": {
+      "type": ["string", "null"],
+      "enum": ["Male", "Female", "Other", null]
+    },
+    "NationalityCode": {
+      "type": ["string", "null"],
+      "description": "ISO 3166-1 alpha-2 country code."
+    },
+    "LanguageCode": {
+      "type": ["string", "null"],
+      "description": "ISO 639-1 / IETF language tag."
+    },
+    "BirthDate": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "BirthPlace": {
+      "type": ["string", "null"]
+    },
+    "Email": {
+      "type": ["string", "null"],
+      "format": "email"
+    },
+    "Phone": {
+      "type": ["string", "null"]
+    },
+    "LoyaltyCode": {
+      "type": ["string", "null"]
+    },
+    "Notes": {
+      "type": ["string", "null"]
+    },
+    "TaxIdentificationNumber": {
+      "type": ["string", "null"]
+    },
+    "Classifications": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Blacklist", "Loyalty Program Member", "Media", "Returning",
+          "Staff", "Top", "VIP", "VIP 2", "VIP 3"
+        ]
+      }
+    },
+    "Address": {
+      "type": ["object", "null"],
+      "properties": {
+        "Line1": {"type": ["string", "null"]},
+        "Line2": {"type": ["string", "null"]},
+        "City": {"type": ["string", "null"]},
+        "PostalCode": {"type": ["string", "null"]},
+        "CountryCode": {"type": ["string", "null"]},
+        "SubdivisionCode": {"type": ["string", "null"]}
+      }
+    },
+    "CreatedUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "UpdatedUtc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": true
+}
