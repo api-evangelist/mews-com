@@ -1,0 +1,107 @@
+arazzo: 1.0.1
+info:
+  title: Mews Update Customer Details
+  summary: Find a guest by name, then update their contact details on the profile.
+  description: >-
+    The Mews profile-maintenance pattern. The Connector API customers/search
+    action resolves the guest by name and the flow branches: when the guest is
+    found, customers/update writes the supplied contact details to the profile.
+    Each step inlines its action-style POST body with the ClientToken,
+    AccessToken, and Client authentication fields Mews requires so the flow reads
+    and runs without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: update-customer-details
+  summary: Resolve a guest by name and update their contact details.
+  description: >-
+    Searches for the guest by name and, when found, updates the email, phone and
+    notes on their customer profile.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - name
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      name:
+        type: string
+        description: The guest name to search for.
+      email:
+        type: string
+        description: The updated email address.
+      phone:
+        type: string
+        description: The updated phone number.
+      notes:
+        type: string
+        description: Updated notes on the guest profile.
+  steps:
+  - stepId: searchCustomer
+    description: >-
+      Search for the guest profile by name to obtain the customer id to update.
+    operationId: customers_search
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        Name: $inputs.name
+        Extent:
+          Customers: true
+          Documents: false
+          Addresses: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      customerId: $response.body#/Customers/0/Customer/Id
+    onSuccess:
+    - name: found
+      type: goto
+      stepId: updateCustomer
+      criteria:
+      - context: $response.body
+        condition: $.Customers.length > 0
+        type: jsonpath
+    - name: notFound
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.Customers.length == 0
+        type: jsonpath
+  - stepId: updateCustomer
+    description: >-
+      Write the supplied contact details to the resolved guest profile.
+    operationId: customers_update
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        CustomerId: $steps.searchCustomer.outputs.customerId
+        Email: $inputs.email
+        Phone: $inputs.phone
+        Notes: $inputs.notes
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      updatedCustomerId: $response.body#/Id
+      updatedUtc: $response.body#/UpdatedUtc
+  outputs:
+    customerId: $steps.searchCustomer.outputs.customerId
+    updatedUtc: $steps.updateCustomer.outputs.updatedUtc

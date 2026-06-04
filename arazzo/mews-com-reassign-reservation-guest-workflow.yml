@@ -1,0 +1,157 @@
+arazzo: 1.0.1
+info:
+  title: Mews Reassign Reservation Guest
+  summary: Find or create a guest profile, then set it as a reservation's customer.
+  description: >-
+    The Mews guest-reassignment pattern. The Connector API customers/search action
+    looks for an existing guest by name and branches to customers/add when none is
+    found, then reservations/updateCustomer sets the resolved guest as the
+    reservation's primary customer. Each step inlines its action-style POST body
+    with the ClientToken, AccessToken, and Client authentication fields Mews
+    requires so the flow reads and runs without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: reassign-reservation-guest
+  summary: Resolve a guest profile and set it as a reservation's customer.
+  description: >-
+    Searches for the guest by name, creates the profile when missing, and assigns
+    the resolved guest as the primary customer of the reservation.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - enterpriseId
+    - reservationId
+    - name
+    - firstName
+    - lastName
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      enterpriseId:
+        type: string
+        description: The enterprise (property) the reservation belongs to.
+      reservationId:
+        type: string
+        description: The reservation whose customer is being reassigned.
+      name:
+        type: string
+        description: The guest name to search for.
+      firstName:
+        type: string
+        description: First name used when creating a new profile.
+      lastName:
+        type: string
+        description: Last name used when creating a new profile.
+      email:
+        type: string
+        description: Email used when creating a new profile.
+  steps:
+  - stepId: searchCustomer
+    description: >-
+      Search for an existing guest profile by name before deciding whether to
+      create one.
+    operationId: customers_search
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        Name: $inputs.name
+        Extent:
+          Customers: true
+          Documents: false
+          Addresses: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      matchedCustomerId: $response.body#/Customers/0/Customer/Id
+    onSuccess:
+    - name: customerExists
+      type: goto
+      stepId: assignExisting
+      criteria:
+      - context: $response.body
+        condition: $.Customers.length > 0
+        type: jsonpath
+    - name: customerMissing
+      type: goto
+      stepId: createCustomer
+      criteria:
+      - context: $response.body
+        condition: $.Customers.length == 0
+        type: jsonpath
+  - stepId: createCustomer
+    description: >-
+      Create the guest profile when the search returned no match.
+    operationId: customers_add
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        FirstName: $inputs.firstName
+        LastName: $inputs.lastName
+        Email: $inputs.email
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      createdCustomerId: $response.body#/Id
+    onSuccess:
+    - name: assignCreated
+      type: goto
+      stepId: assignCreated
+      criteria:
+      - condition: $statusCode == 200
+  - stepId: assignExisting
+    description: >-
+      Set the matched existing guest as the reservation's primary customer.
+    operationId: reservations_updateCustomer
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        EnterpriseId: $inputs.enterpriseId
+        ReservationId: $inputs.reservationId
+        CustomerId: $steps.searchCustomer.outputs.matchedCustomerId
+    successCriteria:
+    - condition: $statusCode == 200
+    onSuccess:
+    - name: done
+      type: end
+  - stepId: assignCreated
+    description: >-
+      Set the newly created guest as the reservation's primary customer.
+    operationId: reservations_updateCustomer
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        EnterpriseId: $inputs.enterpriseId
+        ReservationId: $inputs.reservationId
+        CustomerId: $steps.createCustomer.outputs.createdCustomerId
+    successCriteria:
+    - condition: $statusCode == 200
+  outputs:
+    reservationId: $inputs.reservationId
+    matchedCustomerId: $steps.searchCustomer.outputs.matchedCustomerId
+    createdCustomerId: $steps.createCustomer.outputs.createdCustomerId

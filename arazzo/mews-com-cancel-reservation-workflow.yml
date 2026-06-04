@@ -1,0 +1,120 @@
+arazzo: 1.0.1
+info:
+  title: Mews Cancel Reservation
+  summary: Locate a cancellable reservation and cancel it, optionally posting a fee.
+  description: >-
+    The Mews cancellation pattern. The Connector API reservations/getAll action
+    locates the reservation and the flow branches: when a reservation is found it
+    is cancelled with reservations/cancel, optionally posting a cancellation fee.
+    Each step inlines its action-style POST body with the ClientToken,
+    AccessToken, and Client authentication fields Mews requires so the flow reads
+    and runs without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: cancel-reservation
+  summary: Find a reservation and cancel it when it exists.
+  description: >-
+    Reads the reservation by id and, when present, cancels it and optionally
+    posts a cancellation fee.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - enterpriseId
+    - reservationId
+    - serviceId
+    - startUtc
+    - endUtc
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      enterpriseId:
+        type: string
+        description: The enterprise (property) the reservation belongs to.
+      reservationId:
+        type: string
+        description: The reservation to cancel.
+      serviceId:
+        type: string
+        description: The bookable service the reservation belongs to.
+      startUtc:
+        type: string
+        description: Lower bound of the reservation collision interval, in UTC.
+      endUtc:
+        type: string
+        description: Upper bound of the reservation collision interval, in UTC.
+      postCancellationFee:
+        type: boolean
+        description: Whether a cancellation fee should be posted on cancel.
+  steps:
+  - stepId: getReservation
+    description: >-
+      Load the reservation to confirm it exists before attempting cancellation.
+    operationId: reservations_getAll
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        StartUtc: $inputs.startUtc
+        EndUtc: $inputs.endUtc
+        ServiceIds:
+        - $inputs.serviceId
+        ReservationIds:
+        - $inputs.reservationId
+        Extent:
+          Reservations: true
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      reservationState: $response.body#/Reservations/0/State
+    onSuccess:
+    - name: found
+      type: goto
+      stepId: cancelReservation
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length > 0
+        type: jsonpath
+    - name: notFound
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length == 0
+        type: jsonpath
+  - stepId: cancelReservation
+    description: >-
+      Cancel the reservation, optionally posting a cancellation fee.
+    operationId: reservations_cancel
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        EnterpriseId: $inputs.enterpriseId
+        ReservationIds:
+        - $inputs.reservationId
+        PostCancellationFee: $inputs.postCancellationFee
+        Notes: Cancellation through Connector API
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      cancelledIds: $response.body#/ReservationIds
+  outputs:
+    reservationId: $inputs.reservationId
+    cancelledIds: $steps.cancelReservation.outputs.cancelledIds

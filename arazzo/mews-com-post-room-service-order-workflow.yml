@@ -1,0 +1,147 @@
+arazzo: 1.0.1
+info:
+  title: Mews Post Room Service Order
+  summary: Resolve a guest's reservation, then post a point-of-sale order to it.
+  description: >-
+    The Mews ancillary-revenue pattern. The Connector API reservations/getAll
+    action resolves the reservation and exposes its guest account id, then
+    orders/add posts a point-of-sale order (products and custom items) against
+    that account, linked to the reservation. Each step inlines its action-style
+    POST body with the ClientToken, AccessToken, and Client authentication fields
+    Mews requires so the flow reads and runs without opening the OpenAPI
+    description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: post-room-service-order
+  summary: Resolve a reservation's guest account and post an order to it.
+  description: >-
+    Reads the reservation to obtain its customer id, then posts an order with a
+    single custom item against that guest account, linked to the reservation.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - enterpriseId
+    - serviceId
+    - reservationId
+    - startUtc
+    - endUtc
+    - itemName
+    - unitCount
+    - currency
+    - netValue
+    - consumptionUtc
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      enterpriseId:
+        type: string
+        description: The enterprise (property) the order is posted to.
+      serviceId:
+        type: string
+        description: The service the order belongs to.
+      reservationId:
+        type: string
+        description: The reservation the order is linked to.
+      startUtc:
+        type: string
+        description: Lower bound of the reservation collision interval, in UTC.
+      endUtc:
+        type: string
+        description: Upper bound of the reservation collision interval, in UTC.
+      itemName:
+        type: string
+        description: Display name of the custom order item (e.g. Beer).
+      unitCount:
+        type: integer
+        description: The number of units ordered.
+      currency:
+        type: string
+        description: Currency code for the item unit amount.
+      netValue:
+        type: number
+        description: Net value of a single item unit.
+      consumptionUtc:
+        type: string
+        description: The consumption timestamp of the order, in UTC.
+  steps:
+  - stepId: getReservation
+    description: >-
+      Load the reservation to obtain the guest customer id the order is posted
+      against.
+    operationId: reservations_getAll
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        StartUtc: $inputs.startUtc
+        EndUtc: $inputs.endUtc
+        ServiceIds:
+        - $inputs.serviceId
+        ReservationIds:
+        - $inputs.reservationId
+        Extent:
+          Reservations: true
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      customerId: $response.body#/Reservations/0/CustomerId
+    onSuccess:
+    - name: found
+      type: goto
+      stepId: postOrder
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length > 0
+        type: jsonpath
+    - name: notFound
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length == 0
+        type: jsonpath
+  - stepId: postOrder
+    description: >-
+      Post an order with a single custom item against the guest account, linked
+      to the reservation.
+    operationId: orders_add
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        EnterpriseId: $inputs.enterpriseId
+        ServiceId: $inputs.serviceId
+        AccountId: $steps.getReservation.outputs.customerId
+        Items:
+        - Name: $inputs.itemName
+          UnitCount: $inputs.unitCount
+          UnitAmount:
+            Currency: $inputs.currency
+            NetValue: $inputs.netValue
+        ConsumptionUtc: $inputs.consumptionUtc
+        LinkedReservationId: $inputs.reservationId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      orderId: $response.body#/OrderId
+  outputs:
+    reservationId: $inputs.reservationId
+    customerId: $steps.getReservation.outputs.customerId
+    orderId: $steps.postOrder.outputs.orderId

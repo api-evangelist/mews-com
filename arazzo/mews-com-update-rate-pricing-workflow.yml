@@ -1,0 +1,137 @@
+arazzo: 1.0.1
+info:
+  title: Mews Update Rate Pricing
+  summary: Resolve a rate, update its price for a range, then re-read to verify.
+  description: >-
+    The Mews revenue-management pattern. The Connector API rates/getAll action
+    resolves the rate, rates/updatePrice writes a new value across a time-unit
+    range, and rates/getPricing reads the rate back so the applied price can be
+    verified. Each step inlines its action-style POST body with the ClientToken,
+    AccessToken, and Client authentication fields Mews requires so the flow reads
+    and runs without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: update-rate-pricing
+  summary: Update a rate's price over a date range and verify the new pricing.
+  description: >-
+    Resolves the rate, applies a new price across the requested time-unit range,
+    then re-reads the rate pricing to confirm the change.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - enterpriseId
+    - serviceId
+    - rateId
+    - firstTimeUnitStartUtc
+    - lastTimeUnitStartUtc
+    - newValue
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      enterpriseId:
+        type: string
+        description: The enterprise (property) the rate belongs to.
+      serviceId:
+        type: string
+        description: The service the rate belongs to.
+      rateId:
+        type: string
+        description: The rate whose price is being updated.
+      firstTimeUnitStartUtc:
+        type: string
+        description: Start of the first time unit to update, in UTC.
+      lastTimeUnitStartUtc:
+        type: string
+        description: Start of the last time unit to update, in UTC.
+      newValue:
+        type: number
+        description: The new gross price value to apply across the range.
+  steps:
+  - stepId: getRate
+    description: >-
+      Resolve the rate for the service so its price can be updated.
+    operationId: rates_getAll
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        EnterpriseIds:
+        - $inputs.enterpriseId
+        ServiceIds:
+        - $inputs.serviceId
+        RateIds:
+        - $inputs.rateId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      resolvedRateId: $response.body#/Rates/0/Id
+    onSuccess:
+    - name: found
+      type: goto
+      stepId: updatePrice
+      criteria:
+      - context: $response.body
+        condition: $.Rates.length > 0
+        type: jsonpath
+    - name: notFound
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.Rates.length == 0
+        type: jsonpath
+  - stepId: updatePrice
+    description: >-
+      Apply the new price across the requested time-unit range for the rate.
+    operationId: rates_updatePrice
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        RateId: $steps.getRate.outputs.resolvedRateId
+        PriceUpdates:
+        - FirstTimeUnitStartUtc: $inputs.firstTimeUnitStartUtc
+          LastTimeUnitStartUtc: $inputs.lastTimeUnitStartUtc
+          Value: $inputs.newValue
+    successCriteria:
+    - condition: $statusCode == 200
+  - stepId: verifyPricing
+    description: >-
+      Re-read the rate pricing across the same range to confirm the new value was
+      applied.
+    operationId: rates_getPricing
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        RateId: $steps.getRate.outputs.resolvedRateId
+        FirstTimeUnitStartUtc: $inputs.firstTimeUnitStartUtc
+        LastTimeUnitStartUtc: $inputs.lastTimeUnitStartUtc
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      currency: $response.body#/Currency
+      baseAmountPrices: $response.body#/BaseAmountPrices
+  outputs:
+    rateId: $steps.getRate.outputs.resolvedRateId
+    verifiedCurrency: $steps.verifyPricing.outputs.currency
+    verifiedBaseAmountPrices: $steps.verifyPricing.outputs.baseAmountPrices

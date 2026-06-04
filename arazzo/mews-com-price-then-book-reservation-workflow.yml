@@ -1,0 +1,119 @@
+arazzo: 1.0.1
+info:
+  title: Mews Price then Book Reservation
+  summary: Quote a reservation price first, then create the reservation once accepted.
+  description: >-
+    A price-confirmation booking pattern. The Connector API reservations/price
+    action returns the total for a prospective stay without committing it, and
+    the same stay details are then submitted to reservations/add to create the
+    reservation. Each step inlines its action-style POST body with the
+    ClientToken, AccessToken, and Client authentication fields Mews requires so
+    the flow reads and runs without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: price-then-book-reservation
+  summary: Get a reservation price quote and then book the reservation.
+  description: >-
+    Prices a prospective reservation for a customer on a service, rate and
+    category, then creates the reservation using the same stay parameters.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - enterpriseId
+    - serviceId
+    - rateId
+    - requestedCategoryId
+    - customerId
+    - startUtc
+    - endUtc
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      enterpriseId:
+        type: string
+        description: The enterprise (property) the pricing is evaluated against.
+      serviceId:
+        type: string
+        description: The bookable service the reservation belongs to.
+      rateId:
+        type: string
+        description: The rate applied to the reservation.
+      requestedCategoryId:
+        type: string
+        description: The requested resource (room) category.
+      customerId:
+        type: string
+        description: The guest the reservation is for.
+      startUtc:
+        type: string
+        description: The reservation start in UTC.
+      endUtc:
+        type: string
+        description: The reservation end in UTC.
+  steps:
+  - stepId: priceReservation
+    description: >-
+      Calculate the price of the prospective stay without committing it, so the
+      total can be confirmed before booking.
+    operationId: reservations_price
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        EnterpriseId: $inputs.enterpriseId
+        ServiceId: $inputs.serviceId
+        Reservations:
+        - Identifier: quote-1
+          StartUtc: $inputs.startUtc
+          EndUtc: $inputs.endUtc
+          RequestedCategoryId: $inputs.requestedCategoryId
+          RateId: $inputs.rateId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      currency: $response.body#/ReservationPrices/0/Total/Currency
+      grossTotal: $response.body#/ReservationPrices/0/Total/GrossValue
+  - stepId: bookReservation
+    description: >-
+      Create the reservation using the same stay parameters that were priced.
+    operationId: reservations_add
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        ServiceId: $inputs.serviceId
+        SendConfirmationEmail: true
+        Reservations:
+        - State: Confirmed
+          StartUtc: $inputs.startUtc
+          EndUtc: $inputs.endUtc
+          CustomerId: $inputs.customerId
+          RequestedCategoryId: $inputs.requestedCategoryId
+          RateId: $inputs.rateId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      reservationId: $response.body#/Reservations/0/Reservation/Id
+      reservationState: $response.body#/Reservations/0/Reservation/State
+  outputs:
+    quotedCurrency: $steps.priceReservation.outputs.currency
+    quotedGrossTotal: $steps.priceReservation.outputs.grossTotal
+    reservationId: $steps.bookReservation.outputs.reservationId

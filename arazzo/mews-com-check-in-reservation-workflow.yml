@@ -1,0 +1,132 @@
+arazzo: 1.0.1
+info:
+  title: Mews Check In Reservation
+  summary: Locate a reservation, confirm it if needed, then start it (check in).
+  description: >-
+    The Mews front-desk arrival pattern. The Connector API reservations/getAll
+    action locates the reservation by id and inspects its state, the flow
+    branches to confirm the reservation with reservations/confirm when it is not
+    yet confirmed, and reservations/start marks the guest as checked in. Each
+    step inlines its action-style POST body with the ClientToken, AccessToken,
+    and Client authentication fields Mews requires so the flow reads and runs
+    without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: check-in-reservation
+  summary: Confirm (if necessary) and start a reservation to check the guest in.
+  description: >-
+    Reads the reservation, confirms it when it is not already in the Confirmed
+    state, and then starts it to complete check-in.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - enterpriseId
+    - reservationId
+    - serviceId
+    - startUtc
+    - endUtc
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      enterpriseId:
+        type: string
+        description: The enterprise (property) the reservation belongs to.
+      reservationId:
+        type: string
+        description: The reservation to check in.
+      serviceId:
+        type: string
+        description: The bookable service the reservation belongs to.
+      startUtc:
+        type: string
+        description: Lower bound of the reservation collision interval, in UTC.
+      endUtc:
+        type: string
+        description: Upper bound of the reservation collision interval, in UTC.
+  steps:
+  - stepId: getReservation
+    description: >-
+      Load the reservation and read its current state to decide whether a
+      confirmation step is required before check-in.
+    operationId: reservations_getAll
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        StartUtc: $inputs.startUtc
+        EndUtc: $inputs.endUtc
+        ServiceIds:
+        - $inputs.serviceId
+        ReservationIds:
+        - $inputs.reservationId
+        Extent:
+          Reservations: true
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      reservationState: $response.body#/Reservations/0/State
+    onSuccess:
+    - name: alreadyConfirmed
+      type: goto
+      stepId: startReservation
+      criteria:
+      - context: $response.body
+        condition: $.Reservations[0].State == 'Confirmed'
+        type: jsonpath
+    - name: needsConfirm
+      type: goto
+      stepId: confirmReservation
+      criteria:
+      - context: $response.body
+        condition: $.Reservations[0].State != 'Confirmed'
+        type: jsonpath
+  - stepId: confirmReservation
+    description: >-
+      Confirm the reservation so it satisfies the starting conditions for
+      check-in.
+    operationId: reservations_confirm
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        ReservationIds:
+        - $inputs.reservationId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      confirmedIds: $response.body#/ReservationIds
+  - stepId: startReservation
+    description: >-
+      Mark the reservation as started (checked in).
+    operationId: reservations_start
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        EnterpriseId: $inputs.enterpriseId
+        ReservationId: $inputs.reservationId
+    successCriteria:
+    - condition: $statusCode == 200
+  outputs:
+    reservationId: $inputs.reservationId
+    priorState: $steps.getReservation.outputs.reservationState

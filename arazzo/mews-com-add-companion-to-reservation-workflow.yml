@@ -1,0 +1,89 @@
+arazzo: 1.0.1
+info:
+  title: Mews Add Companion to Reservation
+  summary: Create a companion guest profile and attach it to a reservation.
+  description: >-
+    The Mews shared-room pattern. The Connector API customers/add action creates
+    an additional guest profile, and reservations/addCompanion attaches that
+    profile to an existing reservation as a companion. Each step inlines its
+    action-style POST body with the ClientToken, AccessToken, and Client
+    authentication fields Mews requires so the flow reads and runs without opening
+    the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: add-companion-to-reservation
+  summary: Add a new companion profile and attach it to a reservation.
+  description: >-
+    Creates a companion guest profile, then links that profile to the supplied
+    reservation as a companion.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - reservationId
+    - firstName
+    - lastName
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      reservationId:
+        type: string
+        description: The reservation the companion is attached to.
+      firstName:
+        type: string
+        description: The companion first name.
+      lastName:
+        type: string
+        description: The companion last name.
+      email:
+        type: string
+        description: The companion email address.
+  steps:
+  - stepId: addCompanionProfile
+    description: >-
+      Create the companion guest profile whose id is then linked to the
+      reservation.
+    operationId: customers_add
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        FirstName: $inputs.firstName
+        LastName: $inputs.lastName
+        Email: $inputs.email
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      companionCustomerId: $response.body#/Id
+  - stepId: attachCompanion
+    description: >-
+      Attach the newly created companion profile to the reservation.
+    operationId: reservations_addCompanion
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        ReservationId: $inputs.reservationId
+        CustomerId: $steps.addCompanionProfile.outputs.companionCustomerId
+    successCriteria:
+    - condition: $statusCode == 200
+  outputs:
+    reservationId: $inputs.reservationId
+    companionCustomerId: $steps.addCompanionProfile.outputs.companionCustomerId

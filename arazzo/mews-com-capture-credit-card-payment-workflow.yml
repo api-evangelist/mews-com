@@ -1,0 +1,143 @@
+arazzo: 1.0.1
+info:
+  title: Mews Capture Credit Card Payment
+  summary: Locate a reservation, find its guest, then charge a credit card payment.
+  description: >-
+    The Mews payment-capture pattern. The Connector API reservations/getAll action
+    locates the reservation and exposes its customer id, then payments/addCreditCard
+    charges a credit card payment against that guest account. Each step inlines its
+    action-style POST body with the ClientToken, AccessToken, and Client
+    authentication fields Mews requires so the flow reads and runs without opening
+    the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: capture-credit-card-payment
+  summary: Resolve a reservation's guest and charge a credit card payment.
+  description: >-
+    Reads the reservation to obtain its customer id, then posts a credit card
+    payment of the supplied amount against that guest.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - reservationId
+    - serviceId
+    - startUtc
+    - endUtc
+    - currency
+    - grossValue
+    - cardType
+    - cardNumber
+    - cardExpiration
+    - cardName
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      reservationId:
+        type: string
+        description: The reservation whose guest is charged.
+      serviceId:
+        type: string
+        description: The bookable service the reservation belongs to.
+      startUtc:
+        type: string
+        description: Lower bound of the reservation collision interval, in UTC.
+      endUtc:
+        type: string
+        description: Upper bound of the reservation collision interval, in UTC.
+      currency:
+        type: string
+        description: Currency code for the payment amount (e.g. GBP).
+      grossValue:
+        type: number
+        description: Gross value of the payment.
+      cardType:
+        type: string
+        description: The credit card type (e.g. Visa).
+      cardNumber:
+        type: string
+        description: The masked credit card number.
+      cardExpiration:
+        type: string
+        description: The card expiration as MM/YYYY.
+      cardName:
+        type: string
+        description: The cardholder name.
+  steps:
+  - stepId: getReservation
+    description: >-
+      Load the reservation to obtain the guest customer id that the payment is
+      charged against.
+    operationId: reservations_getAll
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        StartUtc: $inputs.startUtc
+        EndUtc: $inputs.endUtc
+        ServiceIds:
+        - $inputs.serviceId
+        ReservationIds:
+        - $inputs.reservationId
+        Extent:
+          Reservations: true
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      customerId: $response.body#/Reservations/0/CustomerId
+    onSuccess:
+    - name: found
+      type: goto
+      stepId: chargeCard
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length > 0
+        type: jsonpath
+    - name: notFound
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length == 0
+        type: jsonpath
+  - stepId: chargeCard
+    description: >-
+      Charge a credit card payment against the reservation's guest account.
+    operationId: payments_addCreditCard
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        CustomerId: $steps.getReservation.outputs.customerId
+        Amount:
+          Currency: $inputs.currency
+          GrossValue: $inputs.grossValue
+        CreditCard:
+          Type: $inputs.cardType
+          Number: $inputs.cardNumber
+          Expiration: $inputs.cardExpiration
+          Name: $inputs.cardName
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      creditCardId: $response.body#/CreditCardId
+  outputs:
+    reservationId: $inputs.reservationId
+    customerId: $steps.getReservation.outputs.customerId
+    creditCardId: $steps.chargeCard.outputs.creditCardId

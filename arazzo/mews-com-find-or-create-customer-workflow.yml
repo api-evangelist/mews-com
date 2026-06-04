@@ -1,0 +1,108 @@
+arazzo: 1.0.1
+info:
+  title: Mews Find or Create Customer
+  summary: Search for a guest by name and create the profile only when none exists.
+  description: >-
+    A guest-deduplication pattern for Mews. The Connector API customers/search
+    action is run against a name, and the flow branches: when a matching profile
+    is returned the existing customer id is reused, and when no match is found a
+    new profile is created with customers/add. Each step inlines its POST body
+    with the ClientToken, AccessToken, and Client authentication fields Mews
+    requires so the flow reads and runs without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: find-or-create-customer
+  summary: Resolve a guest profile by name, creating it only if missing.
+  description: >-
+    Searches the enterprise for a customer matching the supplied name and either
+    returns the matched customer id or creates a new profile when none matched.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - name
+    - firstName
+    - lastName
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      name:
+        type: string
+        description: The guest name to search for (e.g. "Smith").
+      firstName:
+        type: string
+        description: First name used when creating a new profile.
+      lastName:
+        type: string
+        description: Last name used when creating a new profile.
+      email:
+        type: string
+        description: Email used when creating a new profile.
+  steps:
+  - stepId: searchCustomer
+    description: >-
+      Search for an existing guest profile by name before deciding whether to
+      create a new one.
+    operationId: customers_search
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        Name: $inputs.name
+        Extent:
+          Customers: true
+          Documents: false
+          Addresses: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      matchedCustomerId: $response.body#/Customers/0/Customer/Id
+    onSuccess:
+    - name: customerExists
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.Customers.length > 0
+        type: jsonpath
+    - name: customerMissing
+      type: goto
+      stepId: createCustomer
+      criteria:
+      - context: $response.body
+        condition: $.Customers.length == 0
+        type: jsonpath
+  - stepId: createCustomer
+    description: >-
+      Create a new guest profile when the search returned no matching customer.
+    operationId: customers_add
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        FirstName: $inputs.firstName
+        LastName: $inputs.lastName
+        Email: $inputs.email
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      createdCustomerId: $response.body#/Id
+  outputs:
+    matchedCustomerId: $steps.searchCustomer.outputs.matchedCustomerId
+    createdCustomerId: $steps.createCustomer.outputs.createdCustomerId

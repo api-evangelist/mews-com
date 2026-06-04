@@ -1,0 +1,127 @@
+arazzo: 1.0.1
+info:
+  title: Mews Reservation Accounting Summary
+  summary: Resolve a reservation's guest account, then pull its accounting items.
+  description: >-
+    The Mews folio-review pattern. The Connector API reservations/getAll action
+    resolves the reservation and exposes its guest account id, then
+    accountingItems/getAll returns the order and payment items posted to that
+    account over a date range. Each step inlines its action-style POST body with
+    the ClientToken, AccessToken, and Client authentication fields Mews requires
+    so the flow reads and runs without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: reservation-accounting-summary
+  summary: Resolve a reservation and list its accounting items for a date range.
+  description: >-
+    Reads the reservation to confirm it exists, then returns the order and
+    payment accounting items consumed within the supplied date range.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - reservationId
+    - serviceId
+    - startUtc
+    - endUtc
+    - consumedStartUtc
+    - consumedEndUtc
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      reservationId:
+        type: string
+        description: The reservation to summarize accounting for.
+      serviceId:
+        type: string
+        description: The bookable service the reservation belongs to.
+      startUtc:
+        type: string
+        description: Lower bound of the reservation collision interval, in UTC.
+      endUtc:
+        type: string
+        description: Upper bound of the reservation collision interval, in UTC.
+      consumedStartUtc:
+        type: string
+        description: Start of the accounting item consumption window, in UTC.
+      consumedEndUtc:
+        type: string
+        description: End of the accounting item consumption window, in UTC.
+  steps:
+  - stepId: getReservation
+    description: >-
+      Load the reservation to confirm it exists before pulling accounting items.
+    operationId: reservations_getAll
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        StartUtc: $inputs.startUtc
+        EndUtc: $inputs.endUtc
+        ServiceIds:
+        - $inputs.serviceId
+        ReservationIds:
+        - $inputs.reservationId
+        Extent:
+          Reservations: true
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      customerId: $response.body#/Reservations/0/CustomerId
+    onSuccess:
+    - name: found
+      type: goto
+      stepId: getAccountingItems
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length > 0
+        type: jsonpath
+    - name: notFound
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length == 0
+        type: jsonpath
+  - stepId: getAccountingItems
+    description: >-
+      Return the order and payment accounting items consumed within the supplied
+      window.
+    operationId: accountingItems_getAll
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        ConsumedUtc:
+          StartUtc: $inputs.consumedStartUtc
+          EndUtc: $inputs.consumedEndUtc
+        Extent:
+          OrderItems: true
+          PaymentItems: true
+          CreditCardTransactions: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      orderItems: $response.body#/OrderItems
+      paymentItems: $response.body#/PaymentItems
+  outputs:
+    reservationId: $inputs.reservationId
+    customerId: $steps.getReservation.outputs.customerId
+    orderItems: $steps.getAccountingItems.outputs.orderItems
+    paymentItems: $steps.getAccountingItems.outputs.paymentItems

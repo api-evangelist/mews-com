@@ -1,0 +1,119 @@
+arazzo: 1.0.1
+info:
+  title: Mews Attach Identity Document
+  summary: Find a guest by name, then attach an identity document to their profile.
+  description: >-
+    The Mews registration pattern. The Connector API customers/search action
+    resolves the guest profile by name and the flow branches: when a guest is
+    found, identityDocuments/add records a passport or ID card for that customer.
+    Each step inlines its action-style POST body with the ClientToken,
+    AccessToken, and Client authentication fields Mews requires so the flow reads
+    and runs without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: attach-identity-document
+  summary: Resolve a guest by name and record an identity document for them.
+  description: >-
+    Searches for the guest by name and, when found, attaches an identity document
+    (such as a passport) to their customer profile.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - name
+    - documentType
+    - documentNumber
+    - issuingCountryCode
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      name:
+        type: string
+        description: The guest name to search for.
+      documentType:
+        type: string
+        description: The identity document type (e.g. Passport).
+      documentNumber:
+        type: string
+        description: The identity document number.
+      issuingCountryCode:
+        type: string
+        description: ISO country code of the issuing authority (e.g. CZ).
+      expirationDate:
+        type: string
+        description: Document expiration date in UTC.
+      issuanceDate:
+        type: string
+        description: Document issuance date in UTC.
+  steps:
+  - stepId: searchCustomer
+    description: >-
+      Search for the guest profile by name to obtain the customer id the document
+      is attached to.
+    operationId: customers_search
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        Name: $inputs.name
+        Extent:
+          Customers: true
+          Documents: false
+          Addresses: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      customerId: $response.body#/Customers/0/Customer/Id
+    onSuccess:
+    - name: found
+      type: goto
+      stepId: addDocument
+      criteria:
+      - context: $response.body
+        condition: $.Customers.length > 0
+        type: jsonpath
+    - name: notFound
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.Customers.length == 0
+        type: jsonpath
+  - stepId: addDocument
+    description: >-
+      Record the identity document against the resolved guest profile.
+    operationId: identityDocuments_add
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        IdentityDocuments:
+        - CustomerId: $steps.searchCustomer.outputs.customerId
+          Type: $inputs.documentType
+          Number: $inputs.documentNumber
+          IssuingCountryCode: $inputs.issuingCountryCode
+          ExpirationDate: $inputs.expirationDate
+          IssuanceDate: $inputs.issuanceDate
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      documentId: $response.body#/IdentityDocuments/0/Id
+  outputs:
+    customerId: $steps.searchCustomer.outputs.customerId
+    documentId: $steps.addDocument.outputs.documentId

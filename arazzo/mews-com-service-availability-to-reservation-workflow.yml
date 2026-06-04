@@ -1,0 +1,146 @@
+arazzo: 1.0.1
+info:
+  title: Mews Service Availability to Reservation
+  summary: Resolve a service, check category availability, then book if space exists.
+  description: >-
+    An availability-aware booking pattern. The Connector API services/getAll
+    action resolves the bookable service, services/getAvailability returns the
+    free counts per resource category across the requested time units, and the
+    flow branches: when availability exists a reservation is created with
+    reservations/add. Each step inlines its action-style POST body with the
+    ClientToken, AccessToken, and Client authentication fields Mews requires so
+    the flow reads and runs without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: service-availability-to-reservation
+  summary: Check service availability and book a reservation when space is open.
+  description: >-
+    Loads the service, reads per-category availability for the stay window, and
+    creates a reservation only when at least one category reports availability.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - serviceId
+    - rateId
+    - requestedCategoryId
+    - customerId
+    - firstTimeUnitStartUtc
+    - lastTimeUnitStartUtc
+    - startUtc
+    - endUtc
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      serviceId:
+        type: string
+        description: The bookable service to check and book against.
+      rateId:
+        type: string
+        description: The rate applied to the reservation.
+      requestedCategoryId:
+        type: string
+        description: The requested resource (room) category.
+      customerId:
+        type: string
+        description: The guest the reservation is for.
+      firstTimeUnitStartUtc:
+        type: string
+        description: Start of the first time unit to check availability for, in UTC.
+      lastTimeUnitStartUtc:
+        type: string
+        description: Start of the last time unit to check availability for, in UTC.
+      startUtc:
+        type: string
+        description: The reservation start in UTC.
+      endUtc:
+        type: string
+        description: The reservation end in UTC.
+  steps:
+  - stepId: getService
+    description: >-
+      Resolve the bookable service so availability can be queried against it.
+    operationId: services_getAll
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        ServiceIds:
+        - $inputs.serviceId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      resolvedServiceId: $response.body#/Services/0/Id
+  - stepId: getAvailability
+    description: >-
+      Read per-category availability across the requested time units to decide
+      whether the stay can be booked.
+    operationId: services_getAvailability
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        ServiceId: $steps.getService.outputs.resolvedServiceId
+        FirstTimeUnitStartUtc: $inputs.firstTimeUnitStartUtc
+        LastTimeUnitStartUtc: $inputs.lastTimeUnitStartUtc
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      categoryAvailabilities: $response.body#/CategoryAvailabilities
+    onSuccess:
+    - name: hasAvailability
+      type: goto
+      stepId: bookReservation
+      criteria:
+      - context: $response.body
+        condition: $.CategoryAvailabilities.length > 0
+        type: jsonpath
+    - name: noAvailability
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.CategoryAvailabilities.length == 0
+        type: jsonpath
+  - stepId: bookReservation
+    description: >-
+      Create the reservation now that the service reported availability for the
+      requested window.
+    operationId: reservations_add
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        ServiceId: $steps.getService.outputs.resolvedServiceId
+        SendConfirmationEmail: true
+        Reservations:
+        - State: Confirmed
+          StartUtc: $inputs.startUtc
+          EndUtc: $inputs.endUtc
+          CustomerId: $inputs.customerId
+          RequestedCategoryId: $inputs.requestedCategoryId
+          RateId: $inputs.rateId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      reservationId: $response.body#/Reservations/0/Reservation/Id
+  outputs:
+    reservationId: $steps.bookReservation.outputs.reservationId

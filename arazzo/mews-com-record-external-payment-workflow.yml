@@ -1,0 +1,137 @@
+arazzo: 1.0.1
+info:
+  title: Mews Record External Payment
+  summary: Locate a reservation's guest account, then record an external payment.
+  description: >-
+    The Mews external-settlement pattern. The Connector API reservations/getAll
+    action resolves the reservation's customer id, then payments/addExternal
+    records a payment that was processed outside Mews (such as cash or an external
+    terminal) against that account. Each step inlines its action-style POST body
+    with the ClientToken, AccessToken, and Client authentication fields Mews
+    requires so the flow reads and runs without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: record-external-payment
+  summary: Resolve a reservation's guest and record an external payment.
+  description: >-
+    Reads the reservation to obtain its customer id, then records an external
+    payment of the supplied amount and type against that guest account.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - enterpriseId
+    - reservationId
+    - serviceId
+    - startUtc
+    - endUtc
+    - currency
+    - grossValue
+    - paymentType
+    - externalIdentifier
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      enterpriseId:
+        type: string
+        description: The enterprise (property) the payment is recorded against.
+      reservationId:
+        type: string
+        description: The reservation whose guest account is settled.
+      serviceId:
+        type: string
+        description: The bookable service the reservation belongs to.
+      startUtc:
+        type: string
+        description: Lower bound of the reservation collision interval, in UTC.
+      endUtc:
+        type: string
+        description: Upper bound of the reservation collision interval, in UTC.
+      currency:
+        type: string
+        description: Currency code for the payment amount (e.g. GBP).
+      grossValue:
+        type: number
+        description: Gross value of the external payment.
+      paymentType:
+        type: string
+        description: The external payment type (e.g. Cash).
+      externalIdentifier:
+        type: string
+        description: An identifier of the external transaction.
+  steps:
+  - stepId: getReservation
+    description: >-
+      Load the reservation to obtain the guest customer id used as the payment
+      account.
+    operationId: reservations_getAll
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        StartUtc: $inputs.startUtc
+        EndUtc: $inputs.endUtc
+        ServiceIds:
+        - $inputs.serviceId
+        ReservationIds:
+        - $inputs.reservationId
+        Extent:
+          Reservations: true
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      customerId: $response.body#/Reservations/0/CustomerId
+    onSuccess:
+    - name: found
+      type: goto
+      stepId: recordPayment
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length > 0
+        type: jsonpath
+    - name: notFound
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length == 0
+        type: jsonpath
+  - stepId: recordPayment
+    description: >-
+      Record the external payment against the reservation's guest account.
+    operationId: payments_addExternal
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        AccountId: $steps.getReservation.outputs.customerId
+        EnterpriseId: $inputs.enterpriseId
+        Amount:
+          Currency: $inputs.currency
+          GrossValue: $inputs.grossValue
+        ExternalIdentifier: $inputs.externalIdentifier
+        Type: $inputs.paymentType
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      externalPaymentId: $response.body#/ExternalPaymentId
+  outputs:
+    reservationId: $inputs.reservationId
+    customerId: $steps.getReservation.outputs.customerId
+    externalPaymentId: $steps.recordPayment.outputs.externalPaymentId

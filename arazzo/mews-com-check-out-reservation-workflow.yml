@@ -1,0 +1,117 @@
+arazzo: 1.0.1
+info:
+  title: Mews Check Out Reservation
+  summary: Locate a started reservation and process it (check out) closing its bills.
+  description: >-
+    The Mews front-desk departure pattern. The Connector API reservations/getAll
+    action locates the reservation and confirms it is in the Started state, then
+    reservations/process marks the guest as checked out, closing the reservation
+    bills. Each step inlines its action-style POST body with the ClientToken,
+    AccessToken, and Client authentication fields Mews requires so the flow reads
+    and runs without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: check-out-reservation
+  summary: Verify a reservation is started and process it to check the guest out.
+  description: >-
+    Reads the reservation to confirm it is in the Started state, then processes
+    it to complete check-out and close the associated bills.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - enterpriseId
+    - reservationId
+    - serviceId
+    - startUtc
+    - endUtc
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      enterpriseId:
+        type: string
+        description: The enterprise (property) the reservation belongs to.
+      reservationId:
+        type: string
+        description: The reservation to check out.
+      serviceId:
+        type: string
+        description: The bookable service the reservation belongs to.
+      startUtc:
+        type: string
+        description: Lower bound of the reservation collision interval, in UTC.
+      endUtc:
+        type: string
+        description: Upper bound of the reservation collision interval, in UTC.
+  steps:
+  - stepId: getReservation
+    description: >-
+      Load the reservation and confirm it is in the Started state so it can be
+      processed (checked out).
+    operationId: reservations_getAll
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        StartUtc: $inputs.startUtc
+        EndUtc: $inputs.endUtc
+        ServiceIds:
+        - $inputs.serviceId
+        ReservationIds:
+        - $inputs.reservationId
+        States:
+        - Started
+        Extent:
+          Reservations: true
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      reservationState: $response.body#/Reservations/0/State
+    onSuccess:
+    - name: isStarted
+      type: goto
+      stepId: processReservation
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length > 0
+        type: jsonpath
+    - name: notStarted
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length == 0
+        type: jsonpath
+  - stepId: processReservation
+    description: >-
+      Process the reservation to complete check-out, closing its bills.
+    operationId: reservations_process
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        EnterpriseId: $inputs.enterpriseId
+        ReservationId: $inputs.reservationId
+        CloseBills: true
+        AllowOpenBalance: false
+    successCriteria:
+    - condition: $statusCode == 200
+  outputs:
+    reservationId: $inputs.reservationId
+    priorState: $steps.getReservation.outputs.reservationState

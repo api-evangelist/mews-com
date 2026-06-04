@@ -1,0 +1,113 @@
+arazzo: 1.0.1
+info:
+  title: Mews Refund Payment
+  summary: Find a refundable payment on a reservation, then refund it.
+  description: >-
+    The Mews refund pattern. The Connector API payments/getAll action lists the
+    payments on a reservation and the flow branches: when a payment is found it is
+    refunded with payments/refund, optionally as a partial refund. Each step
+    inlines its action-style POST body with the ClientToken, AccessToken, and
+    Client authentication fields Mews requires so the flow reads and runs without
+    opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: refund-payment
+  summary: Locate a reservation payment and refund it.
+  description: >-
+    Lists the payments on a reservation and, when one is present, refunds the
+    first payment against its account for the supplied reason and value.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - enterpriseId
+    - reservationId
+    - reason
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      enterpriseId:
+        type: string
+        description: The enterprise (property) the refund is recorded against.
+      reservationId:
+        type: string
+        description: The reservation whose payment is refunded.
+      reason:
+        type: string
+        description: The reason for the refund.
+      valueToRefund:
+        type: number
+        description: Optional amount for a partial refund; omit for a full refund.
+  steps:
+  - stepId: listPayments
+    description: >-
+      List the payments tied to the reservation to identify a payment that can be
+      refunded.
+    operationId: payments_getAll
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        ReservationIds:
+        - $inputs.reservationId
+        EnterpriseIds:
+        - $inputs.enterpriseId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      paymentId: $response.body#/Payments/0/Id
+      accountId: $response.body#/Payments/0/AccountId
+    onSuccess:
+    - name: hasPayment
+      type: goto
+      stepId: refundPayment
+      criteria:
+      - context: $response.body
+        condition: $.Payments.length > 0
+        type: jsonpath
+    - name: noPayment
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.Payments.length == 0
+        type: jsonpath
+  - stepId: refundPayment
+    description: >-
+      Refund the identified payment against its account for the supplied reason
+      and optional value.
+    operationId: payments_refund
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        PaymentId: $steps.listPayments.outputs.paymentId
+        AccountId: $steps.listPayments.outputs.accountId
+        Reason: $inputs.reason
+        ValueToRefund: $inputs.valueToRefund
+        EnterpriseId: $inputs.enterpriseId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      refundId: $response.body#/RefundId
+      refundState: $response.body#/State
+  outputs:
+    reservationId: $inputs.reservationId
+    refundedPaymentId: $steps.listPayments.outputs.paymentId
+    refundId: $steps.refundPayment.outputs.refundId

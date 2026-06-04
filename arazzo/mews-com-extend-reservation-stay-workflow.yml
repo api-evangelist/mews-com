@@ -1,0 +1,126 @@
+arazzo: 1.0.1
+info:
+  title: Mews Extend Reservation Stay
+  summary: Locate a reservation and move its interval to a new start and end.
+  description: >-
+    The Mews stay-extension pattern. The Connector API reservations/getAll action
+    locates the reservation, then reservations/updateInterval shifts the stay to
+    a new start and end (for example extending the departure date), optionally
+    charging a cancellation fee. Each step inlines its action-style POST body with
+    the ClientToken, AccessToken, and Client authentication fields Mews requires
+    so the flow reads and runs without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: extend-reservation-stay
+  summary: Move a reservation to a new stay interval.
+  description: >-
+    Reads the reservation by id and updates its interval to the supplied new
+    start and end times.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - enterpriseId
+    - reservationId
+    - serviceId
+    - searchStartUtc
+    - searchEndUtc
+    - newStartUtc
+    - newEndUtc
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      enterpriseId:
+        type: string
+        description: The enterprise (property) the reservation belongs to.
+      reservationId:
+        type: string
+        description: The reservation whose interval is being changed.
+      serviceId:
+        type: string
+        description: The bookable service the reservation belongs to.
+      searchStartUtc:
+        type: string
+        description: Lower bound of the reservation collision interval, in UTC.
+      searchEndUtc:
+        type: string
+        description: Upper bound of the reservation collision interval, in UTC.
+      newStartUtc:
+        type: string
+        description: The new reservation start in UTC.
+      newEndUtc:
+        type: string
+        description: The new reservation end in UTC.
+  steps:
+  - stepId: getReservation
+    description: >-
+      Load the reservation to confirm it exists and read its current interval
+      before changing it.
+    operationId: reservations_getAll
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        StartUtc: $inputs.searchStartUtc
+        EndUtc: $inputs.searchEndUtc
+        ServiceIds:
+        - $inputs.serviceId
+        ReservationIds:
+        - $inputs.reservationId
+        Extent:
+          Reservations: true
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      currentStartUtc: $response.body#/Reservations/0/StartUtc
+      currentEndUtc: $response.body#/Reservations/0/EndUtc
+    onSuccess:
+    - name: found
+      type: goto
+      stepId: updateInterval
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length > 0
+        type: jsonpath
+    - name: notFound
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.Reservations.length == 0
+        type: jsonpath
+  - stepId: updateInterval
+    description: >-
+      Move the reservation to the new start and end interval.
+    operationId: reservations_updateInterval
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        EnterpriseId: $inputs.enterpriseId
+        ReservationId: $inputs.reservationId
+        StartUtc: $inputs.newStartUtc
+        EndUtc: $inputs.newEndUtc
+        ChargeCancellationFee: false
+    successCriteria:
+    - condition: $statusCode == 200
+  outputs:
+    reservationId: $inputs.reservationId
+    previousStartUtc: $steps.getReservation.outputs.currentStartUtc
+    previousEndUtc: $steps.getReservation.outputs.currentEndUtc

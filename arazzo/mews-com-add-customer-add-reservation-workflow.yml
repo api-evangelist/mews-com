@@ -1,0 +1,120 @@
+arazzo: 1.0.1
+info:
+  title: Mews Add Customer and Add Reservation
+  summary: Create a guest profile, then book a reservation for that guest.
+  description: >-
+    The foundational Mews booking pattern. A new guest profile is created with
+    the Connector API customers/add action, the resulting customer id is carried
+    forward, and a reservation is added for that guest against a service and rate
+    using reservations/add. Every step spells out its action-style POST body
+    inline — including the ClientToken, AccessToken, and Client authentication
+    fields Mews requires — so the flow can be read and executed without opening
+    the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: add-customer-add-reservation
+  summary: Create a customer profile and book a reservation for them.
+  description: >-
+    Adds a new customer to the enterprise then immediately creates a reservation
+    for that customer on the supplied service and rate for the requested stay
+    interval.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - firstName
+    - lastName
+    - serviceId
+    - rateId
+    - requestedCategoryId
+    - startUtc
+    - endUtc
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version (e.g. "Sample Client 1.0.0").
+      firstName:
+        type: string
+        description: The guest first name.
+      lastName:
+        type: string
+        description: The guest last name.
+      email:
+        type: string
+        description: The guest email address.
+      serviceId:
+        type: string
+        description: The bookable service (reservable) the reservation belongs to.
+      rateId:
+        type: string
+        description: The rate applied to the reservation.
+      requestedCategoryId:
+        type: string
+        description: The requested resource (room) category for the stay.
+      startUtc:
+        type: string
+        description: The reservation start in UTC (e.g. 2021-01-01T14:00:00Z).
+      endUtc:
+        type: string
+        description: The reservation end in UTC (e.g. 2021-01-03T10:00:00Z).
+  steps:
+  - stepId: addCustomer
+    description: >-
+      Create the guest profile. The returned customer id is required to attach a
+      reservation to the guest.
+    operationId: customers_add
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        FirstName: $inputs.firstName
+        LastName: $inputs.lastName
+        Email: $inputs.email
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      customerId: $response.body#/Id
+  - stepId: addReservation
+    description: >-
+      Book the reservation for the newly created customer on the supplied
+      service, rate and category for the requested interval.
+    operationId: reservations_add
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        ServiceId: $inputs.serviceId
+        SendConfirmationEmail: true
+        Reservations:
+        - State: Confirmed
+          StartUtc: $inputs.startUtc
+          EndUtc: $inputs.endUtc
+          CustomerId: $steps.addCustomer.outputs.customerId
+          RequestedCategoryId: $inputs.requestedCategoryId
+          RateId: $inputs.rateId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      reservationId: $response.body#/Reservations/0/Reservation/Id
+      reservationNumber: $response.body#/Reservations/0/Reservation/Number
+      reservationState: $response.body#/Reservations/0/Reservation/State
+  outputs:
+    customerId: $steps.addCustomer.outputs.customerId
+    reservationId: $steps.addReservation.outputs.reservationId
+    reservationNumber: $steps.addReservation.outputs.reservationNumber

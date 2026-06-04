@@ -1,0 +1,127 @@
+arazzo: 1.0.1
+info:
+  title: Mews Add Product to Reservation
+  summary: Resolve a product on a service, then attach it to a reservation.
+  description: >-
+    The Mews upsell pattern. The Connector API products/getAll action lists the
+    products available on a service, and the flow branches: when a product is
+    found, reservations/addProduct attaches it to the reservation for a count and
+    interval. Each step inlines its action-style POST body with the ClientToken,
+    AccessToken, and Client authentication fields Mews requires so the flow reads
+    and runs without opening the OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: connectorApi
+  url: ../openapi/mews-connector-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: add-product-to-reservation
+  summary: Find an available product and add it to a reservation.
+  description: >-
+    Lists products for the service and, when one is available, attaches the
+    specified product to the reservation.
+  inputs:
+    type: object
+    required:
+    - clientToken
+    - accessToken
+    - client
+    - serviceId
+    - reservationId
+    - productId
+    - count
+    - startUtc
+    - endUtc
+    - currency
+    - grossValue
+    properties:
+      clientToken:
+        type: string
+        description: The Mews ClientToken identifying the integration.
+      accessToken:
+        type: string
+        description: The Mews AccessToken identifying the enterprise.
+      client:
+        type: string
+        description: The client application name and version.
+      serviceId:
+        type: string
+        description: The service whose products are listed.
+      reservationId:
+        type: string
+        description: The reservation the product is attached to.
+      productId:
+        type: string
+        description: The product to attach.
+      count:
+        type: integer
+        description: The number of product units to add.
+      startUtc:
+        type: string
+        description: The product order start in UTC.
+      endUtc:
+        type: string
+        description: The product order end in UTC.
+      currency:
+        type: string
+        description: Currency code for the unit amount (e.g. GBP).
+      grossValue:
+        type: number
+        description: Gross value of a single product unit.
+  steps:
+  - stepId: listProducts
+    description: >-
+      List the products available on the service to confirm the requested
+      product exists before attaching it.
+    operationId: products_getAll
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        ServiceIds:
+        - $inputs.serviceId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      products: $response.body#/Products
+    onSuccess:
+    - name: hasProducts
+      type: goto
+      stepId: addProduct
+      criteria:
+      - context: $response.body
+        condition: $.Products.length > 0
+        type: jsonpath
+    - name: noProducts
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.Products.length == 0
+        type: jsonpath
+  - stepId: addProduct
+    description: >-
+      Attach the product to the reservation for the requested count and interval.
+    operationId: reservations_addProduct
+    requestBody:
+      contentType: application/json
+      payload:
+        ClientToken: $inputs.clientToken
+        AccessToken: $inputs.accessToken
+        Client: $inputs.client
+        ReservationId: $inputs.reservationId
+        ProductId: $inputs.productId
+        Count: $inputs.count
+        StartUtc: $inputs.startUtc
+        EndUtc: $inputs.endUtc
+        UnitAmount:
+          Currency: $inputs.currency
+          GrossValue: $inputs.grossValue
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      itemIds: $response.body#/ItemIds
+  outputs:
+    reservationId: $inputs.reservationId
+    itemIds: $steps.addProduct.outputs.itemIds
