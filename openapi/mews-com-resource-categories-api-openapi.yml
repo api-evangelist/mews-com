@@ -1,0 +1,848 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Resource categories API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Resource categories
+paths:
+  /api/connector/v1/resourceCategories/getAll:
+    post:
+      tags:
+      - Resource categories
+      summary: Get all resource categories
+      description: Returns all categories of resources. This operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/).
+      operationId: resourceCategories_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceCategoryFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              ResourceCategoryIds:
+              - 5c0804f9-d03a-4b13-a57d-b00300781a41
+              - 47d6b462-35ec-467e-a565-b00300781a41
+              ServiceIds:
+              - 9b3a6c54-63aa-4383-b50e-b0030078184b
+              - c0f71466-6c0b-4993-88ac-1794f6b7e958
+              UpdatedUtc:
+                StartUtc: '2023-05-05T00:00:00Z'
+                EndUtc: '2023-05-10T00:00:00Z'
+              ActivityStates:
+              - Active
+              Limitation:
+                Count: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceCategoryResult'
+              example:
+                ResourceCategories:
+                - Id: 5c0804f9-d03a-4b13-a57d-b00300781a41
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  ServiceId: 9b3a6c54-63aa-4383-b50e-b0030078184b
+                  IsActive: true
+                  Type: Bed
+                  Names:
+                    en-US: Bed 1
+                  ShortNames:
+                    en-US: Bed 1
+                  Descriptions: {}
+                  Ordering: 2
+                  Capacity: 1
+                  ExtraCapacity: 0
+                  ExternalIdentifier: null
+                - Id: 47d6b462-35ec-467e-a565-b00300781a41
+                  EnterpriseId: 4d0201db-36f5-428b-8d11-4f0a65e960cc
+                  ServiceId: c0f71466-6c0b-4993-88ac-1794f6b7e958
+                  IsActive: true
+                  Type: Dorm
+                  Names:
+                    en-US: Dorm 1
+                  ShortNames:
+                    en-US: Dorm 1
+                  Descriptions: {}
+                  Ordering: 1
+                  Capacity: 4
+                  ExtraCapacity: 0
+                  ExternalIdentifier: null
+                Cursor: 47d6b462-35ec-467e-a565-b00300781a41
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/resourceCategoryAssignments/getAll:
+    post:
+      tags:
+      - Resource categories
+      summary: Get all resource category assignments
+      description: Returns all resource category assignments. This operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/).
+      operationId: resourceCategoryAssignments_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceCategoryAssignmentFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ResourceCategoryAssignmentIds:
+              - fb69fc51-c4e9-4ef6-874a-24bcfe74a894
+              - 28704948-77df-4bb4-8f39-f8380dc8a914
+              ResourceCategoryIds:
+              - 5c0804f9-d03a-4b13-a57d-b00300781a41
+              - 47d6b462-35ec-467e-a565-b00300781a41
+              UpdatedUtc:
+                StartUtc: '2023-11-01T00:00:00Z'
+                EndUtc: '2023-11-30T00:00:00Z'
+              ActivityStates:
+              - Active
+              ResourceIds:
+              - 5ee074b1-6c86-48e8-915f-c7aa4702086f
+              - c32386aa-1cd2-414a-a823-489325842fbe
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              Limitation:
+                Count: 10
+                Cursor: e7f26210-10e7-462e-9da8-ae8300be8ab7
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceCategoryAssignmentResult'
+              example:
+                ResourceCategoryAssignments:
+                - Id: fb69fc51-c4e9-4ef6-874a-24bcfe74a894
+                  ResourceId: e5a34a69-d35e-4e85-a645-a9bc4ee3a80f
+                  CategoryId: 5c0804f9-d03a-4b13-a57d-b00300781a41
+                  IsActive: true
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                - Id: 28704948-77df-4bb4-8f39-f8380dc8a914
+                  ResourceId: 90908a65-35fc-4856-b659-106f60b591e5
+                  CategoryId: 47d6b462-35ec-467e-a565-b00300781a41
+                  IsActive: true
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                Cursor: 28704948-77df-4bb4-8f39-f8380dc8a914
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/resourceCategoryImageAssignments/getAll:
+    post:
+      tags:
+      - Resource categories
+      summary: Get all resource category image assignments
+      description: Returns all resource category image assignments. This operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/).
+      operationId: resourceCategoryImageAssignments_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceCategoryImageAssignmentFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ResourceCategoryImageAssignmentIds:
+              - edb5f556-7afb-4650-8d4e-8c0a6fff784d
+              - 9d18f5fb-cce5-4e70-9561-f7804262344b
+              ResourceCategoryIds:
+              - 773d5e42-de1e-43a0-9ce6-f940faf2303f
+              - 47d6b462-35ec-467e-a565-b00300781a41
+              UpdatedUtc:
+                StartUtc: '2023-11-01T00:00:00Z'
+                EndUtc: '2023-11-30T00:00:00Z'
+              ActivityStates:
+              - Active
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              Limitation:
+                Count: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceCategoryImageAssignmentResult'
+              example:
+                ResourceCategoryImageAssignments:
+                - Id: edb5f556-7afb-4650-8d4e-8c0a6fff784d
+                  IsActive: true
+                  CategoryId: 773d5e42-de1e-43a0-9ce6-f940faf2303f
+                  ImageId: e910d008-fded-4af5-a84f-c00f92e3947d
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  Ordering: 0
+                - Id: 9d18f5fb-cce5-4e70-9561-f7804262344b
+                  IsActive: true
+                  CategoryId: 47d6b462-35ec-467e-a565-b00300781a41
+                  ImageId: 11056cdb-2045-49e0-821f-2b93905ff522
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  Ordering: 0
+                Cursor: 9d18f5fb-cce5-4e70-9561-f7804262344b
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    ResourceCategoryImageAssignmentResult:
+      title: ResourceCategoryImageAssignmentResult
+      required:
+      - ResourceCategoryImageAssignments
+      type: object
+      properties:
+        ResourceCategoryImageAssignments:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceCategoryImageAssignment'
+          description: Resource category image assignments.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest resource category image assignment returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older resource category image assignments.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceCategoryImageAssignmentResult
+    ResourceCategory:
+      title: Resource category
+      required:
+      - Capacity
+      - Classification
+      - Descriptions
+      - EnterpriseId
+      - ExtraCapacity
+      - Id
+      - IsActive
+      - Names
+      - Ordering
+      - ServiceId
+      - ShortNames
+      - Type
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the category.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the `Enterprise`.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the `Service` of the resource category.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the category is still active.
+        Type:
+          $ref: '#/components/schemas/ResourceCategoryType'
+        Classification:
+          $ref: '#/components/schemas/ResourceClassification'
+        Names:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the name.
+          x-schema-id: LocalizedStrings
+        ShortNames:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the short name.
+          x-schema-id: LocalizedStrings
+        Descriptions:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the description.
+          x-schema-id: LocalizedStrings
+        Ordering:
+          type: integer
+          description: Ordering of the category, lower number corresponds to lower category (note that neither uniqueness nor continuous sequence is guaranteed).
+          format: int32
+        Capacity:
+          type: integer
+          description: Capacity that can be served (e.g. bed count).
+          format: int32
+        ExtraCapacity:
+          type: integer
+          description: Extra capacity that can be served (e.g. extra bed count).
+          format: int32
+        ExternalIdentifier:
+          maxLength: 255
+          type: string
+          description: Identifier of the resource category from external system.
+          nullable: true
+        AccountingCategoryId:
+          type: string
+          description: Unique identifier of the accounting category.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceCategory
+    ResourceCategoryType:
+      title: Resource category type
+      enum:
+      - Room
+      - Bed
+      - Dorm
+      - Apartment
+      - Suite
+      - Villa
+      - Site
+      - Office
+      - MeetingRoom
+      - ParkingSpot
+      - Desk
+      - TeamArea
+      - Membership
+      - Tent
+      - CaravanOrRV
+      - UnequippedCampsite
+      - Bike
+      - ExtraBed
+      - Cot
+      - Crib
+      - ConferenceRoom
+      - Rooftop
+      - Garden
+      - Restaurant
+      - Amphitheater
+      - PrivateSpaces
+      type: string
+      description: Type of the category.
+    ResourceCategoryImageAssignmentFilterParameters:
+      title: ResourceCategoryImageAssignmentFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ResourceCategoryIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        ResourceCategoryImageAssignmentIds:
+          maxItems: 1000
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Resource category image assignments](https://mews-systems.gitbook.io/connector-api/operations/resourcecategories/#resource-category-image-assignment).
+          nullable: true
+        ResourceCategoryIds:
+          maxItems: 1000
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Resource categories](https://mews-systems.gitbook.io/connector-api/operations/resources/#resource-category) to which the resource category image assignments belong.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource category image assignments were updated.
+          nullable: true
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceCategoryImageAssignmentFilterParameters
+    ResourceCategoryFilterParameters:
+      title: ResourceCategoryFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ServiceIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        ResourceCategoryIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Resource categories](https://mews-systems.gitbook.io/connector-api/operations/#resource-category).
+          nullable: true
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Services](https://mews-systems.gitbook.io/connector-api/operations/services/#service) to which the resource categories belong.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource categories were updated.
+          nullable: true
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceCategoryFilterParameters
+    ResourceClassification:
+      title: Resource classification
+      enum:
+      - StandardSingle
+      - StandardDouble
+      - SuperiorTwin
+      - SuperiorDouble
+      - JuniorSuite
+      - SharedOrDorm
+      - Other
+      - SuperiorSingle
+      - Triple
+      - Family
+      - StandardTwin
+      - Studio
+      - SuperiorTripleRoom
+      - OneBedroomApartment
+      - ThreeBedroomsApartment
+      - TwoBedroomsApartment
+      type: string
+      description: Classification of the resource category.
+    ResourceCategoryAssignment:
+      title: Resource category assignment
+      required:
+      - CategoryId
+      - CreatedUtc
+      - Id
+      - IsActive
+      - ResourceId
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the assignment.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the assignment is still active.
+        ResourceId:
+          type: string
+          description: Unique identifier of the [Resource](https://mews-systems.gitbook.io/connector-api/operations/#resource) assigned to the Resource category.
+          format: uuid
+        CategoryId:
+          type: string
+          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/#resource-category).
+          format: uuid
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the assignment in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the assignment in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: ResourceCategoryAssignment
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    ResourceCategoryResult:
+      title: ResourceCategoryResult
+      required:
+      - ResourceCategories
+      type: object
+      properties:
+        ResourceCategories:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceCategory'
+          description: Resource categories of the resources.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest resource category returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older resource categories.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceCategoryResult
+    ResourceCategoryImageAssignment:
+      title: Resource category image assignment
+      required:
+      - CategoryId
+      - CreatedUtc
+      - Id
+      - ImageId
+      - IsActive
+      - Ordering
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the assignment.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the assignment is still active.
+        CategoryId:
+          type: string
+          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/#resource-category).
+          format: uuid
+        ImageId:
+          type: string
+          description: Unique identifier of the image assigned to the Resource category.
+          format: uuid
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the assignment in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the assignment in UTC timezone in ISO 8601 format.
+          format: date-time
+        Ordering:
+          type: integer
+          description: Ordering of the image in the resource category.
+          format: int32
+      additionalProperties: false
+      x-schema-id: ResourceCategoryImageAssignment
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ResourceCategoryAssignmentFilterParameters:
+      title: ResourceCategoryAssignmentFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ResourceCategoryIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        ResourceCategoryAssignmentIds:
+          maxItems: 1000
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Resource category assignment](https://mews-systems.gitbook.io/connector-api/operations/resourcecategories/#resource-category-assignment).
+          nullable: true
+        ResourceCategoryIds:
+          maxItems: 1000
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Resource categories](https://mews-systems.gitbook.io/connector-api/operations/#resource-category) to which the resource category assignment belong.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource category assignments were updated.
+          nullable: true
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records. The `ActivityState` filter applies only to record’s own status. The `IsActive` response property also considers the parent’s status, so some returned records may have `IsActive = false` if their parent is deleted.
+          nullable: true
+        ResourceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of resources to which the resource category assignments belong.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceCategoryAssignmentFilterParameters
+    ResourceCategoryAssignmentResult:
+      title: ResourceCategoryAssignmentResult
+      required:
+      - ResourceCategoryAssignments
+      type: object
+      properties:
+        ResourceCategoryAssignments:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceCategoryAssignment'
+          description: Resource category assignments.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest resource category assignment returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older resource category assignments.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceCategoryAssignmentResult
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation

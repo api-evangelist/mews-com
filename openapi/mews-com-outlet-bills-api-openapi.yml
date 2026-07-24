@@ -1,0 +1,279 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Outlet bills API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Outlet bills
+paths:
+  /api/connector/v1/outletBills/add:
+    post:
+      tags:
+      - Outlet bills
+      summary: Add outlet bills
+      description: Adds new outlet bills with their items.
+      operationId: outletBills_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddOutletBillsParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              Bills:
+              - OutletId: 7700469f-7667-4ebd-a1c0-10380afc9bd0
+                Number: '1257'
+                ClosedUtc: '2017-01-01T00:00:00Z'
+                Items:
+                - Type: Payment
+                  Name: Cash payment
+                  UnitCount: 1
+                  UnitAmount:
+                    Currency: GBP
+                    GrossValue: -25
+                    TaxCodes:
+                    - UK-S
+                  ConsumedUtc: '2017-01-01T00:00:00Z'
+                  ExternalIdentifier: PaymentReference123
+                - Type: Revenue
+                  Name: Beer
+                  UnitCount: 10
+                  UnitAmount:
+                    Currency: GBP
+                    GrossValue: 2.5
+                    TaxCodes:
+                    - UK-S
+                  ConsumedUtc: '2017-01-01T00:00:00Z'
+                  AccountingCategoryId: null
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddOutletBillsResult'
+              example:
+                OutletBillIds:
+                - f2ee1bd2-dd55-4cd3-bab1-ab6800bf0301
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    AddOutletBillsResult:
+      title: AddOutletBillsResult
+      required:
+      - OutletBillIds
+      type: object
+      properties:
+        OutletBillIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Array of unique identifiers of the added Outlet bills.
+      additionalProperties: false
+      x-schema-id: AddOutletBillsResult
+    AmountParameters:
+      title: Amount parameters
+      required:
+      - Currency
+      - TaxCodes
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        TaxCodes:
+          type: array
+          items:
+            type: string
+        NetValue:
+          type: number
+          format: double
+          nullable: true
+        GrossValue:
+          type: number
+          format: double
+          nullable: true
+      additionalProperties: false
+      description: Price of the product that overrides the price defined in Mews.
+      x-schema-id: AmountParameters
+    AddOutletBillsParameters:
+      title: AddOutletBillsParameters
+      required:
+      - AccessToken
+      - Bills
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Bills:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/OutletBillParameters'
+          description: The new outlet bills.
+      additionalProperties: false
+      x-schema-id: AddOutletBillsParameters
+    OutletItemType:
+      title: Outlet item type
+      enum:
+      - Revenue
+      - NonRevenue
+      - Payment
+      type: string
+      description: Type of the outlet item.
+    OutletBillParameters:
+      title: Outlet bill parameters
+      required:
+      - ClosedUtc
+      - Items
+      - Number
+      - OutletId
+      type: object
+      properties:
+        OutletId:
+          type: string
+          description: Unique identifier of the `Outlet` where the bill was issued.
+          format: uuid
+        Number:
+          minLength: 1
+          type: string
+          description: Number of the bill.
+        ClosedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the bill closure in UTC timezone in ISO 8601 format.
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutletItemParameters'
+          description: The items on the bill.
+        AccountId:
+          type: string
+          description: Unique identifier of the `Account` to be assigned to the bill.
+          format: uuid
+          nullable: true
+        Notes:
+          type: string
+          description: Additional notes on the bill.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: OutletBillParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    OutletItemParameters:
+      title: Outlet item parameters
+      required:
+      - ConsumedUtc
+      - Name
+      - Type
+      - UnitAmount
+      - UnitCount
+      type: object
+      properties:
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the item.
+        UnitCount:
+          type: integer
+          description: Unit count of the item.
+          format: int32
+        UnitAmount:
+          title: Amount parameters
+          allOf:
+          - $ref: '#/components/schemas/AmountParameters'
+          description: Unit amount of the item.
+        ConsumedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the item consumption in UTC timezone in ISO 8601 format.
+          format: date-time
+        Type:
+          $ref: '#/components/schemas/OutletItemType'
+        ExternalIdentifier:
+          maxLength: 255
+          type: string
+          description: An identifier of this item from another system.
+          nullable: true
+        Notes:
+          type: string
+          description: Additional notes of the item.
+          nullable: true
+        AccountingCategoryId:
+          type: string
+          description: Unique identifier of an `AccountingCategory` to be assigned to the item.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: OutletItemParameters

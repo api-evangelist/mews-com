@@ -1,0 +1,832 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Payment requests API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Payment requests
+paths:
+  /api/connector/v1/paymentRequests/getAll:
+    post:
+      tags:
+      - Payment requests
+      summary: Get all payment requests
+      description: "Get all payment requests belonging to the specified customer accounts. \nNote this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property)."
+      operationId: paymentRequests_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequestFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              PaymentRequestIds:
+              - bcc76295-4e47-4cf1-a7cb-afae00bd1c35
+              - 6282d17b-a068-4a9f-83d3-afae00c39bfb
+              AccountIds:
+              - fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+              ReservationIds:
+              - 0f515589-99b4-423d-b83a-b237009f0509
+              UpdatedUtc:
+                StartUtc: '2020-01-05T00:00:00Z'
+                EndUtc: '2020-01-10T00:00:00Z'
+              States:
+              - Pending
+              - Expired
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              Limitation:
+                Count: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequestResult'
+              example:
+                PaymentRequests:
+                - Id: bcc76295-4e47-4cf1-a7cb-afae00bd1c35
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  AccountId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  CustomerId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  ReservationGroupId: null
+                  ReservationId: 0f515589-99b4-423d-b83a-b237009f0509
+                  State: Pending
+                  Amount:
+                    Currency: EUR
+                    NetValue: 10.04
+                    GrossValue: 10.4
+                    TaxValues: []
+                    Breakdown:
+                      Items:
+                      - TaxRateCode: null
+                        NetValue: 10.05
+                        TaxValue: 0.0
+                  Type: Payment
+                  Reason: PaymentCardDeclined
+                  ExpirationUtc: '2023-02-23T23:00:00Z'
+                  Description: Payment required.
+                  Notes: null
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                Cursor: bcc76295-4e47-4cf1-a7cb-afae00bd1c35
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/paymentRequests/add:
+    post:
+      tags:
+      - Payment requests
+      summary: Add payment requests
+      description: Creates a payment request to the specified [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer). Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      operationId: paymentRequests_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultiplePaymentRequestAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              PaymentRequests:
+              - AccountId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                Amount:
+                  Currency: EUR
+                  Value: 10.4
+                Type: Payment
+                Reason: PaymentCardMissing
+                ExpirationUtc: '2023-02-20T12:00:00Z'
+                Description: Payment required
+                Notes: Internal notes.
+                ReservationId: 0f515589-99b4-423d-b83a-b237009f0509
+                BillId: ea087d64-3901-4eee-b0b7-9fce4c58a005
+              SendPaymentRequestEmails: true
+              EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequestAdditionResult'
+              example:
+                PaymentRequests:
+                - Id: 6282d17b-a068-4a9f-83d3-afae00c39bfb
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  AccountId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  CustomerId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  ReservationGroupId: null
+                  ReservationId: 0f515589-99b4-423d-b83a-b237009f0509
+                  State: Pending
+                  Amount:
+                    Currency: EUR
+                    NetValue: 10.04
+                    GrossValue: 10.4
+                    TaxValues: []
+                    Breakdown:
+                      Items:
+                      - TaxRateCode: null
+                        NetValue: 10.05
+                        TaxValue: 0.0
+                  Type: Payment
+                  Reason: PaymentCardMissing
+                  ExpirationUtc: '2023-02-20T12:00:00Z'
+                  Description: Payment required
+                  Notes: Internal notes.
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/paymentRequests/cancel:
+    post:
+      tags:
+      - Payment requests
+      summary: Cancel payment requests
+      description: Cancels specified payment requests. Only payment requests which are in `Pending` state can be canceled.
+      operationId: paymentRequests_cancel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultiplePaymentRequestCancelParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              PaymentRequestIds:
+              - 6282d17b-a068-4a9f-83d3-afae00c39bfb
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequestCancellationResult'
+              example:
+                PaymentRequests:
+                - Id: 6282d17b-a068-4a9f-83d3-afae00c39bfb
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  AccountId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  CustomerId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  ReservationGroupId: null
+                  ReservationId: 0f515589-99b4-423d-b83a-b237009f0509
+                  State: Canceled
+                  Amount:
+                    Currency: EUR
+                    NetValue: 10.04
+                    GrossValue: 10.4
+                    TaxValues: []
+                    Breakdown:
+                      Items:
+                      - TaxRateCode: null
+                        NetValue: 10.05
+                        TaxValue: 0.0
+                  Type: Payment
+                  Reason: PaymentCardMissing
+                  ExpirationUtc: '2023-02-20T12:00:00Z'
+                  Description: Payment required
+                  Notes: Internal notes.
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    PaymentRequestAddParameters:
+      title: Payment request parameters
+      required:
+      - AccountId
+      - Amount
+      - Description
+      - ExpirationUtc
+      - Reason
+      - Type
+      type: object
+      properties:
+        AccountId:
+          type: string
+          description: Unique identifier of the `Customer` account to which the payment request is issued.
+          format: uuid
+        Amount:
+          title: Currency value (ver 2023-02-02)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValue'
+          description: Amount of the payment request.
+        Type:
+          $ref: '#/components/schemas/PaymentRequestType'
+        Reason:
+          $ref: '#/components/schemas/PaymentRequestReason'
+        ExpirationUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the payment request's expiration in ISO 8601 format.
+          format: date-time
+        Description:
+          maxLength: 1000
+          minLength: 1
+          type: string
+          description: Description of the payment request.
+        Notes:
+          maxLength: 1000
+          type: string
+          description: Payment request's notes.
+          nullable: true
+        ReservationId:
+          type: string
+          description: Unique identifier of the `Reservation` the payment request belongs to.
+          format: uuid
+          nullable: true
+        BillId:
+          type: string
+          description: Unique identifier of the `Bill` the payment request is linked to.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: PaymentRequestAddParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type: string
+          description: Code corresponding to tax type.
+          nullable: true
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    PaymentRequestAdditionResult:
+      title: PaymentRequestAdditionResult
+      required:
+      - PaymentRequests
+      type: object
+      properties:
+        PaymentRequests:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentRequest'
+          description: The added payment requests.
+      additionalProperties: false
+      x-schema-id: PaymentRequestAdditionResult
+    PaymentRequestState:
+      title: Payment request state
+      enum:
+      - Pending
+      - Completed
+      - Canceled
+      - Expired
+      type: string
+      description: A payment request state.
+      x-enumDescriptions:
+      - Payment request is active and waiting for completion.
+      - Payment request was fulfilled.
+      - Payment request was canceled.
+      - Payment request is past its expiration date and no longer active.
+    CurrencyValue:
+      title: Currency value (ver 2023-02-02)
+      required:
+      - Currency
+      - Value
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the `Currency`.
+          format: currency
+        Value:
+          type: number
+          description: Amount in the currency.
+          format: double
+      additionalProperties: false
+      description: Absolute value of the fee.
+      x-schema-id: CurrencyValue
+    PaymentRequestResult:
+      title: PaymentRequestResult
+      required:
+      - PaymentRequests
+      type: object
+      properties:
+        PaymentRequests:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentRequest'
+          description: The filtered payment requests.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest payment request returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older payment requests.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: PaymentRequestResult
+    PaymentRequestType:
+      title: Payment request type
+      enum:
+      - Payment
+      - Preauthorization
+      type: string
+      description: A payment request type.
+      x-enumDescriptions:
+      - Indicates that a payment is requested.
+      - Indicates that a `Preauthorization` is requested.
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    PaymentRequestReason:
+      title: Payment request reason
+      enum:
+      - Other
+      - PaymentCardMissing
+      - PaymentCardDeclined
+      - Deposit
+      - Prepayment
+      - Fee
+      - RecurringPayment
+      type: string
+      description: A payment request reason.
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
+    MultiplePaymentRequestCancelParameters:
+      title: MultiplePaymentRequestCancelParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - PaymentRequestIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        PaymentRequestIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Identifiers of payment requests to be canceled.
+      additionalProperties: false
+      x-schema-id: MultiplePaymentRequestCancelParameters
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount
+    PaymentRequestFilterParameters:
+      title: PaymentRequestFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        PaymentRequestIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the requested payment requests.
+          nullable: true
+        AccountIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Customer` accounts to which the payment requests were issued.
+          nullable: true
+        ReservationIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Reservation` to which the payment requests belong.
+          nullable: true
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the payment requests were updated.
+          nullable: true
+          x-max-interval-in-months: 3
+        States:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentRequestState'
+          description: A list of payment request states to filter by.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: PaymentRequestFilterParameters
+    MultiplePaymentRequestAddParameters:
+      title: MultiplePaymentRequestAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - PaymentRequests
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        PaymentRequests:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentRequestAddParameters'
+          description: Payment requests to be added.
+        SendPaymentRequestEmails:
+          type: boolean
+          description: Specifies whether a payment request email is sent to the customer. Defaults to `true`.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: MultiplePaymentRequestAddParameters
+    TaxBreakdownItem:
+      title: Tax breakdown item
+      required:
+      - NetValue
+      - TaxValue
+      type: object
+      properties:
+        TaxRateCode:
+          type: string
+          description: Tax rate code for the item. `null` for untaxed amounts.
+          nullable: true
+        NetValue:
+          type: number
+          description: The net value that the tax is calculated from.
+          format: double
+        TaxValue:
+          type: number
+          description: The value of the tax.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxBreakdownItem
+    PaymentRequest:
+      title: Payment request
+      required:
+      - AccountId
+      - Amount
+      - CreatedUtc
+      - Description
+      - EnterpriseId
+      - ExpirationUtc
+      - Id
+      - Reason
+      - State
+      - Type
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the payment request.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the `Enterprise`.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of the `Customer` to which the payment request was issued.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Unique identifier of the `Customer` to which the payment request was issued.
+          format: uuid
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `AccountId`
+        ReservationGroupId:
+          type: string
+          description: Unique identifier of the `ReservationGroup`.
+          format: uuid
+          nullable: true
+        ReservationId:
+          type: string
+          description: Unique identifier of the `Reservation` the payment request belongs to.
+          format: uuid
+          nullable: true
+        State:
+          $ref: '#/components/schemas/PaymentRequestState'
+        Amount:
+          title: Amount
+          allOf:
+          - $ref: '#/components/schemas/Amount'
+          description: Amount of the payment request.
+        Type:
+          $ref: '#/components/schemas/PaymentRequestType'
+        Reason:
+          $ref: '#/components/schemas/PaymentRequestReason'
+        ExpirationUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the payment request's expiration in ISO 8601 format.
+          format: date-time
+        Description:
+          maxLength: 1000
+          minLength: 1
+          type: string
+          description: Description of the payment request.
+        Notes:
+          maxLength: 1000
+          type: string
+          description: Payment request's notes.
+          nullable: true
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the payment request in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the payment request in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: PaymentRequest
+    PaymentRequestCancellationResult:
+      title: PaymentRequestCancellationResult
+      required:
+      - PaymentRequests
+      type: object
+      properties:
+        PaymentRequests:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentRequest'
+          description: The cancelled payment requests.
+      additionalProperties: false
+      x-schema-id: PaymentRequestCancellationResult

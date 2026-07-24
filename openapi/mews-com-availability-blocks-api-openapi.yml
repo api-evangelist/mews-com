@@ -1,0 +1,2364 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Availability blocks API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Availability blocks
+paths:
+  /api/connector/v1/availabilityBlocks/delete:
+    post:
+      tags:
+      - Availability blocks
+      summary: Delete availability blocks
+      description: Delete availability blocks. Note that an availability block containing active reservations (reservations which are not Canceled) cannot be deleted. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: availabilityBlocks_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailabilityBlockDeleteParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              AvailabilityBlockIds:
+              - 5ee074b1-6c86-48e8-915f-c7aa4702086f
+              - c32386aa-1cd2-414a-a823-489325842fbe
+              EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/availabilityBlocks/getAll:
+    post:
+      tags:
+      - Availability blocks
+      summary: Get all availability blocks
+      description: Returns all availability blocks filtered by services, unique identifiers and other filters. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: availabilityBlocks_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailabilityBlockParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              Extent:
+                AvailabilityBlocks: true
+                Adjustments: true
+                ServiceOrders: false
+                Rates: false
+              ServiceIds:
+              - bd26d8db-86da-4f96-9efc-e5a4654a4a94
+              AvailabilityBlockIds:
+              - 5ee074b1-6c86-48e8-915f-c7aa4702086f
+              CreatedUtc:
+                StartUtc: '2020-11-04T00:00:00Z'
+                EndUtc: '2020-11-05T00:00:00Z'
+              UpdatedUtc:
+                StartUtc: '2020-11-04T00:00:00Z'
+                EndUtc: '2020-11-05T00:00:00Z'
+              CollidingUtc:
+                StartUtc: '2020-11-04T00:00:00Z'
+                EndUtc: '2020-11-05T00:00:00Z'
+              ReleasedUtc:
+                StartUtc: '2020-11-04T00:00:00Z'
+                EndUtc: '2020-11-05T00:00:00Z'
+              ExternalIdentifiers:
+              - Block-0001
+              States:
+              - Confirmed
+              ActivityStates:
+              - Active
+              Limitation:
+                Count: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityBlockResult'
+              example:
+                AvailabilityBlocks:
+                - Id: 5ee074b1-6c86-48e8-915f-c7aa4702086f
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  RateId: ed4b660b-19d0-434b-9360-a4de2ea42eda
+                  VoucherId: null
+                  BookerId: ebd507c5-6bfd-4ca9-96aa-ffed6fa94f72
+                  CompanyId: null
+                  TravelAgencyId: null
+                  Budget:
+                    Currency: USD
+                    Value: 48.0
+                    Net: null
+                    Tax: null
+                    TaxRate: null
+                  State: Confirmed
+                  ReservationPurpose: Leisure
+                  CreatedUtc: '2020-11-04T13:00:00Z'
+                  UpdatedUtc: '2020-11-04T13:00:00Z'
+                  FirstTimeUnitStartUtc: '2020-11-04T13:00:00Z'
+                  LastTimeUnitStartUtc: '2020-11-04T13:00:00Z'
+                  ReleasedUtc: '2020-11-04T13:00:00Z'
+                  RollingReleaseOffset: null
+                  ExternalIdentifier: Block-0001
+                  Name: Wedding group
+                  Notes: Have a nice stay
+                  PickupDistribution: AllInOneGroup
+                  IsActive: false
+                  QuoteId: null
+                  AvailabilityBlockNumber: '478'
+                  ReleaseStrategy: FixedRelease
+                  PurchaseOrderNumber: XX-123
+                  BusinessSegmentId: dc9188f6-fb61-412c-b3fd-af32dab082ed
+                  CanceledUtc: null
+                  CancellationReason: null
+                  CancellationReasonDetail: null
+                - Id: c32386aa-1cd2-414a-a823-489325842fbe
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  RateId: ed4b660b-19d0-434b-9360-a4de2ea42eda
+                  VoucherId: null
+                  BookerId: ebd507c5-6bfd-4ca9-96aa-ffed6fa94f72
+                  CompanyId: null
+                  TravelAgencyId: null
+                  Budget:
+                    Currency: USD
+                    Value: 48.0
+                    Net: null
+                    Tax: null
+                    TaxRate: null
+                  State: Confirmed
+                  ReservationPurpose: Leisure
+                  CreatedUtc: '2022-10-11T13:32:32Z'
+                  UpdatedUtc: '2022-10-11T13:32:32Z'
+                  FirstTimeUnitStartUtc: '2022-10-14T00:00:00Z'
+                  LastTimeUnitStartUtc: '2022-11-17T00:00:00Z'
+                  ReleasedUtc: null
+                  RollingReleaseOffset: P-3DT4H
+                  ExternalIdentifier: Block-0002
+                  Name: Rolling release
+                  Notes: null
+                  PickupDistribution: AllInOneGroup
+                  IsActive: false
+                  QuoteId: 67eaf3c8-81e0-4ffb-b5f2-2b61803feb9c
+                  AvailabilityBlockNumber: '479'
+                  ReleaseStrategy: RollingRelease
+                  PurchaseOrderNumber: null
+                  BusinessSegmentId: dc9188f6-fb61-412c-b3fd-af32dab082ed
+                  CanceledUtc: null
+                  CancellationReason: null
+                  CancellationReasonDetail: null
+                ServiceOrders: null
+                Adjustments:
+                - Id: e19297af-373e-4701-b4ea-afae0129bded
+                  AvailabilityBlockId: 5ee074b1-6c86-48e8-915f-c7aa4702086f
+                  ResourceCategoryId: 773d5e42-de1e-43a0-9ce6-f940faf2303f
+                  StartUtc: null
+                  EndUtc: null
+                  FirstTimeUnitStartUtc: '2021-10-14T00:00:00Z'
+                  LastTimeUnitStartUtc: '2021-10-17T00:00:00Z'
+                  UnitCount: 6
+                  ActivityState: Active
+                  ReleaseOverrideUtc: '2021-10-13T00:00:00Z'
+                  UpdatedUtc: '2021-10-21T13:32:32Z'
+                  IsActive: false
+                  PaxCounts: null
+                  FirstTimeUnitReleaseUtc: '2021-10-13T00:00:00Z'
+                Rates: null
+                Cursor: c32386aa-1cd2-414a-a823-489325842fbe
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/availabilityBlocks/add:
+    post:
+      tags:
+      - Availability blocks
+      summary: Add availability blocks
+      description: Adds availability blocks which are used to group related `Availability updates`. This makes limiting public availability easier and more organized. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: availabilityBlocks_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleAvailabilityBlockAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              AvailabilityBlocks:
+              - ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                RateId: ed4b660b-19d0-434b-9360-a4de2ea42eda
+                FirstTimeUnitStartUtc: '2020-11-05T00:00:00Z'
+                LastTimeUnitStartUtc: '2020-11-06T00:00:00Z'
+                ReleasedUtc: '2020-11-04T00:00:00Z'
+                Name: Mr. Smith's block
+                Budget:
+                  Currency: USD
+                  Value: 48.0
+                ExternalIdentifier: Block-0001
+                State: Confirmed
+              - ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                RateId: ed4b660b-19d0-434b-9360-a4de2ea42eda
+                FirstTimeUnitStartUtc: '2021-11-05T00:00:00Z'
+                LastTimeUnitStartUtc: '2021-11-06T00:00:00Z'
+                Name: Rolling release block
+                Budget:
+                  Currency: USD
+                  Value: 48.0
+                ExternalIdentifier: Block-0002
+                State: Confirmed
+              EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityBlockAddResult'
+              example:
+                AvailabilityBlocks:
+                - Id: 5ee074b1-6c86-48e8-915f-c7aa4702086f
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  RateId: ed4b660b-19d0-434b-9360-a4de2ea42eda
+                  VoucherId: null
+                  BookerId: ebd507c5-6bfd-4ca9-96aa-ffed6fa94f72
+                  CompanyId: null
+                  TravelAgencyId: null
+                  Budget:
+                    Currency: USD
+                    Value: 48.0
+                    Net: null
+                    Tax: null
+                    TaxRate: null
+                  State: Confirmed
+                  ReservationPurpose: Leisure
+                  CreatedUtc: '2020-11-04T13:00:00Z'
+                  UpdatedUtc: '2020-11-04T13:00:00Z'
+                  FirstTimeUnitStartUtc: '2020-11-04T13:00:00Z'
+                  LastTimeUnitStartUtc: '2020-11-04T13:00:00Z'
+                  ReleasedUtc: '2020-11-04T13:00:00Z'
+                  RollingReleaseOffset: null
+                  ExternalIdentifier: Block-0001
+                  Name: Wedding group
+                  Notes: Have a nice stay
+                  PickupDistribution: AllInOneGroup
+                  IsActive: false
+                  QuoteId: null
+                  AvailabilityBlockNumber: '478'
+                  ReleaseStrategy: FixedRelease
+                  PurchaseOrderNumber: XX-123
+                  BusinessSegmentId: dc9188f6-fb61-412c-b3fd-af32dab082ed
+                  CanceledUtc: null
+                  CancellationReason: null
+                  CancellationReasonDetail: null
+                - Id: c32386aa-1cd2-414a-a823-489325842fbe
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  RateId: ed4b660b-19d0-434b-9360-a4de2ea42eda
+                  VoucherId: null
+                  BookerId: ebd507c5-6bfd-4ca9-96aa-ffed6fa94f72
+                  CompanyId: null
+                  TravelAgencyId: null
+                  Budget:
+                    Currency: USD
+                    Value: 48.0
+                    Net: null
+                    Tax: null
+                    TaxRate: null
+                  State: Confirmed
+                  ReservationPurpose: Leisure
+                  CreatedUtc: '2022-10-11T13:32:32Z'
+                  UpdatedUtc: '2022-10-11T13:32:32Z'
+                  FirstTimeUnitStartUtc: '2022-10-14T00:00:00Z'
+                  LastTimeUnitStartUtc: '2022-11-17T00:00:00Z'
+                  ReleasedUtc: null
+                  RollingReleaseOffset: P-3DT4H
+                  ExternalIdentifier: Block-0002
+                  Name: Rolling release
+                  Notes: null
+                  PickupDistribution: AllInOneGroup
+                  IsActive: false
+                  QuoteId: 67eaf3c8-81e0-4ffb-b5f2-2b61803feb9c
+                  AvailabilityBlockNumber: '479'
+                  ReleaseStrategy: RollingRelease
+                  PurchaseOrderNumber: null
+                  BusinessSegmentId: dc9188f6-fb61-412c-b3fd-af32dab082ed
+                  CanceledUtc: null
+                  CancellationReason: null
+                  CancellationReasonDetail: null
+                ServiceOrders: null
+                Adjustments:
+                - Id: e19297af-373e-4701-b4ea-afae0129bded
+                  AvailabilityBlockId: 5ee074b1-6c86-48e8-915f-c7aa4702086f
+                  ResourceCategoryId: 773d5e42-de1e-43a0-9ce6-f940faf2303f
+                  StartUtc: null
+                  EndUtc: null
+                  FirstTimeUnitStartUtc: '2021-10-14T00:00:00Z'
+                  LastTimeUnitStartUtc: '2021-10-17T00:00:00Z'
+                  UnitCount: 6
+                  ActivityState: Active
+                  ReleaseOverrideUtc: '2021-10-13T00:00:00Z'
+                  UpdatedUtc: '2021-10-21T13:32:32Z'
+                  IsActive: false
+                  PaxCounts: null
+                  FirstTimeUnitReleaseUtc: '2021-10-13T00:00:00Z'
+                Rates: null
+                Cursor: c32386aa-1cd2-414a-a823-489325842fbe
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/availabilityBlocks/update:
+    post:
+      tags:
+      - Availability blocks
+      summary: Update availability blocks
+      description: Updates information about the specified `Availability block`. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: availabilityBlocks_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleAvailabilityBlockUpdateParameters'
+            example:
+              AvailabilityBlocks:
+              - AvailabilityBlockId: 5ee074b1-6c86-48e8-915f-c7aa4702086f
+                Name:
+                  Value: Mr. Smith's block
+                FirstTimeUnitStartUtc:
+                  Value: '2021-07-05T00:00:00Z'
+                LastTimeUnitStartUtc:
+                  Value: '2021-07-15T00:00:00Z'
+                ExternalIdentifier:
+                  Value: Block-1002
+                State:
+                  Value: Confirmed
+                ReservationPurpose:
+                  Value: Business
+                BookerId:
+                  Value: ebd507c5-6bfd-4ca9-96aa-ffed6fa94f72
+                Notes:
+                  Value: Welcome to Washington
+                Budget:
+                  Value:
+                    Currency: USD
+                    Value: 48.0
+                ReleasedUtc:
+                  Value: '2021-07-04T00:00:00Z'
+                QuoteId: {}
+                BusinessSegmentId:
+                  Value: dc9188f6-fb61-412c-b3fd-af32dab082ed
+              - AvailabilityBlockId: c32386aa-1cd2-414a-a823-489325842fbe
+                State:
+                  Value: Canceled
+                CancellationReason:
+                  Value: ForceMajeure
+                CancellationReasonDetail:
+                  Value: Event was canceled due to rain.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityBlockAddResult'
+              example:
+                AvailabilityBlocks:
+                - Id: 5ee074b1-6c86-48e8-915f-c7aa4702086f
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  RateId: ed4b660b-19d0-434b-9360-a4de2ea42eda
+                  VoucherId: null
+                  BookerId: ebd507c5-6bfd-4ca9-96aa-ffed6fa94f72
+                  CompanyId: null
+                  TravelAgencyId: null
+                  Budget:
+                    Currency: USD
+                    Value: 48.0
+                    Net: null
+                    Tax: null
+                    TaxRate: null
+                  State: Confirmed
+                  ReservationPurpose: Business
+                  CreatedUtc: '2020-11-04T13:00:00Z'
+                  UpdatedUtc: '2020-11-05T16:11:38Z'
+                  FirstTimeUnitStartUtc: '2021-07-05T00:00:00Z'
+                  LastTimeUnitStartUtc: '2021-07-15T00:00:00Z'
+                  ReleasedUtc: '2021-07-04T00:00:00Z'
+                  RollingReleaseOffset: null
+                  ExternalIdentifier: Block-1002
+                  Name: Mr. Smith's block
+                  Notes: Welcome to Washington
+                  PickupDistribution: AllInOneGroup
+                  IsActive: false
+                  QuoteId: null
+                  AvailabilityBlockNumber: '478'
+                  ReleaseStrategy: FixedRelease
+                  PurchaseOrderNumber: XX-123
+                  BusinessSegmentId: dc9188f6-fb61-412c-b3fd-af32dab082ed
+                  CanceledUtc: null
+                  CancellationReason: null
+                  CancellationReasonDetail: null
+                - Id: c32386aa-1cd2-414a-a823-489325842fbe
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  RateId: ed4b660b-19d0-434b-9360-a4de2ea42eda
+                  VoucherId: null
+                  BookerId: ebd507c5-6bfd-4ca9-96aa-ffed6fa94f72
+                  CompanyId: null
+                  TravelAgencyId: null
+                  Budget:
+                    Currency: USD
+                    Value: 48.0
+                    Net: null
+                    Tax: null
+                    TaxRate: null
+                  State: Canceled
+                  ReservationPurpose: Leisure
+                  CreatedUtc: '2022-10-11T13:32:32Z'
+                  UpdatedUtc: '2022-10-11T13:32:32Z'
+                  FirstTimeUnitStartUtc: '2022-10-14T00:00:00Z'
+                  LastTimeUnitStartUtc: '2022-11-17T00:00:00Z'
+                  ReleasedUtc: null
+                  RollingReleaseOffset: P-3DT4H
+                  ExternalIdentifier: Block-0002
+                  Name: Rolling release
+                  Notes: null
+                  PickupDistribution: AllInOneGroup
+                  IsActive: false
+                  QuoteId: 67eaf3c8-81e0-4ffb-b5f2-2b61803feb9c
+                  AvailabilityBlockNumber: '479'
+                  ReleaseStrategy: RollingRelease
+                  PurchaseOrderNumber: null
+                  BusinessSegmentId: dc9188f6-fb61-412c-b3fd-af32dab082ed
+                  CanceledUtc: '2022-10-12T15:12:49Z'
+                  CancellationReason: ForceMajeure
+                  CancellationReasonDetail: Event was canceled due to rain.
+                ServiceOrders: null
+                Adjustments:
+                - Id: e19297af-373e-4701-b4ea-afae0129bded
+                  AvailabilityBlockId: 5ee074b1-6c86-48e8-915f-c7aa4702086f
+                  ResourceCategoryId: 773d5e42-de1e-43a0-9ce6-f940faf2303f
+                  StartUtc: null
+                  EndUtc: null
+                  FirstTimeUnitStartUtc: '2021-10-14T00:00:00Z'
+                  LastTimeUnitStartUtc: '2021-10-17T00:00:00Z'
+                  UnitCount: 6
+                  ActivityState: Active
+                  ReleaseOverrideUtc: '2021-10-13T00:00:00Z'
+                  UpdatedUtc: '2021-10-21T13:32:32Z'
+                  IsActive: false
+                  PaxCounts: null
+                  FirstTimeUnitReleaseUtc: '2021-10-13T00:00:00Z'
+                Rates: null
+                Cursor: c32386aa-1cd2-414a-a823-489325842fbe
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    ReservationOptions:
+      title: Reservation options
+      required:
+      - AllCompanionsCheckedIn
+      - AnyCompanionCheckedIn
+      - OwnerCheckedIn
+      type: object
+      properties:
+        OwnerCheckedIn:
+          type: boolean
+          description: Owner of the reservation checked in.
+        AllCompanionsCheckedIn:
+          type: boolean
+          description: All companions of the reservation checked in.
+        AnyCompanionCheckedIn:
+          type: boolean
+          description: Any companion of the reservation checked in.
+      additionalProperties: false
+      x-schema-id: ReservationOptions
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    ReservationPurposeEnum:
+      title: Reservation purpose
+      enum:
+      - Leisure
+      - Business
+      - Student
+      type: string
+      description: '
+
+
+        Leisure
+
+
+        Business
+
+
+        Student'
+      x-enumNames:
+      - Leisure
+      - Business
+      - Student
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+    RateForExtent:
+      title: Rate for extent
+      required:
+      - GroupId
+      - Id
+      - IsActive
+      - IsBaseRate
+      - IsEnabled
+      - IsPublic
+      - Names
+      - ServiceId
+      - Type
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the rate.
+          format: uuid
+        GroupId:
+          type: string
+          description: Unique identifier of `Rate Group` where the rate belongs.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the `Service`.
+          format: uuid
+        BaseRateId:
+          type: string
+          description: Unique identifier of the base `Rate`.
+          format: uuid
+          nullable: true
+        IsBaseRate:
+          type: boolean
+          description: Whether the rate is a base rate.
+        BusinessSegmentId:
+          type: string
+          description: Unique identifier of the `Business Segment`.
+          format: uuid
+          nullable: true
+        IsActive:
+          type: boolean
+          description: Whether the rate is still active.
+        IsEnabled:
+          type: boolean
+          description: Whether the rate is currently available to customers.
+        IsPublic:
+          type: boolean
+          description: Whether the rate is publicly available.
+        Type:
+          title: Rate type
+          allOf:
+          - $ref: '#/components/schemas/RateTypeEnum'
+          description: 'Type of the rate.
+
+
+            Public
+
+
+            Private
+
+
+            AvailabilityBlock'
+          x-enumNames:
+          - Public
+          - Private
+          - AvailabilityBlock
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+        Name:
+          type: string
+          description: Name of the rate (in the default language).
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `Names` instead
+        Names:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the name.
+          x-schema-id: LocalizedStrings
+        ShortName:
+          type: string
+          description: Short name of the rate (in the default language).
+          nullable: true
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Interval in which the rates were updated.
+          format: date-time
+        ExternalNames:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the external name of the rate.
+          nullable: true
+          x-schema-id: LocalizedStrings
+        Description:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the description of the rate.
+          nullable: true
+          x-schema-id: LocalizedStrings
+        ExternalIdentifier:
+          maxLength: 255
+          type: string
+          description: Identifier of the rate from external system.
+          nullable: true
+      additionalProperties: false
+      description: '`Rate` entity, without some of the details, e.g. pricing.'
+      x-schema-id: RateForExtent
+    AvailabilityBlockAddParameters:
+      title: Availability block parameters
+      required:
+      - FirstTimeUnitStartUtc
+      - LastTimeUnitStartUtc
+      - RateId
+      - ServiceId
+      - State
+      type: object
+      properties:
+        ServiceId:
+          type: string
+          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services#service) to assign block to.
+          format: uuid
+        RateId:
+          type: string
+          description: Unique identifier of the [Rate](https://mews-systems.gitbook.io/connector-api/operations/rates#rate) to assign block to.
+          format: uuid
+        FirstTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: Start of the time interval, expressed as the timestamp for the start of the first time unit, in UTC timezone ISO 8601 format.
+        LastTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: End of the time interval, expressed as the timestamp for the start of the first time unit, in UTC timezone ISO 8601 format.
+        ReleasedUtc:
+          type: string
+          description: The moment when the block and its availability is released, in UTC timezone ISO 8601 format. Takes precedence over `RollingReleaseOffset`.
+          format: date-time
+          nullable: true
+        RollingReleaseOffset:
+          type: string
+          description: Exact offset from the start of availability adjustments to the moment the availability adjustment should be released, in ISO 8601 duration format. Ignored if `ReleasedUtc` is specified.
+          nullable: true
+        Name:
+          type: string
+          description: The name of the block.
+          nullable: true
+        VoucherCode:
+          type: string
+          description: Voucher code providing access to specified private [Rate](https://mews-systems.gitbook.io/connector-api/operations/rates#rate).
+          nullable: true
+        BookerId:
+          type: string
+          description: Unique identifier of the Booker as a creator of an availability block.
+          format: uuid
+          nullable: true
+        CompanyId:
+          type: string
+          description: Unique identifier of [Company](https://mews-systems.gitbook.io/connector-api/operations/companies#company).
+          format: uuid
+          nullable: true
+        TravelAgencyId:
+          type: string
+          description: Unique identifier of travel agency (`Company` with a `TravelAgencyContract`).
+          format: uuid
+          nullable: true
+        Budget:
+          title: Currency value (ver 2018-06-07)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValueOld'
+          description: The tentative budget for the total price of reservations.
+          nullable: true
+        ReservationPurpose:
+          allOf:
+          - $ref: '#/components/schemas/ReservationPurposeEnum'
+          description: 'The purpose of the block.
+
+
+            Leisure
+
+
+            Business
+
+
+            Student'
+          nullable: true
+        ExternalIdentifier:
+          maxLength: 255
+          type: string
+          description: Identifier of the block from external system.
+          nullable: true
+        Notes:
+          type: string
+          description: Additional notes of the block.
+          nullable: true
+        State:
+          allOf:
+          - $ref: '#/components/schemas/AvailabilityBlockStateEnum'
+          description: 'State of the availability block.
+
+
+            Confirmed (The block deducts availability and can have reservations assigned.)
+
+
+            Optional (The block deducts availability and cannot have reservations assigned.)
+
+
+            Inquired (The block does not deduct availability and cannot have reservations assigned (waitlist).)
+
+
+            Canceled (The block does not deduct availability and cannot have reservations assigned (waitlist).)'
+        QuoteId:
+          type: string
+          description: Unique identifier of the Mews Events quote associated with the availability block.
+          format: uuid
+          nullable: true
+        PurchaseOrderNumber:
+          type: string
+          description: Unique number of the purchase order. This number is propagated to any newly picked up `Reservation` within the block.
+          nullable: true
+        BusinessSegmentId:
+          type: string
+          description: Unique identifier of the business segment.
+          format: uuid
+          nullable: true
+        PickupDistribution:
+          allOf:
+          - $ref: '#/components/schemas/PickupDistributionEnum'
+          description: 'Specifies how reservations within the block are distributed for pickup. Defaults to `AllInOneGroup` if not provided. This value cannot be updated after creation.
+
+
+            AllInOneGroup (All created reservations in the block are added to the same reservation group.)
+
+
+            IndividualGroups (Reservations can be picked up in multiple groups, with up to 750 reservations per group.)'
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AvailabilityBlockAddParameters
+    CurrencyValueOld:
+      title: Currency value (ver 2018-06-07)
+      required:
+      - Currency
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        Value:
+          type: number
+          format: double
+          nullable: true
+        Net:
+          type: number
+          format: double
+          nullable: true
+          deprecated: true
+        Tax:
+          type: number
+          format: double
+          nullable: true
+          deprecated: true
+        TaxRate:
+          type: number
+          format: double
+          nullable: true
+          deprecated: true
+      additionalProperties: false
+      description: Total price of the reservation.
+      x-schema-id: CurrencyValueOld
+    AvailabilityBlock:
+      title: Availability block
+      required:
+      - AvailabilityBlockNumber
+      - BusinessSegmentId
+      - CreatedUtc
+      - FirstTimeUnitStartUtc
+      - IsActive
+      - LastTimeUnitStartUtc
+      - PickupDistribution
+      - ReleaseStrategy
+      - State
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the availability block.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the [enterprise](https://mews-systems.gitbook.io/connector-api/operations/enterprises#enterprise).
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the `Service` the block is assigned to.
+          format: uuid
+        RateId:
+          type: string
+          description: Unique identifier of the `Rate` the block is assigned to.
+          format: uuid
+        VoucherId:
+          type: string
+          description: Unique identifier of the `Voucher` used to access specified private `Rate`.
+          format: uuid
+          nullable: true
+        BookerId:
+          type: string
+          description: Unique identifier of the `Customer` on whose behalf the block was made.
+          format: uuid
+          nullable: true
+        CompanyId:
+          type: string
+          description: Unique identifier of the `Company` linked to the block.
+          format: uuid
+          nullable: true
+        TravelAgencyId:
+          type: string
+          description: Unique identifier of `Company`with `Travel agency contract` the Availability Block is related to.
+          format: uuid
+          nullable: true
+        Budget:
+          title: Currency value (ver 2018-06-07)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValueOld'
+          description: The tentative budget for the total price of reservations in the block.
+          nullable: true
+        State:
+          title: Availability block state
+          allOf:
+          - $ref: '#/components/schemas/AvailabilityBlockStateEnum'
+          description: 'State of the availability block.
+
+
+            Confirmed (The block deducts availability and can have reservations assigned.)
+
+
+            Optional (The block deducts availability and cannot have reservations assigned.)
+
+
+            Inquired (The block does not deduct availability and cannot have reservations assigned (waitlist).)
+
+
+            Canceled (The block does not deduct availability and cannot have reservations assigned (waitlist).)'
+          x-enumNames:
+          - Confirmed
+          - Optional
+          - Inquired
+          - Canceled
+          x-enumDescriptions:
+          - The block deducts availability and can have reservations assigned.
+          - The block deducts availability and cannot have reservations assigned.
+          - The block does not deduct availability and cannot have reservations assigned (waitlist).
+          - The block does not deduct availability and cannot have reservations assigned (waitlist).
+        ReservationPurpose:
+          allOf:
+          - $ref: '#/components/schemas/ReservationPurposeEnum'
+          description: 'The purpose of the block.
+
+
+            Leisure
+
+
+            Business
+
+
+            Student'
+          nullable: true
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the block in UTC timezone in ISO 8601 format.
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the block in UTC timezone in ISO 8601 format.
+        FirstTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: Start of the time interval, expressed as the timestamp for the start of the first time unit, in UTC timezone ISO 8601 format. See [Time units](https://mews-systems.gitbook.io/connector-api/concepts/time-units).
+        LastTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: End of the time interval, expressed as the timestamp for the start of the last time unit, in UTC timezone ISO 8601 format. See [Time units](https://mews-systems.gitbook.io/connector-api/concepts/time-units).
+        ReleasedUtc:
+          type: string
+          description: The moment when the block and its availability is released in UTC timezone in ISO 8601 format. Mutually exclusive with `RollingReleaseOffset`; the block will not be automatically released if neither `ReleasedUtc` nor `RollingReleaseOffsetUtc` is specified.
+          nullable: true
+        RollingReleaseOffset:
+          type: string
+          description: Exact offset from the start of availability adjustments to the moment the individual days in the adjustment should be released, in ISO 8601 duration format. Mutually exclusive with `ReleasedUtc`; the block will not be automatically released if neither `ReleasedUtc` nor `RollingReleaseOffsetUtc` is specified.
+          nullable: true
+        ExternalIdentifier:
+          maxLength: 255
+          type: string
+          description: Identifier of the block from external system.
+          nullable: true
+        Name:
+          type: string
+          description: The name of the block in Mews.
+          nullable: true
+        Notes:
+          type: string
+          description: Additional notes of the block.
+          nullable: true
+        PickupDistribution:
+          title: Pickup distribution
+          allOf:
+          - $ref: '#/components/schemas/PickupDistributionEnum'
+          description: 'Whether assigning spaces to reservations within an availability block is done as a single group or divided into individual groups.
+
+
+            AllInOneGroup (All created reservations in the block are added to the same reservation group.)
+
+
+            IndividualGroups (Reservations can be picked up in multiple groups, with up to 750 reservations per group.)'
+          x-enumNames:
+          - AllInOneGroup
+          - IndividualGroups
+          x-enumDescriptions:
+          - All created reservations in the block are added to the same reservation group.
+          - Reservations can be picked up in multiple groups, with up to 750 reservations per group.
+        IsActive:
+          type: boolean
+          description: Whether the `Availability Block` is still active.
+        QuoteId:
+          type: string
+          description: Unique identifier of the Mews Events quote associated with the availability block.
+          format: uuid
+          nullable: true
+        AvailabilityBlockNumber:
+          minLength: 1
+          type: string
+          description: Unique number for a specific availability block within the Mews system.
+        ReleaseStrategy:
+          title: Release strategy
+          allOf:
+          - $ref: '#/components/schemas/ReleaseStrategyEnum'
+          description: 'The strategy for automatic release of the availability block.
+
+
+            FixedRelease (The availability block is released at a fixed time.)
+
+
+            RollingRelease (Each availability adjustment is released at a fixed offset from its start.)
+
+
+            None (The availability block is not automatically released.)'
+          x-enumNames:
+          - FixedRelease
+          - RollingRelease
+          - None
+          x-enumDescriptions:
+          - The availability block is released at a fixed time.
+          - Each availability adjustment is released at a fixed offset from its start.
+          - The availability block is not automatically released.
+        PurchaseOrderNumber:
+          type: string
+          description: Unique number of the purchase order. This number is propagated to any newly picked up `Reservation` within the block.
+          nullable: true
+        BusinessSegmentId:
+          type: string
+          description: Unique identifier of the associated `Business segment`.
+          format: uuid
+          nullable: true
+        CanceledUtc:
+          type: string
+          description: Date and time of the block cancellation in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        CancellationReason:
+          allOf:
+          - $ref: '#/components/schemas/ServiceOrderCancellationReasonEnum'
+          description: 'Cancellation reason of the availability block.
+
+
+            Other
+
+
+            ConfirmationMissed
+
+
+            BookedElsewhere
+
+
+            ForceMajeure
+
+
+            GuestComplaint
+
+
+            NoShow
+
+
+            PriceTooHigh
+
+
+            ServiceNotAvailable
+
+
+            InputError
+
+
+            InvalidPayment
+
+
+            TravelAgency
+
+
+            RequestedByGuest
+
+
+            Update
+
+
+            BookingAbandoned
+
+
+            RequestedByBooker'
+          nullable: true
+        CancellationReasonDetail:
+          type: string
+          description: Additional details of availability block cancellation.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AvailabilityBlock
+    ReleaseStrategyEnum:
+      title: Release strategy
+      enum:
+      - FixedRelease
+      - RollingRelease
+      - None
+      type: string
+      description: 'The strategy for automatic release of the availability block.
+
+
+        FixedRelease (The availability block is released at a fixed time.)
+
+
+        RollingRelease (Each availability adjustment is released at a fixed offset from its start.)
+
+
+        None (The availability block is not automatically released.)'
+      x-enumNames:
+      - FixedRelease
+      - RollingRelease
+      - None
+      x-enumDescriptions:
+      - The availability block is released at a fixed time.
+      - Each availability adjustment is released at a fixed offset from its start.
+      - The availability block is not automatically released.
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    Unit:
+      type: object
+      additionalProperties: false
+    AvailabilityBlockExtent:
+      title: Availability block extent
+      type: object
+      properties:
+        AvailabilityBlocks:
+          type: boolean
+          description: Whether the response should contain the general availability blocks.
+          nullable: true
+        Adjustments:
+          type: boolean
+          description: Whether the response should contain individual availability adjustments related to availability blocks.
+          nullable: true
+        ServiceOrders:
+          type: boolean
+          description: Whether the response should contain reservations related to availability blocks.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Get all reservations (ver 2023-06-06)](https://mews-systems.gitbook.io/connector-api/operations/reservations#get-all-reservations-ver-2023-06-06) instead.
+        Rates:
+          type: boolean
+          description: Whether the response should contain rates related to availability blocks.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Get all rates](https://mews-systems.gitbook.io/connector-api/operations/rates#get-all-rates) instead.
+      additionalProperties: false
+      description: ''
+      x-schema-id: AvailabilityBlockExtent
+    ReservationPersonCount:
+      title: Age category parameters
+      required:
+      - AgeCategoryId
+      - Count
+      type: object
+      properties:
+        AgeCategoryId:
+          type: string
+          description: Unique identifier of the [Age category](https://mews-systems.gitbook.io/connector-api/operations/agecategories#age-category).
+          format: uuid
+        Count:
+          type: integer
+          description: Number of people of a given age category. Only positive value is accepted.
+          format: int32
+      additionalProperties: false
+      x-schema-id: ReservationPersonCount
+    AvailabilityBlockParameters:
+      title: AvailabilityBlockParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Extent
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        Extent:
+          title: Availability block extent
+          allOf:
+          - $ref: '#/components/schemas/AvailabilityBlockExtent'
+          description: Extent of data to be returned, e.g. it is possible to specify that related service orders (for example reservations) are returned.
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Services` to which `Availability blocks` are assigned.
+          nullable: true
+        AvailabilityBlockIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the requested `Availability blocks`.
+          nullable: true
+        CreatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the availability blocks were created.
+          nullable: true
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the `Availability blocks` were updated.
+          nullable: true
+          x-max-interval-in-months: 3
+        CollidingUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the `Availability blocks` are active.
+          nullable: true
+          x-max-interval-in-months: 3
+        ReleasedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the `Availability blocks`are released.
+          nullable: true
+          x-max-interval-in-months: 3
+        ExternalIdentifiers:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: Identifiers of `Availability blocks` from external systems.
+          nullable: true
+        States:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailabilityBlockStateEnum'
+          description: States the availability blocks should be in.
+          nullable: true
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AvailabilityBlockParameters
+    ActivityStateEnum:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: '
+
+
+        Deleted
+
+
+        Active'
+      x-enumNames:
+      - Deleted
+      - Active
+      x-enumDescriptions:
+      - ''
+      - ''
+    AvailabilityBlockAddResult:
+      title: AvailabilityBlockAddResult
+      required:
+      - AvailabilityBlocks
+      type: object
+      properties:
+        AvailabilityBlocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailabilityBlock'
+          description: Availability blocks.
+      additionalProperties: false
+      x-schema-id: AvailabilityBlockAddResult
+    AvailabilityBlockStateEnum:
+      title: Availability block state
+      enum:
+      - Confirmed
+      - Optional
+      - Inquired
+      - Canceled
+      type: string
+      description: '
+
+
+        Confirmed (The block deducts availability and can have reservations assigned.)
+
+
+        Optional (The block deducts availability and cannot have reservations assigned.)
+
+
+        Inquired (The block does not deduct availability and cannot have reservations assigned (waitlist).)
+
+
+        Canceled (The block does not deduct availability and cannot have reservations assigned (waitlist).)'
+      x-enumNames:
+      - Confirmed
+      - Optional
+      - Inquired
+      - Canceled
+      x-enumDescriptions:
+      - The block deducts availability and can have reservations assigned.
+      - The block deducts availability and cannot have reservations assigned.
+      - The block does not deduct availability and cannot have reservations assigned (waitlist).
+      - The block does not deduct availability and cannot have reservations assigned (waitlist).
+    ServiceOrderCancellationReasonEnum:
+      title: Reservation cancellation reason
+      enum:
+      - Other
+      - ConfirmationMissed
+      - BookedElsewhere
+      - ForceMajeure
+      - GuestComplaint
+      - NoShow
+      - PriceTooHigh
+      - ServiceNotAvailable
+      - InputError
+      - InvalidPayment
+      - TravelAgency
+      - RequestedByGuest
+      - Update
+      - BookingAbandoned
+      - RequestedByBooker
+      type: string
+      description: '
+
+
+        Other
+
+
+        ConfirmationMissed
+
+
+        BookedElsewhere
+
+
+        ForceMajeure
+
+
+        GuestComplaint
+
+
+        NoShow
+
+
+        PriceTooHigh
+
+
+        ServiceNotAvailable
+
+
+        InputError
+
+
+        InvalidPayment
+
+
+        TravelAgency
+
+
+        RequestedByGuest
+
+
+        Update
+
+
+        BookingAbandoned
+
+
+        RequestedByBooker'
+      x-enumNames:
+      - Other
+      - ConfirmationMissed
+      - BookedElsewhere
+      - ForceMajeure
+      - GuestComplaint
+      - NoShow
+      - PriceTooHigh
+      - ServiceNotAvailable
+      - InputError
+      - InvalidPayment
+      - TravelAgency
+      - RequestedByGuest
+      - Update
+      - BookingAbandoned
+      - RequestedByBooker
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    AvailabilityBlockResult:
+      title: AvailabilityBlockResult
+      type: object
+      properties:
+        AvailabilityBlocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailabilityBlock'
+          description: Availability blocks.
+          nullable: true
+        ServiceOrders:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReservationOld'
+          description: Service orders (for example reservations) linked to availability blocks.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Get all reservations (ver 2023-06-06)](https://mews-systems.gitbook.io/connector-api/operations/reservations#get-all-reservations-ver-2023-06-06) instead.
+        Adjustments:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailabilityAdjustment'
+          description: Availability adjustments of availability blocks.
+          nullable: true
+        Rates:
+          type: array
+          items:
+            $ref: '#/components/schemas/RateForExtent'
+          description: '`Rates` assigned to the block.'
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Get all rates](https://mews-systems.gitbook.io/connector-api/operations/rates#get-all-rates) instead.
+        Cursor:
+          type: string
+          description: Unique identifier of the last returned availability block. This can be used in Limitation in a subsequent request to fetch the next batch of availability block.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AvailabilityBlockResult
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ServiceOrderStateOld:
+      title: Service order state (ver 2017-04-12)
+      enum:
+      - Enquired
+      - Confirmed
+      - Started
+      - Processed
+      - Canceled
+      - Optional
+      - Requested
+      type: string
+    PickupDistributionEnum:
+      title: Pickup distribution
+      enum:
+      - AllInOneGroup
+      - IndividualGroups
+      type: string
+      description: '
+
+
+        AllInOneGroup (All created reservations in the block are added to the same reservation group.)
+
+
+        IndividualGroups (Reservations can be picked up in multiple groups, with up to 750 reservations per group.)'
+      x-enumNames:
+      - AllInOneGroup
+      - IndividualGroups
+      x-enumDescriptions:
+      - All created reservations in the block are added to the same reservation group.
+      - Reservations can be picked up in multiple groups, with up to 750 reservations per group.
+    ReservationOldOrigin:
+      title: Reservation origin (ver 2017-04-12)
+      enum:
+      - Distributor
+      - ChannelManager
+      - Import
+      - Connector
+      - Navigator
+      - CommanderInPerson
+      - CommanderChannel
+      - CommanderPhone
+      - CommanderEmail
+      - CommanderWebsite
+      - CommanderMessage
+      - CommanderCallCenter
+      - CommanderRoomingList
+      type: string
+      x-enumDescriptions:
+      - From the Mews Booking Engine or Booking Engine API.
+      - From a channel manager.
+      - From an import process.
+      - From the Mews Connector API.
+      - From Mews Guest Services.
+      - From Mews Operations, in person.
+      - From Mews Operations, via channel.
+      - From Mews Operations, via telephone.
+      - From Mews Operations, via email.
+      - From Mews Operations, via website.
+      - From Mews Operations, via message person.
+      - From Mews Operations, via call center.
+      - From Mews Operations, via rooming list.
+    CancellationReason:
+      enum:
+      - Other
+      - ConfirmationMissed
+      - BookedElsewhere
+      - ForceMajeure
+      - GuestComplaint
+      - NoShow
+      - PriceTooHigh
+      - ServiceNotAvailable
+      - InputError
+      - InvalidPayment
+      - TravelAgency
+      - RequestedByGuest
+      - Update
+      - BookingAbandoned
+      - RequestedByBooker
+      type: string
+    RateTypeEnum:
+      title: Rate type
+      enum:
+      - Public
+      - Private
+      - AvailabilityBlock
+      type: string
+      description: '
+
+
+        Public
+
+
+        Private
+
+
+        AvailabilityBlock'
+      x-enumNames:
+      - Public
+      - Private
+      - AvailabilityBlock
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+    MultipleAvailabilityBlockUpdateParameters:
+      title: MultipleAvailabilityBlockUpdateParameters
+      required:
+      - AccessToken
+      - AvailabilityBlocks
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        AvailabilityBlocks:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailabilityBlockUpdateParameters'
+          description: Availability blocks to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleAvailabilityBlockUpdateParameters
+    AvailabilityBlockUpdateParameters:
+      title: Availability block update parameters
+      type: object
+      properties:
+        AvailabilityBlockId:
+          type: string
+          description: Unique identifier of the [Availability block](https://mews-systems.gitbook.io/connector-api/operations/availabilityblocks#availability-block).
+          format: uuid
+        Name:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The name of the block (or `null` if the name should not be updated).
+          nullable: true
+        FirstTimeUnitStartUtc:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Start of the time interval, expressed as the timestamp for the start of the first time unit, in UTC timezone ISO 8601 format (or `null` if the start time should not be updated).
+          nullable: true
+        LastTimeUnitStartUtc:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: End of the time interval, expressed as the timestamp for the start of the last time unit, in UTC timezone ISO 8601 format (or `null` if the end time should not be updated).
+          nullable: true
+        ExternalIdentifier:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Identifier of the block from external system (or `null` if the identifier should not be updated).
+          nullable: true
+        State:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: State of the availability block (or `null` if not updated).
+          nullable: true
+        ReservationPurpose:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The purpose of the block (or `null` if not updated).
+          nullable: true
+        CompanyId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidNullableUpdateValue'
+          description: Unique identifier of the [Company](https://mews-systems.gitbook.io/connector-api/operations/companies#company) (or `null` if not updated).
+          nullable: true
+        TravelAgencyId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidNullableUpdateValue'
+          description: Unique identifier of the travel agency (i.e. `Company`; or `null` if not updated).
+          nullable: true
+        BookerId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidNullableUpdateValue'
+          description: Unique identifier of the Booker as a creator of an availability block (or `null` if not updated).
+          nullable: true
+        Notes:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Additional notes of the block (or `null` if not updated).
+          nullable: true
+        Budget:
+          title: Currency value (ver 2018-06-07) update value
+          allOf:
+          - $ref: '#/components/schemas/UpdateValueCurrencyValueOld'
+          description: The tentative budget for the total price of reservations (or `null` if not updated).
+          nullable: true
+        CancellationReason:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Cancellation reason of the availability block (or `null` if not updated).
+          nullable: true
+        CancellationReasonDetail:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Cancellation reason detail of the availability block (or `null` if not updated).
+          nullable: true
+        RollingReleaseOffset:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Exact offset from the start of availability adjustments to the moment the availability adjustment should be released, in ISO 8601 duration format. Required if `ReleaseStrategy` is set to `RollingRelease`, ignored otherwise.
+          nullable: true
+        ReleasedUtc:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The moment when the block and its availability is released, in UTC timezone ISO 8601 format. Required if `ReleaseStrategy` is set to `FixedRelease`, or used when `ReleaseStrategy` update is unspecified.
+          format: date-time
+          nullable: true
+        ReleaseStrategy:
+          title: Release strategy update value
+          allOf:
+          - $ref: '#/components/schemas/ReleaseStrategyUpdateValue'
+          description: The strategy for automatic release of the availability block (or `null` if not updated).
+          nullable: true
+        QuoteId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidNullableUpdateValue'
+          description: Unique identifier of the Mews Events quote associated with the availability block (or `null` if not updated).
+          nullable: true
+        PurchaseOrderNumber:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Unique number of the purchase order. This number is propagated to any newly picked up `Reservation` within the block.
+          nullable: true
+        BusinessSegmentId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidNullableUpdateValue'
+          description: Unique identifier of the Business segment.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AvailabilityBlockUpdateParameters
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    UpdateValueCurrencyValueOld:
+      title: Currency value (ver 2018-06-07) update value
+      type: object
+      properties:
+        Value:
+          title: Currency value (ver 2018-06-07)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValueOld'
+          description: Value in the specified currency.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: UpdateValueCurrencyValueOld
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    AvailabilityAdjustment:
+      title: Availability adjustment
+      required:
+      - ActivityState
+      - FirstTimeUnitStartUtc
+      - Id
+      - IsActive
+      - LastTimeUnitStartUtc
+      - ResourceCategoryId
+      - UnitCount
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the [Availability adjustment](https://mews-systems.gitbook.io/connector-api/operations/#availability-adjustment).
+          format: uuid
+        AvailabilityBlockId:
+          type: string
+          description: Unique identifier of the [Availability block](https://mews-systems.gitbook.io/connector-api/operations/availabilityblocks/#availability-block) which the availability adjustment belongs to.
+          format: uuid
+          nullable: true
+        ResourceCategoryId:
+          type: string
+          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/resources/#resource-category) whose availability is updated.
+          format: uuid
+        StartUtc:
+          type: string
+          description: Start of the interval in UTC timezone in ISO 8601 format.
+          nullable: true
+          deprecated: true
+        EndUtc:
+          type: string
+          description: End of the interval in UTC timezone in ISO 8601 format.
+          nullable: true
+          deprecated: true
+        FirstTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/operations/services/#time-unit), in UTC timezone ISO 8601 format.
+          format: date-time
+        LastTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/operations/services/#time-unit), in UTC timezone ISO 8601 format.
+          format: date-time
+        UnitCount:
+          type: integer
+          description: Adjustment value applied on the interval.
+          format: int32
+        ActivityState:
+          title: Activity state
+          allOf:
+          - $ref: '#/components/schemas/ActivityStateEnum'
+          description: 'Shows whether the availability adjustment is active or deleted.
+
+
+            Deleted
+
+
+            Active'
+          deprecated: true
+          x-enumNames:
+          - Deleted
+          - Active
+          x-enumDescriptions:
+          - ''
+          - ''
+          x-deprecatedMessage: Use `IsActive` instead.
+        ReleaseOverrideUtc:
+          type: string
+          description: Exact moment the availability adjustment is released if set; overrides the release strategy of the associated availability block.
+          format: date-time
+          nullable: true
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the adjustment in UTC timezone in ISO 8601 format.
+          format: date-time
+        IsActive:
+          type: boolean
+          description: Whether the availability adjustment is still active.
+        PaxCounts:
+          maxItems: 5
+          type: array
+          items:
+            $ref: '#/components/schemas/PaxCount'
+          description: Collection of predicted occupancy of availability adjustments. Relates to how many adjustments are assigned to each count of guests.
+          nullable: true
+        FirstTimeUnitReleaseUtc:
+          type: string
+          description: Exact moment the first time unit of the availability adjustment is released based on `ReleaseOverrideUtc` or the `ReleaseStrategy` of the associated availability block, or the `OperationalEditableHistoryInterval` of the associated enterprise if not set, or `null` if `AvailabilityBlockId` is `null`.
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AvailabilityAdjustment
+    ReservationOld:
+      title: Reservation (ver 2017-04-12)
+      required:
+      - AssignedResourceLocked
+      - CompanionIds
+      - CreatedUtc
+      - CustomerId
+      - EndUtc
+      - GroupId
+      - Id
+      - Number
+      - Options
+      - Origin
+      - OwnerId
+      - PersonCounts
+      - RateId
+      - RequestedCategoryId
+      - ServiceId
+      - StartUtc
+      - State
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the reservation.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the Service that is reserved.
+          format: uuid
+        GroupId:
+          type: string
+          description: Unique identifier of the Reservation group.
+          format: uuid
+        Number:
+          minLength: 1
+          type: string
+          description: Confirmation number of the reservation in Mews.
+        ChannelNumber:
+          type: string
+          description: Number of the reservation within the Channel (i.e. OTA, GDS, CRS, etc) in case the reservation group originates there (e.g. Booking.com confirmation number).
+          nullable: true
+        ChannelManagerNumber:
+          type: string
+          description: Unique number of the reservation within the reservation group.
+          nullable: true
+        ChannelManagerGroupNumber:
+          type: string
+          description: Number of the reservation group within a Channel manager that transferred the reservation from Channel to Mews.
+          nullable: true
+        ChannelManager:
+          type: string
+          description: Name of the Channel manager (e.g. AvailPro, SiteMinder, TravelClick, etc).
+          nullable: true
+        State:
+          $ref: '#/components/schemas/ServiceOrderStateOld'
+        Origin:
+          $ref: '#/components/schemas/ReservationOldOrigin'
+        OriginDetails:
+          type: string
+          description: Details about the reservation origin.
+          nullable: true
+        Purpose:
+          anyOf:
+          - $ref: '#/components/schemas/ReservationPurpose'
+          description: Purpose of the reservation.
+          nullable: true
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the reservation in UTC timezone in ISO 8601 format.
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the reservation in UTC timezone in ISO 8601 format.
+        CancelledUtc:
+          type: string
+          description: Cancellation date and time in UTC timezone in ISO 8601 format.
+          nullable: true
+        StartUtc:
+          minLength: 1
+          type: string
+          description: Start of the reservation in UTC timezone in ISO 8601 format. This is either the scheduled reservation start time, or the actual customer check-in time if this is earlier than the scheduled start time.
+        EndUtc:
+          minLength: 1
+          type: string
+          description: End of the reservation (departure) in UTC timezone in ISO 8601 format.
+        ReleasedUtc:
+          type: string
+          description: Date when the optional reservation is released in UTC timezone in ISO 8601 format.
+          nullable: true
+        RequestedCategoryId:
+          type: string
+          description: Identifier of the requested Resource category.
+          format: uuid
+        AssignedSpaceId:
+          type: string
+          description: Identifier of the assigned Space.
+          format: uuid
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `AssignedResourceId` instead.
+        AssignedSpaceLocked:
+          type: boolean
+          description: Whether the reservation is locked to the assigned Space and cannot be moved.
+          deprecated: true
+          x-deprecatedMessage: Use `AssignedResourceLocked` instead.
+        AssignedResourceId:
+          type: string
+          description: Identifier of the assigned Resource.
+          format: uuid
+          nullable: true
+        AssignedResourceLocked:
+          type: boolean
+          description: Whether the reservation is locked to the assigned Resource and cannot be moved.
+        BusinessSegmentId:
+          type: string
+          description: Identifier of the reservation Business segment.
+          format: uuid
+          nullable: true
+        CompanyId:
+          type: string
+          description: Identifier of the Company on behalf of which the reservation was made.
+          format: uuid
+          nullable: true
+        TravelAgencyId:
+          type: string
+          description: Identifier of the Company that mediated the reservation.
+          format: uuid
+          nullable: true
+        AvailabilityBlockId:
+          type: string
+          description: Unique identifier of the Availability block the reservation is assigned to.
+          format: uuid
+          nullable: true
+        RateId:
+          type: string
+          description: Identifier of the reservation Rate.
+          format: uuid
+        VoucherId:
+          type: string
+          description: Unique identifier of the Voucher that has been used to create reservation.
+          format: uuid
+          nullable: true
+        CreditCardId:
+          type: string
+          description: Unique identifier of the Credit card.
+          format: uuid
+          nullable: true
+        CancellationReason:
+          anyOf:
+          - $ref: '#/components/schemas/CancellationReason'
+          description: Cancellation reason of the reservation.
+          nullable: true
+        AdultCount:
+          type: integer
+          description: Count of adults the reservation was booked for.
+          format: int32
+          deprecated: true
+          x-deprecatedMessage: Use `PersonCounts` instead.
+        ChildCount:
+          type: integer
+          description: Count of children the reservation was booked for.
+          format: int32
+          deprecated: true
+          x-deprecatedMessage: Use `PersonCounts` instead.
+        PersonCounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReservationPersonCount'
+          description: Number of people per age category the reservation was booked for.
+        OwnerId:
+          type: string
+          description: Unique identifier of the Customer or Company who owns the reservation.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Unique identifier of the Customer who owns the reservation.
+          format: uuid
+          deprecated: true
+          x-deprecatedMessage: Use `OwnerId` instead.
+        BookerId:
+          type: string
+          description: Unique identifier of the Customer on whose behalf the reservation was made.
+          format: uuid
+          nullable: true
+        CompanionIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Customer`s that will use the resource.
+          deprecated: true
+          x-deprecatedMessage: Use `companionships/getAll` instead.
+        ChannelManagerId:
+          type: string
+          description: Channel Manager number.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `ChannelManagerNumber` instead.
+        Options:
+          title: Reservation options
+          allOf:
+          - $ref: '#/components/schemas/ReservationOptions'
+          description: Options of the reservation.
+      additionalProperties: false
+      description: ''
+      x-schema-id: ReservationOld
+    AvailabilityBlockDeleteParameters:
+      title: AvailabilityBlockDeleteParameters
+      required:
+      - AccessToken
+      - AvailabilityBlockIds
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        AvailabilityBlockIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifier of the Availability block to delete.
+      additionalProperties: false
+      x-schema-id: AvailabilityBlockDeleteParameters
+    MultipleAvailabilityBlockAddParameters:
+      title: MultipleAvailabilityBlockAddParameters
+      required:
+      - AccessToken
+      - AvailabilityBlocks
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        AvailabilityBlocks:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailabilityBlockAddParameters'
+          description: Availability blocks to be added.
+      additionalProperties: false
+      x-schema-id: MultipleAvailabilityBlockAddParameters
+    GuidNullableUpdateValue:
+      title: Guid update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: GuidNullableUpdateValue
+    ReservationPurpose:
+      title: Reservation purpose
+      enum:
+      - Leisure
+      - Business
+      - Student
+      type: string
+    PaxCount:
+      title: PaxCount
+      required:
+      - PersonCount
+      - UnitCount
+      type: object
+      properties:
+        PersonCount:
+          type: integer
+          description: Predicted guest count that will be assigned to the Resource. The guest count must fit within the Resource Category maximum capacity.
+          format: int32
+        UnitCount:
+          type: integer
+          description: Positive number of adjustments that are assigned to `PersonCount`. The sum of all `UnitCount` in `PaxCounts` should match the adjustment value applied to the interval.
+          format: int32
+      additionalProperties: false
+      x-schema-id: PaxCount
+    ReleaseStrategyUpdateValue:
+      title: Release strategy update value
+      type: object
+      properties:
+        Value:
+          title: Release strategy
+          allOf:
+          - $ref: '#/components/schemas/ReleaseStrategyEnum'
+          description: 'The strategy for automatic release of the availability block.
+
+
+            FixedRelease (The availability block is released at a fixed time.)
+
+
+            RollingRelease (Each availability adjustment is released at a fixed offset from its start.)
+
+
+            None (The availability block is not automatically released.)'
+          x-enumNames:
+          - FixedRelease
+          - RollingRelease
+          - None
+          x-enumDescriptions:
+          - The availability block is released at a fixed time.
+          - Each availability adjustment is released at a fixed offset from its start.
+          - The availability block is not automatically released.
+      additionalProperties: false
+      x-schema-id: ReleaseStrategyUpdateValue

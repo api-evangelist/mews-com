@@ -1,0 +1,366 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Age categories API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Age categories
+paths:
+  /api/connector/v1/ageCategories/getAll:
+    post:
+      tags:
+      - Age categories
+      summary: Get all age categories
+      description: "Returns all age categories filtered by [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service). \nNote this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property)."
+      operationId: ageCategories_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgeCategoryParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              ServiceIds:
+              - bd26d8db-86da-4f96-9efc-e5a4654a4a94
+              AgeCategoryIds:
+              - fe568bbd-1ecb-4bb2-bf77-96c3698de20d
+              - ab58c939-be30-4a60-8f75-ae1600c60c9f
+              UpdatedUtc:
+                StartUtc: '2023-10-01T00:00:00Z'
+                EndUtc: '2023-10-31T00:00:00Z'
+              ActivityStates:
+              - Active
+              Limitation:
+                Count: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgeCategoryResult'
+              example:
+                AgeCategories:
+                - Id: ab58c939-be30-4a60-8f75-ae1600c60c9f
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  MinimalAge: null
+                  MaximalAge: null
+                  Names:
+                    cs-CZ: Dospělí
+                    da-DK: Voksne
+                    de-CH: Erwachsene
+                    de-DE: Erwachsene
+                    el-GR: Ενήλικοι
+                    en-GB: Adults
+                  ShortNames: null
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  Classification: Adult
+                  IsActive: false
+                  ExternalIdentifier: Adult
+                - Id: fe568bbd-1ecb-4bb2-bf77-96c3698de20d
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  MinimalAge: 0
+                  MaximalAge: 18
+                  Names:
+                    cs-CZ: Děti
+                    da-DK: Børn
+                    de-CH: Kinder
+                    de-DE: Kinder
+                    el-GR: Παιδιά
+                    en-GB: Children
+                  ShortNames: null
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  Classification: Child
+                  IsActive: false
+                  ExternalIdentifier: null
+                Cursor: 0b9560fb-055d-47d3-a6d4-e579c44ca558
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    AgeCategory:
+      title: Age category
+      required:
+      - Classification
+      - CreatedUtc
+      - Id
+      - IsActive
+      - Names
+      - ServiceId
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of age category.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service) the age category belongs to.
+          format: uuid
+        MinimalAge:
+          type: integer
+          description: Minimal age for the age category.
+          format: int32
+          nullable: true
+        MaximalAge:
+          type: integer
+          description: Maximal age for the age category.
+          format: int32
+          nullable: true
+        Names:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the name of the age category.
+          x-schema-id: LocalizedStrings
+        ShortNames:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the short name of the age category.
+          nullable: true
+          x-schema-id: LocalizedStrings
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the age category in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the age category in UTC timezone in ISO 8601 format.
+          format: date-time
+        Classification:
+          title: Age category classification
+          allOf:
+          - $ref: '#/components/schemas/AgeCategoryClassificationEnum'
+          description: 'The classification of the age category.
+
+
+            Adult
+
+
+            Child'
+          x-enumNames:
+          - Adult
+          - Child
+          x-enumDescriptions:
+          - ''
+          - ''
+        IsActive:
+          type: boolean
+          description: Whether the age category is still active.
+        ExternalIdentifier:
+          maxLength: 255
+          type: string
+          description: Identifier of the age category from external system.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AgeCategory
+    AgeCategoryClassificationEnum:
+      title: Age category classification
+      enum:
+      - Adult
+      - Child
+      type: string
+      description: '
+
+
+        Adult
+
+
+        Child'
+      x-enumNames:
+      - Adult
+      - Child
+      x-enumDescriptions:
+      - ''
+      - ''
+    AgeCategoryResult:
+      title: AgeCategoryResult
+      required:
+      - AgeCategories
+      type: object
+      properties:
+        AgeCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgeCategory'
+          description: Age category of the enterprise.
+        Cursor:
+          type: string
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AgeCategoryResult
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    AgeCategoryParameters:
+      title: AgeCategoryParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        AgeCategoryIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Age categories](https://mews-systems.gitbook.io/connector-api/operations/#age-category).
+          nullable: true
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Service` associated with the age categories. If not provided, defaults to all bookable services.
+          nullable: true
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the age category was updated.
+          nullable: true
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AgeCategoryParameters
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation

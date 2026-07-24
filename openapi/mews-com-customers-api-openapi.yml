@@ -1,0 +1,3622 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Customers API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Customers
+paths:
+  /api/connector/v1/customers/getAll:
+    post:
+      tags:
+      - Customers
+      summary: Get all customers
+      description: 'Returns all customers filtered by identifiers, emails, names and other filters.
+
+        Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).'
+      operationId: customers_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ChainIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 5fcd1933-22f2-40b9-84da-7db04cbecec2
+              CreatedUtc:
+                StartUtc: '2018-01-01T00:00:00Z'
+                EndUtc: '2018-01-30T00:00:00Z'
+              UpdatedUtc:
+                StartUtc: '2018-01-02T00:00:00Z'
+                EndUtc: '2018-01-30T00:00:00Z'
+              Extent:
+                Customers: true
+                Documents: false
+                Addresses: false
+              ActivityStates:
+              - Active
+              CustomerIds:
+              - fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+              CompanyIds:
+              - c6f5c82d-621a-4c8a-903b-1b0a9a23b71f
+              Emails:
+              - j.smith@example.com
+              FirstNames:
+              - John
+              - Jane
+              LastNames:
+              - Doe
+              - Smith
+              LoyaltyCodes:
+              - LL810213
+              Limitation:
+                Count: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResult'
+              example:
+                Customers:
+                - Id: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  Number: '12345'
+                  Title: Mister
+                  Sex: Male
+                  FirstName: John
+                  LastName: Smith
+                  SecondLastName: Williams
+                  NationalityCode: US
+                  PreferredLanguageCode: en-GB
+                  LanguageCode: en-US
+                  BirthDate: '1983-12-31'
+                  BirthCountryCode: null
+                  BirthCountrySubdivisionCode: null
+                  BirthPlace: New York City, NY
+                  Occupation: Carpenter
+                  Email: j.smith@example.com
+                  HasOtaEmail: false
+                  Phone: 00420123456789
+                  TaxIdentificationNumber: '123456789'
+                  LoyaltyCode: LL810213
+                  AccountingCode: AC123
+                  BillingCode: null
+                  Notes: ''
+                  CarRegistrationNumber: 1A2 3456
+                  DietaryRequirements: null
+                  CreatedUtc: '2018-01-01T00:00:00Z'
+                  UpdatedUtc: '2018-01-02T00:00:00Z'
+                  Passport: null
+                  IdentityCard: null
+                  Visa: null
+                  DriversLicense: null
+                  Address:
+                    Id: f8495413-bf49-45dd-843c-44be7f365569
+                    Line1: Somerford Road Hello House/135
+                    Line2: null
+                    City: Christchurch
+                    PostalCode: BH23 3PY
+                    CountryCode: GB
+                    CountrySubdivisionCode: GB-ENG
+                    Latitude: null
+                    Longitude: null
+                  AddressId: f8495413-bf49-45dd-843c-44be7f365569
+                  Classifications:
+                  - Returning
+                  Options:
+                  - SendMarketingEmails
+                  ItalianDestinationCode: null
+                  ItalianFiscalCode: null
+                  ItalianLotteryCode: null
+                  CompanyId: c6f5c82d-621a-4c8a-903b-1b0a9a23b71f
+                  MergeTargetId: null
+                  ActivityState: Active
+                  IsActive: true
+                  PreferredSpaceFeatures:
+                  - OceanView
+                  CreatorProfileId: 3cd637ef-4728-47f9-8fb1-afb900c9cdcf
+                  UpdaterProfileId: 122fc063-ec6e-4198-b8db-6b168a59ffae
+                Documents: null
+                Cursor: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/customers/search:
+    post:
+      tags:
+      - Customers
+      summary: Search customers
+      description: Searches for customers that are active at the moment in the enterprise (e.g. companions of checked-in reservations or paymasters).
+      operationId: customers_search
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerSearchParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              Name: Smith
+              ResourceId: null
+              Extent:
+                Customers: true
+                Documents: false
+                Addresses: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerSearchResult'
+              example:
+                Customers:
+                - Customer:
+                    Id: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                    ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                    Number: '12345'
+                    Title: Mister
+                    Sex: Male
+                    FirstName: John
+                    LastName: Smith
+                    SecondLastName: Williams
+                    NationalityCode: US
+                    PreferredLanguageCode: en-GB
+                    LanguageCode: en-US
+                    BirthDate: '1983-12-31'
+                    BirthCountryCode: null
+                    BirthCountrySubdivisionCode: null
+                    BirthPlace: New York City, NY
+                    Occupation: Carpenter
+                    Email: j.smith@example.com
+                    HasOtaEmail: false
+                    Phone: 00420123456789
+                    TaxIdentificationNumber: '123456789'
+                    LoyaltyCode: LL810213
+                    AccountingCode: AC123
+                    BillingCode: null
+                    Notes: ''
+                    CarRegistrationNumber: 1A2 3456
+                    DietaryRequirements: null
+                    CreatedUtc: '2018-01-01T00:00:00Z'
+                    UpdatedUtc: '2018-01-02T00:00:00Z'
+                    Passport: null
+                    IdentityCard: null
+                    Visa: null
+                    DriversLicense: null
+                    Address:
+                      Id: f8495413-bf49-45dd-843c-44be7f365569
+                      Line1: Somerford Road Hello House/135
+                      Line2: null
+                      City: Christchurch
+                      PostalCode: BH23 3PY
+                      CountryCode: GB
+                      CountrySubdivisionCode: GB-ENG
+                      Latitude: null
+                      Longitude: null
+                    AddressId: f8495413-bf49-45dd-843c-44be7f365569
+                    Classifications:
+                    - Returning
+                    Options:
+                    - SendMarketingEmails
+                    ItalianDestinationCode: null
+                    ItalianFiscalCode: null
+                    ItalianLotteryCode: null
+                    CompanyId: c6f5c82d-621a-4c8a-903b-1b0a9a23b71f
+                    MergeTargetId: null
+                    ActivityState: Active
+                    IsActive: true
+                    PreferredSpaceFeatures:
+                    - OceanView
+                    CreatorProfileId: 3cd637ef-4728-47f9-8fb1-afb900c9cdcf
+                    UpdaterProfileId: 122fc063-ec6e-4198-b8db-6b168a59ffae
+                  Reservation: null
+                Documents: null
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/customers/getOpenItems:
+    post:
+      tags:
+      - Customers
+      summary: Get customers open items
+      description: Use [Get all payments](https://mews-systems.gitbook.io/connector-api/operations/payments#get-all-payments) and [Get all order items](https://mews-systems.gitbook.io/connector-api/operations/orderitems#get-all-order-items) instead.
+      operationId: customers_getOpenItems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerItemParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              CustomerIds:
+              - 2a1a4315-7e6f-4131-af21-402cec59b8b9
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerItemResult'
+              example:
+                Customers:
+                - CustomerId: 2a1a4315-7e6f-4131-af21-402cec59b8b9
+                  OrderItems:
+                  - Id: 35820535-b988-4d6f-80cf-ecb19cdc3e58
+                    AccountId: 2a1a4315-7e6f-4131-af21-402cec59b8b9
+                    OrderId: 6645113e-72cc-4f99-ab77-e4452911bf20
+                    BillId: null
+                    AccountingCategoryId: d250149e-a29d-4c70-b607-a1759faf7320
+                    Amount:
+                      Currency: GBP
+                      NetValue: -5
+                      GrossValue: -5
+                      TaxValues:
+                      - Code: UK-Z
+                        Value: 0
+                      Breakdown:
+                        Items:
+                        - TaxRateCode: UK-Z
+                          NetValue: -5
+                          TaxValue: 0
+                    RevenueType: Additional
+                    ConsumedUtc: '2017-04-04T15:13:39Z'
+                    ClosedUtc: null
+                    AccountingState: Open
+                    Data:
+                      Discriminator: Rebate
+                      Value:
+                        RebatedItemId: null
+                  PaymentItems: []
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+      deprecated: true
+      x-deprecatedMessage: Use [Get all payments](https://mews-systems.gitbook.io/connector-api/operations/payments#get-all-payments) and [Get all order items](https://mews-systems.gitbook.io/connector-api/operations/orderitems#get-all-order-items) instead.
+  /api/connector/v1/customers/add:
+    post:
+      tags:
+      - Customers
+      summary: Add customer
+      description: Adds a new customer to the system and returns details of the added customer. If a customer with the specified email already exists, and `OverwriteExisting` is set to `true`, then the existing customer profile information is overwritten and the existing customer data returned. If `OverwriteExisting` is set to `false`, an error response is returned. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      operationId: customers_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              Title: Miss
+              FirstName: Thea
+              LastName: Carbone
+              BirthDate: '1985-09-30'
+              BirthPlace: Pescara (BI)
+              Occupation: Giornalista
+              Email: thea@quotidiano.example
+              Phone: +39 06 555 5555
+              Notes: Check-in notturno.
+              CarRegistrationNumber: AA 111AA
+              TaxIdentificationNumber: ZGNZLR17U72P554F
+              Address:
+                Line1: Via Antimo 474 Piano 5
+                City: Liborio laziale
+                PostalCode: '30228'
+                CountryCode: IT
+                CountrySubdivisionCode: IT-65
+              Classifications:
+              - Media
+              - FriendOrFamily
+              Options:
+              - SendMarketingEmails
+              ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              OverwriteExisting: false
+              ItalianDestinationCode: '7654321'
+              ItalianFiscalCode: ZGNZLR17U72P554F
+              ItalianLotteryCode: AB12345
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+              example:
+                Id: 99b4f0af-9558-463b-8452-07a9bc414708
+                ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                Number: '390881'
+                Title: Miss
+                Sex: null
+                FirstName: Thea
+                LastName: Carbone
+                SecondLastName: null
+                NationalityCode: null
+                PreferredLanguageCode: null
+                LanguageCode: null
+                BirthDate: '1985-09-30'
+                BirthCountryCode: null
+                BirthCountrySubdivisionCode: null
+                BirthPlace: Pescara (BI)
+                Occupation: Giornalista
+                Email: thea@quotidiano.example
+                HasOtaEmail: false
+                Phone: +39 06 555 5555
+                TaxIdentificationNumber: ZGNZLR17U72P554F
+                LoyaltyCode: null
+                AccountingCode: null
+                BillingCode: null
+                Notes: Check-in notturno.
+                CarRegistrationNumber: AA 111AA
+                DietaryRequirements: null
+                CreatedUtc: '2024-09-17T12:22:33Z'
+                UpdatedUtc: '2024-10-12T09:45:00Z'
+                Passport: null
+                IdentityCard: null
+                Visa: null
+                DriversLicense: null
+                Address:
+                  Id: 81f62f08-26d5-408f-9b0d-d030957dc799
+                  Line1: Via Antimo 474 Piano 5
+                  Line2: null
+                  City: Liborio laziale
+                  PostalCode: '30228'
+                  CountryCode: IT
+                  CountrySubdivisionCode: IT-65
+                  Latitude: 28.56333
+                  Longitude: -121.243143
+                AddressId: 81f62f08-26d5-408f-9b0d-d030957dc799
+                Classifications:
+                - Media
+                - FriendOrFamily
+                Options: []
+                ItalianDestinationCode: '7654321'
+                ItalianFiscalCode: ZGNZLR17U72P554F
+                ItalianLotteryCode: AB12345
+                CompanyId: f3b4f0af-9558-463b-8452-07a9bc414708
+                MergeTargetId: null
+                ActivityState: null
+                IsActive: true
+                PreferredSpaceFeatures:
+                - LowerBed
+                CreatorProfileId: 3cd637ef-4728-47f9-8fb1-afb900c9cdcf
+                UpdaterProfileId: 122fc063-ec6e-4198-b8db-6b168a59ffae
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/customers/update:
+    post:
+      tags:
+      - Customers
+      summary: Update customer
+      description: Updates personal information of a customer. Note that if any of the fields is left blank, it won't clear the field in Mews. The field will be left intact. In case of email update, the email will change in Mews only if there is no other customer profile in the hotel with such email. Otherwise an error response is returned. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      operationId: customers_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerUpdateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              CustomerId: 99b4f0af-9558-463b-8452-07a9bc414708
+              Title: Miss
+              FirstName: Thea
+              LastName: Carbone
+              BirthDate: '1985-09-30'
+              BirthPlace: Pescara (BI)
+              Occupation: Giornalista
+              Email: thea@quotidiano.example
+              Phone: +39 06 555 5555
+              Notes: Check-in notturno.
+              CarRegistrationNumber: AA 111AA
+              TaxIdentificationNumber: ZGNZLR17U72P554F
+              CompanyId: f3b4f0af-9558-463b-8452-07a9bc414708
+              Address:
+                Line1: Via Antimo 474 Piano 5
+                City: Liborio laziale
+                PostalCode: '30228'
+                CountryCode: IT
+                CountrySubdivisionCode: IT-65
+              Classifications:
+              - Media
+              - FriendOrFamily
+              Options:
+              - SendMarketingEmails
+              ItalianDestinationCode:
+                Value: '7654321'
+              ItalianFiscalCode:
+                Value: ZGNZLR17U72P554F
+              ItalianLotteryCode:
+                Value: AB12345
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+              example:
+                Id: 99b4f0af-9558-463b-8452-07a9bc414708
+                ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                Number: '390881'
+                Title: Miss
+                Sex: null
+                FirstName: Thea
+                LastName: Carbone
+                SecondLastName: null
+                NationalityCode: null
+                PreferredLanguageCode: null
+                LanguageCode: null
+                BirthDate: '1985-09-30'
+                BirthCountryCode: null
+                BirthCountrySubdivisionCode: null
+                BirthPlace: Pescara (BI)
+                Occupation: Giornalista
+                Email: thea@quotidiano.example
+                HasOtaEmail: false
+                Phone: +39 06 555 5555
+                TaxIdentificationNumber: ZGNZLR17U72P554F
+                LoyaltyCode: null
+                AccountingCode: null
+                BillingCode: null
+                Notes: Check-in notturno.
+                CarRegistrationNumber: AA 111AA
+                DietaryRequirements: null
+                CreatedUtc: '2024-09-17T12:22:33Z'
+                UpdatedUtc: '2024-10-12T09:45:00Z'
+                Passport: null
+                IdentityCard: null
+                Visa: null
+                DriversLicense: null
+                Address:
+                  Id: 81f62f08-26d5-408f-9b0d-d030957dc799
+                  Line1: Via Antimo 474 Piano 5
+                  Line2: null
+                  City: Liborio laziale
+                  PostalCode: '30228'
+                  CountryCode: IT
+                  CountrySubdivisionCode: IT-65
+                  Latitude: 28.56333
+                  Longitude: -121.243143
+                AddressId: 81f62f08-26d5-408f-9b0d-d030957dc799
+                Classifications:
+                - Media
+                - FriendOrFamily
+                Options: []
+                ItalianDestinationCode: '7654321'
+                ItalianFiscalCode: ZGNZLR17U72P554F
+                ItalianLotteryCode: AB12345
+                CompanyId: f3b4f0af-9558-463b-8452-07a9bc414708
+                MergeTargetId: null
+                ActivityState: null
+                IsActive: true
+                PreferredSpaceFeatures:
+                - LowerBed
+                CreatorProfileId: 3cd637ef-4728-47f9-8fb1-afb900c9cdcf
+                UpdaterProfileId: 122fc063-ec6e-4198-b8db-6b168a59ffae
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/customers/merge:
+    post:
+      tags:
+      - Customers
+      summary: Merge customers
+      description: Use [Merge accounts](https://mews-systems.gitbook.io/connector-api/operations/accounts#merge-accounts) instead.
+      operationId: customers_merge
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerMergeParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              SourceCustomerId: e11801ff-4148-4010-87f3-0d111e2893e3
+              TargetCustomerId: 35d4b117-4e60-44a3-9580-c582117eff98
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+      deprecated: true
+      x-deprecatedMessage: Use [Merge accounts](https://mews-systems.gitbook.io/connector-api/operations/accounts#merge-accounts) instead.
+  /api/connector/v1/customers/addFile:
+    post:
+      tags:
+      - Customers
+      summary: Add customer file
+      description: "Attaches the specified file to the customer profile. \r\n\r\nAllowed MIME types: `application/pdf`, `image/bmp`, `image/gif`, `image/jpeg`, `image/png`, `image/tiff`.\r\n\r\nNote this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/guidelines/multi-property)."
+      operationId: customers_addFile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerFileParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              CustomerId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              Name: document.pdf
+              Type: application/pdf
+              Data: JVBERi0xLjAKMSAwIG9iajw8L1BhZ2VzIDIgMCBSPj5lbmRvYmogMiAwIG9iajw8L0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iaiAzIDAgb2JqPDwvTWVkaWFCb3hbMCAwIDMgM10+PmVuZG9iagp0cmFpbGVyPDwvUm9vdCAxIDAgUj4+Cg==
+              ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerAddFileResult'
+              example:
+                FileId: f039f5b4-ff18-4510-9086-92b14a68ed78
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/customers/getRelationships:
+    post:
+      tags:
+      - Customers
+      summary: Get customers relationships
+      description: Returns relationships between customers (e.g. Spouse, Friend) for the provided unique identifiers of customers.
+      operationId: customers_getRelationships
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRelationshipFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              CustomerIds:
+              - fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+              - bccdafd1-3e44-439d-861f-341526b597a9
+              ChainIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 5fcd1933-22f2-40b9-84da-7db04cbecec2
+              Limitation:
+                Count: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerRelationshipResult'
+              example:
+                CustomerRelationships:
+                - CustomerId: cbe8a32e-3eb7-4226-baf4-69455a0eeaf5
+                  RelatedCustomerId: cbe8a32e-3eb7-4226-baf4-69455a0eeaf6
+                  Relationship: Other
+                - CustomerId: cbe8a32e-3eb7-4226-baf4-69455a0eeaf6
+                  RelatedCustomerId: cbe8a32e-3eb7-4226-baf4-69455a0eeaf5
+                  Relationship: Other
+                Cursor: null
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+      x-restricted: true
+components:
+  schemas:
+    PaymentItemOld:
+      title: Payment item
+      required:
+      - AccountId
+      - AccountingState
+      - Amount
+      - ConsumedUtc
+      - Data
+      - Id
+      - OriginalAmount
+      - State
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the item.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of the account (for example `Customer`) the item belongs to.
+          format: uuid
+        BillId:
+          type: string
+          description: Unique identifier of the `Bill` the item is assigned to.
+          format: uuid
+          nullable: true
+        AccountingCategoryId:
+          type: string
+          description: Unique identifier of the `AccountingCategory` the item belongs to.
+          format: uuid
+          nullable: true
+        Amount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Item's amount, negative amount represents either rebate or a payment.
+        OriginalAmount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Amount of item; note a negative amount represents a rebate or payment. Contains the earliest known value in conversion chain.
+        AmountDefault:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Item's amount in property's default currency, negative amount represents either rebate or a payment.
+          nullable: true
+          deprecated: true
+        Notes:
+          type: string
+          description: Additional notes.
+          nullable: true
+        SettlementId:
+          type: string
+          description: Identifier of the settled payment from the external system (ApplePay/GooglePay).
+          nullable: true
+        ConsumedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the item consumption in UTC timezone in ISO 8601 format.
+        ClosedUtc:
+          type: string
+          description: Date and time of the item bill closure in UTC timezone in ISO 8601 format.
+          nullable: true
+        AccountingState:
+          minLength: 1
+          type: string
+          description: Accounting state of the item.
+        State:
+          minLength: 1
+          type: string
+          description: Payment state of the item.
+        Identifier:
+          type: string
+          description: External payment identifier.
+          nullable: true
+        Data:
+          title: Payment item data
+          type: object
+          properties:
+            Discriminator:
+              $ref: '#/components/schemas/PaymentType'
+            Value:
+              oneOf:
+              - $ref: '#/components/schemas/PaymentCardPaymentData'
+              - $ref: '#/components/schemas/InvoicePaymentData'
+              description: Based on payment item data discriminator or `null` for types without any additional data.
+              nullable: true
+          description: Additional data specific to particular payment item.
+          x-coproduct: true
+          x-schema-id: PaymentItemOldDataCoproductOfPaymentType
+      additionalProperties: false
+      description: ''
+      x-schema-id: PaymentItemOld
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    PaymentCardPaymentData:
+      title: Credit card payment item data
+      type: object
+      properties:
+        PaymentCardId:
+          type: string
+          description: Unique identifier of the `CreditCard`.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: PaymentCardPaymentData
+    ReservationOptions:
+      title: Reservation options
+      required:
+      - AllCompanionsCheckedIn
+      - AnyCompanionCheckedIn
+      - OwnerCheckedIn
+      type: object
+      properties:
+        OwnerCheckedIn:
+          type: boolean
+          description: Owner of the reservation checked in.
+        AllCompanionsCheckedIn:
+          type: boolean
+          description: All companions of the reservation checked in.
+        AnyCompanionCheckedIn:
+          type: boolean
+          description: Any companion of the reservation checked in.
+      additionalProperties: false
+      x-schema-id: ReservationOptions
+    CustomerItemResult:
+      title: CustomerItemResult
+      type: object
+      properties:
+        Customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerItems'
+          description: The customers with their items.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CustomerItemResult
+    CustomerSearchResult:
+      title: CustomerSearchResult
+      required:
+      - Customers
+      type: object
+      properties:
+        Customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargeableCustomer'
+          description: The customer search results.
+        Documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityDocument'
+          description: The identity documents of customers.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Get all identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#get-all-identity-documents) to fetch identity documents.
+      additionalProperties: false
+      x-schema-id: CustomerSearchResult
+    AddressParameters:
+      title: Address parameters
+      type: object
+      properties:
+        Line1:
+          type: string
+          description: First line of the address.
+          nullable: true
+        Line2:
+          type: string
+          description: Second line of the address.
+          nullable: true
+        City:
+          type: string
+          description: The city.
+          nullable: true
+        PostalCode:
+          type: string
+          description: Postal code.
+          format: postal-code
+          nullable: true
+        CountryCode:
+          type: string
+          description: ISO 3166-1 code of the Country.
+          nullable: true
+        CountrySubdivisionCode:
+          type: string
+          description: ISO 3166-2 code of the administrative division, e.g. DE-BW
+          nullable: true
+      additionalProperties: false
+      description: New address details.
+      x-schema-id: AddressParameters
+    CustomerItemParameters:
+      title: CustomerItemParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CustomerIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        CustomerIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Customer`.
+        Currency:
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency) the item costs should be converted to.
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CustomerItemParameters
+    DocumentParameters:
+      title: Identity document parameters
+      type: object
+      properties:
+        Number:
+          type: string
+          description: Number of the document (e.g. passport number).
+          nullable: true
+        Expiration:
+          type: string
+          description: Expiration date in ISO 8601 format.
+          format: date
+          nullable: true
+        Issuance:
+          type: string
+          description: Date of issuance in ISO 8601 format.
+          format: date
+          nullable: true
+        IssuingCountryCode:
+          type: string
+          description: ISO 3166-1 code of the `Country`.
+          nullable: true
+        IssuingCountrySubdivisionCode:
+          type: string
+          description: Identifier of the country subdivision where the document was issued (province, state or region).
+          nullable: true
+        IssuingCity:
+          type: string
+          description: City from which document issued
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: DocumentParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    OrderItemTypeOld:
+      title: Order item data discriminator
+      enum:
+      - CancellationFee
+      - Rebate
+      - Deposit
+      - ExchangeRateDifference
+      - CustomItem
+      - Surcharge
+      - SurchargeDiscount
+      - SpaceOrder
+      - ProductOrder
+      - Other
+      - TaxCorrection
+      - ResourceUpgradeFee
+      - InvoiceFee
+      type: string
+      x-enumDescriptions:
+      - No additional data.
+      - '[Rebate order item data](https://mews-systems.gitbook.io/connector-api/operations/accountingitems#rebate-order-item-data)'
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - '[Product order item data](https://mews-systems.gitbook.io/connector-api/operations/accountingitems#product-order-item-data)'
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type: string
+          description: Code corresponding to tax type.
+          nullable: true
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    RebateOrderItemData:
+      title: Rebate order item data
+      required:
+      - RebatedItemId
+      type: object
+      properties:
+        RebatedItemId:
+          type: string
+          description: Unique identifier of `OrderItem` which has been rebated by current item.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: RebateOrderItemData
+    ProductOrderItemData:
+      title: Product order item data
+      required:
+      - ProductId
+      type: object
+      properties:
+        ProductId:
+          type: string
+          description: Unique identifier of the `Product`.
+          format: uuid
+        AgeCategoryId:
+          type: string
+          description: Unique identifier of the `AgeCategory`.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ProductOrderItemData
+    Customer:
+      title: Customer
+      required:
+      - ChainId
+      - Classifications
+      - CreatedUtc
+      - CreatorProfileId
+      - Id
+      - IsActive
+      - LastName
+      - Number
+      - Options
+      - PreferredSpaceFeatures
+      - UpdatedUtc
+      - UpdaterProfileId
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the customer.
+          format: uuid
+        ChainId:
+          type: string
+          description: Unique identifier of the chain.
+          format: uuid
+        Number:
+          maxLength: 19
+          minLength: 1
+          type: string
+          description: Unique number of the customer (max 19 digits).
+        Title:
+          allOf:
+          - $ref: '#/components/schemas/Title'
+          description: 'Title of the customer.
+
+
+            Mister (Mr.)
+
+
+            Miss (Ms.)
+
+
+            Misses (Mrs.)'
+          nullable: true
+        Sex:
+          allOf:
+          - $ref: '#/components/schemas/SexEnum'
+          description: 'Sex of the customer.
+
+
+            Male
+
+
+            Female'
+          nullable: true
+        FirstName:
+          type: string
+          description: First name of the customer.
+          nullable: true
+        LastName:
+          minLength: 1
+          type: string
+          description: Last name of the customer.
+        SecondLastName:
+          type: string
+          description: Second last name of the customer.
+          nullable: true
+        NationalityCode:
+          type: string
+          description: ISO 3166-1 code of the [Country](https://mews-systems.gitbook.io/connector-api/operations/countries/#country).
+          nullable: true
+        PreferredLanguageCode:
+          type: string
+          description: 'Language and culture code of the customer''s preferred language, according to their profile. For example: `en-GB`, `fr-CA`.'
+          nullable: true
+        LanguageCode:
+          type: string
+          description: Language and culture code of the customer's language, based on multiple sources. These sources include the preferred language specified in internal data based on previous bookings, and the preferred language of the customer specified in their profile. If neither of these sources are present, we use the native language based on the customer's nationality. The format is, for example, `en-US` or `fr-FR`.
+          nullable: true
+        BirthDate:
+          type: string
+          description: Date of birth in ISO 8601 format.
+          nullable: true
+        BirthCountryCode:
+          type: string
+          description: ISO 3166-1 alpha-2 code of the birth country.
+          nullable: true
+        BirthCountrySubdivisionCode:
+          type: string
+          description: ISO 3166-2 code of the administrative division, e.g. ES-C.
+          nullable: true
+        BirthPlace:
+          type: string
+          description: Place of birth.
+          nullable: true
+        Occupation:
+          type: string
+          description: Occupation of the customer.
+          nullable: true
+        Email:
+          type: string
+          description: Email address of the customer.
+          nullable: true
+        HasOtaEmail:
+          type: boolean
+          description: Whether the customer's email address is a temporary email address from an OTA. For more details, see the [product documentation](https://help.mews.com/s/article/how-to-maintain-ota-guest-profiles-with-verified-email-addresses-obtained-from-the-guest-portal).
+        Phone:
+          type: string
+          description: Phone number of the customer (possibly mobile).
+          nullable: true
+        TaxIdentificationNumber:
+          type: string
+          description: Tax identification number of the customer.
+          nullable: true
+        LoyaltyCode:
+          type: string
+          description: Loyalty code of the customer.
+          nullable: true
+        AccountingCode:
+          type: string
+          description: Accounting code of the customer.
+          nullable: true
+        BillingCode:
+          type: string
+          description: Billing code of the customer.
+          nullable: true
+        Notes:
+          type: string
+          description: Internal notes about the customer.
+          nullable: true
+        CarRegistrationNumber:
+          maxLength: 255
+          type: string
+          description: Registration number of the customer's car.
+          nullable: true
+        DietaryRequirements:
+          maxLength: 255
+          type: string
+          description: Customer's dietary requirements, e.g. Vegan, Halal.
+          nullable: true
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the customer in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the customer in UTC timezone in ISO 8601 format.
+          format: date-time
+        Passport:
+          title: Identity document
+          allOf:
+          - $ref: '#/components/schemas/IdentityDocument'
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Get all identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#get-all-identity-documents) to fetch identity documents.
+        IdentityCard:
+          title: Identity document
+          allOf:
+          - $ref: '#/components/schemas/IdentityDocument'
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Get all identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#get-all-identity-documents) to fetch identity documents.
+        Visa:
+          title: Identity document
+          allOf:
+          - $ref: '#/components/schemas/IdentityDocument'
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Get all identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#get-all-identity-documents) to fetch identity documents.
+        DriversLicense:
+          title: Identity document
+          allOf:
+          - $ref: '#/components/schemas/IdentityDocument'
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Get all identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#get-all-identity-documents) to fetch identity documents.
+        Address:
+          title: Address
+          allOf:
+          - $ref: '#/components/schemas/OldAddress'
+          description: ''
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `AddressId` instead.
+        AddressId:
+          type: string
+          description: Unique identifier of the `Address` of the customer.
+          format: uuid
+          nullable: true
+        Classifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerClassificationEnum'
+          description: Classifications of the customer.
+        Options:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerOptionsEnum'
+          description: Options of the customer.
+        ItalianDestinationCode:
+          type: string
+          description: Value of Italian destination code.
+          nullable: true
+        ItalianFiscalCode:
+          type: string
+          description: Value of Italian fiscal code.
+          nullable: true
+        ItalianLotteryCode:
+          type: string
+          description: Italian lottery code.
+          nullable: true
+        CompanyId:
+          type: string
+          description: Unique identifier of [Company](https://mews-systems.gitbook.io/connector-api/operations/companies/#company) the customer is associated with.
+          format: uuid
+          nullable: true
+        MergeTargetId:
+          type: string
+          description: Unique identifier of the account ([Customer](https://mews-systems.gitbook.io/connector-api/operations/#customer)) to which this customer is linked.
+          format: uuid
+          nullable: true
+        ActivityState:
+          type: string
+          description: '[Activity State](https://mews-systems.gitbook.io/connector-api/operations/#activity-state) of customer record, i.e. whether active or deleted.'
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `IsActive` instead.
+        IsActive:
+          type: boolean
+          description: Whether the customer record is still active.
+        PreferredSpaceFeatures:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceFeatureClassification'
+          description: A list of room preferences, such as view type, bed type, and amenities.
+        CreatorProfileId:
+          type: string
+          description: Unique identifier of the user who created the customer.
+          format: uuid
+        UpdaterProfileId:
+          type: string
+          description: Unique identifier of the user who last updated the customer.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: Customer
+    InvoicePaymentData:
+      title: Invoice payment item data
+      required:
+      - InvoiceId
+      type: object
+      properties:
+        InvoiceId:
+          type: string
+          description: Unique identifier of the invoice `Bill`.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: InvoicePaymentData
+    CustomerRelationshipFilterParameters:
+      title: CustomerRelationshipFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CustomerIds
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        ChainIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
+          nullable: true
+        CustomerIds:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Customer`.
+      additionalProperties: false
+      x-schema-id: CustomerRelationshipFilterParameters
+    AccountingItem:
+      title: Accounting item
+      type: object
+      properties:
+        Id:
+          type: string
+          format: uuid
+        AccountId:
+          type: string
+          format: uuid
+        CustomerId:
+          type: string
+          format: uuid
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `AccountId` instead.
+        OrderId:
+          type: string
+          format: uuid
+          nullable: true
+        ServiceId:
+          type: string
+          format: uuid
+          nullable: true
+        ProductId:
+          type: string
+          format: uuid
+          nullable: true
+        BillId:
+          type: string
+          format: uuid
+          nullable: true
+        InvoiceId:
+          type: string
+          format: uuid
+          nullable: true
+        AccountingCategoryId:
+          type: string
+          format: uuid
+          nullable: true
+        CreditCardId:
+          type: string
+          format: uuid
+          nullable: true
+        Type:
+          type: string
+          nullable: true
+        SubType:
+          type: string
+          nullable: true
+        Name:
+          type: string
+          nullable: true
+        Notes:
+          type: string
+          nullable: true
+        ConsumptionUtc:
+          type: string
+          nullable: true
+        ClosedUtc:
+          type: string
+          nullable: true
+        State:
+          type: string
+          nullable: true
+        SubState:
+          type: string
+          nullable: true
+        Amount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: ''
+          nullable: true
+        TaxExemptionReasonCode:
+          type: string
+          description: Code of tax exemption reason. **Restricted!** This property is currently intended for Mews' internal usage and may be subject to change.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AccountingItem
+    Unit:
+      type: object
+      additionalProperties: false
+    OldAddress:
+      title: Address
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the address.
+          format: uuid
+        Line1:
+          type: string
+          description: First line of the address.
+          nullable: true
+        Line2:
+          type: string
+          description: Second line of the address.
+          nullable: true
+        City:
+          type: string
+          description: The city.
+          nullable: true
+        PostalCode:
+          type: string
+          description: Postal code.
+          nullable: true
+        CountryCode:
+          type: string
+          description: ISO 3166-1 code of the `Country`.
+          nullable: true
+        CountrySubdivisionCode:
+          type: string
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
+          nullable: true
+        Latitude:
+          type: number
+          description: The latitude.
+          format: double
+          nullable: true
+        Longitude:
+          type: number
+          description: The longitude.
+          format: double
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: OldAddress
+    Sex:
+      title: Sex
+      enum:
+      - Male
+      - Female
+      type: string
+    ReservationPersonCount:
+      title: Age category parameters
+      required:
+      - AgeCategoryId
+      - Count
+      type: object
+      properties:
+        AgeCategoryId:
+          type: string
+          description: Unique identifier of the [Age category](https://mews-systems.gitbook.io/connector-api/operations/agecategories#age-category).
+          format: uuid
+        Count:
+          type: integer
+          description: Number of people of a given age category. Only positive value is accepted.
+          format: int32
+      additionalProperties: false
+      x-schema-id: ReservationPersonCount
+    CustomerSearchParameters:
+      title: CustomerSearchParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Name:
+          type: string
+          description: Name to search by (applies to first name, last name, and full name).
+          nullable: true
+        ResourceId:
+          type: string
+          description: Identifier of [Resource](https://mews-systems.gitbook.io/connector-api/operations/resources/#resource) to search by (members of reservation assigned there will be returned).
+          format: uuid
+          nullable: true
+        Extent:
+          title: Customer extent
+          allOf:
+          - $ref: '#/components/schemas/CustomerExtent'
+          description: Extent of data to be returned.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CustomerSearchParameters
+    CustomerItems:
+      title: Customer items
+      required:
+      - CustomerId
+      - Items
+      - OrderItems
+      - PaymentItems
+      type: object
+      properties:
+        CustomerId:
+          type: string
+          description: Unique identifier of the `Customer`.
+          format: uuid
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingItem'
+          deprecated: true
+          x-deprecatedMessage: Use `OrderItems` and `PaymentItems` instead.
+        OrderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemOld'
+          description: The open order items (consumed items such as nights or products).
+        PaymentItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentItemOld'
+          description: The open payment items (such as cash, credit card payments or invoices).
+      additionalProperties: false
+      x-schema-id: CustomerItems
+    CustomerAddParameters:
+      title: CustomerAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - LastName
+      - OverwriteExisting
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Title:
+          anyOf:
+          - $ref: '#/components/schemas/Title'
+          description: Title prefix of the customer.
+          nullable: true
+        FirstName:
+          type: string
+          description: First name of the customer.
+          nullable: true
+        LastName:
+          minLength: 1
+          type: string
+          description: Last name of the customer.
+        SecondLastName:
+          type: string
+          description: Second last name of the customer.
+          nullable: true
+        NationalityCode:
+          type: string
+          description: ISO 3166-1 code of the `Country`.
+          nullable: true
+        PreferredLanguageCode:
+          type: string
+          description: 'Language and culture code of the customer''s preferred language, according to their profile. For example: `en-GB`, `fr-CA`.'
+          nullable: true
+        Sex:
+          anyOf:
+          - $ref: '#/components/schemas/Sex'
+          description: Sex of the customer.
+          nullable: true
+        BirthDate:
+          type: string
+          description: Date of birth in ISO 8601 format.
+          format: date
+          nullable: true
+        BirthCountryCode:
+          type: string
+          description: Country of birth.
+          nullable: true
+        BirthCountrySubdivisionCode:
+          type: string
+          description: Province of birth.
+          nullable: true
+        BirthPlace:
+          type: string
+          description: Place of birth.
+          nullable: true
+        Occupation:
+          type: string
+          description: Occupation of the customer.
+          nullable: true
+        Email:
+          type: string
+          description: Email address of the customer.
+          format: email
+          nullable: true
+        Phone:
+          type: string
+          description: Phone number of the customer (possibly mobile).
+          format: tel
+          nullable: true
+        LoyaltyCode:
+          type: string
+          description: Loyalty code of the customer.
+          nullable: true
+        Notes:
+          type: string
+          description: Internal notes about the customer.
+          nullable: true
+        CarRegistrationNumber:
+          maxLength: 255
+          type: string
+          description: Registration number of the customer's car.
+          nullable: true
+        DietaryRequirements:
+          maxLength: 255
+          type: string
+          description: Customer's dietary requirements, e.g. Vegan, Halal.
+          nullable: true
+        TaxIdentificationNumber:
+          type: string
+          description: Tax identification number of the customer.
+          nullable: true
+        CompanyId:
+          type: string
+          description: Unique identifier of `Company` the customer is associated with.
+          format: uuid
+          nullable: true
+        Address:
+          title: Address parameters
+          allOf:
+          - $ref: '#/components/schemas/AddressParameters'
+          description: Address of the customer.
+          nullable: true
+        IdentityCard:
+          title: Identity document parameters
+          allOf:
+          - $ref: '#/components/schemas/DocumentParameters'
+          description: Identity card details of the customer.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Add identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#add-identity-documents) to add document.
+        Passport:
+          title: Identity document parameters
+          allOf:
+          - $ref: '#/components/schemas/DocumentParameters'
+          description: Passport details of the customer.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Add identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#add-identity-documents) to add document.
+        Visa:
+          title: Identity document parameters
+          allOf:
+          - $ref: '#/components/schemas/DocumentParameters'
+          description: Visa details of the customer.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Add identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#add-identity-documents) to add document.
+        DriversLicense:
+          title: Identity document parameters
+          allOf:
+          - $ref: '#/components/schemas/DocumentParameters'
+          description: Drivers license details of the customer.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Add identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#add-identity-documents) to add document.
+        Classifications:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerClassificationEnum'
+          description: Classifications of the customer.
+          nullable: true
+        Options:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerOptionEnum'
+          description: Options of the customer.
+          nullable: true
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using `PortfolioAccessTokens`, ignored otherwise.
+          format: uuid
+          nullable: true
+        OverwriteExisting:
+          type: boolean
+          description: Whether an existing customer should be overwritten in case of duplicity. This applies only to basic personal information (`Title`, `FirstName`, `LastName`, ...).
+        ItalianDestinationCode:
+          type: string
+          description: Value of Italian destination code.
+          nullable: true
+        ItalianFiscalCode:
+          type: string
+          description: Value of Italian fiscal code.
+          nullable: true
+        ItalianLotteryCode:
+          maxLength: 15
+          minLength: 2
+          type: string
+          description: Value of Italian lottery code.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CustomerAddParameters
+    CustomerRelationshipResult:
+      title: CustomerRelationshipResult
+      required:
+      - CustomerRelationships
+      type: object
+      properties:
+        CustomerRelationships:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerRelationship'
+          description: The relationships for the customers.
+        Cursor:
+          type: string
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CustomerRelationshipResult
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ServiceOrderStateOld:
+      title: Service order state (ver 2017-04-12)
+      enum:
+      - Enquired
+      - Confirmed
+      - Started
+      - Processed
+      - Canceled
+      - Optional
+      - Requested
+      type: string
+    CustomerResult:
+      title: CustomerResult
+      required:
+      - Customers
+      type: object
+      properties:
+        Customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Customer'
+          description: The customers.
+        Documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityDocument'
+          description: The identity documents of customers.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Get all identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#get-all-identity-documents) to fetch identity documents.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest customer item returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older customers. If [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) is specified in the request message, then Cursor will always be included in the response message; this is true even when using Extents set to false so that no actual data is returned.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CustomerResult
+    CustomerClassificationEnum:
+      title: Customer classification
+      enum:
+      - PaymasterAccount
+      - Blacklist
+      - Media
+      - LoyaltyProgram
+      - PreviousComplaint
+      - Returning
+      - Staff
+      - FriendOrFamily
+      - TopManagement
+      - Important
+      - VeryImportant
+      - Problematic
+      - Cashlist
+      - DisabledPerson
+      - Military
+      - Airline
+      - HealthCompliant
+      - InRoom
+      - WaitingForRoom
+      - Student
+      - Blocklist
+      type: string
+      description: '
+
+
+        PaymasterAccount
+
+
+        Blacklist (Deprecated, use Blocklist instead.)
+
+
+        Media
+
+
+        LoyaltyProgram
+
+
+        PreviousComplaint
+
+
+        Returning
+
+
+        Staff
+
+
+        FriendOrFamily
+
+
+        TopManagement
+
+
+        Important
+
+
+        VeryImportant
+
+
+        Problematic
+
+
+        Cashlist
+
+
+        DisabledPerson
+
+
+        Military
+
+
+        Airline
+
+
+        HealthCompliant
+
+
+        InRoom
+
+
+        WaitingForRoom
+
+
+        Student
+
+
+        Blocklist'
+      x-enumNames:
+      - PaymasterAccount
+      - Blacklist
+      - Media
+      - LoyaltyProgram
+      - PreviousComplaint
+      - Returning
+      - Staff
+      - FriendOrFamily
+      - TopManagement
+      - Important
+      - VeryImportant
+      - Problematic
+      - Cashlist
+      - DisabledPerson
+      - Military
+      - Airline
+      - HealthCompliant
+      - InRoom
+      - WaitingForRoom
+      - Student
+      - Blocklist
+      x-enumDescriptions:
+      - ''
+      - Deprecated, use Blocklist instead.
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    PaymentType:
+      title: Payment item data discriminator
+      enum:
+      - CreditCard
+      - Invoice
+      - Cash
+      - Unspecified
+      - BadDebts
+      - WireTransfer
+      - ExchangeRateDifference
+      - ExchangeRoundingDifference
+      - BankCharges
+      - Cheque
+      - Other
+      type: string
+      x-enumDescriptions:
+      - '[Credit card payment item data](https://mews-systems.gitbook.io/connector-api/operations/accountingitems#credit-card-payment-item-data)'
+      - '[Invoice payment item data](https://mews-systems.gitbook.io/connector-api/operations/accountingitems#invoice-payment-item-data)'
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+    ReservationOldOrigin:
+      title: Reservation origin (ver 2017-04-12)
+      enum:
+      - Distributor
+      - ChannelManager
+      - Import
+      - Connector
+      - Navigator
+      - CommanderInPerson
+      - CommanderChannel
+      - CommanderPhone
+      - CommanderEmail
+      - CommanderWebsite
+      - CommanderMessage
+      - CommanderCallCenter
+      - CommanderRoomingList
+      type: string
+      x-enumDescriptions:
+      - From the Mews Booking Engine or Booking Engine API.
+      - From a channel manager.
+      - From an import process.
+      - From the Mews Connector API.
+      - From Mews Guest Services.
+      - From Mews Operations, in person.
+      - From Mews Operations, via channel.
+      - From Mews Operations, via telephone.
+      - From Mews Operations, via email.
+      - From Mews Operations, via website.
+      - From Mews Operations, via message person.
+      - From Mews Operations, via call center.
+      - From Mews Operations, via rooming list.
+    CancellationReason:
+      enum:
+      - Other
+      - ConfirmationMissed
+      - BookedElsewhere
+      - ForceMajeure
+      - GuestComplaint
+      - NoShow
+      - PriceTooHigh
+      - ServiceNotAvailable
+      - InputError
+      - InvalidPayment
+      - TravelAgency
+      - RequestedByGuest
+      - Update
+      - BookingAbandoned
+      - RequestedByBooker
+      type: string
+    OrderItemOld:
+      title: Order item
+      required:
+      - AccountId
+      - AccountingState
+      - Amount
+      - CreatedUtc
+      - CreatorProfileId
+      - Data
+      - Id
+      - OrderId
+      - OriginalAmount
+      - RevenueType
+      - UnitAmount
+      - UpdatedUtc
+      - UpdaterProfileId
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the item.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of the account (for example `Customer`) the item belongs to.
+          format: uuid
+        OrderId:
+          type: string
+          description: Unique identifier of the order (or `Reservation` which is a special type of order) the item belongs to.
+          format: uuid
+        BillId:
+          type: string
+          description: Unique identifier of the `Bill` the item is assigned to.
+          format: uuid
+          nullable: true
+        AccountingCategoryId:
+          type: string
+          description: Unique identifier of the `AccountingCategory` the item belongs to.
+          format: uuid
+          nullable: true
+        UnitCount:
+          type: integer
+          description: Unit count of item, i.e. the number of sub-items or units, if applicable.
+          format: int32
+        UnitAmount:
+          title: Amount
+          allOf:
+          - $ref: '#/components/schemas/Amount'
+          description: Unit amount of item, i.e. the amount of each individual sub-item or unit, if applicable.
+        Amount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Amount of item; note a negative amount represents a rebate or payment.
+        OriginalAmount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Amount of item; note a negative amount represents a rebate or payment. Contains the earliest known value in conversion chain.
+        RevenueType:
+          minLength: 1
+          type: string
+          description: Revenue type of the item.
+        CreatorProfileId:
+          type: string
+          description: Unique identifier of the user who created the item.
+          format: uuid
+        UpdaterProfileId:
+          type: string
+          description: Unique identifier of the user who updated the item.
+          format: uuid
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the item in UTC timezone in ISO 8601 format.
+          format: date
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the item in UTC timezone in ISO 8601 format.
+          format: date
+        ConsumedUtc:
+          type: string
+          description: Date and time of the item consumption in UTC timezone in ISO 8601 format.
+          format: date
+          nullable: true
+        CanceledUtc:
+          type: string
+          description: Cancellation date and time of the item in UTC timezone in ISO 8601 format.
+          format: date
+          nullable: true
+        ClosedUtc:
+          type: string
+          description: Date and time of the item bill closure in UTC timezone in ISO 8601 format.
+          format: date
+          nullable: true
+        StartUtc:
+          type: string
+          description: Start date and time of the item in UTC timezone in ISO 8601 format.
+          format: date
+          nullable: true
+        AccountingState:
+          minLength: 1
+          type: string
+          description: Accounting state of the item.
+        Data:
+          title: Order item data
+          type: object
+          properties:
+            Discriminator:
+              $ref: '#/components/schemas/OrderItemTypeOld'
+            Value:
+              oneOf:
+              - $ref: '#/components/schemas/RebateOrderItemData'
+              - $ref: '#/components/schemas/ProductOrderItemData'
+              description: Based on order item discriminator or `null` for types without any additional data.
+              nullable: true
+          description: Additional data specific to particular order item.
+          x-coproduct: true
+          x-schema-id: OrderItemOldDataCoproductOfOrderItemTypeOld
+      additionalProperties: false
+      x-schema-id: OrderItemOld
+    CustomerFileParameters:
+      title: CustomerFileParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CustomerId
+      - Data
+      - Name
+      - Type
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        CustomerId:
+          type: string
+          description: Unique identifier of the [Customer](https://mews-systems.gitbook.io/connector-api/operations/#customer).
+          format: uuid
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the file.
+        Type:
+          minLength: 1
+          type: string
+          description: MIME type of the file (e.g. `application/pdf`).
+        Data:
+          minLength: 1
+          type: string
+          description: Base64-encoded data of the file.
+      additionalProperties: false
+      x-schema-id: CustomerFileParameters
+    CustomerExtent:
+      title: Customer extent
+      type: object
+      properties:
+        Customers:
+          type: boolean
+          description: Whether the response should contain information about customers.
+          nullable: true
+        Documents:
+          type: boolean
+          description: Whether the response should contain identity documents of customers.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Get all identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#get-all-identity-documents) instead.
+        Addresses:
+          type: boolean
+          description: Whether the response should contain addresses of customers.
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: CustomerExtent
+    CustomerUpdateParameters:
+      title: CustomerUpdateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CustomerId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using `PortfolioAccessTokens`, ignored otherwise.
+          format: uuid
+          nullable: true
+        CustomerId:
+          type: string
+          description: Unique identifier of the `Customer` to be updated.
+          format: uuid
+        Title:
+          allOf:
+          - $ref: '#/components/schemas/Title'
+          description: 'New title.
+
+
+            Mister (Mr.)
+
+
+            Miss (Ms.)
+
+
+            Misses (Mrs.)'
+          nullable: true
+        FirstName:
+          type: string
+          description: New first name.
+          nullable: true
+        LastName:
+          type: string
+          description: New last name.
+          nullable: true
+        SecondLastName:
+          type: string
+          description: New second last name.
+          nullable: true
+        NationalityCode:
+          type: string
+          description: New nationality code as ISO 3166-1 code of the `Country`.
+          nullable: true
+        PreferredLanguageCode:
+          type: string
+          description: 'Language and culture code of the customer''s preferred language, according to their profile. For example: `en-GB`, `fr-CA`.'
+          nullable: true
+        Sex:
+          allOf:
+          - $ref: '#/components/schemas/SexEnum'
+          description: 'Sex of the customer.
+
+
+            Male
+
+
+            Female'
+          nullable: true
+        BirthDate:
+          type: string
+          description: New birth date in ISO 8601 format.
+          format: date
+          nullable: true
+        BirthCountryCode:
+          type: string
+          description: Country of birth.
+          nullable: true
+        BirthCountrySubdivisionCode:
+          type: string
+          description: Province of birth.
+          nullable: true
+        BirthPlace:
+          type: string
+          description: New birth place.
+          nullable: true
+        Occupation:
+          type: string
+          description: Occupation of the customer.
+          nullable: true
+        Email:
+          type: string
+          description: New email address.
+          format: email
+          nullable: true
+        Phone:
+          type: string
+          description: New phone number.
+          format: tel
+          nullable: true
+        LoyaltyCode:
+          type: string
+          description: Loyalty code of the customer.
+          nullable: true
+        Notes:
+          type: string
+          description: Internal notes about the customer. Old value will be overwritten.
+          nullable: true
+        CarRegistrationNumber:
+          maxLength: 255
+          type: string
+          description: New registration number of the customer's car.
+          nullable: true
+        DietaryRequirements:
+          maxLength: 255
+          type: string
+          description: Customer's dietary requirements, e.g. Vegan, Halal.
+          nullable: true
+        TaxIdentificationNumber:
+          type: string
+          description: New tax identification number of the customer.
+          nullable: true
+        CompanyId:
+          type: string
+          description: Unique identifier of `Company` the customer is associated with.
+          format: uuid
+          nullable: true
+        Address:
+          title: Address parameters
+          allOf:
+          - $ref: '#/components/schemas/AddressParameters'
+          description: New address details.
+          nullable: true
+        IdentityCard:
+          title: Identity document parameters
+          allOf:
+          - $ref: '#/components/schemas/DocumentParameters'
+          description: New identity card details.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Update identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#update-identity-documents) to update document.
+        Passport:
+          title: Identity document parameters
+          allOf:
+          - $ref: '#/components/schemas/DocumentParameters'
+          description: New passport details.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Update identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#update-identity-documents) to update document.
+        Visa:
+          title: Identity document parameters
+          allOf:
+          - $ref: '#/components/schemas/DocumentParameters'
+          description: New visa details.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Update identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#update-identity-documents) to update document.
+        DriversLicense:
+          title: Identity document parameters
+          allOf:
+          - $ref: '#/components/schemas/DocumentParameters'
+          description: New drivers license details.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use [Update identity documents](https://mews-systems.gitbook.io/connector-api/operations/identitydocuments#update-identity-documents) to update document.
+        Classifications:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerClassificationEnum'
+          description: New classifications of the customer.
+          nullable: true
+        Options:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerOptionEnum'
+          description: Options of the customer.
+          nullable: true
+        ItalianDestinationCode:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: New Italian destination code of customer.
+          nullable: true
+        ItalianFiscalCode:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: New Italian fiscal code of customer.
+          nullable: true
+        ItalianLotteryCode:
+          title: String update value
+          maxLength: 15
+          minLength: 2
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: New Italian lottery code of customer.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CustomerUpdateParameters
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    CustomerAddFileResult:
+      title: CustomerAddFileResult
+      required:
+      - FileId
+      type: object
+      properties:
+        FileId:
+          type: string
+          description: Unique identifier of the uploaded file.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: CustomerAddFileResult
+    SexEnum:
+      title: Sex
+      enum:
+      - Male
+      - Female
+      type: string
+      description: '
+
+
+        Male
+
+
+        Female'
+      x-enumNames:
+      - Male
+      - Female
+      x-enumDescriptions:
+      - ''
+      - ''
+    ExtendedAmount:
+      title: Extended amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+        Value:
+          type: number
+          format: double
+          nullable: true
+        Net:
+          type: number
+          format: double
+          nullable: true
+        Tax:
+          type: number
+          format: double
+          nullable: true
+        TaxRate:
+          type: number
+          format: double
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: ExtendedAmount
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    CustomerRelationship:
+      title: CustomerRelationship
+      required:
+      - CustomerId
+      - RelatedCustomerId
+      - Relationship
+      type: object
+      properties:
+        CustomerId:
+          type: string
+          description: Unique identifier of the customer in the relationship.
+          format: uuid
+        RelatedCustomerId:
+          type: string
+          description: Unique identifier of the related customer.
+          format: uuid
+        Relationship:
+          title: Customer relationship type
+          allOf:
+          - $ref: '#/components/schemas/CustomerRelationshipTypeEnum'
+          description: 'Type of relationship between the two customers (e.g. Child = the related customer is the child of this customer).
+
+
+            Spouse
+
+
+            Child
+
+
+            Parent
+
+
+            OtherFamily (Any familial relationship that doesn''t fit for the options provided)
+
+
+            Friend
+
+
+            Colleague
+
+
+            Other'
+          x-enumNames:
+          - Spouse
+          - Child
+          - Parent
+          - OtherFamily
+          - Friend
+          - Colleague
+          - Other
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - Any familial relationship that doesn't fit for the options provided
+          - ''
+          - ''
+          - ''
+          x-extensible: true
+      additionalProperties: false
+      x-schema-id: CustomerRelationship
+    CustomerRelationshipTypeEnum:
+      title: Customer relationship type
+      enum:
+      - Spouse
+      - Child
+      - Parent
+      - OtherFamily
+      - Friend
+      - Colleague
+      - Other
+      type: string
+      description: '
+
+
+        Spouse
+
+
+        Child
+
+
+        Parent
+
+
+        OtherFamily (Any familial relationship that doesn''t fit for the options provided)
+
+
+        Friend
+
+
+        Colleague
+
+
+        Other'
+      x-enumNames:
+      - Spouse
+      - Child
+      - Parent
+      - OtherFamily
+      - Friend
+      - Colleague
+      - Other
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - Any familial relationship that doesn't fit for the options provided
+      - ''
+      - ''
+      - ''
+      x-extensible: true
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
+    ChargeableCustomer:
+      title: Customer search result
+      required:
+      - Customer
+      type: object
+      properties:
+        Customer:
+          allOf:
+          - $ref: '#/components/schemas/Customer'
+          description: The found customer.
+        Reservation:
+          title: Reservation (ver 2017-04-12)
+          allOf:
+          - $ref: '#/components/schemas/ReservationOld'
+          description: Reservation of the customer in case they are currently staying in the property.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ChargeableCustomer
+    IdentityDocument:
+      title: Identity document
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the document.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Identifier of the `Customer`.
+          format: uuid
+        Type:
+          title: Document type
+          allOf:
+          - $ref: '#/components/schemas/IdentityDocumentTypeEnum'
+          description: 'Type of the document.
+
+
+            IdentityCard
+
+
+            Passport
+
+
+            Visa
+
+
+            DriversLicense'
+          x-enumNames:
+          - IdentityCard
+          - Passport
+          - Visa
+          - DriversLicense
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+        Number:
+          type: string
+          description: Number of the document (e.g. passport number).
+          nullable: true
+        Expiration:
+          type: string
+          description: Expiration date in ISO 8601 format.
+          format: date
+          nullable: true
+        Issuance:
+          type: string
+          description: Date of issuance in ISO 8601 format.
+          format: date
+          nullable: true
+        IssuingCountryCode:
+          type: string
+          description: ISO 3166-1 code of the `Country`.
+          nullable: true
+        IssuingCountrySubdivisionCode:
+          type: string
+          description: Identifier of the country subdivision where the document was issued (province, state or region).
+          nullable: true
+        IssuingCity:
+          type: string
+          description: City where the document was issued.
+          nullable: true
+        IdentityDocumentSupportNumber:
+          type: string
+          description: Identity document support number. Only required for Spanish identity cards in Spanish hotels.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: IdentityDocument
+    ReservationOld:
+      title: Reservation (ver 2017-04-12)
+      required:
+      - AssignedResourceLocked
+      - CompanionIds
+      - CreatedUtc
+      - CustomerId
+      - EndUtc
+      - GroupId
+      - Id
+      - Number
+      - Options
+      - Origin
+      - OwnerId
+      - PersonCounts
+      - RateId
+      - RequestedCategoryId
+      - ServiceId
+      - StartUtc
+      - State
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the reservation.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the Service that is reserved.
+          format: uuid
+        GroupId:
+          type: string
+          description: Unique identifier of the Reservation group.
+          format: uuid
+        Number:
+          minLength: 1
+          type: string
+          description: Confirmation number of the reservation in Mews.
+        ChannelNumber:
+          type: string
+          description: Number of the reservation within the Channel (i.e. OTA, GDS, CRS, etc) in case the reservation group originates there (e.g. Booking.com confirmation number).
+          nullable: true
+        ChannelManagerNumber:
+          type: string
+          description: Unique number of the reservation within the reservation group.
+          nullable: true
+        ChannelManagerGroupNumber:
+          type: string
+          description: Number of the reservation group within a Channel manager that transferred the reservation from Channel to Mews.
+          nullable: true
+        ChannelManager:
+          type: string
+          description: Name of the Channel manager (e.g. AvailPro, SiteMinder, TravelClick, etc).
+          nullable: true
+        State:
+          $ref: '#/components/schemas/ServiceOrderStateOld'
+        Origin:
+          $ref: '#/components/schemas/ReservationOldOrigin'
+        OriginDetails:
+          type: string
+          description: Details about the reservation origin.
+          nullable: true
+        Purpose:
+          anyOf:
+          - $ref: '#/components/schemas/ReservationPurpose'
+          description: Purpose of the reservation.
+          nullable: true
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the reservation in UTC timezone in ISO 8601 format.
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the reservation in UTC timezone in ISO 8601 format.
+        CancelledUtc:
+          type: string
+          description: Cancellation date and time in UTC timezone in ISO 8601 format.
+          nullable: true
+        StartUtc:
+          minLength: 1
+          type: string
+          description: Start of the reservation in UTC timezone in ISO 8601 format. This is either the scheduled reservation start time, or the actual customer check-in time if this is earlier than the scheduled start time.
+        EndUtc:
+          minLength: 1
+          type: string
+          description: End of the reservation (departure) in UTC timezone in ISO 8601 format.
+        ReleasedUtc:
+          type: string
+          description: Date when the optional reservation is released in UTC timezone in ISO 8601 format.
+          nullable: true
+        RequestedCategoryId:
+          type: string
+          description: Identifier of the requested Resource category.
+          format: uuid
+        AssignedSpaceId:
+          type: string
+          description: Identifier of the assigned Space.
+          format: uuid
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `AssignedResourceId` instead.
+        AssignedSpaceLocked:
+          type: boolean
+          description: Whether the reservation is locked to the assigned Space and cannot be moved.
+          deprecated: true
+          x-deprecatedMessage: Use `AssignedResourceLocked` instead.
+        AssignedResourceId:
+          type: string
+          description: Identifier of the assigned Resource.
+          format: uuid
+          nullable: true
+        AssignedResourceLocked:
+          type: boolean
+          description: Whether the reservation is locked to the assigned Resource and cannot be moved.
+        BusinessSegmentId:
+          type: string
+          description: Identifier of the reservation Business segment.
+          format: uuid
+          nullable: true
+        CompanyId:
+          type: string
+          description: Identifier of the Company on behalf of which the reservation was made.
+          format: uuid
+          nullable: true
+        TravelAgencyId:
+          type: string
+          description: Identifier of the Company that mediated the reservation.
+          format: uuid
+          nullable: true
+        AvailabilityBlockId:
+          type: string
+          description: Unique identifier of the Availability block the reservation is assigned to.
+          format: uuid
+          nullable: true
+        RateId:
+          type: string
+          description: Identifier of the reservation Rate.
+          format: uuid
+        VoucherId:
+          type: string
+          description: Unique identifier of the Voucher that has been used to create reservation.
+          format: uuid
+          nullable: true
+        CreditCardId:
+          type: string
+          description: Unique identifier of the Credit card.
+          format: uuid
+          nullable: true
+        CancellationReason:
+          anyOf:
+          - $ref: '#/components/schemas/CancellationReason'
+          description: Cancellation reason of the reservation.
+          nullable: true
+        AdultCount:
+          type: integer
+          description: Count of adults the reservation was booked for.
+          format: int32
+          deprecated: true
+          x-deprecatedMessage: Use `PersonCounts` instead.
+        ChildCount:
+          type: integer
+          description: Count of children the reservation was booked for.
+          format: int32
+          deprecated: true
+          x-deprecatedMessage: Use `PersonCounts` instead.
+        PersonCounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReservationPersonCount'
+          description: Number of people per age category the reservation was booked for.
+        OwnerId:
+          type: string
+          description: Unique identifier of the Customer or Company who owns the reservation.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Unique identifier of the Customer who owns the reservation.
+          format: uuid
+          deprecated: true
+          x-deprecatedMessage: Use `OwnerId` instead.
+        BookerId:
+          type: string
+          description: Unique identifier of the Customer on whose behalf the reservation was made.
+          format: uuid
+          nullable: true
+        CompanionIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Customer`s that will use the resource.
+          deprecated: true
+          x-deprecatedMessage: Use `companionships/getAll` instead.
+        ChannelManagerId:
+          type: string
+          description: Channel Manager number.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `ChannelManagerNumber` instead.
+        Options:
+          title: Reservation options
+          allOf:
+          - $ref: '#/components/schemas/ReservationOptions'
+          description: Options of the reservation.
+      additionalProperties: false
+      description: ''
+      x-schema-id: ReservationOld
+    Title:
+      title: Title
+      enum:
+      - Mister
+      - Miss
+      - Misses
+      type: string
+      description: "Type of the title prefix of the customer.\r\n\r\nNote that the value should not be used as-is, but localized. For example, the value `Misses` should be displayed as `Mrs.` in English and `Fr.` in German.\n\nMister (Mr.)\n\nMiss (Ms.)\n\nMisses (Mrs.)"
+      x-enumNames:
+      - Mister
+      - Miss
+      - Misses
+      x-enumDescriptions:
+      - Mr.
+      - Ms.
+      - Mrs.
+      x-schema-id: Title
+      x-showDescription: true
+    CustomerFilterParameters:
+      title: CustomerFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Extent
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the chains. Required when using Portfolio Access Tokens, ignored otherwise.
+          nullable: true
+        CreatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which Customer was created.
+          nullable: true
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which Customer was updated.
+          nullable: true
+          x-max-interval-in-months: 3
+        Extent:
+          title: Customer extent
+          allOf:
+          - $ref: '#/components/schemas/CustomerExtent'
+          description: Extent of data to be returned.
+        DeletedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which Customer was deleted. `ActivityStates` value `Deleted` should be provided with this filter to get expected results.
+          nullable: true
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+          nullable: true
+        CustomerIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of Customers. Required if no other filter is provided.
+          nullable: true
+        CompanyIds:
+          maxItems: 1
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifier of the Company the customer is associated with.
+          nullable: true
+        Emails:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: Emails of the [Customers](https://mews-systems.gitbook.io/connector-api/operations/#customer).
+          nullable: true
+        FirstNames:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: First names of the [Customers](https://mews-systems.gitbook.io/connector-api/operations/#customer).
+          nullable: true
+        LastNames:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: Last names of the [Customers](https://mews-systems.gitbook.io/connector-api/operations/#customer).
+          nullable: true
+        LoyaltyCodes:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: Loyalty codes of the [Customers](https://mews-systems.gitbook.io/connector-api/operations/#customer).
+          nullable: true
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned.
+      additionalProperties: false
+      x-schema-id: CustomerFilterParameters
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount
+    ReservationPurpose:
+      title: Reservation purpose
+      enum:
+      - Leisure
+      - Business
+      - Student
+      type: string
+    IdentityDocumentTypeEnum:
+      title: Document type
+      enum:
+      - IdentityCard
+      - Passport
+      - Visa
+      - DriversLicense
+      type: string
+      description: '
+
+
+        IdentityCard
+
+
+        Passport
+
+
+        Visa
+
+
+        DriversLicense'
+      x-enumNames:
+      - IdentityCard
+      - Passport
+      - Visa
+      - DriversLicense
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+    CustomerOptionEnum:
+      title: Customer option
+      enum:
+      - SendMarketingEmails
+      - Invoiceable
+      - BillAddressObjection
+      - SendMarketingPostalMail
+      - SendPartnerMarketingEmails
+      - SendPartnerMarketingPostalMail
+      - WithdrawCardConsent
+      - GuestPhotoConsent
+      - IdPhotosConsent
+      type: string
+      description: '
+
+
+        SendMarketingEmails
+
+
+        Invoiceable
+
+
+        BillAddressObjection
+
+
+        SendMarketingPostalMail
+
+
+        SendPartnerMarketingEmails
+
+
+        SendPartnerMarketingPostalMail
+
+
+        WithdrawCardConsent
+
+
+        GuestPhotoConsent (Whether to ask for consent to take a guest photo.)
+
+
+        IdPhotosConsent (Whether to ask for consent to take identity document photos.)'
+      x-enumNames:
+      - SendMarketingEmails
+      - Invoiceable
+      - BillAddressObjection
+      - SendMarketingPostalMail
+      - SendPartnerMarketingEmails
+      - SendPartnerMarketingPostalMail
+      - WithdrawCardConsent
+      - GuestPhotoConsent
+      - IdPhotosConsent
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - Whether to ask for consent to take a guest photo.
+      - Whether to ask for consent to take identity document photos.
+    TaxBreakdownItem:
+      title: Tax breakdown item
+      required:
+      - NetValue
+      - TaxValue
+      type: object
+      properties:
+        TaxRateCode:
+          type: string
+          description: Tax rate code for the item. `null` for untaxed amounts.
+          nullable: true
+        NetValue:
+          type: number
+          description: The net value that the tax is calculated from.
+          format: double
+        TaxValue:
+          type: number
+          description: The value of the tax.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxBreakdownItem
+    CustomerOptionsEnum:
+      title: Customer option
+      enum:
+      - None
+      - SendMarketingEmails
+      - Invoiceable
+      - BillAddressObjection
+      - SendMarketingPostalMail
+      - SendPartnerMarketingEmails
+      - SendPartnerMarketingPostalMail
+      - WithdrawCardConsent
+      - GuestPhotoConsent
+      - IdPhotosConsent
+      type: string
+      description: '
+
+
+        None
+
+
+        SendMarketingEmails
+
+
+        Invoiceable
+
+
+        BillAddressObjection
+
+
+        SendMarketingPostalMail
+
+
+        SendPartnerMarketingEmails
+
+
+        SendPartnerMarketingPostalMail
+
+
+        WithdrawCardConsent
+
+
+        GuestPhotoConsent
+
+
+        IdPhotosConsent'
+      x-enumNames:
+      - None
+      - SendMarketingEmails
+      - Invoiceable
+      - BillAddressObjection
+      - SendMarketingPostalMail
+      - SendPartnerMarketingEmails
+      - SendPartnerMarketingPostalMail
+      - WithdrawCardConsent
+      - GuestPhotoConsent
+      - IdPhotosConsent
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    ResourceFeatureClassification:
+      title: Resource feature classification
+      enum:
+      - SeaView
+      - RiverView
+      - OceanView
+      - TwinBeds
+      - DoubleBed
+      - RollawayBed
+      - UpperBed
+      - LowerBed
+      - Balcony
+      - AccessibleBathroom
+      - AccessibleRoom
+      - ElevatorAccess
+      - HighFloor
+      - Kitchenette
+      - AirConditioning
+      - PrivateJacuzzi
+      - PrivateSauna
+      - EnsuiteRoom
+      - PrivateBathroom
+      - SharedBathroom
+      type: string
+      description: Classification of `ResourceFeature`.
+    CustomerMergeParameters:
+      title: CustomerMergeParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - SourceCustomerId
+      - TargetCustomerId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        SourceCustomerId:
+          type: string
+          description: Unique identifier of the source [Customer](https://mews-systems.gitbook.io/connector-api/operations/#customer).
+          format: uuid
+        TargetCustomerId:
+          type: string
+          description: Unique identifier of the target [Customer](https://mews-systems.gitbook.io/connector-api/operations/#customer).
+          format: uuid
+      additionalProperties: false
+      x-schema-id: CustomerMergeParameters

@@ -1,0 +1,883 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Resource access tokens API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Resource access tokens
+paths:
+  /api/connector/v1/resourceAccessTokens/getAll:
+    post:
+      tags:
+      - Resource access tokens
+      summary: Get all resource access tokens
+      description: "Returns all resource access tokens based on resource access token identifiers, reservations or interval. One of them must be specified in the request. \nNote this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property)."
+      operationId: resourceAccessTokens_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceAccessTokenFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              ResourceAccessTokenIds:
+              - 90eff5aa-36b4-4689-80c0-ab3a00bb412e
+              ServiceOrderIds:
+              - 65eff5aa-36b4-4689-80c0-ab3a00bb412e
+              CollidingUtc:
+                StartUtc: '2020-02-15T00:00:00Z'
+                EndUtc: '2020-02-20T00:00:00Z'
+              UpdatedUtc:
+                StartUtc: '2020-01-05T00:00:00Z'
+                EndUtc: '2020-01-10T00:00:00Z'
+              ActivityStates:
+              - Active
+              Limitation:
+                Cursor: e7f26210-10e7-462e-9da8-ae8300be8ab7
+                Count: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceAccessTokenResult'
+              example:
+                ResourceAccessTokens:
+                - Id: 72d4b117-1f84-44a3-1f84-8b2c0635ac60
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  ServiceOrderId: 35d4b117-4e60-44a3-9580-c582117eff98
+                  CompanionshipId: 25d4b117-4e60-44a3-9580-c582117eff98
+                  ResourceId: 65d4b117-4e60-44a3-9580-c582117eff98
+                  Type: PinCode
+                  Value: 1234#
+                  SerialNumber: null
+                  ValidityStartUtc: '2020-10-09T22:00:00Z'
+                  ValidityEndUtc: '2020-10-10T22:00:00Z'
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  IsActive: true
+                  Permissions:
+                    Bed: true
+                    Room: false
+                    Floor: false
+                    Building: false
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/resourceAccessTokens/add:
+    post:
+      tags:
+      - Resource access tokens
+      summary: Add resource access tokens
+      description: Adds new resource access tokens with the specified data.
+      operationId: resourceAccessTokens_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleResourceAccessTokenParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ResourceAccessTokenParameters:
+              - ServiceOrderId: 35d4b117-4e60-44a3-9580-c582117eff98
+                CompanionshipId: 25d4b117-4e60-44a3-9580-c582117eff98
+                ResourceId: 65d4b117-4e60-44a3-9580-c582117eff98
+                Type: PinCode
+                Value: 1234#
+                SerialNumber: null
+                ValidityStartUtc: '2020-10-09T22:00:00Z'
+                ValidityEndUtc: '2020-10-10T22:00:00Z'
+                Permissions:
+                  Bed:
+                    Value: true
+                  Room:
+                    Value: false
+                  Floor:
+                    Value: false
+                  Building:
+                    Value: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceAccessTokenAdditionResult'
+              example:
+                ResourceAccessTokens:
+                - Id: 72d4b117-1f84-44a3-1f84-8b2c0635ac60
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  ServiceOrderId: 35d4b117-4e60-44a3-9580-c582117eff98
+                  CompanionshipId: 25d4b117-4e60-44a3-9580-c582117eff98
+                  ResourceId: 65d4b117-4e60-44a3-9580-c582117eff98
+                  Type: PinCode
+                  Value: 1234#
+                  SerialNumber: null
+                  ValidityStartUtc: '2020-10-09T22:00:00Z'
+                  ValidityEndUtc: '2020-10-10T22:00:00Z'
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  IsActive: true
+                  Permissions:
+                    Bed: true
+                    Room: false
+                    Floor: false
+                    Building: false
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/resourceAccessTokens/update:
+    post:
+      tags:
+      - Resource access tokens
+      summary: Update resource access tokens
+      description: Updates the [Resource access token](https://mews-systems.gitbook.io/connector-api/operations/#resource-access-token) validity interval and [permissions](https://mews-systems.gitbook.io/connector-api/operations/#resource-access-token-permission-parameter) that it grants.
+      operationId: resourceAccessTokens_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleResourceAccessTokenUpdateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ResourceAccessTokenUpdates:
+              - ResourceAccessTokenId: 35d4b117-4e60-44a3-9580-c582117eff98
+                ValidityStartUtc:
+                  Value: '2020-10-09T22:00:00Z'
+                ValidityEndUtc:
+                  Value: '2020-10-10T22:00:00Z'
+                Permissions:
+                  Bed:
+                    Value: true
+                  Room:
+                    Value: false
+                  Floor:
+                    Value: false
+                  Building:
+                    Value: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceAccessTokenUpdateResult'
+              example:
+                ResourceAccessTokens:
+                - Id: 72d4b117-1f84-44a3-1f84-8b2c0635ac60
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  ServiceOrderId: 35d4b117-4e60-44a3-9580-c582117eff98
+                  CompanionshipId: 25d4b117-4e60-44a3-9580-c582117eff98
+                  ResourceId: 65d4b117-4e60-44a3-9580-c582117eff98
+                  Type: PinCode
+                  Value: 1234#
+                  SerialNumber: null
+                  ValidityStartUtc: '2020-10-09T22:00:00Z'
+                  ValidityEndUtc: '2020-10-10T22:00:00Z'
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  IsActive: true
+                  Permissions:
+                    Bed: true
+                    Room: false
+                    Floor: false
+                    Building: false
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/resourceAccessTokens/delete:
+    post:
+      tags:
+      - Resource access tokens
+      summary: Delete resource access tokens
+      description: Delete specified resource access tokens.
+      operationId: resourceAccessTokens_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceAccessTokenDeleteParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              Ids:
+              - 35d4b117-4e60-44a3-9580-c582117eff98
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    ResourceAccessTokenPermissions:
+      title: Resource access token permissions
+      type: object
+      properties:
+        Bed:
+          type: boolean
+          description: Specify whether the resource access token grants permission to access bed.
+        Room:
+          type: boolean
+          description: Specify whether the resource access token grants permission to access room.
+        Floor:
+          type: boolean
+          description: Specify whether the resource access token grants permission to access floor.
+        Building:
+          type: boolean
+          description: Specify whether the resource access token grants permission to access building.
+      additionalProperties: false
+      description: ''
+      x-schema-id: ResourceAccessTokenPermissions
+    ResourceAccessTokenUpdateResult:
+      title: ResourceAccessTokenUpdateResult
+      required:
+      - ResourceAccessTokens
+      type: object
+      properties:
+        ResourceAccessTokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceAccessToken'
+          description: Updated resource access tokens.
+      additionalProperties: false
+      x-schema-id: ResourceAccessTokenUpdateResult
+    ResourceAccessTokenDeleteParameters:
+      title: ResourceAccessTokenDeleteParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Ids
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the resource access token to delete.
+      additionalProperties: false
+      x-schema-id: ResourceAccessTokenDeleteParameters
+    ResourceAccessTokenFilterParameters:
+      title: ResourceAccessTokenFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        ResourceAccessTokenIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of resource access token. Required if no other filter is provided.
+          nullable: true
+        ServiceOrderIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of reservations. Required if no other filter is provided.
+          nullable: true
+        CollidingUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource access token is valid. Required if no other filter is provided.
+          nullable: true
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which resource access token was updated. Required if no other filter is provided.
+          nullable: true
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type: array
+          items:
+            type: string
+          description: Whether to return only active, only deleted or both records.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceAccessTokenFilterParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ResourceAccessTokenPermissionsParameters:
+      title: Resource access token permission parameter
+      type: object
+      properties:
+        Bed:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Specify whether the resource access token grants permission to access bed (or null if not being updated).
+          nullable: true
+        Room:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Specify whether the resource access token grants permission to access room (or null if not being updated).
+          nullable: true
+        Floor:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Specify whether the resource access token grants permission to access floor (or null if not being updated).
+          nullable: true
+        Building:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Specify whether the resource access token grants permission to access building (or null if not being updated).
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceAccessTokenPermissionsParameters
+    Unit:
+      type: object
+      additionalProperties: false
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    BooleanUpdateValue:
+      title: Boolean update value
+      type: object
+      properties:
+        Value:
+          type: boolean
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: BooleanUpdateValue
+    MultipleResourceAccessTokenUpdateParameters:
+      title: MultipleResourceAccessTokenUpdateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        ResourceAccessTokenUpdates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceAccessTokenUpdateParameters'
+          description: Parameters of resource access token to update.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: MultipleResourceAccessTokenUpdateParameters
+    ResourceAccessTokenType:
+      title: Resource access token type
+      enum:
+      - PinCode
+      - RfidTag
+      type: string
+      description: Type of stored value.
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ResourceAccessTokenUpdateParameters:
+      title: Resource access token update
+      required:
+      - ResourceAccessTokenId
+      type: object
+      properties:
+        ResourceAccessTokenId:
+          type: string
+          description: Unique identifier of the resource access token to update.
+          format: uuid
+        ValidityStartUtc:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Marks the start of interval in which the resource access token can be used (or null if not being updated).
+          nullable: true
+        ValidityEndUtc:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Marks the end of interval in which the resource access token can be used (or null if not being updated).
+          nullable: true
+        Value:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Value of the resource access token (or null if not being updated).
+          nullable: true
+        Permissions:
+          title: Resource access token permission parameter
+          allOf:
+          - $ref: '#/components/schemas/ResourceAccessTokenPermissionsParameters'
+          description: Specify permissions of the resource access token (or null if not being updated).
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceAccessTokenUpdateParameters
+    ResourceAccessTokenResult:
+      title: ResourceAccessTokenResult
+      required:
+      - ResourceAccessTokens
+      type: object
+      properties:
+        ResourceAccessTokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceAccessToken'
+          description: Resource access tokens.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest item returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older tokens. If `Limitation` is specified in the request message, then `Cursor` will always be included in the response message.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceAccessTokenResult
+    MultipleResourceAccessTokenParameters:
+      title: MultipleResourceAccessTokenParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - ResourceAccessTokenParameters
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ResourceAccessTokenParameters:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceAccessTokenParameters'
+          description: Parameters of resource access token.
+      additionalProperties: false
+      x-schema-id: MultipleResourceAccessTokenParameters
+    ResourceAccessTokenAdditionResult:
+      title: ResourceAccessTokenAdditionResult
+      required:
+      - ResourceAccessTokens
+      type: object
+      properties:
+        ResourceAccessTokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceAccessToken'
+          description: Added resource access tokens.
+      additionalProperties: false
+      x-schema-id: ResourceAccessTokenAdditionResult
+    ResourceAccessToken:
+      title: Resource access token
+      required:
+      - CreatedUtc
+      - EnterpriseId
+      - Id
+      - IsActive
+      - Permissions
+      - ServiceOrderId
+      - Type
+      - UpdatedUtc
+      - ValidityEndUtc
+      - ValidityStartUtc
+      - Value
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the resource access token.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the `Enterprise`.
+          format: uuid
+        ServiceOrderId:
+          type: string
+          description: Unique identifier of `Reservation`.
+          format: uuid
+        CompanionshipId:
+          type: string
+          description: Unique identifier of `Companionship`.
+          format: uuid
+          nullable: true
+        ResourceId:
+          type: string
+          description: Unique identifier of `Resource`.
+          format: uuid
+          nullable: true
+        Type:
+          $ref: '#/components/schemas/ResourceAccessTokenType'
+        Value:
+          minLength: 1
+          type: string
+          description: Value of the resource access token.
+        SerialNumber:
+          type: string
+          description: Serial number of the resource access token.
+          nullable: true
+        ValidityStartUtc:
+          minLength: 1
+          type: string
+          description: Marks the start of interval in which the resource access token can be used.
+          format: date-time
+        ValidityEndUtc:
+          minLength: 1
+          type: string
+          description: Marks the end of interval in which the resource access token can be used.
+          format: date-time
+        Permissions:
+          title: Resource access token permissions
+          allOf:
+          - $ref: '#/components/schemas/ResourceAccessTokenPermissions'
+          description: Permissions of the resource access token.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the resource access token in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the resource access token in UTC timezone in ISO 8601 format.
+          format: date-time
+        IsActive:
+          type: boolean
+          description: Whether the resource access token is still active.
+      additionalProperties: false
+      x-schema-id: ResourceAccessToken
+    ResourceAccessTokenParameters:
+      title: Resource access token parameter
+      required:
+      - Permissions
+      - ServiceOrderId
+      - Type
+      - ValidityEndUtc
+      - ValidityStartUtc
+      - Value
+      type: object
+      properties:
+        ServiceOrderId:
+          type: string
+          description: Unique identifier of a reservation.
+          format: uuid
+        CompanionshipId:
+          type: string
+          description: Unique identifier of `Companionship`.
+          format: uuid
+          nullable: true
+        ResourceId:
+          type: string
+          description: Unique identifier of `Resource`.
+          format: uuid
+          nullable: true
+        Value:
+          maxLength: 255
+          minLength: 1
+          type: string
+          description: Value of the resource access token.
+        Type:
+          $ref: '#/components/schemas/ResourceAccessTokenType'
+        SerialNumber:
+          type: string
+          description: Serial number of the resource access token.
+          nullable: true
+        ValidityStartUtc:
+          minLength: 1
+          type: string
+          description: Marks the start of interval in which the resource access token can be used.
+        ValidityEndUtc:
+          minLength: 1
+          type: string
+          description: Marks the end of interval in which the resource access token can be used.
+        Permissions:
+          title: Resource access token permission parameter
+          allOf:
+          - $ref: '#/components/schemas/ResourceAccessTokenPermissionsParameters'
+          description: Specify permissions of the resource access token.
+      additionalProperties: false
+      x-schema-id: ResourceAccessTokenParameters

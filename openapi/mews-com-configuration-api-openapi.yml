@@ -1,0 +1,1299 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Configuration API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Configuration
+paths:
+  /api/connector/v1/configuration/get:
+    post:
+      tags:
+      - Configuration
+      summary: Get configuration
+      description: Returns the enterprise configuration. For single-enterprise Access Tokens, this is the enterprise associated with the token. For [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), use the `EnterpriseId` parameter to specify which enterprise you want the configuration for. In the case of service scoped integrations, the operation returns the configuration associated with both the enterprise and the bookable service linked to the token.
+      operationId: configuration_get
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigurationFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              EnterpriseId: 851df8c8-90f2-4c4a-8e01-a4fc46b25178
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuration'
+              example:
+                NowUtc: '2018-01-01T14:58:02Z'
+                Enterprise:
+                  Currencies:
+                  - Currency: GBP
+                    IsDefault: true
+                    IsEnabled: true
+                  - Currency: USD
+                    IsDefault: false
+                    IsEnabled: true
+                  AccountingConfiguration:
+                    AdditionalTaxIdentifier: null
+                    CompanyName: Connector API Hotel
+                    BankAccountNumber: '1234'
+                    BankName: Random bank
+                    Iban: CZ7250517882393618329719
+                    Bic: GIBACZPY
+                    SurchargeConfiguration:
+                      SurchargeFees:
+                        Amex: 3.0
+                        DinersClub: 4.0
+                      SurchargeServiceId: 2b9b0143-3135-485b-8064-76c90d1be69e
+                      SurchargeTaxCode: US-HI-KA
+                    EnabledExternalPaymentTypes:
+                    - Invoice
+                    - Cash
+                    - GiftCard
+                    Options:
+                    - ReceivableTrackingEnabled
+                    - GroupTaxesOnBill
+                  IsPortfolio: false
+                  Id: 851df8c8-90f2-4c4a-8e01-a4fc46b25178
+                  ExternalIdentifier: null
+                  HoldingKey: CA123
+                  ChainId: 8ddea57b-6a5c-4eec-8c4c-24467dce118e
+                  ChainName: Connector API Chain
+                  CreatedUtc: '2015-07-07T13:33:17Z'
+                  UpdatedUtc: '2015-07-07T13:33:17Z'
+                  Name: Connector API Hotel
+                  ShortName: null
+                  TimeZoneIdentifier: Europe/Budapest
+                  LegalEnvironmentCode: UK
+                  AccommodationEnvironmentCode: null
+                  AccountingEnvironmentCode: null
+                  TaxEnvironmentCode: null
+                  DefaultLanguageCode: en-US
+                  EditableHistoryInterval: P0M7DT0H0M0S
+                  AccountingEditableHistoryInterval: P0M7DT0H0M0S
+                  OperationalEditableHistoryInterval: P0M5DT0H0M0S
+                  BusinessDayClosingOffset: null
+                  WebsiteUrl: https://en.wikipedia.org/wiki/St._Vitus_Cathedral
+                  Email: charging-api@mews.li
+                  Phone: 00000 123 456 789
+                  LogoImageId: null
+                  CoverImageId: null
+                  Pricing: Gross
+                  TaxPrecision: null
+                  AddressId: c556f56e-713e-4102-9de5-0e853b5a8586
+                  Address:
+                    Id: 8c2c4371-5d42-40a9-b551-ab0b00d75076
+                    Line1: I.P. Pavlova 5
+                    Line2: null
+                    City: Prague
+                    PostalCode: '1200'
+                    CountryCode: CZ
+                    CountrySubdivisionCode: null
+                    Latitude: 14.429645
+                    Longitude: 50.075181
+                  GroupNames:
+                  - Connector API Group
+                  Subscription:
+                    TaxIdentifier: 123456789 RC 0001
+                Service:
+                  Id: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  IsActive: true
+                  Name: Accommodation
+                  Names:
+                    en-GB: Accommodation
+                  StartTime: PT14H
+                  EndTime: PT12H
+                  Options:
+                    BillAsPackage: false
+                  Promotions:
+                    BeforeCheckIn: false
+                    AfterCheckIn: false
+                    DuringStay: false
+                    BeforeCheckOut: false
+                    AfterCheckOut: false
+                    DuringCheckOut: false
+                  Type: Reservable
+                  Ordering: 0
+                  Data: null
+                  ExternalIdentifier: null
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                PaymentCardStorage: null
+                IsIdentityDocumentNumberRequired: true
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    BookableServiceData:
+      title: Bookable service data
+      required:
+      - EndOffset
+      - OccupancyEndOffset
+      - OccupancyStartOffset
+      - StartOffset
+      - TimeUnit
+      - TimeUnitPeriod
+      type: object
+      properties:
+        StartOffset:
+          minLength: 1
+          type: string
+          description: Offset from the start of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the default start of the service; expressed in ISO 8601 duration format.
+        EndOffset:
+          minLength: 1
+          type: string
+          description: Offset from the end of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the default end of the service; expressed in ISO 8601 duration format.
+        OccupancyStartOffset:
+          minLength: 1
+          type: string
+          description: Offset from the start of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the occupancy start of the service; expressed in ISO 8601 duration format. 'Occupancy start' is used for availability and reporting purposes, it implies the time at which the booked resource is considered occupied.
+        OccupancyEndOffset:
+          minLength: 1
+          type: string
+          description: Offset from the end of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the occupancy end of the service; expressed in ISO 8601 duration format. 'Occupancy end' is used for availability and reporting purposes, it implies the time at which the booked resource is no longer considered occupied.
+        TimeUnit:
+          title: Time unit period
+          allOf:
+          - $ref: '#/components/schemas/TimeUnitPeriodEnum'
+          description: '
+
+
+            Day
+
+
+            Month
+
+
+            Hour'
+          deprecated: true
+          x-enumNames:
+          - Day
+          - Month
+          - Hour
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          x-deprecatedMessage: Use `TimeUnitPeriod` instead.
+        TimeUnitPeriod:
+          title: Time unit period
+          allOf:
+          - $ref: '#/components/schemas/TimeUnitPeriodEnum'
+          description: 'The length of time or period represented by a [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/), for which the service can be booked.
+
+
+            Day
+
+
+            Month
+
+
+            Hour'
+          x-enumNames:
+          - Day
+          - Month
+          - Hour
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+      additionalProperties: false
+      x-schema-id: BookableServiceData
+    SurchargeConfiguration:
+      title: Surcharging fees configuration
+      required:
+      - SurchargeFees
+      type: object
+      properties:
+        SurchargeFees:
+          title: CreditCardTypeDecimalIDictionary
+          type: object
+          properties:
+            MasterCard:
+              type: number
+              format: double
+            Visa:
+              type: number
+              format: double
+            Amex:
+              type: number
+              format: double
+            Discover:
+              type: number
+              format: double
+            DinersClub:
+              type: number
+              format: double
+            Jcb:
+              type: number
+              format: double
+            Maestro:
+              type: number
+              format: double
+            UnionPay:
+              type: number
+              format: double
+            VPay:
+              type: number
+              format: double
+            RuPay:
+              type: number
+              format: double
+            Dankort:
+              type: number
+              format: double
+            Mir:
+              type: number
+              format: double
+            Verve:
+              type: number
+              format: double
+            Troy:
+              type: number
+              format: double
+            PostFinance:
+              type: number
+              format: double
+            Giro:
+              type: number
+              format: double
+            Bancomat:
+              type: number
+              format: double
+            Bc:
+              type: number
+              format: double
+            CarteBleue:
+              type: number
+              format: double
+            Eftpos:
+              type: number
+              format: double
+            Eps:
+              type: number
+              format: double
+            Interac:
+              type: number
+              format: double
+            Isracard:
+              type: number
+              format: double
+            Meps:
+              type: number
+              format: double
+            Nets:
+              type: number
+              format: double
+            Bancontact:
+              type: number
+              format: double
+          additionalProperties: false
+          description: Dictionary keys are `CreditCardType` and values are surcharging fees as a percentage.
+          x-schema-id: CreditCardTypeDecimalIDictionary
+        SurchargeServiceId:
+          type: string
+          description: Unique identifier of the surcharging `Service`.
+          format: uuid
+          nullable: true
+        SurchargeTaxCode:
+          type: string
+          description: Surcharging fee `TaxCode`.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: SurchargeConfiguration
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ConfigurationFilterParameters:
+      title: ConfigurationFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/#enterprise), defaults to the enterprise associated with the given access token.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConfigurationFilterParameters
+    AccountingConfigurationOptionEnum:
+      title: Accounting configuration option
+      enum:
+      - OptionalCreditCardPaymentDetails
+      - ReceivableTrackingEnabled
+      - SeparateDepositsOnBill
+      - AllowModifyingClosedBills
+      - RequireAccountingCategorySetup
+      - GroupTaxesOnBill
+      - DisplayEmployeeNameOnBill
+      - TaxDeclarationOnDeposit
+      - SplitVatByClassificationOnBill
+      - EmailClosedBillsAfterCheckout
+      type: string
+      description: '
+
+
+        OptionalCreditCardPaymentDetails (Optional credit card payment details)
+
+
+        ReceivableTrackingEnabled (Receivable tracking enabled)
+
+
+        SeparateDepositsOnBill (Separate deposits on bill)
+
+
+        AllowModifyingClosedBills (Allow modifying closed bills)
+
+
+        RequireAccountingCategorySetup (Require accounting category setup)
+
+
+        GroupTaxesOnBill (Group taxes on bill)
+
+
+        DisplayEmployeeNameOnBill (Display employee name on bill)
+
+
+        TaxDeclarationOnDeposit (Tax declaration on deposit)
+
+
+        SplitVatByClassificationOnBill (Split VAT by classification on bill)
+
+
+        EmailClosedBillsAfterCheckout (Send system closed bills automatically after checkout)'
+      x-enumNames:
+      - OptionalCreditCardPaymentDetails
+      - ReceivableTrackingEnabled
+      - SeparateDepositsOnBill
+      - AllowModifyingClosedBills
+      - RequireAccountingCategorySetup
+      - GroupTaxesOnBill
+      - DisplayEmployeeNameOnBill
+      - TaxDeclarationOnDeposit
+      - SplitVatByClassificationOnBill
+      - EmailClosedBillsAfterCheckout
+      x-enumDescriptions:
+      - Optional credit card payment details
+      - Receivable tracking enabled
+      - Separate deposits on bill
+      - Allow modifying closed bills
+      - Require accounting category setup
+      - Group taxes on bill
+      - Display employee name on bill
+      - Tax declaration on deposit
+      - Split VAT by classification on bill
+      - Send system closed bills automatically after checkout
+      x-extensible: true
+    OldAddress:
+      title: Address
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the address.
+          format: uuid
+        Line1:
+          type: string
+          description: First line of the address.
+          nullable: true
+        Line2:
+          type: string
+          description: Second line of the address.
+          nullable: true
+        City:
+          type: string
+          description: The city.
+          nullable: true
+        PostalCode:
+          type: string
+          description: Postal code.
+          nullable: true
+        CountryCode:
+          type: string
+          description: ISO 3166-1 code of the `Country`.
+          nullable: true
+        CountrySubdivisionCode:
+          type: string
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
+          nullable: true
+        Latitude:
+          type: number
+          description: The latitude.
+          format: double
+          nullable: true
+        Longitude:
+          type: number
+          description: The longitude.
+          format: double
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: OldAddress
+    PricingModeEnum:
+      title: Pricing
+      enum:
+      - Gross
+      - Net
+      type: string
+      description: '
+
+
+        Gross (The enterprise shows amount with gross prices.)
+
+
+        Net (The enterprise shows amount with net prices.)'
+      x-enumNames:
+      - Gross
+      - Net
+      x-enumDescriptions:
+      - The enterprise shows amount with gross prices.
+      - The enterprise shows amount with net prices.
+    EnterpriseSubscription:
+      title: Enterprise subscription
+      type: object
+      properties:
+        TaxIdentifier:
+          type: string
+          description: Tax identifier of the `Enterprise`.
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: EnterpriseSubscription
+    AdditionalServiceData:
+      title: Additional service data
+      required:
+      - Promotions
+      type: object
+      properties:
+        Promotions:
+          allOf:
+          - $ref: '#/components/schemas/Promotions'
+          description: Promotions of the service.
+      additionalProperties: false
+      x-schema-id: AdditionalServiceData
+    PaymentCardStorage:
+      title: Payment card storage
+      required:
+      - PublicKey
+      type: object
+      properties:
+        PublicKey:
+          minLength: 1
+          type: string
+          description: Key for accessing PCI proxy storage.
+      additionalProperties: false
+      description: ''
+      x-schema-id: PaymentCardStorage
+    Service:
+      title: Service
+      required:
+      - CreatedUtc
+      - Data
+      - EnterpriseId
+      - Id
+      - IsActive
+      - Name
+      - Names
+      - Options
+      - Ordering
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the service.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/enterprises/#enterprise).
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the service is still active.
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the service.
+          deprecated: true
+          x-deprecatedMessage: Use `Names` instead
+        Names:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the name.
+          x-schema-id: LocalizedStrings
+        StartTime:
+          type: string
+          nullable: true
+          deprecated: true
+        EndTime:
+          type: string
+          nullable: true
+          deprecated: true
+        Options:
+          title: Service options
+          allOf:
+          - $ref: '#/components/schemas/ServiceOptions'
+          description: Options of the service.
+        Promotions:
+          allOf:
+          - $ref: '#/components/schemas/Promotions'
+          description: ''
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `Promotions` in `Data` instead.
+        Type:
+          type: string
+          nullable: true
+          deprecated: true
+        Ordering:
+          type: integer
+          description: Order value for presentation purposes.
+          format: int32
+        Data:
+          title: Service data
+          type: object
+          properties:
+            Discriminator:
+              $ref: '#/components/schemas/ServiceDataDiscriminator'
+            Value:
+              oneOf:
+              - $ref: '#/components/schemas/BookableServiceData'
+              - $ref: '#/components/schemas/AdditionalServiceData'
+          description: Additional information about the specific service.
+          x-coproduct: true
+          x-schema-id: ServiceDataCoproductOfServiceDataDiscriminator
+        ExternalIdentifier:
+          maxLength: 255
+          type: string
+          description: Identifier of the service from external system.
+          nullable: true
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the service in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the service in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      description: ''
+      x-schema-id: Service
+    TimeUnitPeriodEnum:
+      title: Time unit period
+      enum:
+      - Day
+      - Month
+      - Hour
+      type: string
+      description: '
+
+
+        Day
+
+
+        Month
+
+
+        Hour'
+      x-enumNames:
+      - Day
+      - Month
+      - Hour
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+    AccountingConfiguration:
+      title: Accounting configuration
+      required:
+      - EnabledExternalPaymentTypes
+      - Options
+      - SurchargeConfiguration
+      type: object
+      properties:
+        AdditionalTaxIdentifier:
+          maxLength: 50
+          type: string
+          description: Organization number.
+          nullable: true
+        CompanyName:
+          maxLength: 100
+          type: string
+          description: Legal name of the company.
+          nullable: true
+        BankAccountNumber:
+          maxLength: 50
+          type: string
+          description: Bank account number.
+          nullable: true
+        BankName:
+          maxLength: 100
+          type: string
+          description: Name of the bank.
+          nullable: true
+        Iban:
+          maxLength: 40
+          type: string
+          description: International Bank Account Number.
+          nullable: true
+        Bic:
+          maxLength: 11
+          type: string
+          description: Business Identification Code.
+          nullable: true
+        SurchargeConfiguration:
+          title: Surcharging fees configuration
+          allOf:
+          - $ref: '#/components/schemas/SurchargeConfiguration'
+          description: Configuration for surcharging fees.
+        EnabledExternalPaymentTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalPaymentTypeEnum'
+          description: External payment types that are enabled for the enterprise and can be used in `payments/addExternal`.
+        Options:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingConfigurationOptionEnum'
+          description: Accounting configuration options.
+      additionalProperties: false
+      x-schema-id: AccountingConfiguration
+    Enterprise:
+      title: Enterprise
+      required:
+      - AccommodationEnvironmentCode
+      - AccountingEditableHistoryInterval
+      - AccountingEnvironmentCode
+      - Address
+      - AddressId
+      - ChainId
+      - ChainName
+      - CreatedUtc
+      - Currencies
+      - DefaultLanguageCode
+      - EditableHistoryInterval
+      - GroupNames
+      - Id
+      - LegalEnvironmentCode
+      - Name
+      - OperationalEditableHistoryInterval
+      - Pricing
+      - Subscription
+      - TaxEnvironmentCode
+      - TimeZoneIdentifier
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the enterprise.
+          format: uuid
+        ExternalIdentifier:
+          maxLength: 255
+          type: string
+          description: Identifier of the enterprise from external system.
+          nullable: true
+        HoldingKey:
+          maxLength: 255
+          type: string
+          description: Identifies an enterprise in the external system of a holding company. The holding company may administer multiple portfolios.
+          nullable: true
+        ChainId:
+          type: string
+          description: Unique identifier of the chain to which the enterprise belongs.
+          format: uuid
+        ChainName:
+          minLength: 1
+          type: string
+          description: Name of the `Chain` to which the enterprise belongs.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the enterprise in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the enterprise in UTC timezone in ISO 8601 format.
+          format: date-time
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the enterprise.
+        ShortName:
+          maxLength: 11
+          type: string
+          description: Short name of the enterprise used in Manager Report exports.
+          nullable: true
+        TimeZoneIdentifier:
+          minLength: 1
+          type: string
+          description: IANA timezone identifier of the enterprise.
+        LegalEnvironmentCode:
+          minLength: 1
+          type: string
+          description: Unique identifier of the legal environment where the enterprise resides.
+        AccommodationEnvironmentCode:
+          minLength: 1
+          type: string
+          description: Unique code of the accommodation environment where the enterprise resides.
+        AccountingEnvironmentCode:
+          minLength: 1
+          type: string
+          description: Unique code of the accounting environment where the enterprise resides.
+        TaxEnvironmentCode:
+          minLength: 1
+          type: string
+          description: Unique code of the tax environment where the enterprise resides.
+        DefaultLanguageCode:
+          minLength: 1
+          type: string
+          description: Language-culture codes of the enterprise default `Language`.
+        EditableHistoryInterval:
+          minLength: 1
+          type: string
+          deprecated: true
+          x-deprecatedMessage: Use `AccountingEditableHistoryInterval` and `OperationalEditableHistoryInterval` instead.
+        AccountingEditableHistoryInterval:
+          minLength: 1
+          type: string
+          description: Editable history interval for accounting data in ISO 8601 duration format.
+        OperationalEditableHistoryInterval:
+          minLength: 1
+          type: string
+          description: Editable history interval for operational data in ISO 8601 duration format.
+        BusinessDayClosingOffset:
+          type: string
+          description: The offset value for the business day closing time, in ISO 8601 duration format.
+          nullable: true
+        WebsiteUrl:
+          type: string
+          description: URL of the enterprise website.
+          format: uri
+          nullable: true
+        Email:
+          type: string
+          description: Email address of the enterprise.
+          format: email
+          nullable: true
+        Phone:
+          type: string
+          description: Phone number of the enterprise.
+          format: tel
+          nullable: true
+        LogoImageId:
+          type: string
+          description: Unique identifier of the `Image` of the enterprise logo.
+          format: uuid
+          nullable: true
+        CoverImageId:
+          type: string
+          description: Unique identifier of the `Image` of the enterprise cover.
+          format: uuid
+          nullable: true
+        Pricing:
+          title: Pricing
+          allOf:
+          - $ref: '#/components/schemas/PricingModeEnum'
+          description: 'Pricing of the enterprise.
+
+
+            Gross (The enterprise shows amount with gross prices.)
+
+
+            Net (The enterprise shows amount with net prices.)'
+          x-enumNames:
+          - Gross
+          - Net
+          x-enumDescriptions:
+          - The enterprise shows amount with gross prices.
+          - The enterprise shows amount with net prices.
+        TaxPrecision:
+          type: integer
+          description: Tax precision used for financial calculations in the enterprise. If `null`, `Currency` precision is used.
+          format: int32
+          nullable: true
+        AddressId:
+          type: string
+          description: Unique identifier of the `Address` of the enterprise.
+          format: uuid
+        Address:
+          title: Address
+          allOf:
+          - $ref: '#/components/schemas/OldAddress'
+          description: Address of the enterprise.
+        GroupNames:
+          type: array
+          items:
+            type: string
+          description: A list of the group names of the enterprise.
+        Subscription:
+          title: Enterprise subscription
+          allOf:
+          - $ref: '#/components/schemas/EnterpriseSubscription'
+          description: Subscription information of the enterprise.
+        Currencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/CurrencyAcceptance'
+          description: Currencies accepted by the enterprise.
+        AccountingConfiguration:
+          title: Accounting configuration
+          allOf:
+          - $ref: '#/components/schemas/AccountingConfiguration'
+          description: Configuration information containing financial information about the property.
+          nullable: true
+        IsPortfolio:
+          type: boolean
+          description: Whether the enterprise is a Portfolio enterprise (see [Multi-property guidelines](https://mews-systems.gitbook.io/connector-api/guidelines/multi-property)).
+      additionalProperties: false
+      description: ''
+      x-schema-id: Enterprise
+    ServiceDataDiscriminator:
+      title: Service data discriminator
+      enum:
+      - Bookable
+      - Additional
+      type: string
+    Configuration:
+      title: Configuration
+      required:
+      - Enterprise
+      - NowUtc
+      type: object
+      properties:
+        NowUtc:
+          minLength: 1
+          type: string
+          description: Current server date and time in UTC timezone in ISO 8601 format.
+          format: date-time
+        Enterprise:
+          title: Enterprise
+          allOf:
+          - $ref: '#/components/schemas/Enterprise'
+          description: The enterprise (e.g. hotel, hostel) associated with the access token.
+        Service:
+          allOf:
+          - $ref: '#/components/schemas/Service'
+          description: The reservable service (e.g. accommodation, parking) associated with the access token of the service scoped integration.
+          nullable: true
+        PaymentCardStorage:
+          title: Payment card storage
+          allOf:
+          - $ref: '#/components/schemas/PaymentCardStorage'
+          description: Contains information about payment card storage.
+          nullable: true
+        IsIdentityDocumentNumberRequired:
+          type: boolean
+          description: Whether the identity documents for this enterprise include the value of identity document number as required by the legal environment. When `false`, the number is not required, and an empty string can be used in write operations. In read operations, an empty string is returned when an empty string was provided for the number.
+      additionalProperties: false
+      x-schema-id: Configuration
+    ExternalPaymentTypeEnum:
+      title: External payment type
+      enum:
+      - Unspecified
+      - BadDebts
+      - Bacs
+      - WireTransfer
+      - Invoice
+      - ExchangeRateDifference
+      - Complimentary
+      - Reseller
+      - ExchangeRoundingDifference
+      - Barter
+      - Commission
+      - BankCharges
+      - CrossSettlement
+      - Cash
+      - CreditCard
+      - Prepayment
+      - Cheque
+      - Bancontact
+      - IDeal
+      - PayPal
+      - GiftCard
+      - LoyaltyPoints
+      - ChequeVacances
+      - OnlinePayment
+      - CardCheck
+      - PaymentHubRedirection
+      - Voucher
+      - MasterCard
+      - Visa
+      - Amex
+      - Discover
+      - DinersClub
+      - Jcb
+      - UnionPay
+      - Twint
+      - Reka
+      - LoyaltyCard
+      - PosDiningAndSpaReward
+      - DirectDebit
+      - DepositCheck
+      - DepositCash
+      - DepositCreditCard
+      - DepositWireTransfer
+      type: string
+      description: '
+
+
+        Unspecified (Unspecified (unavailable in French Legal Environment))
+
+
+        BadDebts (Bad debts)
+
+
+        Bacs (Bacs payment)
+
+
+        WireTransfer (Wire transfer)
+
+
+        Invoice (Invoice)
+
+
+        ExchangeRateDifference (Exchange rate difference)
+
+
+        Complimentary (Complimentary)
+
+
+        Reseller (Reseller)
+
+
+        ExchangeRoundingDifference (Exchange rounding difference)
+
+
+        Barter (Barter)
+
+
+        Commission (Commission)
+
+
+        BankCharges (Bank charges)
+
+
+        CrossSettlement (Cross settlement)
+
+
+        Cash (Cash)
+
+
+        CreditCard (Credit card – deprecated, only for existing partners)
+
+
+        Prepayment (Prepayment)
+
+
+        Cheque (Cheque)
+
+
+        Bancontact (Bancontact)
+
+
+        IDeal (iDeal – deprecated, only for existing partners)
+
+
+        PayPal (PayPal – deprecated, only for existing partners)
+
+
+        GiftCard (Gift card)
+
+
+        LoyaltyPoints (Loyalty points)
+
+
+        ChequeVacances (Chèque-Vacances)
+
+
+        OnlinePayment (Online payment – deprecated, only for existing partners)
+
+
+        CardCheck (Card check)
+
+
+        PaymentHubRedirection (Payment hub redirection)
+
+
+        Voucher (Voucher)
+
+
+        MasterCard (MasterCard – deprecated, only for existing partners)
+
+
+        Visa (Visa – deprecated, only for existing partners)
+
+
+        Amex (American Express – deprecated, only for existing partners)
+
+
+        Discover (Discover – deprecated, only for existing partners)
+
+
+        DinersClub (Diners Club – deprecated, only for existing partners)
+
+
+        Jcb (JCB – deprecated, only for existing partners)
+
+
+        UnionPay (UnionPay – deprecated, only for existing partners)
+
+
+        Twint (TWINT)
+
+
+        Reka (Reka)
+
+
+        LoyaltyCard (Loyalty card)
+
+
+        PosDiningAndSpaReward (POS Dining & Spa Reward)
+
+
+        DirectDebit (Direct debit)
+
+
+        DepositCheck (Deposit - check)
+
+
+        DepositCash (Deposit - cash)
+
+
+        DepositCreditCard (Deposit - credit card – deprecated, only for existing partners)
+
+
+        DepositWireTransfer (Deposit - wire transfer)'
+      x-enumNames:
+      - Unspecified
+      - BadDebts
+      - Bacs
+      - WireTransfer
+      - Invoice
+      - ExchangeRateDifference
+      - Complimentary
+      - Reseller
+      - ExchangeRoundingDifference
+      - Barter
+      - Commission
+      - BankCharges
+      - CrossSettlement
+      - Cash
+      - CreditCard
+      - Prepayment
+      - Cheque
+      - Bancontact
+      - IDeal
+      - PayPal
+      - GiftCard
+      - LoyaltyPoints
+      - ChequeVacances
+      - OnlinePayment
+      - CardCheck
+      - PaymentHubRedirection
+      - Voucher
+      - MasterCard
+      - Visa
+      - Amex
+      - Discover
+      - DinersClub
+      - Jcb
+      - UnionPay
+      - Twint
+      - Reka
+      - LoyaltyCard
+      - PosDiningAndSpaReward
+      - DirectDebit
+      - DepositCheck
+      - DepositCash
+      - DepositCreditCard
+      - DepositWireTransfer
+      x-enumDescriptions:
+      - Unspecified (unavailable in French Legal Environment)
+      - Bad debts
+      - Bacs payment
+      - Wire transfer
+      - Invoice
+      - Exchange rate difference
+      - Complimentary
+      - Reseller
+      - Exchange rounding difference
+      - Barter
+      - Commission
+      - Bank charges
+      - Cross settlement
+      - Cash
+      - Credit card – deprecated, only for existing partners
+      - Prepayment
+      - Cheque
+      - Bancontact
+      - iDeal – deprecated, only for existing partners
+      - PayPal – deprecated, only for existing partners
+      - Gift card
+      - Loyalty points
+      - Chèque-Vacances
+      - Online payment – deprecated, only for existing partners
+      - Card check
+      - Payment hub redirection
+      - Voucher
+      - MasterCard – deprecated, only for existing partners
+      - Visa – deprecated, only for existing partners
+      - American Express – deprecated, only for existing partners
+      - Discover – deprecated, only for existing partners
+      - Diners Club – deprecated, only for existing partners
+      - JCB – deprecated, only for existing partners
+      - UnionPay – deprecated, only for existing partners
+      - TWINT
+      - Reka
+      - Loyalty card
+      - POS Dining & Spa Reward
+      - Direct debit
+      - Deposit - check
+      - Deposit - cash
+      - Deposit - credit card – deprecated, only for existing partners
+      - Deposit - wire transfer
+    Promotions:
+      title: Promotions
+      required:
+      - AfterCheckIn
+      - AfterCheckOut
+      - BeforeCheckIn
+      - BeforeCheckOut
+      - DuringCheckOut
+      - DuringStay
+      type: object
+      properties:
+        BeforeCheckIn:
+          type: boolean
+          description: Whether it can be promoted before check-in.
+        AfterCheckIn:
+          type: boolean
+          description: Whether it can be promoted after check-in.
+        DuringStay:
+          type: boolean
+          description: Whether it can be promoted during stay.
+        BeforeCheckOut:
+          type: boolean
+          description: Whether it can be promoted before check-out.
+        AfterCheckOut:
+          type: boolean
+          description: Whether it can be promoted after check-out.
+        DuringCheckOut:
+          type: boolean
+          description: Whether it can be promoted during check-out.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Promotions
+    CurrencyAcceptance:
+      title: Accepted currency
+      required:
+      - Currency
+      - IsDefault
+      - IsEnabled
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the `Currency`.
+          format: currency
+        IsDefault:
+          type: boolean
+          description: Whether the currency is a default accounting currency.
+        IsEnabled:
+          type: boolean
+          description: Whether the currency is enabled for usage.
+      additionalProperties: false
+      x-schema-id: CurrencyAcceptance
+    ServiceOptions:
+      title: Service options
+      required:
+      - BillAsPackage
+      type: object
+      properties:
+        BillAsPackage:
+          type: boolean
+          description: Products should be displayed as a single package instead of individual items.
+      additionalProperties: false
+      description: Options of the service.
+      x-schema-id: ServiceOptions

@@ -1,0 +1,746 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Credit cards API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Credit cards
+paths:
+  /api/connector/v1/creditCards/getAll:
+    post:
+      tags:
+      - Credit cards
+      summary: Get all credit cards
+      description: 'Returns all credit cards, possibly filtered by identifiers, [Customers](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) or other filters.
+
+        Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).'
+      operationId: creditCards_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditCardFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              CreditCardIds:
+              - f1d94a32-b4be-479b-9e47-a9fcb03d5196
+              CustomerIds:
+              - 5cbbd97d-5f19-4010-9abf-ab0400a3366a
+              UpdatedUtc:
+                StartUtc: '2023-10-01T00:00:00Z'
+                EndUtc: '2023-10-31T00:00:00Z'
+              Limitation:
+                Count: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditCardResult'
+              example:
+                CreditCards:
+                - Id: f1d94a32-b4be-479b-9e47-a9fcb03d5196
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  CustomerId: a3c90426-43f2-4b53-8482-446dfc724bd2
+                  Expiration: 2020-11
+                  Format: Physical
+                  IsActive: true
+                  Kind: Gateway
+                  ObfuscatedNumber: '************1111'
+                  State: Enabled
+                  Type: Visa
+                Cursor: f1d94a32-b4be-479b-9e47-a9fcb03d5196
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/creditCards/addTokenized:
+    post:
+      tags:
+      - Credit cards
+      summary: Add tokenized credit card
+      description: Adds a new tokenized credit card to the specified customer. To be able to use this operation special permission has to be granted during certification. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: creditCards_addTokenized
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenizedCreditCardAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              CustomerId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+              CreditCardData:
+                Expiration: 2025-10
+              EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddCreditCardResult'
+              example:
+                CreditCardId: e417dfe8-c813-4938-837b-36081199ce88
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/creditCards/charge:
+    post:
+      tags:
+      - Credit cards
+      summary: Charge credit card
+      description: Creates payment for specified customer credit card and charges the credit card via a gateway. Note that the kind of the card has to be `Gateway`.
+      operationId: creditCards_charge
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargeCreditCardParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              CreditCardId: 866d3f51-5b8b-4e8f-a3af-5b84768c522d
+              Amount:
+                GrossValue: 5
+                Currency: EUR
+              AccountingCategoryId: null
+              Notes: null
+              ReceiptIdentifier: null
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargeCreditCardResult'
+              example:
+                PaymentId: 98753f51-5b8b-4e8f-a3af-5b8476865983
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/creditCards/disable:
+    post:
+      tags:
+      - Credit cards
+      summary: Disable gateway credit card
+      description: Disable an existing credit card in the system. Only gateway credit cards can be disabled. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: creditCards_disable
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisableCreditCardParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              CreditCardId: f5c6b7a8-9d4f-4e2a-8a3b-2f3b8b9e6a1f
+              EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+              example: {}
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+      x-restricted: true
+components:
+  schemas:
+    CreditCard:
+      title: Credit card
+      required:
+      - CreatedUtc
+      - CustomerId
+      - EnterpriseId
+      - Format
+      - Id
+      - IsActive
+      - Kind
+      - State
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the credit card.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the `Enterprise`.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Unique identifier of the credit card owner (`Customer`).
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the credit card is still active.
+        State:
+          $ref: '#/components/schemas/CreditCardState'
+        Kind:
+          $ref: '#/components/schemas/CreditCardKind'
+        Format:
+          $ref: '#/components/schemas/CreditCardFormat'
+        Type:
+          anyOf:
+          - $ref: '#/components/schemas/CreditCardType'
+          description: Type of the credit card.
+          nullable: true
+        ObfuscatedNumber:
+          type: string
+          description: Obfuscated credit card number. At most first six digits and last four digits can be specified, otherwise the digits are replaced with `*`.
+          nullable: true
+        Expiration:
+          type: string
+          description: Expiration of the credit card in format `MM/YYYY`.
+          nullable: true
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the credit card in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the credit card in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: CreditCard
+    CreditCardResult:
+      title: CreditCardResult
+      required:
+      - CreditCards
+      type: object
+      properties:
+        CreditCards:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditCard'
+          description: The credit cards.
+        Cursor:
+          type: string
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CreditCardResult
+    TokenizedCreditCardAddParameters:
+      title: TokenizedCreditCardAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CreditCardData
+      - CustomerId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        CustomerId:
+          type: string
+          description: Unique identifier of the `Customer`.
+          format: uuid
+        CreditCardData:
+          title: Credit card data
+          allOf:
+          - $ref: '#/components/schemas/CreditCardData'
+          description: Credit card details provided by PCI provider.
+      additionalProperties: false
+      x-schema-id: TokenizedCreditCardAddParameters
+    ChargeCreditCardParameters:
+      title: CreditCard payment data
+      required:
+      - AccessToken
+      - Amount
+      - Client
+      - ClientToken
+      - CreditCardId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        CreditCardId:
+          type: string
+          description: Unique identifier of the `CreditCard`.
+          format: uuid
+        ReceiptIdentifier:
+          type: string
+          description: Identifier of the payment receipt.
+          nullable: true
+        AccountingCategoryId:
+          type: string
+          description: Unique identifier of the `AccountingCategory`.
+          format: uuid
+          nullable: true
+        ReservationId:
+          type: string
+          description: Unique identifier of the reservation the payment belongs to.
+          format: uuid
+          nullable: true
+        Amount:
+          title: Amount parameters
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmountParameters'
+          description: Amount of the credit card payment.
+        Notes:
+          type: string
+          description: Additional payment notes.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ChargeCreditCardParameters
+    Unit:
+      type: object
+      additionalProperties: false
+    ChargeCreditCardResult:
+      title: ChargeCreditCardResult
+      type: object
+      properties:
+        PaymentId:
+          type: string
+          description: Unique identifier of the `Payment` item.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ChargeCreditCardResult
+    ExtendedAmountParameters:
+      title: Amount parameters
+      required:
+      - Currency
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the `Currency`.
+          format: currency
+        TaxCodes:
+          type: array
+          items:
+            type: string
+          description: The tax values applied.
+          nullable: true
+        NetValue:
+          type: number
+          description: Net value in case the item is taxed.
+          format: double
+          nullable: true
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: ExtendedAmountParameters
+    CreditCardData:
+      title: Credit card data
+      required:
+      - Expiration
+      - StorageData
+      type: object
+      properties:
+        StorageData:
+          minLength: 1
+          type: string
+          description: Identifier of credit card data in PCI storage (`transactionId`).
+        Expiration:
+          minLength: 1
+          type: string
+          description: Expiration of the credit card in format `yyyy-MM`.
+      additionalProperties: false
+      description: ''
+      x-schema-id: CreditCardData
+    CreditCardState:
+      title: Credit card state
+      enum:
+      - Enabled
+      - Disabled
+      type: string
+      description: State of the credit card.
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    CreditCardFormat:
+      title: Credit card format
+      enum:
+      - Physical
+      - Virtual
+      type: string
+      description: Format of the credit card.
+    CreditCardFilterParameters:
+      title: CreditCardFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        CreditCardIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `CreditCard`. Required if no other filter is provided.
+          nullable: true
+        CustomerIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Customer`.
+          nullable: true
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which `CreditCard` was updated.
+          nullable: true
+          x-max-interval-in-months: 3
+      additionalProperties: false
+      x-schema-id: CreditCardFilterParameters
+    CreditCardType:
+      title: Credit card type
+      enum:
+      - MasterCard
+      - Visa
+      - Amex
+      - Discover
+      - DinersClub
+      - Jcb
+      - Maestro
+      - UnionPay
+      - VPay
+      - RuPay
+      - Dankort
+      - Mir
+      - Verve
+      - Troy
+      - PostFinance
+      - Giro
+      - Bancomat
+      - Bc
+      - CarteBleue
+      - Eftpos
+      - Eps
+      - Interac
+      - Isracard
+      - Meps
+      - Nets
+      - Bancontact
+      type: string
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    CreditCardKind:
+      title: Credit card kind
+      enum:
+      - Terminal
+      - Gateway
+      type: string
+      description: Kind of the credit card.
+    AddCreditCardResult:
+      title: AddCreditCardResult
+      type: object
+      properties:
+        CreditCardId:
+          type: string
+          description: Unique identifier of the `CreditCard`.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: AddCreditCardResult
+    DisableCreditCardParameters:
+      title: DisableCreditCardParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CreditCardId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        CreditCardId:
+          type: string
+          description: Unique identifier of the `CreditCard` to disable.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: DisableCreditCardParameters
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation

@@ -1,0 +1,1091 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Loyalty memberships API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Loyalty memberships
+paths:
+  /api/connector/v1/loyaltyMemberships/getAll:
+    post:
+      tags:
+      - Loyalty memberships
+      summary: Get all loyalty memberships
+      description: Returns all loyalty memberships of the enterprise, optionally filtered by specific loyalty membership identifiers, activity states, or other filter parameters. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: loyaltyMemberships_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoyaltyMembershipFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ChainIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 5fcd1933-22f2-40b9-84da-7db04cbecec2
+              CreatedUtc:
+                StartUtc: '2022-10-15T00:00:00Z'
+                EndUtc: '2022-10-20T00:00:00Z'
+              UpdatedUtc:
+                StartUtc: '2022-10-15T00:00:00Z'
+                EndUtc: '2022-10-20T00:00:00Z'
+              LoyaltyMembershipIds:
+              - 905a4489-0960-4ac9-96ec-793f47365c92
+              - ac48674e-58a2-43d6-a02b-9ead0b213b17
+              AccountIds:
+              - fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+              - bccdafd1-3e44-439d-861f-341526b597a9
+              LoyaltyProgramIds:
+              - f701dafb-5765-4cf4-b1dd-1f602a740ae5
+              - da34b396-41f7-47f6-8847-aecf00a3f19e
+              MembershipStates:
+              - Pending
+              - Enrolled
+              ActivityStates:
+              - Active
+              MembershipNumbers:
+              - MBR-2025-AX49ZT73
+              ProviderMembershipIds:
+              - PRV-MBR-9842XKLT
+              Limitation:
+                Count: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoyaltyMembershipResult'
+              example:
+                LoyaltyMemberships:
+                - Id: 905a4489-0960-4ac9-96ec-793f47365c92
+                  ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  AccountId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  LoyaltyProgramId: f701dafb-5765-4cf4-b1dd-1f602a740ae5
+                  State: New
+                  IsPrimary: true
+                  ProviderMembershipId: PRV-MBR-9842XKLT
+                  Code: MBR-2025-AX49ZT73
+                  MembershipNumber: MBR-2025-AX49ZT73
+                  Points: 22
+                  ExpirationDate: '2029-11-04T13:00:00Z'
+                  Url: https://rewards.example.com/member/PRV-MBR-9842XKLT
+                  LoyaltyTierId: 69eedfd2-6f25-42fc-b3c8-39df70f85e37
+                  CreatorProfile: null
+                  UpdaterProfile: null
+                Cursor: 905a4489-0960-4ac9-96ec-793f47365c92
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/loyaltyMemberships/add:
+    post:
+      tags:
+      - Loyalty memberships
+      summary: Add loyalty memberships
+      description: Adds loyalty memberships to the enterprise. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: loyaltyMemberships_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleLoyaltyMembershipAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              LoyaltyMemberships:
+              - AccountId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                LoyaltyProgramId: f701dafb-5765-4cf4-b1dd-1f602a740ae5
+                IsPrimary: true
+                State: Enrolled
+                MembershipNumber: MBR-2025-AX49ZT73
+                Points: 22
+                ExpirationDate: '2029-12-24T00:00:00Z'
+                Url: https://rewards.example.com/member/PRV-MBR-9842XKLT
+                LoyaltyTierId: 69eedfd2-6f25-42fc-b3c8-39df70f85e37
+              ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoyaltyMembershipResult'
+              example:
+                LoyaltyMemberships:
+                - Id: 905a4489-0960-4ac9-96ec-793f47365c92
+                  ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  AccountId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  LoyaltyProgramId: f701dafb-5765-4cf4-b1dd-1f602a740ae5
+                  State: New
+                  IsPrimary: true
+                  ProviderMembershipId: PRV-MBR-9842XKLT
+                  Code: MBR-2025-AX49ZT73
+                  MembershipNumber: MBR-2025-AX49ZT73
+                  Points: 22
+                  ExpirationDate: '2029-11-04T13:00:00Z'
+                  Url: https://rewards.example.com/member/PRV-MBR-9842XKLT
+                  LoyaltyTierId: 69eedfd2-6f25-42fc-b3c8-39df70f85e37
+                  CreatorProfile: null
+                  UpdaterProfile: null
+                Cursor: 905a4489-0960-4ac9-96ec-793f47365c92
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/loyaltyMemberships/update:
+    post:
+      tags:
+      - Loyalty memberships
+      summary: Update loyalty memberships
+      description: Updates information about the specified loyalty memberships. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: loyaltyMemberships_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleLoyaltyMembershipUpdateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              LoyaltyMembershipUpdates:
+              - LoyaltyMembershipId: 905a4489-0960-4ac9-96ec-793f47365c92
+                LoyaltyProgramId:
+                  Value: f701dafb-5765-4cf4-b1dd-1f602a740ae5
+                State:
+                  Value: Canceled
+                IsPrimary:
+                  Value: true
+                MembershipNumber:
+                  Value: MBR-2025-AX49ZT73
+                Points:
+                  Value: 42
+                ExpirationDate:
+                  Value: '2038-01-19T03:14:07Z'
+                Url:
+                  Value: https://final-rewards.example.com/member/PRV-MBR-9842XKLT
+                LoyaltyTierId:
+                  Value: 69eedfd2-6f25-42fc-b3c8-39df70f85e37
+              ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoyaltyMembershipResult'
+              example:
+                LoyaltyMemberships:
+                - Id: 905a4489-0960-4ac9-96ec-793f47365c92
+                  ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  AccountId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  LoyaltyProgramId: f701dafb-5765-4cf4-b1dd-1f602a740ae5
+                  State: New
+                  IsPrimary: true
+                  ProviderMembershipId: PRV-MBR-9842XKLT
+                  Code: MBR-2025-AX49ZT73
+                  MembershipNumber: MBR-2025-AX49ZT73
+                  Points: 22
+                  ExpirationDate: '2029-11-04T13:00:00Z'
+                  Url: https://rewards.example.com/member/PRV-MBR-9842XKLT
+                  LoyaltyTierId: 69eedfd2-6f25-42fc-b3c8-39df70f85e37
+                  CreatorProfile: null
+                  UpdaterProfile: null
+                Cursor: 905a4489-0960-4ac9-96ec-793f47365c92
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/loyaltyMemberships/delete:
+    post:
+      tags:
+      - Loyalty memberships
+      summary: Delete loyalty memberships
+      description: Deletes loyalty memberships. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: loyaltyMemberships_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoyaltyMembershipDeleteParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              LoyaltyMembershipIds:
+              - 905a4489-0960-4ac9-96ec-793f47365c92
+              - ac48674e-58a2-43d6-a02b-9ead0b213b17
+              ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    LoyaltyMembershipDeleteParameters:
+      title: Loyalty membership delete parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - LoyaltyMembershipIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        LoyaltyMembershipIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifier of the loyalty memberships to be deleted.
+      additionalProperties: false
+      x-schema-id: LoyaltyMembershipDeleteParameters
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    LoyaltyMembershipStateUpdateValue:
+      title: Loyalty membership state update value
+      type: object
+      properties:
+        Value:
+          title: Loyalty membership state
+          allOf:
+          - $ref: '#/components/schemas/LoyaltyMembershipStateEnum'
+          description: Value which is to be updated.
+          x-enumNames:
+          - New
+          - Pending
+          - Enrolled
+          - Canceled
+          - Declined
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+          - ''
+      additionalProperties: false
+      x-schema-id: LoyaltyMembershipStateUpdateValue
+    LoyaltyMembership:
+      title: Loyalty membership
+      required:
+      - AccountId
+      - ChainId
+      - CreatorProfile
+      - Id
+      - IsPrimary
+      - LoyaltyProgramId
+      - State
+      - UpdaterProfile
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the loyalty membership.
+          format: uuid
+        ChainId:
+          type: string
+          description: Unique identifier of the chain.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of the account.
+          format: uuid
+        LoyaltyProgramId:
+          type: string
+          description: Unique identifier of the loyalty program.
+          format: uuid
+        State:
+          title: Loyalty membership state
+          allOf:
+          - $ref: '#/components/schemas/LoyaltyMembershipStateEnum'
+          description: 'State of the loyalty membership.
+
+
+            New
+
+
+            Pending
+
+
+            Enrolled
+
+
+            Canceled
+
+
+            Declined'
+          x-enumNames:
+          - New
+          - Pending
+          - Enrolled
+          - Canceled
+          - Declined
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+          - ''
+        IsPrimary:
+          type: boolean
+          description: Defines the primary loyalty membership.
+        ProviderMembershipId:
+          type: string
+          description: Unique identifier for the loyalty membership in the loyalty provider's system.
+          nullable: true
+        Code:
+          type: string
+          description: Code of the loyalty membership.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `MembershipNumber` instead.
+        MembershipNumber:
+          type: string
+          description: Customer-facing membership numbers, e.g., printed on a loyalty card.
+          nullable: true
+        Points:
+          type: integer
+          description: The loyalty points for the account in that membership.
+          format: int32
+          nullable: true
+        ExpirationDate:
+          type: string
+          description: Expiration date of the loyalty membership in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        Url:
+          type: string
+          description: Url of the loyalty membership.
+          nullable: true
+        LoyaltyTierId:
+          type: string
+          description: Unique identifier of the loyalty tier.
+          format: uuid
+          nullable: true
+        CreatorProfile:
+          title: Profile data
+          allOf:
+          - $ref: '#/components/schemas/ProfileData'
+          description: The profile data of the user who created or last updated the record.
+        UpdaterProfile:
+          title: Profile data
+          allOf:
+          - $ref: '#/components/schemas/ProfileData'
+          description: The profile data of the user who created or last updated the record.
+      additionalProperties: false
+      x-schema-id: LoyaltyMembership
+    LoyaltyMembershipStateEnum:
+      title: Loyalty membership state
+      enum:
+      - New
+      - Pending
+      - Enrolled
+      - Canceled
+      - Declined
+      type: string
+      description: 'State of the loyalty membership.
+
+
+        New
+
+
+        Pending
+
+
+        Enrolled
+
+
+        Canceled
+
+
+        Declined'
+      x-enumNames:
+      - New
+      - Pending
+      - Enrolled
+      - Canceled
+      - Declined
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    MultipleLoyaltyMembershipAddParameters:
+      title: MultipleLoyaltyMembershipAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - LoyaltyMemberships
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        LoyaltyMemberships:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/LoyaltyMembershipAddParameters'
+          description: Loyalty memberships to be added.
+      additionalProperties: false
+      x-schema-id: MultipleLoyaltyMembershipAddParameters
+    GuidUpdateValue:
+      title: Guid update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: GuidUpdateValue
+    Unit:
+      type: object
+      additionalProperties: false
+    EnterpriseProfileData:
+      title: Enterprise profile data
+      required:
+      - ProfileId
+      type: object
+      properties:
+        ProfileId:
+          type: string
+          description: Unique identifier of the profile.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: EnterpriseProfileData
+    Int32NullableUpdateValue:
+      title: Int32 update value
+      type: object
+      properties:
+        Value:
+          type: integer
+          description: Value which is to be updated.
+          format: int32
+          nullable: true
+      additionalProperties: false
+      x-schema-id: Int32NullableUpdateValue
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    BooleanUpdateValue:
+      title: Boolean update value
+      type: object
+      properties:
+        Value:
+          type: boolean
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: BooleanUpdateValue
+    LoyaltyMembershipAddParameters:
+      title: Loyalty membership parameters
+      required:
+      - AccountId
+      - IsPrimary
+      - LoyaltyProgramId
+      type: object
+      properties:
+        AccountId:
+          type: string
+          description: Unique identifier of the customer account.
+          format: uuid
+        LoyaltyProgramId:
+          type: string
+          description: Unique identifier of the loyalty program.
+          format: uuid
+        IsPrimary:
+          type: boolean
+          description: Defines the primary loyalty membership for the account.
+        State:
+          allOf:
+          - $ref: '#/components/schemas/LoyaltyMembershipStateEnum'
+          description: 'State of the loyalty membership. The default is `Enrolled`.
+
+
+            New
+
+
+            Pending
+
+
+            Enrolled
+
+
+            Canceled
+
+
+            Declined'
+          nullable: true
+        Code:
+          maxLength: 255
+          type: string
+          description: Loyalty membership code, such as an identification number printed on a loyalty card visible to the customer.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `MembershipNumber` instead.
+        MembershipNumber:
+          maxLength: 255
+          type: string
+          description: Customer-facing membership numbers, e.g., printed on a loyalty card.
+          nullable: true
+        Points:
+          type: integer
+          description: The loyalty points for the account in that membership.
+          format: int32
+          nullable: true
+        ExpirationDate:
+          type: string
+          description: Expiration date of the loyalty membership in UTC timezone in ISO 8601 format.
+          format: date
+          nullable: true
+        Url:
+          type: string
+          description: URL of the loyalty membership in external loyalty system.
+          format: uri
+          nullable: true
+        LoyaltyTierId:
+          type: string
+          description: Unique identifier of the loyalty tier.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: LoyaltyMembershipAddParameters
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    LoyaltyMembershipFilterParameters:
+      title: Loyalty membership filter parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the chain. If not specified, the operation returns data for all chains within scope of the Access Token.
+          nullable: true
+        CreatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: The time interval during which the membership was created.
+          nullable: true
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: The time interval during which the membership was last updated.
+          nullable: true
+          x-max-interval-in-months: 3
+        LoyaltyMembershipIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Loyalty memberships](https://mews-systems.gitbook.io/connector-api/operations/#loyalty-membership).
+          nullable: true
+        AccountIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of accounts (for example [Customers](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) or [Companies](https://mews-systems.gitbook.io/connector-api/operations/companies/#company)) the membership is associated with.
+          nullable: true
+        LoyaltyProgramIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Loyalty programs](https://mews-systems.gitbook.io/connector-api/operations/loyaltyprograms/#loyalty-program).
+          nullable: true
+        MembershipStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoyaltyMembershipStateEnum'
+          description: States of the loyalty memberships.
+          nullable: true
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+          nullable: true
+        Codes:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: List of loyalty membership codes, such as identification numbers printed on loyalty cards visible to the customer.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `MembershipNumbers` instead.
+        MembershipNumbers:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: Customer-facing membership numbers, e.g., printed on a loyalty card.
+          nullable: true
+        ProviderMembershipIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: List of unique loyalty membership identifiers assigned and managed by the external loyalty provider's system.
+          nullable: true
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned.
+      additionalProperties: false
+      x-schema-id: LoyaltyMembershipFilterParameters
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ProfileDataDiscriminator:
+      title: Profile data discriminator
+      enum:
+      - Personal
+      - Enterprise
+      - Platform
+      - Static
+      - Integration
+      type: string
+    MultipleLoyaltyMembershipUpdateParameters:
+      title: MultipleLoyaltyMembershipUpdateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - LoyaltyMembershipUpdates
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        LoyaltyMembershipUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/LoyaltyMembershipUpdateParameters'
+          description: Loyalty memberships to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleLoyaltyMembershipUpdateParameters
+    ProfileData:
+      title: Profile data
+      required:
+      - Discriminator
+      type: object
+      properties:
+        Discriminator:
+          $ref: '#/components/schemas/ProfileDataDiscriminator'
+        EnterpriseProfile:
+          title: Enterprise profile data
+          allOf:
+          - $ref: '#/components/schemas/EnterpriseProfileData'
+          description: Enterprise profile data.
+          nullable: true
+      additionalProperties: false
+      description: The profile data of the user who created or last updated the record.
+      x-schema-id: ProfileData
+    LoyaltyMembershipResult:
+      title: Loyalty membership result
+      required:
+      - LoyaltyMemberships
+      type: object
+      properties:
+        LoyaltyMemberships:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoyaltyMembership'
+          description: The loyalty memberships of the enterprise.
+        Cursor:
+          type: string
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: LoyaltyMembershipResult
+    GuidNullableUpdateValue:
+      title: Guid update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: GuidNullableUpdateValue
+    LoyaltyMembershipUpdateParameters:
+      title: Loyalty membership update parameters
+      required:
+      - LoyaltyMembershipId
+      type: object
+      properties:
+        LoyaltyMembershipId:
+          type: string
+          description: Unique identifier of the loyalty membership.
+          format: uuid
+        LoyaltyProgramId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidUpdateValue'
+          description: Unique identifier of the loyalty program (or `null` if the program should not be updated).
+          nullable: true
+        State:
+          title: Loyalty membership state update value
+          allOf:
+          - $ref: '#/components/schemas/LoyaltyMembershipStateUpdateValue'
+          description: State of the loyalty membership, (or `null` if the state should not be updated).
+          nullable: true
+        IsPrimary:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Boolean value defining the primary loyalty membership for the account (or `null` if the value should not be updated).
+          nullable: true
+        Code:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Code of the loyalty membership. (or `null` if the code should not be updated).
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `MembershipNumber` instead.
+        MembershipNumber:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Customer-facing membership numbers, e.g., printed on a loyalty card.
+          nullable: true
+        ProviderMembershipId:
+          title: String update value
+          maxLength: 100
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Loyalty membership identifier assigned by the external loyalty provider's system (or `null` if the value should not be updated).
+          nullable: true
+        Points:
+          title: Int32 update value
+          allOf:
+          - $ref: '#/components/schemas/Int32NullableUpdateValue'
+          description: The loyalty points the account has in the loyalty membership (or `null` if the points should not be updated).
+          nullable: true
+        ExpirationDate:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Expiration date of the loyalty membership in UTC timezone in ISO 8601 format (or `null` if the date should not be updated).
+          format: date
+          nullable: true
+        Url:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: URL of the loyalty membership (or `null` if the URL should not be updated).
+          format: uri
+          nullable: true
+        LoyaltyTierId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidNullableUpdateValue'
+          description: Unique identifier of the loyalty tier (or `null` if the tier should not be updated).
+          nullable: true
+      additionalProperties: false
+      x-schema-id: LoyaltyMembershipUpdateParameters

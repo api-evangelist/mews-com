@@ -1,0 +1,1473 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Products API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Products
+paths:
+  /api/connector/v1/products/getPricing:
+    post:
+      tags:
+      - Products
+      summary: Get product pricing
+      description: 'Returns prices for a given product for a specified time interval. UTC timestamps must correspond to the start boundary of a time unit, e.g. 00:00 converted to UTC for a time unit of "Day". Other timestamps are not permitted. The __maximum size of time interval__ depends on the service''s time unit: 100 hours if hours, 100 days if days, or 24 months if months. For more information about time units, see [Time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units). This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).'
+      operationId: products_getPricing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductPricingFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ProductId: 6b97a38b-0043-41e0-afbd-3f083bdbc0d2
+              FirstTimeUnitStartUtc: '2024-03-01T23:00:00.000Z'
+              LastTimeUnitStartUtc: '2024-03-03T23:00:00.000Z'
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductPricingResult'
+              example:
+                ProductId: 6b97a38b-0043-41e0-afbd-3f083bdbc0d2
+                TimeUnitStartsUtc:
+                - '2024-03-01T23:00:00Z'
+                - '2024-03-02T23:00:00Z'
+                - '2024-03-03T23:00:00Z'
+                BaseAmountPrices:
+                - Currency: EUR
+                  NetValue: 93.46
+                  GrossValue: 100.0
+                  TaxValues:
+                  - Code: DE-2020-1-L
+                    Value: 6.54
+                  Breakdown:
+                    Items:
+                    - TaxRateCode: DE-2020-1-L
+                      NetValue: 93.46
+                      TaxValue: 6.54
+                - Currency: EUR
+                  NetValue: 93.46
+                  GrossValue: 100.0
+                  TaxValues:
+                  - Code: DE-2020-1-L
+                    Value: 6.54
+                  Breakdown:
+                    Items:
+                    - TaxRateCode: DE-2020-1-L
+                      NetValue: 93.46
+                      TaxValue: 6.54
+                AgeCategoryPrices:
+                - AgeCategoryId: 7d9d9b11-2c96-4862-9ead-501c6a8ed114
+                  Prices:
+                  - Currency: EUR
+                    NetValue: 93.46
+                    GrossValue: 100.0
+                    TaxValues:
+                    - Code: DE-2020-1-L
+                      Value: 6.54
+                    Breakdown:
+                      Items:
+                      - TaxRateCode: DE-2020-1-L
+                        NetValue: 93.46
+                        TaxValue: 6.54
+                  - Currency: EUR
+                    NetValue: 93.46
+                    GrossValue: 100.0
+                    TaxValues:
+                    - Code: DE-2020-1-L
+                      Value: 6.54
+                    Breakdown:
+                      Items:
+                      - TaxRateCode: DE-2020-1-L
+                        NetValue: 93.46
+                        TaxValue: 6.54
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+      x-restricted: true
+  /api/connector/v1/products/updatePrice:
+    post:
+      tags:
+      - Products
+      summary: Update product pricing
+      description: Updates the prices for a given product. You can make multiple price updates with one API call, and for each one specify the price amount per [Time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units) and the time interval for which it applies. The price will be updated for all service time units that the specified time interval intersects. It is not permitted to update historical prices older than specified by `EditableHistoryInterval`. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: products_updatePrice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductPriceUpdateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ProductId: 6b97a38b-0043-41e0-afbd-3f083bdbc0d2
+              PriceUpdates:
+              - Value: 100.0
+                FirstTimeUnitStartUtc: '2024-03-01T23:00:00.000Z'
+                LastTimeUnitStartUtc: '2024-03-03T23:00:00.000Z'
+              - Value: 200.0
+                FirstTimeUnitStartUtc: '2024-03-06T23:00:00.000Z'
+                LastTimeUnitStartUtc: '2024-03-08T23:00:00.000Z'
+              EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/products/getAll:
+    post:
+      tags:
+      - Products
+      summary: Get all products
+      description: Returns all products offered together with the specified services. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: products_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ServiceIds:
+              - bd26d8db-86da-4f96-9efc-e5a4654a4a94
+              UpdatedUtc:
+                StartUtc: '2023-10-01T00:00:00Z'
+                EndUtc: '2023-10-31T00:00:00Z'
+              Limitation:
+                Count: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResult'
+              example:
+                Products:
+                - Id: 198bc308-c1f2-4a1c-a827-c41d99d52f3d
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  CategoryId: null
+                  AccountingCategoryId: 6535e19e-1077-49d9-a338-67bf4ffecb14
+                  IsActive: true
+                  Names:
+                    en-US: Breakfast
+                  ExternalNames:
+                    en-US: Breakfast
+                  ShortNames:
+                    en-US: BFST
+                  Descriptions:
+                    en-US: Nice continental breakfast.
+                  ChargingMode: PerPersonPerTimeUnit
+                  PostingMode: Once
+                  Options:
+                    BillAsPackage: false
+                  Promotions:
+                    BeforeCheckIn: false
+                    AfterCheckIn: false
+                    DuringStay: false
+                    BeforeCheckOut: false
+                    AfterCheckOut: false
+                    DuringCheckOut: false
+                  Classifications:
+                    Food: false
+                    Beverage: false
+                    Wellness: false
+                    CityTax: false
+                  Price:
+                    GrossValue: 25
+                    Currency: EUR
+                    TaxValues:
+                    - Code: FR-T
+                  ExternalIdentifier: PROD-BFST-009
+                CustomerProducts:
+                - Id: 198bc308-c1f2-4a1c-a827-c41d99d52f3d
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  CategoryId: null
+                  AccountingCategoryId: 6535e19e-1077-49d9-a338-67bf4ffecb14
+                  IsActive: true
+                  Names:
+                    en-US: Breakfast
+                  ExternalNames:
+                    en-US: Breakfast
+                  ShortNames:
+                    en-US: BFST
+                  Descriptions:
+                    en-US: Nice continental breakfast.
+                  ChargingMode: PerPersonPerTimeUnit
+                  PostingMode: Once
+                  Options:
+                    BillAsPackage: false
+                  Promotions:
+                    BeforeCheckIn: false
+                    AfterCheckIn: false
+                    DuringStay: false
+                    BeforeCheckOut: false
+                    AfterCheckOut: false
+                    DuringCheckOut: false
+                  Classifications:
+                    Food: false
+                    Beverage: false
+                    Wellness: false
+                    CityTax: false
+                  Price:
+                    GrossValue: 25
+                    Currency: EUR
+                    TaxValues:
+                    - Code: FR-T
+                  ExternalIdentifier: PROD-BFST-009
+                Cursor: 198bc308-c1f2-4a1c-a827-c41d99d52f3d
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/products/delete:
+    post:
+      tags:
+      - Products
+      summary: Delete products
+      description: Deletes specified products. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: products_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductDeleteParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              EnterpriseId: aff75fbb-5cce-4fae-8039-b07000d16650
+              ProductIds:
+              - 1f60b9de-c042-4841-bcab-b07000d2201f
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    ProductPricing:
+      title: Product pricing data discriminator
+      enum:
+      - Absolute
+      - Relative
+      type: string
+      description: ''
+    ProductChargingModeEnum:
+      title: Product charging mode
+      enum:
+      - Once
+      - PerTimeUnit
+      - PerPersonPerTimeUnit
+      - PerPerson
+      type: string
+      description: '
+
+
+        Once
+
+
+        PerTimeUnit
+
+
+        PerPersonPerTimeUnit
+
+
+        PerPerson'
+      x-enumNames:
+      - Once
+      - PerTimeUnit
+      - PerPersonPerTimeUnit
+      - PerPerson
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type: string
+          description: Code corresponding to tax type.
+          nullable: true
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    ProductPricingFilterParameters:
+      title: Product pricing filter parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - FirstTimeUnitStartUtc
+      - LastTimeUnitStartUtc
+      - ProductId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ProductId:
+          type: string
+          description: Unique identifier of the product.
+          format: uuid
+        FirstTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/), in UTC timezone ISO 8601 format.
+          format: date-time
+        LastTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/): 100 hours if hours, 100 days if days, or 24 months if months.'
+          format: date-time
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ProductPricingFilterParameters
+    ProductDeleteParameters:
+      title: Product delete parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - ProductIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        ProductIds:
+          maxItems: 1000
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the products to delete.
+      additionalProperties: false
+      x-schema-id: ProductDeleteParameters
+    ProductFilterParameters:
+      title: Product parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ServiceIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        ProductIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the product.
+          nullable: true
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Services](https://mews-systems.gitbook.io/connector-api/operations/services/#service).
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the products were updated.
+          nullable: true
+          x-max-interval-in-months: 3
+        IncludeDefault:
+          type: boolean
+          description: Whether or not to include default products for the service, i.e. products which are standard includes and not true extras. For example, the night's stay would be the default product for a room reservation. These may be useful for accounting purposes but should not be displayed to customers for selection. If `ProductIds` are provided, `IncludeDefault` defaults to true, otherwise it defaults to false.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ProductFilterParameters
+    ProductResult:
+      title: Product result
+      required:
+      - CustomerProducts
+      - Products
+      type: object
+      properties:
+        Products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+          description: Products offered with the service.
+        CustomerProducts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+          description: Products offered specifically to customers.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest product returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older products.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ProductResult
+    Unit:
+      type: object
+      additionalProperties: false
+    ProductPricingResult:
+      title: Product pricing result
+      required:
+      - AgeCategoryPrices
+      - BaseAmountPrices
+      - ProductId
+      - TimeUnitStartsUtc
+      type: object
+      properties:
+        ProductId:
+          type: string
+          description: Unique identifier of the product.
+          format: uuid
+        TimeUnitStartsUtc:
+          type: array
+          items:
+            type: string
+          description: Set of all time units covered by the time interval; expressed in UTC timezone ISO 8601 format.
+          format: date-time
+        BaseAmountPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Amount'
+          description: Base prices of the product for each time unit covered by the time interval.
+        AgeCategoryPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductAgeCategoryPrice'
+          description: Age category prices.
+      additionalProperties: false
+      x-schema-id: ProductPricingResult
+    ProductConsumptionMomentEnum:
+      title: Product consumption moment
+      enum:
+      - ServiceOrderEnd
+      - ServiceOrderStart
+      - PostingTimeUnit
+      - NextTimeUnit
+      type: string
+      description: '
+
+
+        ServiceOrderEnd
+
+
+        ServiceOrderStart
+
+
+        PostingTimeUnit
+
+
+        NextTimeUnit'
+      x-enumNames:
+      - ServiceOrderEnd
+      - ServiceOrderStart
+      - PostingTimeUnit
+      - NextTimeUnit
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+    ProductAgeCategoryPrice:
+      title: Age category price
+      required:
+      - AgeCategoryId
+      - Prices
+      type: object
+      properties:
+        AgeCategoryId:
+          type: string
+          description: Unique identifier of the age category.
+          format: uuid
+        Prices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Amount'
+          description: Prices of the product for the resource category in the covered dates.
+      additionalProperties: false
+      x-schema-id: ProductAgeCategoryPrice
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    TaxExemptionReasonTypeEnum:
+      title: Tax exemption reason type
+      enum:
+      - Unknown
+      - IT_N1
+      - IT_N2_2
+      - IT_N3_5
+      - IT_N4
+      - IT_N5
+      - PL_ZW
+      - PL_NP
+      - DE_NATO
+      type: string
+      description: '
+
+
+        Unknown (Unknown tax exemption reason)
+
+
+        IT_N1 (N1 - Escluse ex art.15)
+
+
+        IT_N2_2 (N2.2 - Non soggette – altri casi)
+
+
+        IT_N3_5 (N3.5 - Non imponibili – a seguito di dichiarazioni d’intento)
+
+
+        IT_N4 (N4 - Esenti)
+
+
+        IT_N5 (N5 - Regime del margine / IVA non esposta in fattura)
+
+
+        PL_ZW (ZW - Zwolniony)
+
+
+        PL_NP (NP - Nie podlega)
+
+
+        DE_NATO (NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen)'
+      x-enumNames:
+      - Unknown
+      - IT_N1
+      - IT_N2_2
+      - IT_N3_5
+      - IT_N4
+      - IT_N5
+      - PL_ZW
+      - PL_NP
+      - DE_NATO
+      x-enumDescriptions:
+      - Unknown tax exemption reason
+      - N1 - Escluse ex art.15
+      - N2.2 - Non soggette – altri casi
+      - N3.5 - Non imponibili – a seguito di dichiarazioni d’intento
+      - N4 - Esenti
+      - N5 - Regime del margine / IVA non esposta in fattura
+      - ZW - Zwolniony
+      - NP - Nie podlega
+      - NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen
+    ProductClassifications:
+      title: Product classifications
+      type: object
+      properties:
+        Food:
+          type: boolean
+          description: Product is classified as food.
+        Beverage:
+          type: boolean
+          description: Product is classified as beverage.
+        Wellness:
+          type: boolean
+          description: Product is classified as wellness.
+        CityTax:
+          type: boolean
+          description: Product is classified as city tax.
+        Fee:
+          type: boolean
+          description: Product is classified as fee.
+      additionalProperties: false
+      description: ''
+      x-schema-id: ProductClassifications
+    ProductPriceUpdate:
+      title: Product price update
+      type: object
+      properties:
+        Value:
+          type: number
+          description: New value of the product on the interval. If not specified, removes all price adjustments within the interval.
+          format: double
+          nullable: true
+        FirstTimeUnitStartUtc:
+          type: string
+          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format.
+          format: date-time
+          nullable: true
+        LastTimeUnitStartUtc:
+          type: string
+          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s time unit: 367 hours if hours, 367 days if days, or 24 months if months.'
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ProductPriceUpdate
+    ProductPostingEnum:
+      title: Product posting
+      enum:
+      - Once
+      - Daily
+      type: string
+      description: '
+
+
+        Once
+
+
+        Daily'
+      x-enumNames:
+      - Once
+      - Daily
+      x-enumDescriptions:
+      - ''
+      - ''
+    ExtendedAmount:
+      title: Extended amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+        Value:
+          type: number
+          format: double
+          nullable: true
+        Net:
+          type: number
+          format: double
+          nullable: true
+        Tax:
+          type: number
+          format: double
+          nullable: true
+        TaxRate:
+          type: number
+          format: double
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: ExtendedAmount
+    ProductPostingModeEnum:
+      title: Product posting mode
+      enum:
+      - Once
+      - PerTimeUnit
+      type: string
+      description: '
+
+
+        Once
+
+
+        PerTimeUnit'
+      x-enumNames:
+      - Once
+      - PerTimeUnit
+      x-enumDescriptions:
+      - ''
+      - ''
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
+    RelativeProductPrice:
+      title: Relative product price
+      type: object
+      properties:
+        Multiplier:
+          type: number
+          format: double
+          deprecated: true
+        Target:
+          type: string
+          nullable: true
+          deprecated: true
+        TaxRateCodes:
+          type: array
+          items:
+            type: string
+          nullable: true
+          deprecated: true
+        ProductIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+          deprecated: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: RelativeProductPrice
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ProductOptions:
+      title: Product options
+      required:
+      - BillAsPackage
+      type: object
+      properties:
+        BillAsPackage:
+          type: boolean
+          description: Product should be displayed as part of a package.
+      additionalProperties: false
+      description: ''
+      x-schema-id: ProductOptions
+    Product:
+      title: Product
+      required:
+      - ChargingMode
+      - Classifications
+      - ConsumptionMoment
+      - CreatedUtc
+      - ExternalNames
+      - Id
+      - IsActive
+      - Names
+      - Options
+      - Ordering
+      - PostingMode
+      - Price
+      - Pricing
+      - Promotions
+      - ServiceId
+      - ShortNames
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the product.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service).
+          format: uuid
+        CategoryId:
+          type: string
+          description: Unique identifier of the Product category.
+          format: uuid
+          nullable: true
+        AccountingCategoryId:
+          type: string
+          description: Unique identifier of [Accounting Category](https://mews-systems.gitbook.io/connector-api/operations/accountingcategories/#accounting-category).
+          format: uuid
+          nullable: true
+        IsActive:
+          type: boolean
+          description: Whether the product is still active.
+        IsDefault:
+          type: boolean
+          deprecated: true
+        Name:
+          type: string
+          description: Name of the product. **Deprecated!** Please use Names
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `Names` instead.
+        Names:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the name.
+          x-schema-id: LocalizedStrings
+        ExternalName:
+          type: string
+          description: Name of the product meant to be displayed to customer. **Deprecated!** Please use ExternalNames
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `ExternalNames` instead.
+        ExternalNames:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of external name.
+          x-schema-id: LocalizedStrings
+        ShortName:
+          type: string
+          description: Short name of the product. **Deprecated!** Please use ShortNames
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `ShortNames` instead.
+        ShortNames:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of short name.
+          x-schema-id: LocalizedStrings
+        Description:
+          type: string
+          description: Description of the product. **Deprecated!** Please use Descriptions
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `Descriptions` instead.
+        Descriptions:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of descriptions.
+          nullable: true
+          x-schema-id: LocalizedStrings
+        Charging:
+          title: Product charging mode
+          allOf:
+          - $ref: '#/components/schemas/ProductChargingModeEnum'
+          description: '
+
+
+            Once
+
+
+            PerTimeUnit
+
+
+            PerPersonPerTimeUnit
+
+
+            PerPerson'
+          deprecated: true
+          x-enumNames:
+          - Once
+          - PerTimeUnit
+          - PerPersonPerTimeUnit
+          - PerPerson
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+        ChargingMode:
+          title: Product charging mode
+          allOf:
+          - $ref: '#/components/schemas/ProductChargingModeEnum'
+          description: 'Charging mode of the product.
+
+
+            Once
+
+
+            PerTimeUnit
+
+
+            PerPersonPerTimeUnit
+
+
+            PerPerson'
+          x-enumNames:
+          - Once
+          - PerTimeUnit
+          - PerPersonPerTimeUnit
+          - PerPerson
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+        Posting:
+          title: Product posting
+          allOf:
+          - $ref: '#/components/schemas/ProductPostingEnum'
+          description: '
+
+
+            Once
+
+
+            Daily'
+          deprecated: true
+          x-enumNames:
+          - Once
+          - Daily
+          x-enumDescriptions:
+          - ''
+          - ''
+        PostingMode:
+          title: Product posting mode
+          allOf:
+          - $ref: '#/components/schemas/ProductPostingModeEnum'
+          description: 'Charging mode of the product.
+
+
+            Once
+
+
+            PerTimeUnit'
+          x-enumNames:
+          - Once
+          - PerTimeUnit
+          x-enumDescriptions:
+          - ''
+          - ''
+        Options:
+          title: Product options
+          allOf:
+          - $ref: '#/components/schemas/ProductOptions'
+          description: Options of the product.
+        Promotions:
+          allOf:
+          - $ref: '#/components/schemas/Promotions'
+          description: Promotions of the product.
+        Classifications:
+          title: Product classifications
+          allOf:
+          - $ref: '#/components/schemas/ProductClassifications'
+          description: Classifications of the product.
+        Price:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Price representing price of the product.
+        Pricing:
+          title: Product pricing
+          type: object
+          properties:
+            Discriminator:
+              $ref: '#/components/schemas/ProductPricing'
+            Value:
+              oneOf:
+              - $ref: '#/components/schemas/ExtendedAmount'
+              - $ref: '#/components/schemas/RelativeProductPrice'
+          deprecated: true
+          x-coproduct: true
+          x-schema-id: ProductPricingCoproductOfProductPricing
+          x-deprecatedMessage: Use `Price` instead.
+        ImageIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifier of the product image.
+          nullable: true
+        Ordering:
+          type: integer
+          description: Order value for presentation purposes.
+          format: int32
+        ExternalIdentifier:
+          maxLength: 255
+          type: string
+          description: Identifier of the product from external system.
+          nullable: true
+        TaxExemptionReason:
+          allOf:
+          - $ref: '#/components/schemas/TaxExemptionReasonTypeEnum'
+          description: 'Specifies the reason a product is exempt from tax.
+
+
+            Unknown (Unknown tax exemption reason)
+
+
+            IT_N1 (N1 - Escluse ex art.15)
+
+
+            IT_N2_2 (N2.2 - Non soggette – altri casi)
+
+
+            IT_N3_5 (N3.5 - Non imponibili – a seguito di dichiarazioni d’intento)
+
+
+            IT_N4 (N4 - Esenti)
+
+
+            IT_N5 (N5 - Regime del margine / IVA non esposta in fattura)
+
+
+            PL_ZW (ZW - Zwolniony)
+
+
+            PL_NP (NP - Nie podlega)
+
+
+            DE_NATO (NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen)'
+          nullable: true
+        TaxExemptionLegalReference:
+          type: string
+          description: Legal reference that states why this product is exempt from tax.
+          nullable: true
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the product in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the product in UTC timezone in ISO 8601 format.
+          format: date-time
+        ConsumptionMoment:
+          title: Product consumption moment
+          allOf:
+          - $ref: '#/components/schemas/ProductConsumptionMomentEnum'
+          description: 'Consumption moment of the product.
+
+
+            ServiceOrderEnd
+
+
+            ServiceOrderStart
+
+
+            PostingTimeUnit
+
+
+            NextTimeUnit'
+          x-enumNames:
+          - ServiceOrderEnd
+          - ServiceOrderStart
+          - PostingTimeUnit
+          - NextTimeUnit
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+      additionalProperties: false
+      x-schema-id: Product
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount
+    ProductPriceUpdateParameters:
+      title: Product price update parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - PriceUpdates
+      - ProductId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        ProductId:
+          minLength: 1
+          type: string
+          description: Unique identifier of the `Product`.
+          x-schema-id: HybridIdentifier
+        PriceUpdates:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductPriceUpdate'
+          description: Price adjustments for specific time intervals.
+      additionalProperties: false
+      x-schema-id: ProductPriceUpdateParameters
+    Promotions:
+      title: Promotions
+      required:
+      - AfterCheckIn
+      - AfterCheckOut
+      - BeforeCheckIn
+      - BeforeCheckOut
+      - DuringCheckOut
+      - DuringStay
+      type: object
+      properties:
+        BeforeCheckIn:
+          type: boolean
+          description: Whether it can be promoted before check-in.
+        AfterCheckIn:
+          type: boolean
+          description: Whether it can be promoted after check-in.
+        DuringStay:
+          type: boolean
+          description: Whether it can be promoted during stay.
+        BeforeCheckOut:
+          type: boolean
+          description: Whether it can be promoted before check-out.
+        AfterCheckOut:
+          type: boolean
+          description: Whether it can be promoted after check-out.
+        DuringCheckOut:
+          type: boolean
+          description: Whether it can be promoted during check-out.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Promotions
+    TaxBreakdownItem:
+      title: Tax breakdown item
+      required:
+      - NetValue
+      - TaxValue
+      type: object
+      properties:
+        TaxRateCode:
+          type: string
+          description: Tax rate code for the item. `null` for untaxed amounts.
+          nullable: true
+        NetValue:
+          type: number
+          description: The net value that the tax is calculated from.
+          format: double
+        TaxValue:
+          type: number
+          description: The value of the tax.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxBreakdownItem

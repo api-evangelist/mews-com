@@ -1,0 +1,812 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Cancellation policies API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Cancellation policies
+paths:
+  /api/connector/v1/cancellationPolicies/getAll:
+    post:
+      tags:
+      - Cancellation policies
+      summary: Get all cancellation policies
+      description: "> ### Restricted!\n> This operation is currently in beta-test and as such it is subject to change.\nReturns all cancellation policies, filtered by services, rate groups and other filters. \nNote this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property)."
+      operationId: cancellationPolicies_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancellationPolicyFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              ServiceIds:
+              - e654f217-d1b5-46be-a820-e93ba568dfac
+              CancellationPolicyIds:
+              - fe795f96-0b64-445b-89ed-c032563f2bac
+              RateGroupIds:
+              - deb9444e-6897-4f2a-86b4-aff100c2896e
+              UpdatedUtc:
+                StartUtc: '2023-04-27T11:48:57Z'
+                EndUtc: '2023-04-27T11:48:57Z'
+              Limitation:
+                Count: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancellationPolicyResult'
+              example:
+                CancellationPolicies:
+                - Id: 769fc613-838f-41a7-ac2a-aff100c3189f
+                  RateGroupId: deb9444e-6897-4f2a-86b4-aff100c2896e
+                  CreatedUtc: '2023-04-27T11:48:57Z'
+                  UpdatedUtc: '2023-04-27T11:48:57Z'
+                  Applicability: Creation
+                  FeeExtent:
+                  - TimeUnits
+                  - Products
+                  ApplicabilityOffset: 0M0D0:0:0.0
+                  FeeMaximumTimeUnits: 0
+                  AbsoluteFee:
+                    Currency: EUR
+                    Value: 15
+                  RelativeFee: 0
+                Cursor: 769fc613-838f-41a7-ac2a-aff100c3189f
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/cancellationPolicies/getByReservations:
+    post:
+      tags:
+      - Cancellation policies
+      summary: Get cancellation policies by reservations
+      description: Gets cancellation policies for enterprise grouped by reservation for granular cancellation policies flow. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: cancellationPolicies_getByReservations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancellationPolicyByReservationParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ReservationIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancellationPolicyByReservationResult'
+              example:
+                CancellationPolicies:
+                - ReservationId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  Policies:
+                  - Applicability: Start
+                    FeeExtents:
+                    - TimeUnits
+                    - Products
+                    ApplicabilityOffset: P10DT20H30M
+                    FeeMaximumTimeUnits: 1
+                    AbsoluteFee:
+                      Currency: EUR
+                      Value: 20.0
+                    RelativeFee: 0.1
+                - ReservationId: 4d0201db-36f5-428b-8d11-4f0a65e960cc
+                  Policies:
+                  - Applicability: Start
+                    FeeExtents:
+                    - TimeUnits
+                    - Products
+                    ApplicabilityOffset: P5DT10H30M
+                    FeeMaximumTimeUnits: 2
+                    AbsoluteFee:
+                      Currency: EUR
+                      Value: 15.0
+                    RelativeFee: 0.4
+                  - Applicability: Start
+                    FeeExtents:
+                    - TimeUnits
+                    - Products
+                    ApplicabilityOffset: P10DT10H30M
+                    FeeMaximumTimeUnits: 2
+                    AbsoluteFee:
+                      Currency: EUR
+                      Value: 15.0
+                    RelativeFee: 0.2
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+      x-restricted: true
+  /api/connector/v1/cancellationPolicies/getByRates:
+    post:
+      tags:
+      - Cancellation policies
+      summary: Get cancellation policies by rates
+      description: Gets cancellation policies for enterprise grouped by rate for granular cancellation policies flow. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: cancellationPolicies_getByRates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancellationPolicyByRateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              RateIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancellationPolicyByRateResult'
+              example:
+                CancellationPolicies:
+                - RateId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  Policies:
+                  - Applicability: Start
+                    FeeExtents:
+                    - TimeUnits
+                    - Products
+                    ApplicabilityOffset: P10DT20H30M
+                    FeeMaximumTimeUnits: 1
+                    AbsoluteFee:
+                      Currency: EUR
+                      Value: 20.0
+                    RelativeFee: 0.1
+                - RateId: 4d0201db-36f5-428b-8d11-4f0a65e960cc
+                  Policies:
+                  - Applicability: Start
+                    FeeExtents:
+                    - TimeUnits
+                    - Products
+                    ApplicabilityOffset: P5DT10H30M
+                    FeeMaximumTimeUnits: 2
+                    AbsoluteFee:
+                      Currency: EUR
+                      Value: 15.0
+                    RelativeFee: 0.4
+                  - Applicability: Start
+                    FeeExtents:
+                    - TimeUnits
+                    - Products
+                    ApplicabilityOffset: P10DT10H30M
+                    FeeMaximumTimeUnits: 2
+                    AbsoluteFee:
+                      Currency: EUR
+                      Value: 15.0
+                    RelativeFee: 0.2
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+      x-restricted: true
+components:
+  schemas:
+    CancellationPolicyApplicabilityEnum:
+      title: Cancellation Policy Applicability
+      enum:
+      - Creation
+      - Start
+      - StartDate
+      type: string
+      description: 'Applicability mode of the cancellation policy.
+
+
+        Creation
+
+
+        Start
+
+
+        StartDate'
+      x-enumNames:
+      - Creation
+      - Start
+      - StartDate
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+    CancellationFeeExtentEnum:
+      title: Cancellation Fee Extent
+      enum:
+      - Nothing
+      - TimeUnits
+      - Products
+      - Everything
+      type: string
+      description: 'Extent for the cancellation fee, i.e. what should be in scope for the automatic payment.
+
+
+        Nothing
+
+
+        TimeUnits
+
+
+        Products
+
+
+        Everything'
+      x-enumNames:
+      - Nothing
+      - TimeUnits
+      - Products
+      - Everything
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    CancellationPolicyByRateResult:
+      title: CancellationPolicyByRateResult
+      required:
+      - CancellationPolicies
+      type: object
+      properties:
+        CancellationPolicies:
+          maxItems: 1300
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationPolicyByRate'
+          description: List of cancellation policies data grouped by rate.
+      additionalProperties: false
+      x-schema-id: CancellationPolicyByRateResult
+    CancellationPolicyFilterParameters:
+      title: CancellationPolicyFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ServiceIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        ServiceIds:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service).
+        CancellationPolicyIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Cancellation Policy](https://mews-systems.gitbook.io/connector-api/operations/#cancellationpolicy). Required if no other filter is provided.
+          nullable: true
+        RateGroupIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Rate group](https://mews-systems.gitbook.io/connector-api/operations/rates/#rategroup). Required if no other filter is provided.
+          nullable: true
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the Cancellation Policy was updated. Required if no other filter is provided.
+          nullable: true
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted, or both types of record. If not specified, only active records will be returned.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CancellationPolicyFilterParameters
+    CurrencyValue:
+      title: Currency value (ver 2023-02-02)
+      required:
+      - Currency
+      - Value
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the `Currency`.
+          format: currency
+        Value:
+          type: number
+          description: Amount in the currency.
+          format: double
+      additionalProperties: false
+      description: Absolute value of the fee.
+      x-schema-id: CurrencyValue
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    CancellationPolicyData:
+      title: Cancellation policy data
+      required:
+      - AbsoluteFee
+      - Applicability
+      - ApplicabilityOffset
+      - FeeExtents
+      - RelativeFee
+      type: object
+      properties:
+        Applicability:
+          title: Cancellation Policy Applicability
+          allOf:
+          - $ref: '#/components/schemas/CancellationPolicyApplicabilityEnum'
+          description: 'Applicability mode of the cancellation policy.
+
+
+            Creation
+
+
+            Start
+
+
+            StartDate'
+          x-enumNames:
+          - Creation
+          - Start
+          - StartDate
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+        FeeExtents:
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationFeeExtentEnum'
+          description: Extent for the cancellation fee, i.e. what should be in scope for the automatic payment.
+        ApplicabilityOffset:
+          minLength: 1
+          type: string
+          description: Offset for order start (assuming Applicability is set to Start) from which the fee is applied in ISO 8601 duration format.
+        FeeMaximumTimeUnits:
+          type: integer
+          description: Maximum number of time units the cancellation fee is applicable to.
+          format: int32
+          nullable: true
+        AbsoluteFee:
+          title: Currency value (ver 2023-02-02)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValue'
+          description: Absolute value of the fee.
+        RelativeFee:
+          type: number
+          description: Relative value of the fee, as a percentage of the reservation price.
+          format: double
+      additionalProperties: false
+      x-schema-id: CancellationPolicyData
+    CancellationPolicyByReservationResult:
+      title: CancellationPolicyByReservationResult
+      required:
+      - CancellationPolicies
+      type: object
+      properties:
+        CancellationPolicies:
+          maxItems: 1300
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationPolicyByReservation'
+          description: List of cancellation policies data grouped by reservation.
+      additionalProperties: false
+      x-schema-id: CancellationPolicyByReservationResult
+    CancellationFeeExtent:
+      title: Cancellation Fee Extent
+      enum:
+      - TimeUnits
+      - Products
+      type: string
+      description: Extent for the cancellation fee, i.e. what should be in scope for the automatic payment.
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    CancellationPolicyByReservation:
+      title: Cancellation policy data grouped by reservation
+      required:
+      - Policies
+      - ReservationId
+      type: object
+      properties:
+        ReservationId:
+          type: string
+          description: Unique identifier of the reservation.
+          format: uuid
+        Policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationPolicyData'
+          description: Collection of cancellation policy data.
+      additionalProperties: false
+      x-schema-id: CancellationPolicyByReservation
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    CancellationPolicyByRate:
+      title: Cancellation policy data grouped by rate
+      required:
+      - Policies
+      - RateId
+      type: object
+      properties:
+        RateId:
+          type: string
+          description: Unique identifier of the `Rate`.
+          format: uuid
+        Policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationPolicyData'
+          description: Collection of cancellation policy data.
+      additionalProperties: false
+      x-schema-id: CancellationPolicyByRate
+    CancellationPolicy:
+      title: Cancellation Policy
+      required:
+      - AbsoluteFee
+      - Applicability
+      - ApplicabilityOffset
+      - CreatedUtc
+      - FeeExtent
+      - Id
+      - IsActive
+      - RateGroupId
+      - RelativeFee
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the cancellation policy.
+          format: uuid
+        RateGroupId:
+          type: string
+          description: Unique identifier of the rate group the cancellation policy belongs to.
+          format: uuid
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the cancellation policy creation in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the cancellation policy update in UTC timezone in ISO 8601 format.
+          format: date-time
+        Applicability:
+          $ref: '#/components/schemas/CancellationPolicyApplicability'
+        FeeExtent:
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationFeeExtent'
+          description: Extent for the cancellation fee, i.e. what should be in scope for the automatic payment.
+        ApplicabilityOffset:
+          minLength: 1
+          type: string
+          description: Offset for order start (assuming Applicability is set to Start) from which the fee is applied.
+        FeeMaximumTimeUnits:
+          type: integer
+          description: Maximum number of time units the cancellation fee is applicable to.
+          format: int32
+          nullable: true
+        AbsoluteFee:
+          title: Currency value (ver 2023-02-02)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValue'
+          description: Absolute value of the fee.
+        RelativeFee:
+          type: number
+          description: Relative value of the fee, as a percentage of the reservation price.
+          format: double
+        IsActive:
+          type: boolean
+          description: Whether the cancellation policy is still active.
+      additionalProperties: false
+      x-schema-id: CancellationPolicy
+    CancellationPolicyByRateParameters:
+      title: CancellationPolicyByRateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - RateIds
+      - ReservationEndUtc
+      - ReservationStartUtc
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        RateIds:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Rate`.
+        ReservationStartUtc:
+          minLength: 1
+          type: string
+          description: Start of the reservation interval in UTC timezone in ISO 8601 format.
+          format: date-time
+        ReservationEndUtc:
+          minLength: 1
+          type: string
+          description: End of the reservation interval in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: CancellationPolicyByRateParameters
+    CancellationPolicyResult:
+      title: CancellationPolicyResult
+      required:
+      - CancellationPolicies
+      type: object
+      properties:
+        CancellationPolicies:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationPolicy'
+          description: The filtered cancellation policies.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest cancellation policy returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older cancellation policies.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CancellationPolicyResult
+    CancellationPolicyApplicability:
+      title: Cancellation Policy Applicability
+      enum:
+      - Creation
+      - Start
+      - StartDate
+      type: string
+      description: Applicability mode of the cancellation policy.
+    CancellationPolicyByReservationParameters:
+      title: CancellationPolicyByReservationParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - ReservationIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ReservationIds:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Reservation`.
+      additionalProperties: false
+      x-schema-id: CancellationPolicyByReservationParameters

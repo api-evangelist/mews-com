@@ -1,0 +1,814 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Addresses API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Addresses
+paths:
+  /api/connector/v1/addresses/getAll:
+    post:
+      tags:
+      - Addresses
+      summary: Get all addresses
+      description: "Returns all addresses associated with the specified accounts within the enterprise. \nNote this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property)."
+      operationId: addresses_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ChainIds:
+              - 1df21f06-0cfc-4960-9c58-a3bf1261663e
+              - 5fcd1933-22f2-40b9-84da-7db04cbecec2
+              AccountIds:
+              - 3db2c989-7d95-42b4-a502-a9f246db1634
+              AddressIds:
+              - fc7b2df3-de66-48a6-907d-af4600ecd892
+              UpdatedUtc:
+                StartUtc: '2022-12-10T00:00:00Z'
+                EndUtc: '2022-12-17T00:00:00Z'
+              ActivityStates:
+              - Active
+              Limitation:
+                Count: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressResultPage'
+              example:
+                Addresses:
+                - Id: fc7b2df3-de66-48a6-907d-af4600ecd892
+                  AccountId: 3db2c989-7d95-42b4-a502-a9f246db1634
+                  AccountType: Customer
+                  Line1: I.P. Pavlova 5
+                  Line2: null
+                  City: Prague
+                  PostalCode: '12000'
+                  CountryCode: CZ
+                  CountrySubdivisionCode: null
+                  Latitude: null
+                  Longitude: null
+                  UpdatedUtc: '2023-11-29T14:49:29.982Z'
+                  IsActive: true
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/addresses/add:
+    post:
+      tags:
+      - Addresses
+      summary: Add addresses
+      description: Adds one or more new addresses to the system and assigns them to specified accounts. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      operationId: addresses_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleAddressAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ChainId: 1df21f06-0cfc-4960-9c58-a3bf1261663e
+              Addresses:
+              - AccountId: 3db2c989-7d95-42b4-a502-a9f246db1634
+                Line1: Rheinlanddamm 207-209
+                Line2: null
+                City: Dortmund
+                PostalCode: '44137'
+                CountryCode: DE
+                CountrySubdivisionCode: null
+                Latitude: null
+                Longitude: null
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressResult'
+              example:
+                Addresses:
+                - Id: fc7b2df3-de66-48a6-907d-af4600ecd892
+                  AccountId: 3db2c989-7d95-42b4-a502-a9f246db1634
+                  AccountType: Customer
+                  Line1: I.P. Pavlova 5
+                  Line2: null
+                  City: Prague
+                  PostalCode: '12000'
+                  CountryCode: CZ
+                  CountrySubdivisionCode: null
+                  Latitude: null
+                  Longitude: null
+                  UpdatedUtc: '2023-11-29T14:49:29.982Z'
+                  IsActive: true
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/addresses/update:
+    post:
+      tags:
+      - Addresses
+      summary: Update addresses
+      description: Updates one or more existing addresses in the system, assigned to specified accounts. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      operationId: addresses_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleAddressUpdateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ChainId: 1df21f06-0cfc-4960-9c58-a3bf1261663e
+              AddressUpdates:
+              - AddressId: fc7b2df3-de66-48a6-907d-af4600ecd892
+                AccountId: 3db2c989-7d95-42b4-a502-a9f246db1634
+                Line1:
+                  Value: I.P. Pavlova 5
+                Line2:
+                  Value: null
+                City:
+                  Value: Prague
+                PostalCode:
+                  Value: '12000'
+                CountryCode:
+                  Value: CZ
+                CountrySubdivisionCode:
+                  Value: null
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressResult'
+              example:
+                Addresses:
+                - Id: fc7b2df3-de66-48a6-907d-af4600ecd892
+                  AccountId: 3db2c989-7d95-42b4-a502-a9f246db1634
+                  AccountType: Customer
+                  Line1: I.P. Pavlova 5
+                  Line2: null
+                  City: Prague
+                  PostalCode: '12000'
+                  CountryCode: CZ
+                  CountrySubdivisionCode: null
+                  Latitude: null
+                  Longitude: null
+                  UpdatedUtc: '2023-11-29T14:49:29.982Z'
+                  IsActive: true
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/addresses/delete:
+    post:
+      tags:
+      - Addresses
+      summary: Delete addresses
+      description: Deletes one or more addresses in the system. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      operationId: addresses_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressDeleteParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ChainId: 1df21f06-0cfc-4960-9c58-a3bf1261663e
+              AddressIds:
+              - cefa640f-43fa-4a02-8d20-f97f68e19ed5
+              - 44108366-8e9b-4007-844b-8ebcca4ac009
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    AddressAddParameters:
+      title: Account address parameters
+      required:
+      - AccountId
+      type: object
+      properties:
+        AccountId:
+          type: string
+          description: Unique identifier of a Company or a Customer within the enterprise.
+          format: uuid
+        Line1:
+          maxLength: 255
+          type: string
+          description: First line of the address.
+          nullable: true
+        Line2:
+          maxLength: 255
+          type: string
+          description: Second line of the address.
+          nullable: true
+        City:
+          maxLength: 255
+          type: string
+          description: The city.
+          nullable: true
+        PostalCode:
+          maxLength: 255
+          type: string
+          description: Postal code.
+          format: postal-code
+          nullable: true
+        CountryCode:
+          type: string
+          description: ISO 3166-1 alpha-2 code of the Country.
+          nullable: true
+        CountrySubdivisionCode:
+          type: string
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
+          nullable: true
+        Latitude:
+          maximum: 90
+          minimum: -90
+          type: number
+          description: The latitude in range of -90 to 90.
+          format: double
+          nullable: true
+        Longitude:
+          maximum: 180
+          minimum: -180
+          type: number
+          description: The longitude in range of -180 to 180.
+          format: double
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AddressAddParameters
+    AddressFilterParameters:
+      title: AddressFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        ChainIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
+          nullable: true
+        AccountIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Companies](https://mews-systems.gitbook.io/connector-api/operations/companies/#company) or [Customers](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) within the enterprise. Required if no other filter is provided.
+          nullable: true
+        AddressIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Addresses](https://mews-systems.gitbook.io/connector-api/operations/#account-address) within the enterprise. Use this property if you want to fetch specific addresses. Required if no other filter is provided.
+          nullable: true
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval of Address last update date and time. Required if no other filter is provided.
+          nullable: true
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AddressFilterParameters
+    AccountAddress:
+      title: Account address
+      required:
+      - AccountType
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the address.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of a [Company](https://mews-systems.gitbook.io/connector-api/operations/companies/#company) or a [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) within the enterprise.
+          format: uuid
+        ChainId:
+          type: string
+          description: Unique identifier of the chain.
+          format: uuid
+          nullable: true
+        AccountType:
+          $ref: '#/components/schemas/AccountType'
+        Line1:
+          maxLength: 1023
+          type: string
+          description: First line of the address.
+          nullable: true
+        Line2:
+          maxLength: 255
+          type: string
+          description: Second line of the address.
+          nullable: true
+        City:
+          maxLength: 255
+          type: string
+          description: The city.
+          nullable: true
+        PostalCode:
+          maxLength: 255
+          type: string
+          description: Postal code.
+          nullable: true
+        CountryCode:
+          type: string
+          description: ISO 3166-1 alpha-2 code of the Country.
+          nullable: true
+        CountrySubdivisionCode:
+          type: string
+          description: ISO 3166-2 code of the administrative division, e.g. DE-BW.
+          nullable: true
+        Latitude:
+          type: number
+          description: The latitude.
+          format: double
+          nullable: true
+        Longitude:
+          type: number
+          description: The longitude.
+          format: double
+          nullable: true
+        UpdatedUtc:
+          type: string
+          description: Last update date and time of the address in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        IsActive:
+          type: boolean
+          description: Whether the address is still active.
+      additionalProperties: false
+      x-schema-id: AccountAddress
+    AccountType:
+      title: Account type
+      enum:
+      - Company
+      - Customer
+      type: string
+      description: A discriminator specifying the account type, e.g. `Customer` or `Company`
+    Unit:
+      type: object
+      additionalProperties: false
+    MultipleAddressAddParameters:
+      title: MultipleAddressAddParameters
+      required:
+      - AccessToken
+      - Addresses
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        Addresses:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressAddParameters'
+          description: Collection of addresses to be created.
+      additionalProperties: false
+      x-schema-id: MultipleAddressAddParameters
+    AddressDeleteParameters:
+      title: AddressDeleteParameters
+      required:
+      - AccessToken
+      - AddressIds
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        AddressIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Addresses](https://mews-systems.gitbook.io/connector-api/operations/#account-address) within the enterprise to be deleted.
+      additionalProperties: false
+      x-schema-id: AddressDeleteParameters
+    AddressResult:
+      title: AddressResult
+      required:
+      - Addresses
+      type: object
+      properties:
+        Addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountAddress'
+          description: The collection of added or modified Account addresses, containing address and account information.
+      additionalProperties: false
+      x-schema-id: AddressResult
+    AddressUpdateParameters:
+      title: Account address update parameters
+      required:
+      - AddressId
+      type: object
+      properties:
+        AddressId:
+          type: string
+          description: Unique identifier of the address.
+          format: uuid
+        Line1:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: First line of the address.
+          nullable: true
+        Line2:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Second line of the address.
+          nullable: true
+        City:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The city.
+          nullable: true
+        PostalCode:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Postal code.
+          format: postal-code
+          nullable: true
+        CountryCode:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: ISO 3166-1 alpha-2 code of the Country.
+          nullable: true
+        CountrySubdivisionCode:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AddressUpdateParameters
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    AddressResultPage:
+      title: AddressResultPage
+      required:
+      - Addresses
+      type: object
+      properties:
+        Addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountAddress'
+          description: The collection of Account addresses, containing address and account information.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest address item returned. This can be used in Limitation in a subsequent request to fetch the next batch of older Account address.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AddressResultPage
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    MultipleAddressUpdateParameters:
+      title: MultipleAddressUpdateParameters
+      required:
+      - AccessToken
+      - AddressUpdates
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        AddressUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressUpdateParameters'
+          description: Collection of addresses to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleAddressUpdateParameters
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation

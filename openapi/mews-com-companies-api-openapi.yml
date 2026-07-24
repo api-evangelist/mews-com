@@ -1,0 +1,1494 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Companies API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Companies
+paths:
+  /api/connector/v1/companies/add:
+    post:
+      tags:
+      - Companies
+      summary: Add company
+      description: Adds a new company. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      operationId: companies_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ChainId: 1df21f06-0cfc-4960-9c58-a3bf1261663e
+              Name: Mews
+              Options:
+                Invoiceable: true
+                AddFeesToInvoices: true
+              MotherCompanyId: null
+              Identifier: null
+              TaxIdentifier: null
+              AdditionalTaxIdentifier: null
+              BillingCode: null
+              AccountingCode: null
+              Address: null
+              InvoiceDueInterval: P2DT23H
+              Telephone: 111-222-333
+              ContacPerson: SamplePerson
+              Contact: ContactInfo
+              Notes: Note1
+              Iata: PAO
+              Department: Sales
+              DunsNumber: '987654321'
+              CreditRating:
+                Basic: CreditOk
+              ExternalIdentifier: '1234'
+              ReferenceIdentifier: a58ff7cb-77e3-495a-bd61-aecf00a3f19d
+              WebsiteUrl: https://www.mews.com
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResult'
+              example:
+                Companies:
+                - Id: a58ff7cb-77e3-495a-bd61-aecf00a3f19d
+                  ChainId: 1df21f06-0cfc-4960-9c58-a3bf1261663e
+                  Name: Sample Company 1
+                  IsActive: true
+                  Number: 11
+                  Identifier: null
+                  TaxIdentifier: null
+                  AdditionalTaxIdentifier: null
+                  ElectronicInvoiceIdentifier: null
+                  InvoiceDueInterval: P2DT23H
+                  AccountingCode: null
+                  MotherCompanyId: null
+                  CreatedUtc: '2022-07-11T09:56:54Z'
+                  UpdatedUtc: '2022-07-11T09:56:54Z'
+                  AddressId: bab7441c-4b82-43bc-8001-ab0400a346ec
+                  BillingCode: null
+                  Iata: PAO
+                  Telephone: 111-222-333
+                  InvoicingEmail: sample1@mews.com
+                  ContacPerson: Sample Person 1
+                  Contact: Contact Info 1
+                  Notes: Note 1
+                  Options:
+                    Invoiceable: true
+                    AddFeesToInvoices: true
+                  Department: Sales
+                  DunsNumber: '123456789'
+                  CreditRating:
+                    Basic: PaymentRequiredUpfront
+                  ReferenceIdentifier: da34b396-77e3-495a-bd61-aecf00a3f19d
+                  WebsiteUrl: https://www.mewssystems.com
+                  ExternalIdentifier: company0001
+                - Id: da34b396-41f7-47f6-8847-aecf00a3f19e
+                  ChainId: 5fcd1933-22f2-40b9-84da-7db04cbecec2
+                  Name: Sample Company 2
+                  IsActive: true
+                  Number: 12
+                  Identifier: null
+                  TaxIdentifier: null
+                  AdditionalTaxIdentifier: null
+                  ElectronicInvoiceIdentifier: null
+                  InvoiceDueInterval: P2DT23H
+                  AccountingCode: null
+                  MotherCompanyId: null
+                  CreatedUtc: '2022-07-11T09:56:54Z'
+                  UpdatedUtc: '2022-07-11T09:56:54Z'
+                  AddressId: null
+                  BillingCode: null
+                  Iata: PAO
+                  Telephone: 111-222-333
+                  InvoicingEmail: sample2@mews.com
+                  ContacPerson: Sample Person 2
+                  Contact: Contact Info 2
+                  Notes: Note 2
+                  Options:
+                    Invoiceable: true
+                    AddFeesToInvoices: false
+                  Department: Accounting
+                  DunsNumber: '987654321'
+                  CreditRating:
+                    Basic: CreditOk
+                  ReferenceIdentifier: a58ff7cb-77e3-495a-bd61-aecf00a3f19d
+                  WebsiteUrl: https://www.mews.com
+                  ExternalIdentifier: company0002
+                Cursor: da34b396-41f7-47f6-8847-aecf00a3f19e
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/companies/update:
+    post:
+      tags:
+      - Companies
+      summary: Update company
+      description: Updates information of the company. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      operationId: companies_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyUpdateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ChainId: 1df21f06-0cfc-4960-9c58-a3bf1261663e
+              CompanyId: 7a1e4d67-d6a2-4a4c-a464-ab1100bea786
+              Name:
+                Value: Sample company name
+              Options:
+                Invoiceable:
+                  Value: true
+                AddFeesToInvoices:
+                  Value: false
+              MotherCompanyId:
+                Value: ff649bce-0c4b-4395-9cdd-02039acb7cb3
+              Identifier: null
+              TaxIdentifier: null
+              AdditionalTaxIdentifier: null
+              BillingCode: null
+              AccountingCode: null
+              InvoiceDueInterval:
+                Value: P2DT23H
+              ContactPerson:
+                Value: John Snow
+              Contact:
+                Value: John Snow
+              Notes:
+                Value: Notes
+              Iata:
+                Value: PAO
+              Department:
+                Value: Marketing
+              DunsNumber:
+                Value: '123456789'
+              CreditRating:
+                Basic:
+                  Value: PaymentRequiredUpfront
+              ExternalIdentifier:
+                Value: '4321'
+              ReferenceIdentifier:
+                Value: ff64395-9cdd-4395-9cdd-02039acb7cb3
+              WebsiteUrl:
+                Value: https://www.mews.com
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResult'
+              example:
+                Companies:
+                - Id: a58ff7cb-77e3-495a-bd61-aecf00a3f19d
+                  ChainId: 1df21f06-0cfc-4960-9c58-a3bf1261663e
+                  Name: Sample Company 1
+                  IsActive: true
+                  Number: 11
+                  Identifier: null
+                  TaxIdentifier: null
+                  AdditionalTaxIdentifier: null
+                  ElectronicInvoiceIdentifier: null
+                  InvoiceDueInterval: P2DT23H
+                  AccountingCode: null
+                  MotherCompanyId: null
+                  CreatedUtc: '2022-07-11T09:56:54Z'
+                  UpdatedUtc: '2022-07-11T09:56:54Z'
+                  AddressId: bab7441c-4b82-43bc-8001-ab0400a346ec
+                  BillingCode: null
+                  Iata: PAO
+                  Telephone: 111-222-333
+                  InvoicingEmail: sample1@mews.com
+                  ContacPerson: Sample Person 1
+                  Contact: Contact Info 1
+                  Notes: Note 1
+                  Options:
+                    Invoiceable: true
+                    AddFeesToInvoices: true
+                  Department: Sales
+                  DunsNumber: '123456789'
+                  CreditRating:
+                    Basic: PaymentRequiredUpfront
+                  ReferenceIdentifier: da34b396-77e3-495a-bd61-aecf00a3f19d
+                  WebsiteUrl: https://www.mewssystems.com
+                  ExternalIdentifier: company0001
+                - Id: da34b396-41f7-47f6-8847-aecf00a3f19e
+                  ChainId: 5fcd1933-22f2-40b9-84da-7db04cbecec2
+                  Name: Sample Company 2
+                  IsActive: true
+                  Number: 12
+                  Identifier: null
+                  TaxIdentifier: null
+                  AdditionalTaxIdentifier: null
+                  ElectronicInvoiceIdentifier: null
+                  InvoiceDueInterval: P2DT23H
+                  AccountingCode: null
+                  MotherCompanyId: null
+                  CreatedUtc: '2022-07-11T09:56:54Z'
+                  UpdatedUtc: '2022-07-11T09:56:54Z'
+                  AddressId: null
+                  BillingCode: null
+                  Iata: PAO
+                  Telephone: 111-222-333
+                  InvoicingEmail: sample2@mews.com
+                  ContacPerson: Sample Person 2
+                  Contact: Contact Info 2
+                  Notes: Note 2
+                  Options:
+                    Invoiceable: true
+                    AddFeesToInvoices: false
+                  Department: Accounting
+                  DunsNumber: '987654321'
+                  CreditRating:
+                    Basic: CreditOk
+                  ReferenceIdentifier: a58ff7cb-77e3-495a-bd61-aecf00a3f19d
+                  WebsiteUrl: https://www.mews.com
+                  ExternalIdentifier: company0002
+                Cursor: da34b396-41f7-47f6-8847-aecf00a3f19e
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/companies/getAll:
+    post:
+      tags:
+      - Companies
+      summary: Get all companies
+      description: 'Returns all company profiles of the enterprise, possibly filtered by identifiers, names or other filters.
+
+        Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).'
+      operationId: companies_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ChainIds:
+              - 1df21f06-0cfc-4960-9c58-a3bf1261663e
+              - 5fcd1933-22f2-40b9-84da-7db04cbecec2
+              Ids:
+              - 3ed9e2f3-4bba-4df6-8d41-ab1b009b6425
+              - 8a98965a-7c03-48a1-a28c-ab1b009b53c8
+              Names:
+              - AC Company
+              CreatedUtc:
+                StartUtc: '2019-12-05T00:00:00Z'
+                EndUtc: '2019-12-10T00:00:00Z'
+              UpdatedUtc:
+                StartUtc: '2019-12-10T00:00:00Z'
+                EndUtc: '2019-12-17T00:00:00Z'
+              ExternalIdentifiers:
+              - '12345'
+              - '4312343'
+              Limitation:
+                Count: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyResult'
+              example:
+                Companies:
+                - Id: a58ff7cb-77e3-495a-bd61-aecf00a3f19d
+                  ChainId: 1df21f06-0cfc-4960-9c58-a3bf1261663e
+                  Name: Sample Company 1
+                  IsActive: true
+                  Number: 11
+                  Identifier: null
+                  TaxIdentifier: null
+                  AdditionalTaxIdentifier: null
+                  ElectronicInvoiceIdentifier: null
+                  InvoiceDueInterval: P2DT23H
+                  AccountingCode: null
+                  MotherCompanyId: null
+                  CreatedUtc: '2022-07-11T09:56:54Z'
+                  UpdatedUtc: '2022-07-11T09:56:54Z'
+                  AddressId: bab7441c-4b82-43bc-8001-ab0400a346ec
+                  BillingCode: null
+                  Iata: PAO
+                  Telephone: 111-222-333
+                  InvoicingEmail: sample1@mews.com
+                  ContacPerson: Sample Person 1
+                  Contact: Contact Info 1
+                  Notes: Note 1
+                  Options:
+                    Invoiceable: true
+                    AddFeesToInvoices: true
+                  Department: Sales
+                  DunsNumber: '123456789'
+                  CreditRating:
+                    Basic: PaymentRequiredUpfront
+                  ReferenceIdentifier: da34b396-77e3-495a-bd61-aecf00a3f19d
+                  WebsiteUrl: https://www.mewssystems.com
+                  ExternalIdentifier: company0001
+                - Id: da34b396-41f7-47f6-8847-aecf00a3f19e
+                  ChainId: 5fcd1933-22f2-40b9-84da-7db04cbecec2
+                  Name: Sample Company 2
+                  IsActive: true
+                  Number: 12
+                  Identifier: null
+                  TaxIdentifier: null
+                  AdditionalTaxIdentifier: null
+                  ElectronicInvoiceIdentifier: null
+                  InvoiceDueInterval: P2DT23H
+                  AccountingCode: null
+                  MotherCompanyId: null
+                  CreatedUtc: '2022-07-11T09:56:54Z'
+                  UpdatedUtc: '2022-07-11T09:56:54Z'
+                  AddressId: null
+                  BillingCode: null
+                  Iata: PAO
+                  Telephone: 111-222-333
+                  InvoicingEmail: sample2@mews.com
+                  ContacPerson: Sample Person 2
+                  Contact: Contact Info 2
+                  Notes: Note 2
+                  Options:
+                    Invoiceable: true
+                    AddFeesToInvoices: false
+                  Department: Accounting
+                  DunsNumber: '987654321'
+                  CreditRating:
+                    Basic: CreditOk
+                  ReferenceIdentifier: a58ff7cb-77e3-495a-bd61-aecf00a3f19d
+                  WebsiteUrl: https://www.mews.com
+                  ExternalIdentifier: company0002
+                Cursor: da34b396-41f7-47f6-8847-aecf00a3f19e
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/companies/delete:
+    post:
+      tags:
+      - Companies
+      summary: Delete companies
+      description: Deletes specified companies.
+      operationId: companies_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleCompanyDeleteParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              CompanyIds:
+              - eb02cbff-353d-48ec-97da-7def2305a5c5
+              - 63551515-1740-49b3-914e-309a8b1429f0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    CompanyTimeFilter:
+      title: Company Time Filter
+      enum:
+      - Created
+      - Updated
+      type: string
+    AddressParameters:
+      title: Address parameters
+      type: object
+      properties:
+        Line1:
+          type: string
+          description: First line of the address.
+          nullable: true
+        Line2:
+          type: string
+          description: Second line of the address.
+          nullable: true
+        City:
+          type: string
+          description: The city.
+          nullable: true
+        PostalCode:
+          type: string
+          description: Postal code.
+          format: postal-code
+          nullable: true
+        CountryCode:
+          type: string
+          description: ISO 3166-1 code of the Country.
+          nullable: true
+        CountrySubdivisionCode:
+          type: string
+          description: ISO 3166-2 code of the administrative division, e.g. DE-BW
+          nullable: true
+      additionalProperties: false
+      description: New address details.
+      x-schema-id: AddressParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    Unit:
+      type: object
+      additionalProperties: false
+    CompanyUpdateParameters:
+      title: CompanyUpdateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CompanyId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        CompanyId:
+          type: string
+          description: Unique identifier of the [Company](https://mews-systems.gitbook.io/connector-api/operations/#company).
+          format: uuid
+        Name:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Name of the company (or `null` if the name should not be updated).
+          nullable: true
+        MotherCompanyId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidNullableUpdateValue'
+          description: Unique identifier of the mother company (or `null` if the mother company should not be updated).
+          nullable: true
+        InvoicingEmail:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Email for issuing invoices to the company  (or `null` if the email for issuing invoices should not be updated).
+          format: email
+          nullable: true
+        WebsiteUrl:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The website url of the company (or `null` if the website url should not be updated).
+          format: uri
+          nullable: true
+        InvoiceDueInterval:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The maximum time, when the invoice has to be be paid in ISO 8601 duration format (or `null` if the interval should not be updated).
+          nullable: true
+        Options:
+          title: Company update options
+          allOf:
+          - $ref: '#/components/schemas/CompanyOptionUpdateParameters'
+          description: Options of the company (or `null` if the company options should not be updated).
+          nullable: true
+        CreditRating:
+          title: Credit rating update parameters
+          allOf:
+          - $ref: '#/components/schemas/CreditRatingUpdateParameters'
+          description: Credit rating to define creditworthiness of the company (or `null` if the credit rating should not be updated).
+          nullable: true
+        Department:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The internal segmentation of a company, e.g. sales department (or `null` if the department should not be updated).
+          nullable: true
+        DunsNumber:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The Dun & Bradstreet unique 9-digit DUNS number (or `null` if the Duns number should not be updated).
+          nullable: true
+        ReferenceIdentifier:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: External system identifier - custom identifier used by an external system such as an external database (or `null` if the identifier should not be updated).
+          nullable: true
+        AccountingCode:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Accounting code of the company (or `null` if the accounting code should not be updated).
+          nullable: true
+        AdditionalTaxIdentifier:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Additional tax identifier of the company (or `null` if the additional tax identifier should not be updated).
+          nullable: true
+        BillingCode:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Billing code of the company (or `null` if the billing code should not be updated).
+          nullable: true
+        Contact:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Other contact details, such as telephone, email or similar (or `null` if the contact should not be updated).
+          nullable: true
+        ContactPerson:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Contact person of the company (or `null` if the contact person should not be updated).
+          nullable: true
+        Identifier:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Fiscal or legal identifier of the company (or `null` if the identifier should not be updated).
+          nullable: true
+        Iata:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Iata of the company (or `null` if the Iata should not be updated).
+          nullable: true
+        Notes:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Notes of the company (or `null` if the notes should not be updated).
+          nullable: true
+        TaxIdentifier:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Tax identification number of the company (or `null` if the tax identifier should not be updated).
+          nullable: true
+        Telephone:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Contact telephone number (or `null` if the telephone number should not be updated).
+          format: tel
+          nullable: true
+        ExternalIdentifier:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Identifier of the company from external system (or `null` if the External Identifier should not be updated).
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CompanyUpdateParameters
+    OldAddress:
+      title: Address
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the address.
+          format: uuid
+        Line1:
+          type: string
+          description: First line of the address.
+          nullable: true
+        Line2:
+          type: string
+          description: Second line of the address.
+          nullable: true
+        City:
+          type: string
+          description: The city.
+          nullable: true
+        PostalCode:
+          type: string
+          description: Postal code.
+          nullable: true
+        CountryCode:
+          type: string
+          description: ISO 3166-1 code of the `Country`.
+          nullable: true
+        CountrySubdivisionCode:
+          type: string
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
+          nullable: true
+        Latitude:
+          type: number
+          description: The latitude.
+          format: double
+          nullable: true
+        Longitude:
+          type: number
+          description: The longitude.
+          format: double
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: OldAddress
+    CreditRatingUpdateParameters:
+      title: Credit rating update parameters
+      type: object
+      properties:
+        Basic:
+          title: Credit rating basic update value
+          allOf:
+          - $ref: '#/components/schemas/CreditRatingBasicUpdateValue'
+          description: Credit status of a company (or `null` if the credit status should not be updated).
+          nullable: true
+      additionalProperties: false
+      description: Credit rating to define creditworthiness of the company.
+      x-schema-id: CreditRatingUpdateParameters
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    BooleanUpdateValue:
+      title: Boolean update value
+      type: object
+      properties:
+        Value:
+          type: boolean
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: BooleanUpdateValue
+    CompanyResult:
+      title: CompanyResult
+      required:
+      - Companies
+      type: object
+      properties:
+        Companies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Company'
+          description: The company profiles of the enterprise.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest company item returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older companies. If [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) is specified in the request message, then Cursor will always be included in the response message; this is true even when using Extents set to false so that no actual data is returned.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CompanyResult
+    CreditRatingParameters:
+      title: Credit rating parameters
+      type: object
+      properties:
+        Basic:
+          allOf:
+          - $ref: '#/components/schemas/CreditRatingBasicEnum'
+          description: 'Indicates the credit status of a company.
+
+
+            CreditOk (Company can book services.)
+
+
+            PaymentRequiredUpfront (Company must pay upfront.)
+
+
+            LocalDecisionRequired (Requires local approval.)'
+          nullable: true
+      additionalProperties: false
+      description: Credit rating to define creditworthiness of the company.
+      x-schema-id: CreditRatingParameters
+    CompanyOptions:
+      title: Company Options
+      type: object
+      properties:
+        Invoiceable:
+          type: boolean
+          description: Whether the company is invoiceable or not.
+        AddFeesToInvoices:
+          type: boolean
+          description: Whether the company has an additional fee applied for invoicing or not.
+        AddTaxDeductedPaymentToInvoices:
+          type: boolean
+          description: Whether tax-deducted payments should be automatically added to invoices.
+      additionalProperties: false
+      description: Options of the company.
+      x-schema-id: CompanyOptions
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    CreditRatingBasicEnum:
+      title: Credit rating basic
+      enum:
+      - CreditOk
+      - PaymentRequiredUpfront
+      - LocalDecisionRequired
+      type: string
+      description: '
+
+
+        CreditOk (Company can book services.)
+
+
+        PaymentRequiredUpfront (Company must pay upfront.)
+
+
+        LocalDecisionRequired (Requires local approval.)'
+      x-enumNames:
+      - CreditOk
+      - PaymentRequiredUpfront
+      - LocalDecisionRequired
+      x-enumDescriptions:
+      - Company can book services.
+      - Company must pay upfront.
+      - Requires local approval.
+    CompanyAddParameters:
+      title: CompanyAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Name
+      - Options
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the company.
+        MotherCompanyId:
+          type: string
+          description: Unique identifier of the mother company.
+          format: uuid
+          nullable: true
+        InvoicingEmail:
+          type: string
+          description: Email for issuing invoices to the company.
+          format: email
+          nullable: true
+        WebsiteUrl:
+          type: string
+          description: The website url of the company.
+          format: uri
+          nullable: true
+        InvoiceDueInterval:
+          type: string
+          description: The maximum time, when the invoice has to be be paid in ISO 8601 duration format.
+          nullable: true
+        Options:
+          title: Company Options Parameters
+          allOf:
+          - $ref: '#/components/schemas/CompanyOptionsParameters'
+          description: Options of the company.
+        CreditRating:
+          title: Credit rating parameters
+          allOf:
+          - $ref: '#/components/schemas/CreditRatingParameters'
+          description: Credit rating to define creditworthiness of the company.
+          nullable: true
+        Department:
+          type: string
+          description: The internal segmentation of a company, e.g. sales department.
+          nullable: true
+        DunsNumber:
+          type: string
+          description: The Dun & Bradstreet unique 9-digit DUNS number.
+          nullable: true
+        ReferenceIdentifier:
+          type: string
+          description: External system identifier - custom identifier used by an external system such as an external database.
+          nullable: true
+        AccountingCode:
+          type: string
+          description: Accounting code of the company.
+          nullable: true
+        AdditionalTaxIdentifier:
+          type: string
+          description: Additional tax identifer of the company.
+          nullable: true
+        BillingCode:
+          type: string
+          description: Billing code of the company.
+          nullable: true
+        Contact:
+          type: string
+          description: Other contact details, such as telephone, email or similar.
+          nullable: true
+        ContactPerson:
+          type: string
+          description: Contact person of the company.
+          nullable: true
+        Identifier:
+          type: string
+          description: Fiscal or legal identifier of the company.
+          nullable: true
+        Iata:
+          type: string
+          description: Iata of the company.
+          nullable: true
+        Notes:
+          type: string
+          description: Notes of the company.
+          nullable: true
+        TaxIdentifier:
+          type: string
+          description: Tax identification number of the company.
+          nullable: true
+        Telephone:
+          type: string
+          description: Contact telephone number.
+          format: tel
+          nullable: true
+        Address:
+          title: Address parameters
+          allOf:
+          - $ref: '#/components/schemas/AddressParameters'
+          description: New address details.
+          nullable: true
+        ExternalIdentifier:
+          maxLength: 255
+          type: string
+          description: Identifier of the company from external system.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CompanyAddParameters
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    Company:
+      title: Company
+      required:
+      - ChainId
+      - CreditRating
+      - Id
+      - IsActive
+      - Name
+      - Number
+      - Options
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the company.
+          format: uuid
+        ChainId:
+          type: string
+          description: Unique identifier of the chain.
+          format: uuid
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the company.
+        MotherCompanyId:
+          type: string
+          description: Unique identifier of mother company.
+          format: uuid
+          nullable: true
+        InvoicingEmail:
+          type: string
+          description: Email for issuing invoices to the company.
+          format: email
+          nullable: true
+        WebsiteUrl:
+          type: string
+          description: The website url of the company.
+          format: uri
+          nullable: true
+        InvoiceDueInterval:
+          type: string
+          description: The maximum time, when the invoice has to be be paid in ISO 8601 duration format.
+          nullable: true
+        Options:
+          title: Company Options
+          allOf:
+          - $ref: '#/components/schemas/CompanyOptions'
+          description: Options of the company.
+        CreditRating:
+          title: Credit Rating
+          allOf:
+          - $ref: '#/components/schemas/CreditRating'
+          description: Credit rating to define creditworthiness of the company.
+        Department:
+          type: string
+          description: The internal segmentation of a company, e.g. sales department.
+          nullable: true
+        DunsNumber:
+          type: string
+          description: The Dun & Bradstreet unique 9-digit DUNS number.
+          nullable: true
+        ReferenceIdentifier:
+          type: string
+          description: External system identifier - custom identifier used by an external system such as an external database.
+          nullable: true
+        AccountingCode:
+          type: string
+          description: Accounting code of the company.
+          nullable: true
+        AdditionalTaxIdentifier:
+          type: string
+          description: Additional tax identifier of the company.
+          nullable: true
+        BillingCode:
+          type: string
+          description: Billing code of the company.
+          nullable: true
+        Contact:
+          type: string
+          description: Other contact details, such as telephone, email or similar.
+          nullable: true
+        ContactPerson:
+          type: string
+          description: Contact person of the company.
+          nullable: true
+        ElectronicInvoiceIdentifier:
+          type: string
+          description: Electronic invoice identifier of the company.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `AdditionalTaxIdentifier` instead.
+        Identifier:
+          type: string
+          description: Fiscal or legal identifier of the company.
+          nullable: true
+        Iata:
+          type: string
+          description: Iata of the company.
+          nullable: true
+        IsActive:
+          type: boolean
+          description: Whether the company is still active.
+        Notes:
+          type: string
+          description: Additional notes.
+          nullable: true
+        Number:
+          type: integer
+          description: Unique number of the company (max 19 digits).
+          format: int64
+        TaxIdentifier:
+          type: string
+          description: Tax identification number of the company.
+          nullable: true
+        Telephone:
+          type: string
+          description: Contact telephone number.
+          format: tel
+          nullable: true
+        CreatedUtc:
+          type: string
+          description: Date of [Company](https://mews-systems.gitbook.io/connector-api/operations/#company) creation date and time.
+          format: date-time
+          nullable: true
+        UpdatedUtc:
+          type: string
+          description: Date of [Company](https://mews-systems.gitbook.io/connector-api/operations/#company) last update date and time.
+          format: date-time
+          nullable: true
+        Address:
+          title: Address
+          allOf:
+          - $ref: '#/components/schemas/OldAddress'
+          description: ''
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use AddressId instead.
+        AddressId:
+          type: string
+          description: Unique identifier of the company [Address](https://mews-systems.gitbook.io/connector-api/operations/addresses/#account-address).
+          format: uuid
+          nullable: true
+        MergeTargetId:
+          type: string
+          description: Unique identifier of the account (Customer) to which this company is linked.
+          format: uuid
+          nullable: true
+        TaxIdentificationNumber:
+          type: string
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use TaxIdentifier instead.
+        ExternalIdentifier:
+          maxLength: 255
+          type: string
+          description: Identifier of company from external system.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: Company
+    CreditRating:
+      title: Credit Rating
+      type: object
+      properties:
+        Basic:
+          allOf:
+          - $ref: '#/components/schemas/CreditRatingBasicEnum'
+          description: 'Indicates the credit status of a company.
+
+
+            CreditOk (Company can book services.)
+
+
+            PaymentRequiredUpfront (Company must pay upfront.)
+
+
+            LocalDecisionRequired (Requires local approval.)'
+          nullable: true
+      additionalProperties: false
+      description: Credit rating to define creditworthiness of the company.
+      x-schema-id: CreditRating
+    GuidNullableUpdateValue:
+      title: Guid update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: GuidNullableUpdateValue
+    MultipleCompanyDeleteParameters:
+      title: MultipleCompanyDeleteParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CompanyIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        CompanyIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the companies to be deleted.
+      additionalProperties: false
+      x-schema-id: MultipleCompanyDeleteParameters
+    CompanyOptionsParameters:
+      title: Company Options Parameters
+      type: object
+      properties:
+        Invoiceable:
+          type: boolean
+          description: Whether the company is invoiceable or not.
+        AddFeesToInvoices:
+          type: boolean
+          description: Whether the company has an additional fee applied for invoicing or not.
+        AddTaxDeductedPaymentToInvoices:
+          type: boolean
+          description: Whether tax-deducted payments should be automatically added to invoices.
+      additionalProperties: false
+      description: Options of the company.
+      x-schema-id: CompanyOptionsParameters
+    CreditRatingBasicUpdateValue:
+      title: Credit rating basic update value
+      type: object
+      properties:
+        Value:
+          title: Credit rating basic
+          allOf:
+          - $ref: '#/components/schemas/CreditRatingBasicEnum'
+          description: Value which is to be updated.
+          x-enumNames:
+          - CreditOk
+          - PaymentRequiredUpfront
+          - LocalDecisionRequired
+          x-enumDescriptions:
+          - Company can book services.
+          - Company must pay upfront.
+          - Requires local approval.
+      additionalProperties: false
+      x-schema-id: CreditRatingBasicUpdateValue
+    CompanyFilterParameters:
+      title: CompanyFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        ChainIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
+          nullable: true
+        MotherCompanyIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of mother `Company`.
+          nullable: true
+        CreatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the companies were created.
+          nullable: true
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the companies were updated.
+          nullable: true
+          x-max-interval-in-months: 3
+        TimeFilter:
+          anyOf:
+          - $ref: '#/components/schemas/CompanyTimeFilter'
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use CreatedUtc or UpdatedUtc instead.
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use CreatedUtc or UpdatedUtc instead.
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use CreatedUtc or UpdatedUtc instead.
+        Ids:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Companies](https://mews-systems.gitbook.io/connector-api/operations/#company).
+          nullable: true
+        ExternalIdentifiers:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: Identifiers of [Company](https://mews-systems.gitbook.io/connector-api/operations/#company) from external system.
+          nullable: true
+        Names:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: Names of [Companies](https://mews-systems.gitbook.io/connector-api/operations/#company).
+          nullable: true
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted, or both types of record. If not specified, both active and deleted records will be returned.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CompanyFilterParameters
+    CompanyOptionUpdateParameters:
+      title: Company update options
+      type: object
+      properties:
+        Invoiceable:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Whether the company is invoiceable or not (or `null` if the `Invoiceable` field should not be updated).
+          nullable: true
+        AddFeesToInvoices:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Whether the company has an additional fee applied for invoicing or not (or `null` if the `AddFeesToInvoices` field should not be updated).
+          nullable: true
+        AddTaxDeductedPaymentToInvoices:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Whether tax-deducted payments should be automatically added to invoices (or `null` if the `AddTaxDeductedPaymentToInvoices` field should not be updated).
+          nullable: true
+      additionalProperties: false
+      description: Options of the company.
+      x-schema-id: CompanyOptionUpdateParameters

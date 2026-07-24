@@ -1,0 +1,375 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Counters API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Counters
+paths:
+  /api/connector/v1/counters/getAll:
+    post:
+      tags:
+      - Counters
+      summary: Get all counters
+      description: 'Returns all counters of an enterprise associated with the connector integration.
+
+        Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).'
+      operationId: counters_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CounterFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              UpdatedUtc:
+                StartUtc: '2023-10-01T00:00:00Z'
+                EndUtc: '2023-10-31T00:00:00Z'
+              Type: Counter
+              Limitation:
+                Count: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CounterResult'
+              example:
+                Counters:
+                - Id: b7e4b68a-026e-41f3-ad2f-35325aa5dcbf
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  Name: Normal
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  IsDefault: false
+                  Value: 67
+                  Format: NORMAL{0:0000}
+                  Type: BillCounter
+                - Id: 403842df-635f-4b6e-8de5-42129201235e
+                  EnterpriseId: 4d0201db-36f5-428b-8d11-4f0a65e960cc
+                  Name: Events
+                  IsDefault: true
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  Value: 1575
+                  Format: E2018{0:0000}
+                  Type: BillCounter
+                - Id: 3362d7d5-a52f-4077-b2b4-4ec2476e6e19
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  Name: Default
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  IsDefault: true
+                  Value: 171
+                  Format: ''
+                  Type: ProformaCounter
+                - Id: 1162d7d5-a52f-4077-b2b4-4ec2476e6e19
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  Name: Default
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  IsDefault: true
+                  Value: 911
+                  Format: ''
+                  Type: BillPreviewCounter
+                - Id: a9fd7868-1ed0-4e96-8dd9-580708c200ea
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  Name: Default
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  IsDefault: true
+                  Value: 25797
+                  Format: null
+                  Type: ServiceOrderCounter
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    CounterResult:
+      title: CounterResult
+      required:
+      - BillCounters
+      - BillPreviewCounters
+      - Counters
+      - ProformaCounters
+      - RegistrationCardCounters
+      - ServiceOrderCounters
+      type: object
+      properties:
+        Counters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Counter'
+          description: All types of counters.
+        BillCounters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Counter'
+          description: The counters used to count closed `Bills`.
+          deprecated: true
+          x-deprecatedMessage: Use `Counters` instead.
+        ProformaCounters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Counter'
+          description: The counters used to count Pro Forma invoices for `Bills`.
+          deprecated: true
+          x-deprecatedMessage: Use `Counters` instead.
+        BillPreviewCounters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Counter'
+          description: The counters used to count bill previews for `Bills`.
+          deprecated: true
+          x-deprecatedMessage: Use `Counters` instead.
+        ServiceOrderCounters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Counter'
+          description: The counters used to count service orders (for example reservations).
+          deprecated: true
+          x-deprecatedMessage: Use `Counters` instead.
+        RegistrationCardCounters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Counter'
+          description: The counters used to count registration cards.
+          deprecated: true
+          x-deprecatedMessage: Use `Counters` instead.
+        Cursor:
+          type: string
+          description: Unique identifier of the last returned counter in `Counters`. This can be used in Limitation in a subsequent request to fetch the next batch of counters.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CounterResult
+    CounterFilterParameters:
+      title: CounterFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        CounterIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the counters. If not specified, the operation returns all counters.
+          nullable: true
+        Type:
+          anyOf:
+          - $ref: '#/components/schemas/EnterpriseScopeCounterDiscriminator'
+          description: Type of the counter. If not specified, the operation returns all types.
+          nullable: true
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which `Counter` was updated.
+          nullable: true
+          x-max-interval-in-months: 3
+      additionalProperties: false
+      x-schema-id: CounterFilterParameters
+    Counter:
+      title: Counter
+      required:
+      - CreatedUtc
+      - EnterpriseId
+      - Format
+      - Id
+      - IsDefault
+      - Name
+      - Type
+      - UpdatedUtc
+      - Value
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the counter.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise to which the counter belongs.
+          format: uuid
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the counter.
+        IsDefault:
+          type: boolean
+          description: Whether the counter is used by default.
+        Value:
+          type: integer
+          description: Current value of the counter.
+          format: int64
+        Format:
+          minLength: 1
+          type: string
+          description: Display format of the counter.
+        Type:
+          $ref: '#/components/schemas/EnterpriseScopeCounterDiscriminator'
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the counter in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the counter in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: Counter
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    EnterpriseScopeCounterDiscriminator:
+      title: Counter type discriminator
+      enum:
+      - Counter
+      - AccountingCounter
+      - AvailabilityBlockCounter
+      - BillCounter
+      - BillPreviewCounter
+      - FiscalCounter
+      - ProformaCounter
+      - RegistrationCardCounter
+      - ServiceOrderCounter
+      - CorrectionBillCounter
+      - PaymentConfirmationBillCounter
+      - CreditNoteBillCounter
+      type: string
+      description: Type of the counter.
+      x-enumDescriptions:
+      - Any type of counter.
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation

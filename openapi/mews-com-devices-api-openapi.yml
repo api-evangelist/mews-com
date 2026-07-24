@@ -1,0 +1,221 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Devices API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Devices
+paths:
+  /api/connector/v1/devices/getAll:
+    post:
+      tags:
+      - Devices
+      summary: Get all devices
+      description: Returns all devices in the enterprise.
+      operationId: devices_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Parameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceResult'
+              example:
+                Devices:
+                - Id: d14efcfd-75b9-4bd3-9f10-5657a01f860a
+                  Name: Key cutter 1
+                  Type: KeyCutter
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    DeviceTypeEnum:
+      title: Device type
+      enum:
+      - Printer
+      - PaymentTerminal
+      - KeyCutter
+      - FiscalMachine
+      - PassportScanner
+      type: string
+      description: 'Type of the device.
+
+
+        Printer ([Printer command data](https://mews-systems.gitbook.io/connector-api/operations/commands#printer-command-data))
+
+
+        PaymentTerminal ([Payment terminal command data](https://mews-systems.gitbook.io/connector-api/operations/commands#payment-terminal-command-data))
+
+
+        KeyCutter ([Key cutter command data](https://mews-systems.gitbook.io/connector-api/operations/commands#key-cutter-command-data))
+
+
+        FiscalMachine ([Fiscal machine command data](https://mews-systems.gitbook.io/connector-api/operations/commands#fiscal-machine-command-data))
+
+
+        PassportScanner ([Passport scanner command data](https://mews-systems.gitbook.io/connector-api/operations/commands#passport-scanner-command-data))'
+      x-enumNames:
+      - Printer
+      - PaymentTerminal
+      - KeyCutter
+      - FiscalMachine
+      - PassportScanner
+      x-enumDescriptions:
+      - '[Printer command data](https://mews-systems.gitbook.io/connector-api/operations/commands#printer-command-data)'
+      - '[Payment terminal command data](https://mews-systems.gitbook.io/connector-api/operations/commands#payment-terminal-command-data)'
+      - '[Key cutter command data](https://mews-systems.gitbook.io/connector-api/operations/commands#key-cutter-command-data)'
+      - '[Fiscal machine command data](https://mews-systems.gitbook.io/connector-api/operations/commands#fiscal-machine-command-data)'
+      - '[Passport scanner command data](https://mews-systems.gitbook.io/connector-api/operations/commands#passport-scanner-command-data)'
+    Parameters:
+      title: Parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+      additionalProperties: false
+      x-schema-id: Parameters
+    DeviceResult:
+      title: DeviceResult
+      required:
+      - Devices
+      type: object
+      properties:
+        Devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Device'
+          description: The devices.
+      additionalProperties: false
+      x-schema-id: DeviceResult
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    Device:
+      title: Device
+      required:
+      - Id
+      - Name
+      - Type
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the device.
+          format: uuid
+        Type:
+          title: Device type
+          allOf:
+          - $ref: '#/components/schemas/DeviceTypeEnum'
+          description: 'Type of the device.
+
+
+            Printer ([Printer command data](https://mews-systems.gitbook.io/connector-api/operations/commands#printer-command-data))
+
+
+            PaymentTerminal ([Payment terminal command data](https://mews-systems.gitbook.io/connector-api/operations/commands#payment-terminal-command-data))
+
+
+            KeyCutter ([Key cutter command data](https://mews-systems.gitbook.io/connector-api/operations/commands#key-cutter-command-data))
+
+
+            FiscalMachine ([Fiscal machine command data](https://mews-systems.gitbook.io/connector-api/operations/commands#fiscal-machine-command-data))
+
+
+            PassportScanner ([Passport scanner command data](https://mews-systems.gitbook.io/connector-api/operations/commands#passport-scanner-command-data))'
+          x-enumNames:
+          - Printer
+          - PaymentTerminal
+          - KeyCutter
+          - FiscalMachine
+          - PassportScanner
+          x-enumDescriptions:
+          - '[Printer command data](https://mews-systems.gitbook.io/connector-api/operations/commands#printer-command-data)'
+          - '[Payment terminal command data](https://mews-systems.gitbook.io/connector-api/operations/commands#payment-terminal-command-data)'
+          - '[Key cutter command data](https://mews-systems.gitbook.io/connector-api/operations/commands#key-cutter-command-data)'
+          - '[Fiscal machine command data](https://mews-systems.gitbook.io/connector-api/operations/commands#fiscal-machine-command-data)'
+          - '[Passport scanner command data](https://mews-systems.gitbook.io/connector-api/operations/commands#passport-scanner-command-data)'
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the device.
+        Identifier:
+          type: string
+          description: Device identifier (for internal purposes).
+          nullable: true
+      additionalProperties: false
+      x-schema-id: Device

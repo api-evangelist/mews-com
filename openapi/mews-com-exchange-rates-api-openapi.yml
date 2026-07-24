@@ -1,0 +1,181 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Exchange rates API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Exchange rates
+paths:
+  /api/connector/v1/exchangeRates/getAll:
+    post:
+      tags:
+      - Exchange rates
+      summary: Get all exchange rates
+      description: Returns all available exchange rates among currencies of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/configuration/#enterprise).
+      operationId: exchangeRates_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CurrencyAcceptanceFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExchangeRateResult'
+              example:
+                ExchangeRates:
+                - SourceCurrency: EUR
+                  TargetCurrency: GBP
+                  Value: 0.8505342
+                - SourceCurrency: GBP
+                  TargetCurrency: EUR
+                  Value: 1.1757317
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    ExchangeRateResult:
+      title: ExchangeRateResult
+      required:
+      - ExchangeRates
+      type: object
+      properties:
+        ExchangeRates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExchangeRate'
+          description: The available exchange rates.
+      additionalProperties: false
+      x-schema-id: ExchangeRateResult
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ExchangeRate:
+      title: Exchange rate
+      required:
+      - EnterpriseId
+      - Id
+      - SourceCurrency
+      - TargetCurrency
+      - Value
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the Exchange Rate.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/configuration/#enterprise) to which the Exchange Rate belongs.
+          format: uuid
+        SourceCurrency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the source [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        TargetCurrency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the target [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        Value:
+          type: number
+          description: The exchange rate from the source currency to the target currency.
+          format: double
+      additionalProperties: false
+      x-schema-id: ExchangeRate
+    CurrencyAcceptanceFilterParameters:
+      title: CurrencyAcceptanceFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Exchange Rates. If not specified, the operation returns all exchange rates.
+          nullable: true
+        EnterpriseIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Enterprises](https://mews-systems.gitbook.io/connector-api/operations/configuration/#enterprise). If not specified, the operation returns the exchange rates for all enterprises within scope of the Access Token.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CurrencyAcceptanceFilterParameters

@@ -1,0 +1,684 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Service order notes API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Service order notes
+paths:
+  /api/connector/v1/serviceOrderNotes/add:
+    post:
+      tags:
+      - Service order notes
+      summary: Add service order notes
+      description: Adds one or more notes with a provided text to a specific service order. Service orders can be reservations or product orders.
+      operationId: serviceOrderNotes_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleServiceOrderNoteAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ServiceOrderNotes:
+              - ServiceOrderId: 1dc0c6bf-2ce6-4a9f-af97-af5c01676720
+                Text: Shaken, not stirred.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceOrderNoteAdditionResult'
+              example:
+                ServiceOrderNotes:
+                - Id: a06a225b-00f7-48c8-a463-af5c016768e9
+                  OrderId: 1dc0c6bf-2ce6-4a9f-af97-af5c01676720
+                  Text: Shaken, not stirred.
+                  Type: General
+                  CreatedUtc: '2022-11-29T21:48:32Z'
+                  UpdatedUtc: '2022-11-30T12:36:37Z'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/serviceOrderNotes/update:
+    post:
+      tags:
+      - Service order notes
+      summary: Update service order notes
+      description: Updates one or more given service order notes with new text.
+      operationId: serviceOrderNotes_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleServiceOrderNoteUpdateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ServiceOrderNoteUpdates:
+              - ServiceOrderNoteId: a06a225b-00f7-48c8-a463-af5c016768e9
+                Text:
+                  Value: Shaken, not stirred.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceOrderNoteUpdateResult'
+              example:
+                ServiceOrderNotes:
+                - Id: a06a225b-00f7-48c8-a463-af5c016768e9
+                  OrderId: 1dc0c6bf-2ce6-4a9f-af97-af5c01676720
+                  Text: Shaken, not stirred.
+                  Type: General
+                  CreatedUtc: '2022-11-29T21:48:32Z'
+                  UpdatedUtc: '2022-11-30T12:36:37Z'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/serviceOrderNotes/getAll:
+    post:
+      tags:
+      - Service order notes
+      summary: Get all service order notes
+      description: "Returns all notes associated with the given service orders. Service orders can be reservations or product orders. Note this operation uses [Pagination](../guidelines/pagination.md) and supports [Portfolio Access Tokens](../guidelines/multi-property.md).\r\n> **Service order:** This is the general name for an order made against a service, which includes both 'stay' service orders, called [Reservations](reservations.md#reservation), and 'product' service orders, which we simply call [Orders](orders.md). Operations such as [Get all service order notes](#get-all-service-order-notes) will accept Reservation IDs or Order IDs as service order identifiers."
+      operationId: serviceOrderNotes_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceOrderNoteFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ServiceOrderIds:
+              - 1dc0c6bf-2ce6-4a9f-af97-af5c01676720
+              ServiceOrderNoteIds:
+              - a06a225b-00f7-48c8-a463-af5c016768e9
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              Limitation:
+                Count: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceOrderNoteResult'
+              example:
+                ServiceOrderNotes:
+                - Id: a06a225b-00f7-48c8-a463-af5c016768e9
+                  OrderId: 1dc0c6bf-2ce6-4a9f-af97-af5c01676720
+                  Text: Shaken, not stirred.
+                  Type: General
+                  CreatedUtc: '2022-11-29T21:48:32Z'
+                  UpdatedUtc: '2022-11-30T12:36:37Z'
+                Cursor: a06a225b-00f7-48c8-a463-af5c016768e9
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/serviceOrderNotes/delete:
+    post:
+      tags:
+      - Service order notes
+      summary: Delete service order notes
+      description: Deletes service order notes.
+      operationId: serviceOrderNotes_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceOrderNoteDeleteParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ServiceOrderNoteIds:
+              - a06a225b-00f7-48c8-a463-af5c016768e9
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    ServiceOrderNoteUpdateResult:
+      title: ServiceOrderNoteUpdateResult
+      required:
+      - ServiceOrderNotes
+      type: object
+      properties:
+        ServiceOrderNotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderNote'
+          description: Updated service order notes.
+      additionalProperties: false
+      x-schema-id: ServiceOrderNoteUpdateResult
+    ServiceOrderNoteAdditionResult:
+      title: ServiceOrderNoteAdditionResult
+      required:
+      - ServiceOrderNotes
+      type: object
+      properties:
+        ServiceOrderNotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderNote'
+          description: Added service order notes.
+      additionalProperties: false
+      x-schema-id: ServiceOrderNoteAdditionResult
+    Unit:
+      type: object
+      additionalProperties: false
+    ServiceOrderNoteDeleteParameters:
+      title: ServiceOrderNoteDeleteParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - ServiceOrderNoteIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ServiceOrderNoteIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the service order notes to be deleted.
+      additionalProperties: false
+      x-schema-id: ServiceOrderNoteDeleteParameters
+    ServiceOrderNoteUpdateParameters:
+      title: Service order note update parameters
+      required:
+      - ServiceOrderNoteId
+      type: object
+      properties:
+        ServiceOrderNoteId:
+          type: string
+          description: Unique identifier of the `Service order note`.
+          format: uuid
+        Text:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Content of the service order note (or `null` if the content should not be updated).
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ServiceOrderNoteUpdateParameters
+    OrderNote:
+      title: Service order note
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the service order note.
+          format: uuid
+        OrderId:
+          type: string
+          description: Unique identifier of the `Service order` to which the Service Order Note belongs.
+          format: uuid
+        Text:
+          type: string
+          description: Content of the service order note.
+          nullable: true
+        Type:
+          title: Service order note type
+          allOf:
+          - $ref: '#/components/schemas/OrderNoteTypeEnum'
+          description: 'A discriminator specifying the type of service order note, e.g. general or channel manager.
+
+
+            General
+
+
+            ChannelManager
+
+
+            SpecialRequest'
+          x-enumNames:
+          - General
+          - ChannelManager
+          - SpecialRequest
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+        CreatedUtc:
+          type: string
+          description: Creation date and time of the service order note in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        UpdatedUtc:
+          type: string
+          description: Last update date and time of the service order note in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      x-schema-id: OrderNote
+    ServiceOrderNoteFilterParameters:
+      title: ServiceOrderNoteFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ServiceOrderIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        ServiceOrderIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Service order`. Reservation IDs or Order IDs can be used as service order identifiers.
+        ServiceOrderNoteIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Service order note`. Use this property if you want to fetch specific service order notes.
+          nullable: true
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Timestamp in UTC timezone ISO 8601 format when the service order note was updated.
+          nullable: true
+          x-max-interval-in-months: 3
+        Types:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderNoteTypeEnum'
+          description: Type of the service order note. Defaults to `["General", "ChannelManager"]`.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ServiceOrderNoteFilterParameters
+    ServiceOrderNoteResult:
+      title: ServiceOrderNoteResult
+      required:
+      - ServiceOrderNotes
+      type: object
+      properties:
+        ServiceOrderNotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderNote'
+          description: The collection of service order notes.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest service order note returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older service order notes.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ServiceOrderNoteResult
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    MultipleServiceOrderNoteAddParameters:
+      title: MultipleServiceOrderNoteAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - ServiceOrderNotes
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ServiceOrderNotes:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceOrderNoteAddParameters'
+          description: Notes to be added.
+      additionalProperties: false
+      x-schema-id: MultipleServiceOrderNoteAddParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ServiceOrderNoteAddParameters:
+      title: Service order note parameters
+      required:
+      - ServiceOrderId
+      - Text
+      type: object
+      properties:
+        ServiceOrderId:
+          type: string
+          description: Unique identifier of the `Service order` to which note will be added.
+          format: uuid
+        Text:
+          minLength: 1
+          type: string
+          description: Content of the service order note.
+      additionalProperties: false
+      x-schema-id: ServiceOrderNoteAddParameters
+    OrderNoteTypeEnum:
+      title: Service order note type
+      enum:
+      - General
+      - ChannelManager
+      - SpecialRequest
+      type: string
+      description: '
+
+
+        General
+
+
+        ChannelManager
+
+
+        SpecialRequest'
+      x-enumNames:
+      - General
+      - ChannelManager
+      - SpecialRequest
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+    MultipleServiceOrderNoteUpdateParameters:
+      title: MultipleServiceOrderNoteUpdateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - ServiceOrderNoteUpdates
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ServiceOrderNoteUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceOrderNoteUpdateParameters'
+          description: Notes to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleServiceOrderNoteUpdateParameters
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation

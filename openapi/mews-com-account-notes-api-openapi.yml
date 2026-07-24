@@ -1,0 +1,991 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Account notes
+paths:
+  /api/connector/v1/accountNotes/getAll:
+    post:
+      tags:
+      - Account notes
+      summary: Get all account notes
+      description: 'Returns all account notes of an account, optionally filtered by activity state, account identifiers, specific account note identifiers or other filter parameters.
+
+        Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).'
+      operationId: accountNotes_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountNoteFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ChainIds:
+              - 1df21f06-0cfc-4960-9c58-a3bf1261663e
+              - 5fcd1933-22f2-40b9-84da-7db04cbecec2
+              AccountNoteIds:
+              - 3ed9e2f3-4bba-4df6-8d41-ab1b009b6425
+              - 8a98965a-7c03-48a1-a28c-ab1b009b53c8
+              AccountIds:
+              - a6738390-c241-45b7-8e46-14f47207abe5
+              - 435d4d5f-d14f-48dc-a47e-0481fc28ead0
+              UpdatedUtc:
+                StartUtc: '2022-10-10T00:00:00Z'
+                EndUtc: '2022-10-17T00:00:00Z'
+              ActivityStates:
+              - Active
+              Limitation:
+                Cursor: e7f26210-10e7-462e-9da8-ae8300be8ab7
+                Count: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNoteResult'
+              example:
+                AccountNotes:
+                - Id: a58ff7cb-77e3-495a-bd61-aecf00a3f19d
+                  AccountId: 1df21f06-0cfc-4960-9c58-a3bf1261663e
+                  Content: Customer receives a free bottle of champagne during stay
+                  AccountType: Customer
+                  Classifications:
+                  - Gifts
+                  IsActive: true
+                  CreatorProfile:
+                    Discriminator: Enterprise
+                    EnterpriseProfile:
+                      ProfileId: 52d19c34-b0aa-4635-905d-1326fa8b8e13
+                  UpdaterProfile:
+                    Discriminator: Integration
+                    EnterpriseProfile: null
+                - Id: da34b396-41f7-47f6-8847-aecf00a3f19e
+                  AccountId: 5fcd1933-22f2-40b9-84da-7db04cbecec2
+                  Content: Lactose intolerant
+                  AccountType: Customer
+                  Classifications:
+                  - FoodAndBeverage
+                  IsActive: true
+                  CreatorProfile:
+                    Discriminator: Enterprise
+                    EnterpriseProfile:
+                      ProfileId: 52d19c34-b0aa-4635-905d-1326fa8b8e13
+                  UpdaterProfile:
+                    Discriminator: Integration
+                    EnterpriseProfile: null
+                Cursor: da34b396-41f7-47f6-8847-aecf00a3f19e
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/accountNotes/add:
+    post:
+      tags:
+      - Account notes
+      summary: Add account notes
+      description: Adds account notes to an account of the enterprise chain. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      operationId: accountNotes_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleAccountNoteAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ChainId: 1df21f06-0cfc-4960-9c58-a3bf1261663e
+              AccountNotes:
+              - AccountId: 8ddea57b-6a5c-4eec-8c4c-24467dce118e
+                Content: Brother of the CEO
+                Classifications:
+                - FamilyRelations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNoteAdditionResult'
+              example:
+                AccountNotes:
+                - Id: a58ff7cb-77e3-495a-bd61-aecf00a3f19d
+                  AccountId: 1df21f06-0cfc-4960-9c58-a3bf1261663e
+                  Content: Brother of the CEO
+                  AccountType: Customer
+                  Classifications:
+                  - FamilyRelations
+                  IsActive: true
+                  CreatorProfile:
+                    Discriminator: Enterprise
+                    EnterpriseProfile:
+                      ProfileId: 52d19c34-b0aa-4635-905d-1326fa8b8e13
+                  UpdaterProfile:
+                    Discriminator: Integration
+                    EnterpriseProfile: null
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/accountNotes/update:
+    post:
+      tags:
+      - Account notes
+      summary: Update account notes
+      description: Updates information about the specified account notes.
+      operationId: accountNotes_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleAccountNoteUpdateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              AccountNoteUpdates:
+              - AccountNoteId: a58ff7cb-77e3-495a-bd61-aecf00a3f19d
+                Content:
+                  Value: The AC in the room doesn't work anymore
+                Classifications:
+                  Maintenance:
+                    Value: true
+                  Housekeeping:
+                    Value: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNoteUpdateResult'
+              example:
+                AccountNotes:
+                - Id: a58ff7cb-77e3-495a-bd61-aecf00a3f19d
+                  AccountId: 1df21f06-0cfc-4960-9c58-a3bf1261663e
+                  Content: The AC in the room doesn't work anymore
+                  AccountType: Customer
+                  Classifications:
+                  - Maintenance
+                  IsActive: true
+                  CreatorProfile:
+                    Discriminator: Enterprise
+                    EnterpriseProfile:
+                      ProfileId: 52d19c34-b0aa-4635-905d-1326fa8b8e13
+                  UpdaterProfile:
+                    Discriminator: Integration
+                    EnterpriseProfile: null
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/accountNotes/delete:
+    post:
+      tags:
+      - Account notes
+      summary: Delete account notes
+      description: Deletes specified account notes.
+      operationId: accountNotes_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleAccountNoteDeleteParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              AccountNoteIds:
+              - a58ff7cb-77e3-495a-bd61-aecf00a3f19d
+              - da34b396-41f7-47f6-8847-aecf00a3f19e
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    AccountNote:
+      title: Account note
+      required:
+      - AccountId
+      - AccountType
+      - Classifications
+      - Content
+      - CreatorProfile
+      - Id
+      - IsActive
+      - UpdaterProfile
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the account note.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of the account.
+          format: uuid
+        Content:
+          minLength: 1
+          type: string
+          description: The content of the account note.
+        AccountType:
+          title: Account type
+          allOf:
+          - $ref: '#/components/schemas/AccountTypeEnum'
+          description: 'Specifying type of associated account.
+
+
+            Company
+
+
+            Customer'
+          x-enumNames:
+          - Company
+          - Customer
+          x-enumDescriptions:
+          - ''
+          - ''
+        Classifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNoteClassificationEnum'
+          description: Specifying the classifications of the note based on account type.
+        IsActive:
+          type: boolean
+          description: Whether the account note is still active.
+        CreatorProfile:
+          title: Profile data
+          allOf:
+          - $ref: '#/components/schemas/ProfileData'
+          description: The profile data of the user who created the account note.
+        UpdaterProfile:
+          title: Profile data
+          allOf:
+          - $ref: '#/components/schemas/ProfileData'
+          description: The profile data of the user who updated the account note.
+      additionalProperties: false
+      x-schema-id: AccountNote
+    AccountNoteUpdateParameters:
+      title: Account note update parameters
+      required:
+      - AccountNoteId
+      - Classifications
+      type: object
+      properties:
+        AccountNoteId:
+          type: string
+          description: Unique identifier of the account note.
+          format: uuid
+        Content:
+          title: String update value
+          maxLength: 1000
+          minLength: 1
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Content of the account note (or `null` if the content should not be updated).
+          nullable: true
+        Classifications:
+          title: Account note update classifications
+          allOf:
+          - $ref: '#/components/schemas/AccountNoteUpdateClassifications'
+          description: Classification of the account note.
+      additionalProperties: false
+      x-schema-id: AccountNoteUpdateParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    AccountNoteAdditionResult:
+      title: AccountNoteAdditionResult
+      required:
+      - AccountNotes
+      type: object
+      properties:
+        AccountNotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNote'
+          description: Added account notes.
+      additionalProperties: false
+      x-schema-id: AccountNoteAdditionResult
+    Unit:
+      type: object
+      additionalProperties: false
+    EnterpriseProfileData:
+      title: Enterprise profile data
+      required:
+      - ProfileId
+      type: object
+      properties:
+        ProfileId:
+          type: string
+          description: Unique identifier of the profile.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: EnterpriseProfileData
+    AccountNoteAddParameters:
+      title: Account note parameters
+      required:
+      - AccountId
+      - Classifications
+      - Content
+      type: object
+      properties:
+        AccountId:
+          type: string
+          format: uuid
+        Content:
+          maxLength: 1000
+          minLength: 1
+          type: string
+          description: The content of the account note.
+        Classifications:
+          maxItems: 1
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNoteClassificationEnum'
+          description: Specifying the classifications of the note based on account type.
+      additionalProperties: false
+      x-schema-id: AccountNoteAddParameters
+    MultipleAccountNoteAddParameters:
+      title: MultipleAccountNoteAddParameters
+      required:
+      - AccessToken
+      - AccountNotes
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        AccountNotes:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNoteAddParameters'
+          description: Account notes to be added.
+      additionalProperties: false
+      x-schema-id: MultipleAccountNoteAddParameters
+    AccountNoteClassificationEnum:
+      title: Account note classification
+      enum:
+      - General
+      - FoodAndBeverage
+      - FrontOffice
+      - Reservations
+      - Housekeeping
+      - Maintenance
+      - PreviousStay
+      - FamilyRelations
+      - Gifts
+      - Accounting
+      - Complaints
+      - Other
+      type: string
+      description: '
+
+
+        General (For Company and Customer)
+
+
+        FoodAndBeverage (Only Customer)
+
+
+        FrontOffice (Only Customer)
+
+
+        Reservations (Only Customer)
+
+
+        Housekeeping (Only Customer)
+
+
+        Maintenance (Only Customer)
+
+
+        PreviousStay (Only Customer)
+
+
+        FamilyRelations (Only Customer)
+
+
+        Gifts (Only Customer)
+
+
+        Accounting (Only Customer)
+
+
+        Complaints (Only Customer)
+
+
+        Other (Only Customer)'
+      x-enumNames:
+      - General
+      - FoodAndBeverage
+      - FrontOffice
+      - Reservations
+      - Housekeeping
+      - Maintenance
+      - PreviousStay
+      - FamilyRelations
+      - Gifts
+      - Accounting
+      - Complaints
+      - Other
+      x-enumDescriptions:
+      - For Company and Customer
+      - Only Customer
+      - Only Customer
+      - Only Customer
+      - Only Customer
+      - Only Customer
+      - Only Customer
+      - Only Customer
+      - Only Customer
+      - Only Customer
+      - Only Customer
+      - Only Customer
+      x-extensible: true
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    BooleanUpdateValue:
+      title: Boolean update value
+      type: object
+      properties:
+        Value:
+          type: boolean
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: BooleanUpdateValue
+    AccountNoteFilterParameters:
+      title: AccountNoteFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        ChainIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
+          nullable: true
+        AccountNoteIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Account note](https://mews-systems.gitbook.io/connector-api/operations/#account-note).
+          nullable: true
+        AccountIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the accounts ([Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) or [Company](https://mews-systems.gitbook.io/connector-api/operations/companies/#company)).
+          nullable: true
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval of Account note's last update date and time.
+          nullable: true
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AccountNoteFilterParameters
+    AccountTypeEnum:
+      title: Account type
+      enum:
+      - Company
+      - Customer
+      type: string
+      description: 'A discriminator specifying the account type, e.g. `Customer` or `Company`
+
+
+        Company
+
+
+        Customer'
+      x-enumNames:
+      - Company
+      - Customer
+      x-enumDescriptions:
+      - ''
+      - ''
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    AccountNoteUpdateClassifications:
+      title: Account note update classifications
+      type: object
+      properties:
+        General:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Company and Customer: Boolean value defining the general classification for the account note (or `null` if the value should not be updated).'
+          nullable: true
+        FoodAndBeverage:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the food and beverage classification for the account note (or `null` if the value should not be updated).'
+          nullable: true
+        FrontOffice:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the front office classification for the account note (or `null` if the value should not be updated).'
+          nullable: true
+        Reservations:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the reservations classification for the account note (or `null` if the value should not be updated).'
+          nullable: true
+        Housekeeping:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the housekeeping classification for the account note (or `null` if the value should not be updated).'
+          nullable: true
+        Maintenance:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the maintenance classification for the account note (or `null` if the value should not be updated).'
+          nullable: true
+        PreviousStay:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the previous stay classification for the account note (or `null` if the value should not be updated).'
+          nullable: true
+        FamilyRelations:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the family relations classification for the account note (or `null` if the value should not be updated).'
+          nullable: true
+        Gifts:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the gifts classification for the account note (or `null` if the value should not be updated).'
+          nullable: true
+        Accounting:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the accounting classification for the account note (or `null` if the value should not be updated).'
+          nullable: true
+        Complaints:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the complaints classification for the account note (or `null` if the value should not be updated).'
+          nullable: true
+        Other:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the other classification for the account note (or `null` if the value should not be updated).'
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AccountNoteUpdateClassifications
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ProfileDataDiscriminator:
+      title: Profile data discriminator
+      enum:
+      - Personal
+      - Enterprise
+      - Platform
+      - Static
+      - Integration
+      type: string
+    ProfileData:
+      title: Profile data
+      required:
+      - Discriminator
+      type: object
+      properties:
+        Discriminator:
+          $ref: '#/components/schemas/ProfileDataDiscriminator'
+        EnterpriseProfile:
+          title: Enterprise profile data
+          allOf:
+          - $ref: '#/components/schemas/EnterpriseProfileData'
+          description: Enterprise profile data.
+          nullable: true
+      additionalProperties: false
+      description: The profile data of the user who created or last updated the record.
+      x-schema-id: ProfileData
+    AccountNoteUpdateResult:
+      title: AccountNoteUpdateResult
+      required:
+      - AccountNotes
+      type: object
+      properties:
+        AccountNotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNote'
+          description: Updated account notes.
+      additionalProperties: false
+      x-schema-id: AccountNoteUpdateResult
+    MultipleAccountNoteDeleteParameters:
+      title: MultipleAccountNoteDeleteParameters
+      required:
+      - AccessToken
+      - AccountNoteIds
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        AccountNoteIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the account notes to be deleted.
+      additionalProperties: false
+      x-schema-id: MultipleAccountNoteDeleteParameters
+    AccountNoteResult:
+      title: AccountNoteResult
+      required:
+      - AccountNotes
+      type: object
+      properties:
+        AccountNotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNote'
+          description: The set of requested account notes.
+        Cursor:
+          type: string
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AccountNoteResult
+    MultipleAccountNoteUpdateParameters:
+      title: MultipleAccountNoteUpdateParameters
+      required:
+      - AccessToken
+      - AccountNoteUpdates
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        AccountNoteUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNoteUpdateParameters'
+          description: Account notes to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleAccountNoteUpdateParameters

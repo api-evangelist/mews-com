@@ -1,0 +1,323 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Preauthorizations API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Preauthorizations
+paths:
+  /api/connector/v1/preauthorizations/getAllByCustomers:
+    post:
+      tags:
+      - Preauthorizations
+      summary: Get all preauthorizations by customers
+      description: Returns all preauthorizations of specified customers.
+      operationId: preauthorizations_getAllByCustomers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleCustomerParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              CustomerIds:
+              - fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+              - bccdafd1-3e44-439d-861f-341526b597a9
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreauthorizationResult'
+              example:
+                Preauthorizations:
+                - Id: 2d93962f-067f-45a6-b7c4-bc4b9d899456
+                  CreditCardId: e417dfe8-c813-4938-837b-36081199ce88
+                  Amount:
+                    Currency: EUR
+                    NetValue: 8.4
+                    GrossValue: 10.0
+                    TaxValues:
+                    - Code: VAT
+                      Value: 1.6
+                    Breakdown:
+                      Items:
+                      - TaxRateCode: VAT
+                        NetValue: 8.4
+                        TaxValue: 1.6
+                  State: Cancelled
+                  ReservationId: null
+                  Code: null
+                  CustomerId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  IsActive: false
+                - Id: ad44411a-1efc-46b6-b903-ec5fa7842000
+                  CreditCardId: 41fa39ab-4b12-4816-95a3-d06cdbbdcb69
+                  Amount:
+                    Currency: EUR
+                    NetValue: 18.49
+                    GrossValue: 22.0
+                    TaxValues:
+                    - Code: VAT
+                      Value: 3.51
+                    Breakdown:
+                      Items:
+                      - TaxRateCode: VAT
+                        NetValue: 18.49
+                        TaxValue: 3.51
+                  State: Charged
+                  ReservationId: 0f515589-99b4-423d-b83a-b237009f0509
+                  Code: PAY-2024-001
+                  CustomerId: bccdafd1-3e44-439d-861f-341526b597a9
+                  IsActive: true
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    PreauthorizationResult:
+      title: PreauthorizationResult
+      required:
+      - Preauthorizations
+      type: object
+      properties:
+        Preauthorizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Preauthorization'
+          description: Preauthorizations of the specified `Customer`.
+      additionalProperties: false
+      x-schema-id: PreauthorizationResult
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    MultipleCustomerParameters:
+      title: MultipleCustomerParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CustomerIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        CustomerIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Customer`.
+      additionalProperties: false
+      x-schema-id: MultipleCustomerParameters
+    TaxBreakdownItem:
+      title: Tax breakdown item
+      required:
+      - NetValue
+      - TaxValue
+      type: object
+      properties:
+        TaxRateCode:
+          type: string
+          description: Tax rate code for the item. `null` for untaxed amounts.
+          nullable: true
+        NetValue:
+          type: number
+          description: The net value that the tax is calculated from.
+          format: double
+        TaxValue:
+          type: number
+          description: The value of the tax.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxBreakdownItem
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type: string
+          description: Code corresponding to tax type.
+          nullable: true
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    PreauthorizationState:
+      title: Preauthorization state
+      enum:
+      - Chargeable
+      - Expired
+      - Cancelled
+      - Charged
+      - Pending
+      - Failed
+      type: string
+      description: State of the preauthorization.
+      x-enumDescriptions:
+      - Created and prepared for the charging.
+      - A preauthorization that is not charged and expired.
+      - A preauthorization that was canceled before charging.
+      - Charged preauthorization.
+      - A preauthorization that is waiting for the charge to be processed.
+      - A preauthorization that failed to be charged.
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
+    Preauthorization:
+      title: Preauthorization
+      required:
+      - Amount
+      - CreditCardId
+      - Id
+      - State
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the preauthorization.
+          format: uuid
+        CreditCardId:
+          type: string
+          description: Unique identifier of the credit card.
+          format: uuid
+        Amount:
+          title: Amount
+          allOf:
+          - $ref: '#/components/schemas/Amount'
+          description: Value of the preauthorization.
+        State:
+          $ref: '#/components/schemas/PreauthorizationState'
+        ReservationId:
+          type: string
+          description: Unique identifier of the `Reservation` the preauthorization belongs to.
+          format: uuid
+          nullable: true
+        Code:
+          type: string
+          description: Code of the preauthorization.
+          nullable: true
+        CustomerId:
+          type: string
+          description: Unique identifier of the customer.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the preauthorization is active.
+      additionalProperties: false
+      x-schema-id: Preauthorization

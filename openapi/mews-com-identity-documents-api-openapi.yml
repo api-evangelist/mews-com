@@ -1,0 +1,980 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Identity documents API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Identity documents
+paths:
+  /api/connector/v1/identityDocuments/getAll:
+    post:
+      tags:
+      - Identity documents
+      summary: Get all identity documents
+      description: Returns all identity documents for the specified customers, with additional filtering options available. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: identityDocuments_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdentityDocumentFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              IdentityDocumentIds:
+              - e8a72a69-c20b-4278-b699-ab0400a32ecc
+              - 24a3f051-49ed-411b-9384-78187f9daae6
+              CustomerIds:
+              - fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+              - bccdafd1-3e44-439d-861f-341526b597a9
+              ChainIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 5fcd1933-22f2-40b9-84da-7db04cbecec2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityDocumentResult'
+              example:
+                IdentityDocuments:
+                - Id: e8a72a69-c20b-4278-b699-ab0400a32ecc
+                  CustomerId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  Type: Passport
+                  Number: M1234567
+                  ExpirationDate: '2040-10-24T00:00:00Z'
+                  IssuanceDate: '2024-10-24T00:00:00Z'
+                  IssuingCountryCode: CZ
+                  IssuingCountrySubdivisionCode: null
+                  IssuingCity: Prague
+                  IdentityDocumentSupportNumber: S-123456
+                - Id: cbe8a32e-3eb7-4226-baf4-69455a0eeaf4
+                  CustomerId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  Type: IdentityCard
+                  Number: ID7654321
+                  ExpirationDate: '2040-11-20T00:00:00Z'
+                  IssuanceDate: '2024-11-20T00:00:00Z'
+                  IssuingCountryCode: CZ
+                  IssuingCountrySubdivisionCode: null
+                  IssuingCity: Brno
+                  IdentityDocumentSupportNumber: B-321
+                Cursor: cbe8a32e-3eb7-4226-baf4-69455a0eeaf4
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/identityDocuments/delete:
+    post:
+      tags:
+      - Identity documents
+      summary: Delete identity documents
+      description: Deletes specified identity documents. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: identityDocuments_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdentityDocumentDeleteParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              IdentityDocumentIds:
+              - e8a72a69-c20b-4278-b699-ab0400a32ecc
+              - 2e1c6096-3a28-411d-a375-150a7350b278
+              ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/identityDocuments/clear:
+    post:
+      tags:
+      - Identity documents
+      summary: Clear identity documents
+      description: Deletes all identity documents for the specified customers. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: identityDocuments_clear
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdentityDocumentClearParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              CustomerIds:
+              - fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+              - bccdafd1-3e44-439d-861f-341526b597a9
+              ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/identityDocuments/update:
+    post:
+      tags:
+      - Identity documents
+      summary: Update identity documents
+      description: Updates specified identity documents. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: identityDocuments_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleIdentityDocumentUpdateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              IdentityDocuments:
+              - Id: e8a72a69-c20b-4278-b699-ab0400a32ecc
+                Type:
+                  Value: Passport
+                Number:
+                  Value: '123456789'
+                ExpirationDate:
+                  Value: '2040-11-20T00:00:00Z'
+                IssuanceDate:
+                  Value: '2020-11-20T00:00:00Z'
+                IssuingCountryCode:
+                  Value: CZ
+                IssuingCity:
+                  Value: Prague
+                IdentityDocumentSupportNumber:
+                  Value: S-123456
+              ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityDocumentWriteResult'
+              example:
+                IdentityDocuments:
+                - Id: e8a72a69-c20b-4278-b699-ab0400a32ecc
+                  CustomerId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  Type: Passport
+                  Number: M1234567
+                  ExpirationDate: '2040-10-24T00:00:00Z'
+                  IssuanceDate: '2024-10-24T00:00:00Z'
+                  IssuingCountryCode: CZ
+                  IssuingCountrySubdivisionCode: null
+                  IssuingCity: Prague
+                  IdentityDocumentSupportNumber: S-123456
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/identityDocuments/add:
+    post:
+      tags:
+      - Identity documents
+      summary: Add identity documents
+      description: Adds identity documents. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: identityDocuments_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdentityDocumentsAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              IdentityDocuments:
+              - CustomerId: e8a72a69-c20b-4278-b699-ab0400a32ecc
+                Type: Passport
+                Number: '123456789'
+                ExpirationDate: '2040-11-20T00:00:00Z'
+                IssuanceDate: '2020-11-20T00:00:00Z'
+                IssuingCountryCode: CZ
+                IssuingCity: Prague
+                IdentityDocumentSupportNumber: S-123456
+              ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityDocumentWriteResult'
+              example:
+                IdentityDocuments:
+                - Id: e8a72a69-c20b-4278-b699-ab0400a32ecc
+                  CustomerId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                  Type: Passport
+                  Number: M1234567
+                  ExpirationDate: '2040-10-24T00:00:00Z'
+                  IssuanceDate: '2024-10-24T00:00:00Z'
+                  IssuingCountryCode: CZ
+                  IssuingCountrySubdivisionCode: null
+                  IssuingCity: Prague
+                  IdentityDocumentSupportNumber: S-123456
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    IdentityDocumentDeleteParameters:
+      title: IdentityDocumentDeleteParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - IdentityDocumentIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        IdentityDocumentIds:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the identity documents to be deleted.
+      additionalProperties: false
+      x-schema-id: IdentityDocumentDeleteParameters
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    IdentityDocumentWriteResult:
+      title: IdentityDocumentWriteResult
+      required:
+      - IdentityDocuments
+      type: object
+      properties:
+        IdentityDocuments:
+          maxItems: 10
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityDocumentV20241025'
+          description: Modified identity documents.
+      additionalProperties: false
+      x-schema-id: IdentityDocumentWriteResult
+    IdentityDocumentV20241025:
+      title: Identity document (ver 2024-10-25)
+      required:
+      - CustomerId
+      - Id
+      - Number
+      - Type
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the document.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Identifier of the `Customer`.
+          format: uuid
+        Type:
+          title: Document type
+          allOf:
+          - $ref: '#/components/schemas/IdentityDocumentTypeEnum'
+          description: 'Type of the document.
+
+
+            IdentityCard
+
+
+            Passport
+
+
+            Visa
+
+
+            DriversLicense'
+          x-enumNames:
+          - IdentityCard
+          - Passport
+          - Visa
+          - DriversLicense
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+        Number:
+          minLength: 1
+          type: string
+          description: Number of the document (e.g. passport number). The value is an empty string when the number is not collected in certain regions, such as The Netherlands.
+        ExpirationDate:
+          type: string
+          description: Expiration date in ISO 8601 format.
+          format: date
+          nullable: true
+        IssuanceDate:
+          type: string
+          description: Date of issuance in ISO 8601 format.
+          format: date
+          nullable: true
+        IssuingCountryCode:
+          type: string
+          description: ISO 3166-1 code of the `Country`.
+          nullable: true
+        IssuingCountrySubdivisionCode:
+          type: string
+          description: Identifier of the country subdivision where the document was issued (province, state or region).
+          nullable: true
+        IssuingCity:
+          type: string
+          description: City where the document was issued.
+          nullable: true
+        IdentityDocumentSupportNumber:
+          type: string
+          description: Identity document support number. Only required for Spanish identity cards in Spanish hotels.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: IdentityDocumentV20241025
+    IdentityDocumentClearParameters:
+      title: IdentityDocumentClearParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CustomerIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        CustomerIds:
+          maxItems: 10
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Customer` for whom documents will be deleted.
+      additionalProperties: false
+      x-schema-id: IdentityDocumentClearParameters
+    IdentityDocumentResult:
+      title: IdentityDocumentResult
+      required:
+      - IdentityDocuments
+      type: object
+      properties:
+        IdentityDocuments:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityDocumentV20241025'
+          description: The identity documents of customers.
+        Cursor:
+          type: string
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: IdentityDocumentResult
+    IdentityDocumentFilterParameters:
+      title: IdentityDocumentFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CustomerIds
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        ChainIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
+          nullable: true
+        IdentityDocumentIds:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Identity document`.
+          nullable: true
+        CustomerIds:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Customer`.
+        Types:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityDocumentTypeEnum'
+          description: Type of the identity document.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: IdentityDocumentFilterParameters
+    Unit:
+      type: object
+      additionalProperties: false
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    IdentityDocumentTypeEnum:
+      title: Document type
+      enum:
+      - IdentityCard
+      - Passport
+      - Visa
+      - DriversLicense
+      type: string
+      description: '
+
+
+        IdentityCard
+
+
+        Passport
+
+
+        Visa
+
+
+        DriversLicense'
+      x-enumNames:
+      - IdentityCard
+      - Passport
+      - Visa
+      - DriversLicense
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+    IdentityDocumentsAddData:
+      title: Identity document parameters
+      required:
+      - CustomerId
+      - Number
+      - Type
+      type: object
+      properties:
+        CustomerId:
+          type: string
+          description: Identifier of the `Customer`.
+          format: uuid
+        Type:
+          title: Document type
+          allOf:
+          - $ref: '#/components/schemas/IdentityDocumentTypeEnum'
+          description: 'Type of the document.
+
+
+            IdentityCard
+
+
+            Passport
+
+
+            Visa
+
+
+            DriversLicense'
+          x-enumNames:
+          - IdentityCard
+          - Passport
+          - Visa
+          - DriversLicense
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+        Number:
+          minLength: 1
+          type: string
+          description: Number of the document (e.g. passport number). If the number is not collected in certain regions, such as The Netherlands, use an empty string. In all other cases, a value should be supplied.
+        ExpirationDate:
+          type: string
+          description: Expiration date in ISO 8601 format.
+          format: date
+          nullable: true
+        IssuanceDate:
+          type: string
+          description: Date of issuance in ISO 8601 format.
+          format: date
+          nullable: true
+        IssuingCountryCode:
+          type: string
+          description: ISO 3166-1 code of the `Country`).
+          nullable: true
+        IssuingCountrySubdivisionCode:
+          type: string
+          description: Identifier of the country subdivision where the document was issued (province, state or region).
+          nullable: true
+        IssuingCity:
+          type: string
+          description: City where the document was issued.
+          nullable: true
+        IdentityDocumentSupportNumber:
+          type: string
+          description: Identity document support number. Only required for Spanish identity cards in Spanish hotels.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: IdentityDocumentsAddData
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    MultipleIdentityDocumentUpdateParameters:
+      title: Multiple identity document update parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - IdentityDocuments
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        IdentityDocuments:
+          maxItems: 10
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityDocumentUpdateParameters'
+          description: Identity documents to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleIdentityDocumentUpdateParameters
+    IdentityDocumentTypeUpdateValue:
+      title: Identity document type update value
+      type: object
+      properties:
+        Value:
+          title: Document type
+          allOf:
+          - $ref: '#/components/schemas/IdentityDocumentTypeEnum'
+          description: 'Type of the document (or `null` if the type should not be updated).
+
+
+            IdentityCard
+
+
+            Passport
+
+
+            Visa
+
+
+            DriversLicense'
+          x-enumNames:
+          - IdentityCard
+          - Passport
+          - Visa
+          - DriversLicense
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+      additionalProperties: false
+      description: Has same structure as [String update value](https://mews-systems.gitbook.io/connector-api/operations/_objects#string-update-value).
+      x-schema-id: IdentityDocumentTypeUpdateValue
+    IdentityDocumentsAddParameters:
+      title: Identity document add parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - IdentityDocuments
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        IdentityDocuments:
+          maxItems: 10
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityDocumentsAddData'
+          description: Identity documents to be added.
+      additionalProperties: false
+      x-schema-id: IdentityDocumentsAddParameters
+    IdentityDocumentUpdateParameters:
+      title: Identity document update parameters
+      required:
+      - Id
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the document.
+          format: uuid
+        Type:
+          title: Identity document type update value
+          allOf:
+          - $ref: '#/components/schemas/IdentityDocumentTypeUpdateValue'
+          description: Type of the document (or `null` if the type should not be updated).
+          nullable: true
+        Number:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Number of the document (e.g. passport number or `null` if the number should not be updated).
+          nullable: true
+        ExpirationDate:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Expiration date in ISO 8601 format (or `null` if the expiration date should not be updated).
+          format: date
+          nullable: true
+        IssuanceDate:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Date of issuance in ISO 8601 format (or `null` if the issuance date should not be updated).
+          format: date
+          nullable: true
+        IssuingCountryCode:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: ISO 3166-1 code of the `Country` (or `null` if the issuing country code should not be updated).
+          nullable: true
+        IssuingCountrySubdivisionCode:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Identifier of the country subdivision where the document was issued (province, state or region) (or `null` if the value should not be updated).
+          nullable: true
+        IssuingCity:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: City where the document was issued (or `null` if the issuing city should not be updated).
+          nullable: true
+        IdentityDocumentSupportNumber:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Identity document support number. Only required for Spanish identity cards in Spanish hotels.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: IdentityDocumentUpdateParameters

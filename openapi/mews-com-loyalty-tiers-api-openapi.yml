@@ -1,0 +1,697 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Loyalty tiers API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Loyalty tiers
+paths:
+  /api/connector/v1/loyaltyTiers/getAll:
+    post:
+      tags:
+      - Loyalty tiers
+      summary: Get all loyalty tiers
+      description: Returns all loyalty tiers of the chain or chains, filtered by loyalty program identifiers and optionally filtered by specific loyalty tier identifiers, activity states, or other filter parameters. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: loyaltyTiers_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoyaltyTierFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ChainIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 5fcd1933-22f2-40b9-84da-7db04cbecec2
+              LoyaltyProgramIds:
+              - f701dafb-5765-4cf4-b1dd-1f602a740ae5
+              - da34b396-41f7-47f6-8847-aecf00a3f19e
+              LoyaltyTierIds:
+              - 69eedfd2-6f25-42fc-b3c8-39df70f85e37
+              - 3cad97ef-5257-4ced-8599-8e6bbd33331f
+              ActivityStates:
+              - Active
+              UpdatedUtc:
+                StartUtc: '2022-10-10T00:00:00Z'
+                EndUtc: '2022-10-17T00:00:00Z'
+              Limitation:
+                Count: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoyaltyTierResult'
+              example:
+                LoyaltyTiers:
+                - Id: 69eedfd2-6f25-42fc-b3c8-39df70f85e37
+                  LoyaltyProgramId: f701dafb-5765-4cf4-b1dd-1f602a740ae5
+                  Name: Platinum
+                  Code: P1
+                  Ordering: 1
+                - Id: 3cad97ef-5257-4ced-8599-8e6bbd33331f
+                  LoyaltyProgramId: f701dafb-5765-4cf4-b1dd-1f602a740ae5
+                  Name: Silver
+                  Code: S1
+                  Ordering: 2
+                Cursor: 3cad97ef-5257-4ced-8599-8e6bbd33331f
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/loyaltyTiers/add:
+    post:
+      tags:
+      - Loyalty tiers
+      summary: Add loyalty tiers
+      description: Adds loyalty tiers to a loyalty program of the enterprise chain. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: loyaltyTiers_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleLoyaltyTierAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              LoyaltyTiers:
+              - LoyaltyProgramId: f701dafb-5765-4cf4-b1dd-1f602a740ae5
+                Name: Platinum
+                Code: P1
+                Ordering: 1
+              ChainId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoyaltyTierWriteResult'
+              example:
+                LoyaltyTiers:
+                - Id: 69eedfd2-6f25-42fc-b3c8-39df70f85e37
+                  LoyaltyProgramId: f701dafb-5765-4cf4-b1dd-1f602a740ae5
+                  Name: Platinum
+                  Code: P1
+                  Ordering: 1
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/loyaltyTiers/update:
+    post:
+      tags:
+      - Loyalty tiers
+      summary: Update loyalty tiers
+      description: Updates information about the specified loyalty tiers.
+      operationId: loyaltyTiers_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleLoyaltyTierUpdateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              LoyaltyTierUpdates:
+              - LoyaltyTierId: 69eedfd2-6f25-42fc-b3c8-39df70f85e37
+                Name:
+                  Value: Platinum
+                Code:
+                  Value: P1
+                Ordering:
+                  Value: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoyaltyTierWriteResult'
+              example:
+                LoyaltyTiers:
+                - Id: 69eedfd2-6f25-42fc-b3c8-39df70f85e37
+                  LoyaltyProgramId: f701dafb-5765-4cf4-b1dd-1f602a740ae5
+                  Name: Platinum
+                  Code: P1
+                  Ordering: 1
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/loyaltyTiers/delete:
+    post:
+      tags:
+      - Loyalty tiers
+      summary: Delete loyalty tiers
+      description: Deletes loyalty tiers.
+      operationId: loyaltyTiers_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoyaltyTierDeleteParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              LoyaltyTierIds:
+              - 69eedfd2-6f25-42fc-b3c8-39df70f85e37
+              - 3cad97ef-5257-4ced-8599-8e6bbd33331f
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    LoyaltyTier:
+      title: Loyalty tier
+      required:
+      - Code
+      - Id
+      - LoyaltyProgramId
+      - Name
+      - Ordering
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the loyalty tier.
+          format: uuid
+        LoyaltyProgramId:
+          type: string
+          description: Unique identifier of the loyalty program of that loyalty tier.
+          format: uuid
+        Name:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: Name of the loyalty tier.
+        Code:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: Code of the loyalty tier.
+        Ordering:
+          type: integer
+          description: Ordering of the loyalty tier.
+          format: int32
+      additionalProperties: false
+      x-schema-id: LoyaltyTier
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    LoyaltyTierAddParameters:
+      title: Loyalty tier add parameters
+      required:
+      - Code
+      - LoyaltyProgramId
+      - Name
+      - Ordering
+      type: object
+      properties:
+        LoyaltyProgramId:
+          type: string
+          description: Unique identifier of the loyalty program the tier belongs to.
+          format: uuid
+        Name:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: Name of the loyalty tier.
+        Code:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: Code of the loyalty tier.
+        Ordering:
+          type: integer
+          description: Ordering of the loyalty tier.
+          format: int32
+      additionalProperties: false
+      x-schema-id: LoyaltyTierAddParameters
+    MultipleLoyaltyTierUpdateParameters:
+      title: MultipleLoyaltyTierUpdateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - LoyaltyTierUpdates
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        LoyaltyTierUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/LoyaltyTierUpdateParameters'
+          description: Loyalty tiers to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleLoyaltyTierUpdateParameters
+    LoyaltyTierResult:
+      title: LoyaltyTierResult
+      required:
+      - LoyaltyTiers
+      type: object
+      properties:
+        LoyaltyTiers:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/LoyaltyTier'
+          description: The loyalty tiers of the loyalty program within the chain.
+        Cursor:
+          type: string
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: LoyaltyTierResult
+    LoyaltyTierUpdateParameters:
+      title: Loyalty tier update parameters
+      required:
+      - LoyaltyTierId
+      type: object
+      properties:
+        LoyaltyTierId:
+          type: string
+          description: Unique identifier of the loyalty tier.
+          format: uuid
+        Name:
+          title: String update value
+          maxLength: 50
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Name of the loyalty tier \(or `null` if the name should not be updated\).
+          nullable: true
+        Code:
+          title: String update value
+          maxLength: 50
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Code of the loyalty tier, \(or `null` if the code should not be updated\).
+          nullable: true
+        Ordering:
+          title: Int32 update value
+          allOf:
+          - $ref: '#/components/schemas/Int32UpdateValue'
+          description: Ordering of the loyalty tier, \(or `null` if the ordering should not be updated\).
+          nullable: true
+      additionalProperties: false
+      x-schema-id: LoyaltyTierUpdateParameters
+    Unit:
+      type: object
+      additionalProperties: false
+    LoyaltyTierFilterParameters:
+      title: LoyaltyTierFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - LoyaltyProgramIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the chain. If not specified, the operation returns data for all chains within scope of the Access Token.
+          nullable: true
+        LoyaltyProgramIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Loyalty programs](https://mews-systems.gitbook.io/connector-api/operations/#loyalty-program).
+        LoyaltyTierIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Loyalty tiers](https://mews-systems.gitbook.io/connector-api/operations/#loyalty-tier).
+          nullable: true
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+          nullable: true
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval of `Loyalty tier` last update date and time.
+          nullable: true
+          x-max-interval-in-months: 3
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned.
+      additionalProperties: false
+      x-schema-id: LoyaltyTierFilterParameters
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    Int32UpdateValue:
+      title: Int32 update value
+      type: object
+      properties:
+        Value:
+          type: integer
+          description: Value which is to be updated.
+          format: int32
+      additionalProperties: false
+      x-schema-id: Int32UpdateValue
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    MultipleLoyaltyTierAddParameters:
+      title: MultipleLoyaltyTierAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - LoyaltyTiers
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        LoyaltyTiers:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/LoyaltyTierAddParameters'
+          description: Loyalty tiers to be added.
+      additionalProperties: false
+      x-schema-id: MultipleLoyaltyTierAddParameters
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    LoyaltyTierWriteResult:
+      title: LoyaltyTierWriteResult
+      required:
+      - LoyaltyTiers
+      type: object
+      properties:
+        LoyaltyTiers:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/LoyaltyTier'
+          description: The loyalty tiers of the loyalty program within the chain.
+      additionalProperties: false
+      x-schema-id: LoyaltyTierWriteResult
+    LoyaltyTierDeleteParameters:
+      title: LoyaltyTierDeleteParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - LoyaltyTierIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        LoyaltyTierIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifier of the loyalty tiers to be deleted.
+      additionalProperties: false
+      x-schema-id: LoyaltyTierDeleteParameters
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation

@@ -1,0 +1,500 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Ledger balances API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Ledger balances
+paths:
+  /api/connector/v1/ledgerBalances/getAll:
+    post:
+      tags:
+      - Ledger balances
+      summary: Get all ledger balances
+      description: Returns opening and closing balances of specified ledgers for each day in the specified date interval. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: ledgerBalances_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LedgerBalanceParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              Date:
+                Start: '2024-01-01'
+                End: '2024-01-02'
+              LedgerTypes:
+              - Revenue
+              - Payment
+              - Guest
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              Limitation:
+                Count: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LedgerBalanceResult'
+              example:
+                LedgerBalances:
+                - EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  Date: '2024-01-15'
+                  LedgerType: Revenue
+                  OpeningBalance:
+                    Currency: EUR
+                    NetValue: 15000.0
+                    GrossValue: 18000.0
+                    TaxValues:
+                    - Code: VAT
+                      Value: 3000.0
+                    Breakdown:
+                      Items:
+                      - TaxRateCode: VAT
+                        NetValue: 15000.0
+                        TaxValue: 3000.0
+                  ClosingBalance:
+                    Currency: EUR
+                    NetValue: 25000.0
+                    GrossValue: 30000.0
+                    TaxValues:
+                    - Code: VAT
+                      Value: 5000.0
+                    Breakdown:
+                      Items:
+                      - TaxRateCode: VAT
+                        NetValue: 25000.0
+                        TaxValue: 5000.0
+                - EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  Date: '2024-01-15'
+                  LedgerType: Payment
+                  OpeningBalance:
+                    Currency: EUR
+                    NetValue: 5000.0
+                    GrossValue: 5000.0
+                    TaxValues:
+                    - Code: VAT
+                      Value: 0.0
+                    Breakdown:
+                      Items:
+                      - TaxRateCode: VAT
+                        NetValue: 5000.0
+                        TaxValue: 0.0
+                  ClosingBalance:
+                    Currency: EUR
+                    NetValue: 12000.0
+                    GrossValue: 12000.0
+                    TaxValues:
+                    - Code: VAT
+                      Value: 0.0
+                    Breakdown:
+                      Items:
+                      - TaxRateCode: VAT
+                        NetValue: 12000.0
+                        TaxValue: 0.0
+                - EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  Date: '2024-01-15'
+                  LedgerType: Guest
+                  OpeningBalance:
+                    Currency: EUR
+                    NetValue: -2000.0
+                    GrossValue: -2400.0
+                    TaxValues:
+                    - Code: VAT
+                      Value: -400.0
+                    Breakdown:
+                      Items:
+                      - TaxRateCode: VAT
+                        NetValue: -2000.0
+                        TaxValue: -400.0
+                  ClosingBalance:
+                    Currency: EUR
+                    NetValue: -5000.0
+                    GrossValue: -6000.0
+                    TaxValues:
+                    - Code: VAT
+                      Value: -1000.0
+                    Breakdown:
+                      Items:
+                      - TaxRateCode: VAT
+                        NetValue: -5000.0
+                        TaxValue: -1000.0
+                Cursor: 145a6ece-e15e-4b22-922d-eeac973478c8
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    LedgerBalanceParameters:
+      title: LedgerBalanceParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Date
+      - LedgerTypes
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        Date:
+          title: Date filter interval
+          allOf:
+          - $ref: '#/components/schemas/DateFilterInterval'
+          description: Date interval over which the ledger balances are created.
+          x-max-interval-in-months: 1
+        LedgerTypes:
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingLedgerTypeEnum'
+          description: Accounting ledger types to which ledger balances belong.
+      additionalProperties: false
+      x-schema-id: LedgerBalanceParameters
+    DateFilterInterval:
+      title: Date filter interval
+      required:
+      - End
+      - Start
+      type: object
+      properties:
+        Start:
+          minLength: 1
+          type: string
+          description: Starting date of the interval in ISO 8601 format.
+          format: date
+        End:
+          minLength: 1
+          type: string
+          description: Ending date of the interval in ISO 8601 format.
+          format: date
+      additionalProperties: false
+      x-schema-id: DateFilterInterval
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount
+    AccountingLedgerTypeEnum:
+      title: Accounting ledger type
+      enum:
+      - Revenue
+      - Tax
+      - Payment
+      - Deposit
+      - Guest
+      - City
+      - NonRevenue
+      type: string
+      description: '
+
+
+        Revenue
+
+
+        Tax
+
+
+        Payment
+
+
+        Deposit
+
+
+        Guest
+
+
+        City
+
+
+        NonRevenue'
+      x-enumNames:
+      - Revenue
+      - Tax
+      - Payment
+      - Deposit
+      - Guest
+      - City
+      - NonRevenue
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    LedgerBalance:
+      title: Ledger balance
+      required:
+      - ClosingBalance
+      - Date
+      - EnterpriseId
+      - LedgerType
+      - OpeningBalance
+      type: object
+      properties:
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the Enterprise.
+          format: uuid
+        Date:
+          minLength: 1
+          type: string
+          description: Day for which the ledger balance applies in ISO 8601 format.
+          format: date
+        LedgerType:
+          title: Accounting ledger type
+          allOf:
+          - $ref: '#/components/schemas/AccountingLedgerTypeEnum'
+          description: 'Type of accounting ledger.
+
+
+            Revenue
+
+
+            Tax
+
+
+            Payment
+
+
+            Deposit
+
+
+            Guest
+
+
+            City
+
+
+            NonRevenue'
+          x-enumNames:
+          - Revenue
+          - Tax
+          - Payment
+          - Deposit
+          - Guest
+          - City
+          - NonRevenue
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+          - ''
+          - ''
+          - ''
+        OpeningBalance:
+          title: Amount
+          allOf:
+          - $ref: '#/components/schemas/Amount'
+          description: Ledger opening balance at the start of the day.
+        ClosingBalance:
+          title: Amount
+          allOf:
+          - $ref: '#/components/schemas/Amount'
+          description: Ledger closing balance at the end of the day.
+      additionalProperties: false
+      description: Ledger balance
+      x-schema-id: LedgerBalance
+    TaxBreakdownItem:
+      title: Tax breakdown item
+      required:
+      - NetValue
+      - TaxValue
+      type: object
+      properties:
+        TaxRateCode:
+          type: string
+          description: Tax rate code for the item. `null` for untaxed amounts.
+          nullable: true
+        NetValue:
+          type: number
+          description: The net value that the tax is calculated from.
+          format: double
+        TaxValue:
+          type: number
+          description: The value of the tax.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxBreakdownItem
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type: string
+          description: Code corresponding to tax type.
+          nullable: true
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
+    LedgerBalanceResult:
+      title: LedgerBalanceResult
+      required:
+      - LedgerBalances
+      type: object
+      properties:
+        LedgerBalances:
+          type: array
+          items:
+            $ref: '#/components/schemas/LedgerBalance'
+          description: The list of filtered ledger balances.
+          nullable: true
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest ledger balance returned. This can be used in Limitation in a subsequent request to fetch the next batch of ledger balances.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: LedgerBalanceResult

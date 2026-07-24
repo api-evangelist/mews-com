@@ -1,0 +1,253 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Countries API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Countries
+paths:
+  /api/connector/v1/countries/getAll:
+    post:
+      tags:
+      - Countries
+      summary: Get all countries
+      description: Returns all countries supported by the API.
+      operationId: countries_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Parameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryResult'
+              example:
+                Countries:
+                - Code: GB
+                  EnglishName: United Kingdom of Great Britain and Northern Ireland
+                - Code: US
+                  EnglishName: United States of America
+                CountrySubdivisions:
+                - Code: AU-NSW
+                  CountryCode: AU
+                  EnglishName: New South Wales
+                - Code: AU-QLD
+                  CountryCode: AU
+                  EnglishName: Queensland
+                CountryAlliances:
+                - Code: SCHENGEN
+                  EnglishName: Schengen Area
+                  CountryCodes:
+                  - AT
+                  - BE
+                  - CZ
+                  - '...'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    CountryRule:
+      title: Country rules
+      required:
+      - CountryCode
+      - DriverLicenceExpirationDateNotRequired
+      - IdentityCardExpirationDateNotRequired
+      type: object
+      properties:
+        CountryCode:
+          minLength: 1
+          type: string
+          description: ISO 3166-1 alpha-2 code, e.g. US or GB.
+        IdentityCardExpirationDateNotRequired:
+          type: boolean
+          description: Whether the country requires expiration date for identity card.
+        DriverLicenceExpirationDateNotRequired:
+          type: boolean
+          description: Whether the country requires expiration date for driver's license.
+      additionalProperties: false
+      description: Country-specific rules
+      x-schema-id: CountryRule
+    Parameters:
+      title: Parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+      additionalProperties: false
+      x-schema-id: Parameters
+    CountrySubdivision:
+      title: Country subdivision
+      required:
+      - Code
+      - CountryCode
+      - EnglishName
+      type: object
+      properties:
+        Code:
+          minLength: 1
+          type: string
+          description: ISO 3166-2 code of the administrative division, e.g AU-QLD.
+        CountryCode:
+          minLength: 1
+          type: string
+          description: ISO 3166-1 code of the [Country](https://mews-systems.gitbook.io/connector-api/operations/countries#country).
+        EnglishName:
+          minLength: 1
+          type: string
+          description: English name of the country subdivision.
+      additionalProperties: false
+      x-schema-id: CountrySubdivision
+    Country:
+      title: Country
+      required:
+      - Code
+      - EnglishName
+      - SovereignCountryCode
+      type: object
+      properties:
+        Code:
+          minLength: 1
+          type: string
+          description: ISO 3166-1 alpha-2 code, e.g. `CZ` or `SK`.
+        SovereignCountryCode:
+          minLength: 1
+          type: string
+          description: ISO 3166-1 alpha-2 code of the sovereign country. May differ from `Code` for dependent territories.
+        EnglishName:
+          minLength: 1
+          type: string
+          description: English name of the country.
+      additionalProperties: false
+      x-schema-id: Country
+    CountryResult:
+      title: CountryResult
+      required:
+      - Countries
+      - CountryGroups
+      - CountryRules
+      - CountrySubdivisions
+      type: object
+      properties:
+        Countries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Country'
+          description: The supported countries.
+        CountrySubdivisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountrySubdivision'
+          description: The supported country subdivisions.
+        CountryRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryRule'
+          description: Country-specific rules
+        CountryGroups:
+          title: Country group
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryGroup'
+          description: The supported country groups.
+      additionalProperties: false
+      x-schema-id: CountryResult
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    CountryGroup:
+      title: Country group
+      required:
+      - Code
+      - CountryCodes
+      - EnglishName
+      type: object
+      properties:
+        Code:
+          minLength: 1
+          type: string
+          description: Group code, e.g. `EU`, `SCHENGEN`, `NORDIC`...
+        EnglishName:
+          minLength: 1
+          type: string
+          description: English name of the country group.
+        CountryCodes:
+          type: array
+          items:
+            type: string
+          description: Codes of countries included in the group, in ISO 3166-1 alpha-2 format.
+      additionalProperties: false
+      x-schema-id: CountryGroup

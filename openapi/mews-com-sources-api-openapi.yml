@@ -1,0 +1,253 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Sources API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Sources
+paths:
+  /api/connector/v1/sources/getAll:
+    post:
+      tags:
+      - Sources
+      summary: Get all sources
+      description: Returns all sources from which reservations can originate. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/).
+      operationId: sources_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SourceFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              UpdatedUtc:
+                StartUtc: '2023-01-05T00:00:00Z'
+                EndUtc: '2023-01-10T00:00:00Z'
+              SourceIds:
+              - bbe29c21-401a-4746-b97d-af1f00e1bb8b
+              - 22e42a59-b321-43f8-a5d1-af1f00e1bb8b
+              - b5a55d41-bbc5-48d0-a01b-af1f00e1bb8b
+              Limitation:
+                Count: 10
+                Cursor: null
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SourceResult'
+              example:
+                Sources:
+                - Id: bbe29c21-401a-4746-b97d-af1f00e1bb8b
+                  Name: Booking.com
+                  Type: OnlineTravelAgency
+                  UpdatedUtc: '2023-01-05T12:00:00Z'
+                - Id: 22e42a59-b321-43f8-a5d1-af1f00e1bb8b
+                  Name: Hostelworld
+                  Type: OnlineTravelAgency
+                  UpdatedUtc: '2023-01-06T12:00:00Z'
+                - Id: b5a55d41-bbc5-48d0-a01b-af1f00e1bb8b
+                  Name: SynXis
+                  Type: OnlineTravelAgency
+                  UpdatedUtc: '2023-01-06T12:00:00Z'
+                Cursor: b5a55d41-bbc5-48d0-a01b-af1f00e1bb8b
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    Source:
+      title: Source
+      required:
+      - Code
+      - Id
+      - Name
+      - Type
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the source.
+          format: uuid
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the source.
+        Type:
+          $ref: '#/components/schemas/SourceType'
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Date and time when the source was last updated, expressed in UTC timezone in ISO 8601 format.
+          format: date-time
+        Code:
+          type: integer
+          description: Code of the source.
+          format: int32
+      additionalProperties: false
+      x-schema-id: Source
+    SourceFilterParameters:
+      title: SourceFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        SourceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Sources](https://mews-systems.gitbook.io/connector-api/operations/sources/#source).
+          nullable: true
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the source was updated.
+          nullable: true
+          x-max-interval-in-months: 3
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned.
+      additionalProperties: false
+      x-schema-id: SourceFilterParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    SourceResult:
+      title: SourceResult
+      required:
+      - Sources
+      type: object
+      properties:
+        Sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Source'
+          description: The reservation sources.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest source returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older sources.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: SourceResult
+    SourceType:
+      title: Source type
+      enum:
+      - OnlineTravelAgency
+      - CentralReservationSystem
+      - GlobalDistributionSystem
+      - AlternativeDistributionSystem
+      - SalesAndCateringSystem
+      - PropertyManagementSystem
+      - TourOperatorSystem
+      - OnlineBookingEngine
+      - Kiosk
+      - Agent
+      type: string
+      description: Type of the source.
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation

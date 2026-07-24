@@ -1,0 +1,1022 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Company contracts API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Company contracts
+paths:
+  /api/connector/v1/companyContracts/getAll:
+    post:
+      tags:
+      - Company contracts
+      summary: Get all company contracts
+      description: 'Returns all contracts between the enterprise and other companies.
+
+        Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).'
+      operationId: companyContracts_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyContractFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              CompanyContractIds:
+              - 3396f6f3-6733-443b-92e0-b2a0009a05a7
+              CompanyIds:
+              - bfd5667b-533f-424f-860d-af150065f4d6
+              ServiceIds:
+              - c8f88563-dc60-47f3-aca3-af150065d951
+              UpdatedUtc:
+                StartUtc: '2023-10-01T00:00:00Z'
+                EndUtc: '2023-10-31T00:00:00Z'
+              ActivityStates:
+              - Active
+              - Deleted
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              Limitation:
+                Count: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractResult'
+              example:
+                TravelAgencyContracts:
+                - Id: 0078f370-3787-43dc-a615-af150066bb88
+                  ServiceId: c8f88563-dc60-47f3-aca3-af150065d951
+                  CompanyId: bfd5667b-533f-424f-860d-af150065f4d6
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  IsActive: true
+                  CommissionIncluded: true
+                  Commission: 0.1
+                  ChannelManagerAbsoluteAdjustment: 10
+                  ChannelManagerRelativeAdjustment: 0.15
+                  Options:
+                    IncludeCancellationFeeInCommissionEstimate: true
+                    SkipAutomaticSettlement: true
+                  AccountingCode: P2DT23H
+                  InvoiceDueInterval: P0M15DT0H0M0S
+                  ChannelManagerBusinessSegmentId: 1289d3c8-3c83-4169-b756-af150066bb87
+                  ContactPerson: Sample person
+                  ContactEmail: sample-person@email.com
+                  AdditionalContactInfo: null
+                  Notes: null
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/companyContracts/add:
+    post:
+      tags:
+      - Company contracts
+      summary: Add company contracts
+      description: Adds one or more company contracts.
+      operationId: companyContracts_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleCompanyContractAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              TravelAgencyContracts:
+              - ServiceId: c8f88563-dc60-47f3-aca3-af150065d951
+                CompanyId: 896e9313-477d-4306-9d37-af150065f4d6
+                CommissionIncluded: true
+                Commission: 0.1
+                ChannelManagerAbsoluteAdjustment: 10
+                ChannelManagerRelativeAdjustment: 0.15
+                Options:
+                  IncludeCancellationFeeInCommissionEstimate: false
+                  SkipAutomaticSettlement: false
+                AccountingCode: P2DT23H
+                InvoiceDueInterval: P0M15DT0H0M0S
+                ChannelManagerBusinessSegmentId: 1289d3c8-3c83-4169-b756-af150066bb87
+                ContactPerson: Sample person
+                ContactEmail: sample-person@email.com
+                AdditionalContactInfo: null
+                Notes: null
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractAdditionResult'
+              example:
+                TravelAgencyContracts:
+                - Id: 0078f370-3787-43dc-a615-af150066bb88
+                  ServiceId: c8f88563-dc60-47f3-aca3-af150065d951
+                  CompanyId: bfd5667b-533f-424f-860d-af150065f4d6
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  IsActive: true
+                  CommissionIncluded: true
+                  Commission: 0.1
+                  ChannelManagerAbsoluteAdjustment: 10
+                  ChannelManagerRelativeAdjustment: 0.15
+                  Options:
+                    IncludeCancellationFeeInCommissionEstimate: true
+                    SkipAutomaticSettlement: true
+                  AccountingCode: P2DT23H
+                  InvoiceDueInterval: P0M15DT0H0M0S
+                  ChannelManagerBusinessSegmentId: 1289d3c8-3c83-4169-b756-af150066bb87
+                  ContactPerson: Sample person
+                  ContactEmail: sample-person@email.com
+                  AdditionalContactInfo: null
+                  Notes: null
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/companyContracts/update:
+    post:
+      tags:
+      - Company contracts
+      summary: Update company contracts
+      description: Updates one or more company contracts.
+      operationId: companyContracts_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleCompanyContractUpdateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              TravelAgencyContractUpdates:
+              - TravelAgencyContractId: 652d4a22-ac33-42b7-abe7-af1f00820023
+                CommissionIncluded:
+                  Value: true
+                Commission:
+                  Value: 0.1
+                ChannelManagerAbsoluteAdjustment:
+                  Value: 10
+                ChannelManagerRelativeAdjustment:
+                  Value: 0.15
+                Options:
+                  IncludeCancellationFeeInCommissionEstimate:
+                    Value: true
+                  SkipAutomaticSettlement:
+                    Value: true
+                AccountingCode:
+                  Value: P2DT23H
+                InvoiceDueInterval:
+                  Value: P0M15DT0H0M0S
+                ChannelManagerBusinessSegmentId:
+                  Value: 1289D3C8-3C83-4169-B756-AF150066BB87
+                ContactPerson:
+                  Value: Sample person
+                ContactEmail:
+                  Value: sample-person@email.com
+                AdditionalContactInfo: null
+                Notes: null
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractUpdateResult'
+              example:
+                TravelAgencyContracts:
+                - Id: 0078f370-3787-43dc-a615-af150066bb88
+                  ServiceId: c8f88563-dc60-47f3-aca3-af150065d951
+                  CompanyId: bfd5667b-533f-424f-860d-af150065f4d6
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                  IsActive: true
+                  CommissionIncluded: true
+                  Commission: 0.1
+                  ChannelManagerAbsoluteAdjustment: 10
+                  ChannelManagerRelativeAdjustment: 0.15
+                  Options:
+                    IncludeCancellationFeeInCommissionEstimate: true
+                    SkipAutomaticSettlement: true
+                  AccountingCode: P2DT23H
+                  InvoiceDueInterval: P0M15DT0H0M0S
+                  ChannelManagerBusinessSegmentId: 1289d3c8-3c83-4169-b756-af150066bb87
+                  ContactPerson: Sample person
+                  ContactEmail: sample-person@email.com
+                  AdditionalContactInfo: null
+                  Notes: null
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/companyContracts/delete:
+    post:
+      tags:
+      - Company contracts
+      summary: Delete company contracts
+      description: Deletes one or more company contracts. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: companyContracts_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleCompanyContractDeleteParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              TravelAgencyContractIds:
+              - 0078f370-3787-43dc-a615-af150066bb88
+              - 652d4a22-ac33-42b7-abe7-af1f00820023
+              ServiceIds:
+              - a1d6dee8-355b-44c3-b6be-faef1a7eb6c0
+              - d5a2aac3-5194-479b-ba05-6c073398e0fd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    TravelAgencyContractAddParameters:
+      title: Travel agency contract parameters
+      required:
+      - CompanyId
+      - Options
+      - ServiceId
+      type: object
+      properties:
+        ServiceId:
+          type: string
+          description: Unique identifier of the `Service` the travel agency contract is created to.
+          format: uuid
+        CompanyId:
+          type: string
+          description: Unique identifier of the `Company` the travel agency contract is issued to.
+          format: uuid
+        CommissionIncluded:
+          type: boolean
+          description: Whether commission of the travel agency is included in the rate.
+          nullable: true
+        Commission:
+          type: number
+          description: Commission of the travel agency. Value must be between 0 and 1.
+          format: double
+          nullable: true
+        ChannelManagerBusinessSegmentId:
+          type: string
+          description: Unique identifier of the `BusinessSegment` used for incoming reservations originating from Channel Managers, for this particular contract.
+          format: uuid
+          nullable: true
+        ChannelManagerAbsoluteAdjustment:
+          type: number
+          description: Flat fee added to (or subtracted from) the reservation price when coming from Channel Managers.
+          format: double
+          nullable: true
+        ChannelManagerRelativeAdjustment:
+          type: number
+          description: Percentage of the reservation price added to (or subtracted from) price when coming from Channel Managers. Value must be between -1 and 1.
+          format: double
+          nullable: true
+        Options:
+          title: Travel agency contract options
+          allOf:
+          - $ref: '#/components/schemas/TravelAgencyContractOptions'
+          description: Options of the travel agency contract.
+        AccountingCode:
+          type: string
+          description: Accounting code of the travel agency contract.
+          nullable: true
+        InvoiceDueInterval:
+          type: string
+          description: The maximum time, when the invoice has to be be paid in ISO 8601 duration format.
+          nullable: true
+        ContactPerson:
+          type: string
+          description: Contact person of the travel agency.
+          nullable: true
+        ContactEmail:
+          type: string
+          description: Contact email of the travel agency.
+          format: email
+          nullable: true
+        AdditionalContactInfo:
+          type: string
+          description: Additional contact info of the travel agency.
+          nullable: true
+        Notes:
+          type: string
+          description: Additional notes of the travel agency contract.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: TravelAgencyContractAddParameters
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    ContractAdditionResult:
+      title: ContractAdditionResult
+      required:
+      - TravelAgencyContracts
+      type: object
+      properties:
+        TravelAgencyContracts:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelAgencyContract'
+          description: The added travel agency contracts.
+      additionalProperties: false
+      x-schema-id: ContractAdditionResult
+    BooleanNullableUpdateValue:
+      title: Boolean update value
+      type: object
+      properties:
+        Value:
+          type: boolean
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: BooleanNullableUpdateValue
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TravelAgencyContract:
+      title: Travel agency contract
+      required:
+      - CompanyId
+      - CreatedUtc
+      - Id
+      - IsActive
+      - Options
+      - ServiceId
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the contract.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the `Service` the contract is related to.
+          format: uuid
+        CompanyId:
+          type: string
+          description: Unique identifier of the contracted `Company`.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the contract is still active.
+        CommissionIncluded:
+          type: boolean
+          description: Whether commission of the travel agency is included in the rate. When `CommissionIncluded` is not provided in the response, that means commission is unspecified, when set to true it means the the commission is included in the rate and false means the commission in not included in the rate.
+          nullable: true
+        Commission:
+          type: number
+          description: Commission of the travel agency.
+          format: double
+          nullable: true
+        ChannelManagerAbsoluteAdjustment:
+          type: number
+          description: Flat fee added to (or subtracted from) the reservation price when coming from Channel Managers.
+          format: double
+          nullable: true
+        ChannelManagerRelativeAdjustment:
+          type: number
+          description: Percentage of the reservation price added to (or subtracted from) price when coming from Channel Managers.
+          format: double
+          nullable: true
+        Options:
+          title: Travel agency contract options
+          allOf:
+          - $ref: '#/components/schemas/TravelAgencyContractOptions'
+          description: Options of the travel agency contract.
+        AccountingCode:
+          type: string
+          description: Accounting code of the travel agency contract.
+          nullable: true
+        InvoiceDueInterval:
+          type: string
+          description: The maximum time, when the invoice has to be be paid in ISO 8601 duration format.
+          nullable: true
+        ChannelManagerBusinessSegmentId:
+          type: string
+          description: Unique identifier of the `BusinessSegment` used for incoming reservations originating from Channel Managers, for this particular contract.
+          format: uuid
+          nullable: true
+        ContactPerson:
+          type: string
+          description: Contact person of the travel agency.
+          nullable: true
+        ContactEmail:
+          type: string
+          description: Contact email of the travel agency.
+          format: email
+          nullable: true
+        AdditionalContactInfo:
+          type: string
+          description: Additional contact info of the travel agency.
+          nullable: true
+        Notes:
+          type: string
+          description: Additional notes of the travel agency contract.
+          nullable: true
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the travel agency contract in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the travel agency contract in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: TravelAgencyContract
+    TravelAgencyContractOptionsParameters:
+      title: Travel agency contract update options
+      required:
+      - IncludeCancellationFeeInCommissionEstimate
+      - SkipAutomaticSettlement
+      type: object
+      properties:
+        IncludeCancellationFeeInCommissionEstimate:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Cancellation fee will be considered when calculating the travel agency commission estimate.
+        SkipAutomaticSettlement:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Reservations from travel agencies will not be automatically charged.
+      additionalProperties: false
+      x-schema-id: TravelAgencyContractOptionsParameters
+    MultipleCompanyContractAddParameters:
+      title: MultipleCompanyContractAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - TravelAgencyContracts
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        TravelAgencyContracts:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelAgencyContractAddParameters'
+          description: Information about travel agency contracts to be created.
+      additionalProperties: false
+      x-schema-id: MultipleCompanyContractAddParameters
+    CompanyContractFilterParameters:
+      title: CompanyContractFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        CompanyContractIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifier of the Travel agency contracts to fetch.
+          nullable: true
+        CompanyIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Company` assigned with Travel agency contracts.
+          nullable: true
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Service` where the Travel agency contracts belong to.
+          nullable: true
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the Travel agency contracts were updated.
+          nullable: true
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CompanyContractFilterParameters
+    ContractResult:
+      title: ContractResult
+      required:
+      - TravelAgencyContracts
+      type: object
+      properties:
+        TravelAgencyContracts:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelAgencyContract'
+          description: The travel agency contracts.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest contract returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older messages.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ContractResult
+    Unit:
+      type: object
+      additionalProperties: false
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    BooleanUpdateValue:
+      title: Boolean update value
+      type: object
+      properties:
+        Value:
+          type: boolean
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: BooleanUpdateValue
+    MultipleCompanyContractUpdateParameters:
+      title: MultipleCompanyContractUpdateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - TravelAgencyContractUpdates
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        TravelAgencyContractUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelAgencyContractUpdateParameters'
+          description: Information about travel agency contracts to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleCompanyContractUpdateParameters
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    ContractUpdateResult:
+      title: ContractUpdateResult
+      required:
+      - TravelAgencyContracts
+      type: object
+      properties:
+        TravelAgencyContracts:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelAgencyContract'
+          description: The updated travel agency contracts.
+      additionalProperties: false
+      x-schema-id: ContractUpdateResult
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    MultipleCompanyContractDeleteParameters:
+      title: MultipleCompanyContractDeleteParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - ServiceIds
+      - TravelAgencyContractIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        TravelAgencyContractIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Travel agency contract to delete.
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Service` the travel agency contract belongs to.
+      additionalProperties: false
+      x-schema-id: MultipleCompanyContractDeleteParameters
+    TravelAgencyContractUpdateParameters:
+      title: Travel agency contract update parameters
+      required:
+      - TravelAgencyContractId
+      type: object
+      properties:
+        TravelAgencyContractId:
+          type: string
+          description: Unique identifier of the Travel agency contract.
+          format: uuid
+        CommissionIncluded:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanNullableUpdateValue'
+          description: Whether commission of the travel agency is included in the rate.
+          nullable: true
+        Commission:
+          title: Decimal update value
+          allOf:
+          - $ref: '#/components/schemas/DecimalNullableUpdateValue'
+          description: Commission of the travel agency.
+          nullable: true
+        ChannelManagerBusinessSegmentId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidNullableUpdateValue'
+          description: Unique identifier of the `BusinessSegment` used for incoming reservations originating from Channel Managers, for this particular contract.
+          nullable: true
+        ChannelManagerAbsoluteAdjustment:
+          title: Decimal update value
+          allOf:
+          - $ref: '#/components/schemas/DecimalNullableUpdateValue'
+          description: Flat fee added to (or subtracted from) the reservation price when coming from Channel Managers.
+          nullable: true
+        ChannelManagerRelativeAdjustment:
+          title: Decimal update value
+          allOf:
+          - $ref: '#/components/schemas/DecimalNullableUpdateValue'
+          description: Percentage of the reservation price added to (or subtracted from) price when coming from Channel Managers.
+          nullable: true
+        Options:
+          title: Travel agency contract update options
+          allOf:
+          - $ref: '#/components/schemas/TravelAgencyContractOptionsParameters'
+          description: Options of the travel agency contract.
+          nullable: true
+        AccountingCode:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Accounting code of the travel agency contract.
+          nullable: true
+        InvoiceDueInterval:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The maximum time, when the invoice has to be be paid in ISO 8601 duration format.
+          nullable: true
+        ContactPerson:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Contact person of the travel agency.
+          nullable: true
+        ContactEmail:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Contact email of the travel agency.
+          format: email
+          nullable: true
+        AdditionalContactInfo:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Additional contact info of the travel agency.
+          nullable: true
+        Notes:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Additional notes of the travel agency contract.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: TravelAgencyContractUpdateParameters
+    DecimalNullableUpdateValue:
+      title: Decimal update value
+      type: object
+      properties:
+        Value:
+          type: number
+          description: Value which is to be updated.
+          format: double
+          nullable: true
+      additionalProperties: false
+      x-schema-id: DecimalNullableUpdateValue
+    GuidNullableUpdateValue:
+      title: Guid update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: GuidNullableUpdateValue
+    TravelAgencyContractOptions:
+      title: Travel agency contract options
+      required:
+      - IncludeCancellationFeeInCommissionEstimate
+      - SkipAutomaticSettlement
+      type: object
+      properties:
+        IncludeCancellationFeeInCommissionEstimate:
+          type: boolean
+          description: Cancellation fee will be considered when calculating the travel agency commission estimate.
+        SkipAutomaticSettlement:
+          type: boolean
+          description: Reservations from travel agencies will not be automatically charged.
+      additionalProperties: false
+      description: ''
+      x-schema-id: TravelAgencyContractOptions

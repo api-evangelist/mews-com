@@ -1,0 +1,535 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Outlet items API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Outlet items
+paths:
+  /api/connector/v1/outletItems/getAll:
+    post:
+      tags:
+      - Outlet items
+      summary: Get all outlet items
+      description: 'Returns all outlet items of the enterprise that were consumed (posted) or will be consumed within the specified interval. If the `Currency` is specified, costs of the items are converted to that currency.
+
+        Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).'
+      operationId: outletItems_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OutletItemsFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              ConsumedUtc:
+                StartUtc: '2020-01-05T00:00:00Z'
+                EndUtc: '2020-01-10T00:00:00Z'
+              ClosedUtc:
+                StartUtc: '2020-01-05T00:00:00Z'
+                EndUtc: '2020-01-10T00:00:00Z'
+              UpdatedUtc:
+                StartUtc: '2020-01-05T00:00:00Z'
+                EndUtc: '2020-01-10T00:00:00Z'
+              Currency: EUR
+              Limitation:
+                Count: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutletItemResult'
+              example:
+                OutletItems:
+                - Id: f29821b7-1659-4c96-a8c7-3725d0f1509b
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  BillId: 5c82a9bd-729c-4f80-af48-a56ab3aebbf6
+                  AccountingCategoryId: 1131ddd1-fa2b-4150-bbf6-7fce94941f65
+                  Type: Revenue
+                  Name: sample revenue item
+                  UnitCount: 4
+                  UnitAmount:
+                    Currency: EUR
+                    GrossValue: 11
+                    NetValue: 11
+                    TaxValues: []
+                  CreatedUtc: '2018-07-25T12:47:11Z'
+                  ConsumedUtc: '2018-07-26T12:19:07Z'
+                  UpdatedUtc: '2018-07-26T12:19:07Z'
+                  ExternalIdentifier: null
+                  Notes: null
+                - Id: dfec07c6-e278-4ed0-932f-41bbd1f38039
+                  EnterpriseId: 4d0201db-36f5-428b-8d11-4f0a65e960cc
+                  BillId: 7bdd3b53-7bb3-419d-8ff2-c9bde65d0c7e
+                  AccountingCategoryId: 7EDAB816-BF4E-40CC-8936-7BC0B222908D
+                  Type: Payment
+                  Name: sample payment item
+                  UnitCount: 77
+                  UnitAmount:
+                    Currency: EUR
+                    GrossValue: 2
+                    NetValue: 2
+                    TaxValues: []
+                  CreatedUtc: '2018-07-25T16:25:28Z'
+                  ConsumedUtc: '2018-07-26T10:11:08Z'
+                  UpdatedUtc: '2018-07-26T10:11:08Z'
+                  ExternalIdentifier: PaymentReference123
+                  Notes: null
+                OutletBills:
+                - Id: 5c82a9bd-729c-4f80-af48-a56ab3aebbf6
+                  OutletId: c9f09414-2fdf-41d6-bdb1-12158b01048e
+                  Number: '1305'
+                  ClosedUtc: '2018-07-26T12:19:07Z'
+                  UpdatedUtc: '2018-07-26T12:19:07Z'
+                  Notes: null
+                - Id: 7bdd3b53-7bb3-419d-8ff2-c9bde65d0c7e
+                  OutletId: E0A29D6D-411E-4302-AA6D-9289935C5F14
+                  Number: '1306'
+                  ClosedUtc: '2018-07-26T10:19:02Z'
+                  UpdatedUtc: '2018-07-26T10:19:02Z'
+                  Notes: null
+                Cursor: 8d02142f-31cf-4115-90bf-ae5200c7a1ba
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    OutletItemsFilterParameters:
+      title: OutletItemsFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        Ids:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Outlet items](#outlet-item). If not specified, the operation returns data for all [Outlet items](#outlet-item) within scope of the Access Token.
+          nullable: true
+        ConsumedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the [Outlet item](#outlet-item) was consumed. Required if no other filter is provided.
+          nullable: true
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the [Outlet bill](#outlet-bill) was updated.
+          nullable: true
+          x-max-interval-in-months: 3
+        ClosedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the [Outlet bill](#outlet-bill) was closed.
+          nullable: true
+          x-max-interval-in-months: 3
+        Currency:
+          type: string
+          description: ISO-4217 code of the [Currency](#currency) the item costs should be converted to.
+          format: currency
+          nullable: true
+      additionalProperties: false
+      x-schema-id: OutletItemsFilterParameters
+    OutletItemResult:
+      title: OutletItemResult
+      required:
+      - OutletBills
+      - OutletItems
+      type: object
+      properties:
+        OutletItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutletItem'
+          description: The outlet items.
+        OutletBills:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutletBill'
+          description: The outlet bills of the items.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest outlet item returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older outlet items.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: OutletItemResult
+    OutletItemType:
+      title: Outlet item type
+      enum:
+      - Revenue
+      - NonRevenue
+      - Payment
+      type: string
+      description: Type of the outlet item.
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    CurrencyValueOld:
+      title: Currency value (ver 2018-06-07)
+      required:
+      - Currency
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        Value:
+          type: number
+          format: double
+          nullable: true
+        Net:
+          type: number
+          format: double
+          nullable: true
+          deprecated: true
+        Tax:
+          type: number
+          format: double
+          nullable: true
+          deprecated: true
+        TaxRate:
+          type: number
+          format: double
+          nullable: true
+          deprecated: true
+      additionalProperties: false
+      description: Total price of the reservation.
+      x-schema-id: CurrencyValueOld
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TaxBreakdownItem:
+      title: Tax breakdown item
+      required:
+      - NetValue
+      - TaxValue
+      type: object
+      properties:
+        TaxRateCode:
+          type: string
+          description: Tax rate code for the item. `null` for untaxed amounts.
+          nullable: true
+        NetValue:
+          type: number
+          description: The net value that the tax is calculated from.
+          format: double
+        TaxValue:
+          type: number
+          description: The value of the tax.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxBreakdownItem
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type: string
+          description: Code corresponding to tax type.
+          nullable: true
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
+    OutletItem:
+      title: Outlet item
+      required:
+      - BillId
+      - ConsumedUtc
+      - CreatedUtc
+      - EnterpriseId
+      - Id
+      - Type
+      - UnitAmount
+      - UnitCount
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the item.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/enterprises/#enterprise).
+          format: uuid
+        BillId:
+          type: string
+          description: Unique identifier of the [Outlet bill](https://mews-systems.gitbook.io/connector-api/operations/#outlet-bill) the item belongs to.
+          format: uuid
+        AccountingCategoryId:
+          type: string
+          description: Unique identifier of the [Accounting category](https://mews-systems.gitbook.io/connector-api/operations/accountingcategories/#accounting-category) the item belongs to.
+          format: uuid
+          nullable: true
+        Type:
+          $ref: '#/components/schemas/OutletItemType'
+        Name:
+          type: string
+          description: Name of the item.
+          nullable: true
+        UnitCount:
+          type: integer
+          description: Unit count of the item.
+          format: int32
+        UnitAmount:
+          title: Amount
+          allOf:
+          - $ref: '#/components/schemas/Amount'
+          description: Unit amount of the item.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the item creation in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the item in UTC timezone in ISO 8601 format.
+          format: date-time
+        ConsumedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the item consumption in UTC timezone in ISO 8601 format.
+          format: date-time
+        ExternalIdentifier:
+          type: string
+          description: An identifier of this item from another system.
+          nullable: true
+        Notes:
+          type: string
+          description: Additional notes.
+          nullable: true
+        PaymentCardPaymentId:
+          type: string
+          description: Unique identifier of the payment card `Payment` this item is linked to. This is only applicable to items where `Type` is `Payment`.
+          format: uuid
+          nullable: true
+        UnitCost:
+          title: Currency value (ver 2018-06-07)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValueOld'
+          description: Total price of the reservation.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `UnitAmount` instead.
+      additionalProperties: false
+      x-schema-id: OutletItem
+    OutletBill:
+      title: Outlet bill
+      required:
+      - ClosedUtc
+      - EnterpriseId
+      - Id
+      - OutletId
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the bill.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the Enterprise.
+          format: uuid
+        OutletId:
+          type: string
+          description: Unique identifier of the [Outlet](https://mews-systems.gitbook.io/connector-api/operations/outlets/#outlet) where the bill was issued.
+          format: uuid
+        Number:
+          type: string
+          description: Number of the bill.
+          nullable: true
+        ClosedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the bill closure in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the bill in UTC timezone in ISO 8601 format.
+          format: date-time
+        Notes:
+          type: string
+          description: Additional notes on the bill.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: OutletBill
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation

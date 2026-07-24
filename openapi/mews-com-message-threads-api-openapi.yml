@@ -1,0 +1,372 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Message threads API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Message threads
+paths:
+  /api/connector/v1/messageThreads/getAll:
+    post:
+      tags:
+      - Message threads
+      summary: Get all message threads
+      description: Get all message threads that you have created, filtered by time interval and/or specific message thread IDs. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      operationId: messageThreads_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageThreadFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              CreatedUtc:
+                StartUtc: '2022-03-03T00:00:00Z'
+                EndUtc: '2022-03-14T00:00:00Z'
+              Limitation:
+                Cursor: e7f26210-10e7-462e-9da8-ae8300be8ab7
+                Count: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageThreadResult'
+              example:
+                MessageThreads:
+                - Id: 7f9325f6-ef44-4911-89a8-ae51010a5aa4
+                  OriginalSender: John Doe
+                  Subject: Example subject
+                  CreatedUtc: '2022-03-07T16:09:45Z'
+                  UpdatedUtc: '2022-03-07T16:09:45Z'
+                Cursor: 7f9325f6-ef44-4911-89a8-ae51010a5aa4
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/messageThreads/add:
+    post:
+      tags:
+      - Message threads
+      summary: Add message thread
+      description: Creates a new [Message thread](https://mews-systems.gitbook.io/connector-api/operations/#message-thread) on behalf of the specified customer, i.e. the sender of the original message in the message thread.
+      operationId: messageThreads_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageThreadAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              OriginalSender: John Doe
+              Subject: Example subject
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageThreadAddResult'
+              example:
+                MessageThreads:
+                - Id: 7f9325f6-ef44-4911-89a8-ae51010a5aa4
+                  OriginalSender: John Doe
+                  Subject: Example subject
+                  CreatedUtc: '2022-03-08T12:06:50Z'
+                  UpdatedUtc: '2022-03-08T12:06:50Z'
+                  IsResolved: false
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    MessageThreadFilterParameters:
+      title: MessageThreadFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        MessageThreadIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `MessageThread`. Required if no other filter is provided.
+          nullable: true
+        CreatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the `MessageThread` was created. Required if no other filter is provided.
+          nullable: true
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the `MessageThread` was updated. Required if no other filter is provided.
+          nullable: true
+          x-max-interval-in-months: 3
+      additionalProperties: false
+      x-schema-id: MessageThreadFilterParameters
+    MessageThreadResult:
+      title: MessageThreadResult
+      required:
+      - MessageThreads
+      type: object
+      properties:
+        MessageThreads:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageThread'
+          description: The filtered message threads.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest message thread returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older message threads.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: MessageThreadResult
+    MessageThread:
+      title: Message thread
+      required:
+      - CreatedUtc
+      - Id
+      - OriginalSender
+      - Subject
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the message thread.
+          format: uuid
+        OriginalSender:
+          minLength: 1
+          type: string
+          description: The sender of the original message in the thread.
+        Subject:
+          minLength: 1
+          type: string
+          description: Subject of the message thread.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the message thread in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the message thread in UTC timezone in ISO 8601 format.
+          format: date-time
+        IsResolved:
+          type: boolean
+          description: Whether the message thread is resolved.
+      additionalProperties: false
+      x-schema-id: MessageThread
+    MessageThreadAddParameters:
+      title: MessageThreadAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - OriginalSender
+      - Subject
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        OriginalSender:
+          minLength: 1
+          type: string
+          description: The sender of the original message in the thread.
+        Subject:
+          minLength: 1
+          type: string
+          description: Subject of the message thread.
+      additionalProperties: false
+      x-schema-id: MessageThreadAddParameters
+    MessageThreadAddResult:
+      title: MessageThreadAddResult
+      required:
+      - MessageThreads
+      type: object
+      properties:
+        MessageThreads:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageThread'
+          description: The created message threads.
+      additionalProperties: false
+      x-schema-id: MessageThreadAddResult
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation

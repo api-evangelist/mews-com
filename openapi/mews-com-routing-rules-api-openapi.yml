@@ -1,0 +1,968 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Routing rules API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Routing rules
+paths:
+  /api/connector/v1/routingRules/getAll:
+    post:
+      tags:
+      - Routing rules
+      summary: Get all routing rules
+      description: Use [Get all billing automations](https://mews-systems.gitbook.io/connector-api/operations/billingautomations#get-all-billing-automations).
+      operationId: routingRules_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoutingRuleFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              CompanyIds:
+              - c6f5c82d-621a-4c8a-903b-1b0a9a23b71f
+              - 956aa0f0-a090-42c8-bee2-991972d32f80
+              RoutingRuleIds:
+              - ff785b22-5422-4d1d-87f4-af2e00b3dfda
+              - d98c9611-0006-4691-a835-af2e00b170c4
+              UpdatedUtc:
+                StartUtc: '2023-10-01T00:00:00Z'
+                EndUtc: '2023-10-31T00:00:00Z'
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              Limitation:
+                Count: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoutingRuleResult'
+              example:
+                RoutingRules:
+                - Id: ff785b22-5422-4d1d-87f4-af2e00b3dfda
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  CompanyId: c6f5c82d-621a-4c8a-903b-1b0a9a23b71f
+                  CompanyRelation: PartnerCompany
+                  Applicability: PrepaidOnly
+                  RouteType: AllStayItems
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  SelectedStayItems: null
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                - Id: d98c9611-0006-4691-a835-af2e00b170c4
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  CompanyId: c021013e-4930-4592-8e32-91b0b1fc9663
+                  CompanyRelation: TravelAgency
+                  Applicability: Always
+                  RouteType: SelectedStayItems
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  SelectedStayItems:
+                    Nights: true
+                    CityTax: true
+                    ProductCategoryIds:
+                    - 004fa262-7b08-4853-b544-af2a00d5cf1f
+                    - 8f0dc6ef-1fd4-44e4-b353-af2c00b24caf
+                    - d4c1b435-0ed1-4d98-9833-af2c00b28518
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                Cursor: d98c9611-0006-4691-a835-af2e00b170c4
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+      deprecated: true
+      x-deprecatedMessage: Use [Get all billing automations](https://mews-systems.gitbook.io/connector-api/operations/billingautomations#get-all-billing-automations).
+  /api/connector/v1/routingRules/add:
+    post:
+      tags:
+      - Routing rules
+      summary: Add routing rules
+      description: Use [Add billing automations](https://mews-systems.gitbook.io/connector-api/operations/billingautomations#add-billing-automations).
+      operationId: routingRules_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleRoutingRuleAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              RoutingRules:
+              - CompanyId: c6f5c82d-621a-4c8a-903b-1b0a9a23b71f
+                ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                CompanyRelation: PartnerCompany
+                Applicability: PrepaidOnly
+                RouteType: AllStayItems
+              - CompanyId: c021013e-4930-4592-8e32-91b0b1fc9663
+                ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                CompanyRelation: TravelAgency
+                Applicability: Always
+                RouteType: SelectedStayItems
+                AssignmentTargetType: CompanyAsDetails
+                SelectedStayItems:
+                  Nights: true
+                  CityTax: true
+                  ProductCategoryIds:
+                  - 004fa262-7b08-4853-b544-af2a00d5cf1f
+                  - 8f0dc6ef-1fd4-44e4-b353-af2c00b24caf
+                  - d4c1b435-0ed1-4d98-9833-af2c00b28518
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoutingRuleAdditionResult'
+              example:
+                RoutingRules:
+                - Id: ff785b22-5422-4d1d-87f4-af2e00b3dfda
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  CompanyId: c6f5c82d-621a-4c8a-903b-1b0a9a23b71f
+                  CompanyRelation: PartnerCompany
+                  Applicability: PrepaidOnly
+                  RouteType: AllStayItems
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  SelectedStayItems: null
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                - Id: d98c9611-0006-4691-a835-af2e00b170c4
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  CompanyId: c021013e-4930-4592-8e32-91b0b1fc9663
+                  CompanyRelation: TravelAgency
+                  Applicability: Always
+                  RouteType: SelectedStayItems
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  SelectedStayItems:
+                    Nights: true
+                    CityTax: true
+                    ProductCategoryIds:
+                    - 004fa262-7b08-4853-b544-af2a00d5cf1f
+                    - 8f0dc6ef-1fd4-44e4-b353-af2c00b24caf
+                    - d4c1b435-0ed1-4d98-9833-af2c00b28518
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+      deprecated: true
+      x-deprecatedMessage: Use [Add billing automations](https://mews-systems.gitbook.io/connector-api/operations/billingautomations#add-billing-automations).
+  /api/connector/v1/routingRules/update:
+    post:
+      tags:
+      - Routing rules
+      summary: Update routing rules
+      description: Use [Update billing automations](https://mews-systems.gitbook.io/connector-api/operations/billingautomations#update-billing-automations) and [Update billing automations assignments](https://mews-systems.gitbook.io/connector-api/operations/billingautomations#update-billing-automations-assignments).
+      operationId: routingRules_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleRoutingRuleUpdateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              RoutingRuleUpdates:
+              - RoutingRuleId: ff785b22-5422-4d1d-87f4-af2e00b3dfda
+                CompanyId:
+                  Value: c021013e-4930-4592-8e32-91b0b1fc9663
+                ServiceId:
+                  Value: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                CompanyRelation:
+                  Value: PartnerCompany
+                Applicability:
+                  Value: Always
+                RouteType:
+                  Value: AllStayItems
+              - RoutingRuleId: d98c9611-0006-4691-a835-af2e00b170c4
+                CompanyId:
+                  Value: a793d381-65a2-4fa6-9514-00c4c5bfe607
+                ServiceId:
+                  Value: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                CompanyRelation:
+                  Value: TravelAgency
+                Applicability:
+                  Value: Always
+                RouteType:
+                  Value: SelectedStayItems
+                AssignmentTargetType:
+                  Value: CompanyAsDetails
+                SelectedStayItems:
+                  Nights:
+                    Value: false
+                  CityTax:
+                    Value: true
+                  ProductCategoryIds:
+                    Value:
+                    - 004fa262-7b08-4853-b544-af2a00d5cf1f
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoutingRuleUpdateResult'
+              example:
+                RoutingRules:
+                - Id: ff785b22-5422-4d1d-87f4-af2e00b3dfda
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  CompanyId: c6f5c82d-621a-4c8a-903b-1b0a9a23b71f
+                  CompanyRelation: PartnerCompany
+                  Applicability: PrepaidOnly
+                  RouteType: AllStayItems
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  SelectedStayItems: null
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+                - Id: d98c9611-0006-4691-a835-af2e00b170c4
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  CompanyId: c021013e-4930-4592-8e32-91b0b1fc9663
+                  CompanyRelation: TravelAgency
+                  Applicability: Always
+                  RouteType: SelectedStayItems
+                  ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+                  SelectedStayItems:
+                    Nights: true
+                    CityTax: true
+                    ProductCategoryIds:
+                    - 004fa262-7b08-4853-b544-af2a00d5cf1f
+                    - 8f0dc6ef-1fd4-44e4-b353-af2c00b24caf
+                    - d4c1b435-0ed1-4d98-9833-af2c00b28518
+                  CreatedUtc: '2023-10-01T11:48:57Z'
+                  UpdatedUtc: '2023-10-28T11:48:57Z'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+      deprecated: true
+      x-deprecatedMessage: Use [Update billing automations](https://mews-systems.gitbook.io/connector-api/operations/billingautomations#update-billing-automations) and [Update billing automations assignments](https://mews-systems.gitbook.io/connector-api/operations/billingautomations#update-billing-automations-assignments).
+  /api/connector/v1/routingRules/delete:
+    post:
+      tags:
+      - Routing rules
+      summary: Delete routing rules
+      description: Use [Delete billing automations](https://mews-systems.gitbook.io/connector-api/operations/billingautomations#delete-billing-automations).
+      operationId: routingRules_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoutingRuleDeleteParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              RoutingRuleIds:
+              - ff785b22-5422-4d1d-87f4-af2e00b3dfda
+              - d98c9611-0006-4691-a835-af2e00b170c4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+              example: {}
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+      deprecated: true
+      x-deprecatedMessage: Use [Delete billing automations](https://mews-systems.gitbook.io/connector-api/operations/billingautomations#delete-billing-automations).
+components:
+  schemas:
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    RoutingRuleRouteType:
+      title: Route type
+      enum:
+      - AllStayItems
+      - SelectedStayItems
+      type: string
+      description: Determines to which stay items the routing rule applies.
+    RoutingRuleStayItems:
+      title: Selected stay items
+      type: object
+      properties:
+        Nights:
+          type: boolean
+          description: Whether the routing rule applies to nights.
+        CityTax:
+          type: boolean
+          description: Whether the routing rule applies to city tax.
+        ProductCategoryIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Product categories to which the routing rule applies to.
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: RoutingRuleStayItems
+    RoutingRuleFilterParameters:
+      title: RoutingRuleFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        CompanyIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifier of the `Company`.
+          nullable: true
+        RoutingRuleIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifier of the routing rules.
+          nullable: true
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the routing rules were updated.
+          nullable: true
+          x-max-interval-in-months: 3
+      additionalProperties: false
+      x-schema-id: RoutingRuleFilterParameters
+    RoutingRuleDeleteParameters:
+      title: RoutingRuleDeleteParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - RoutingRuleIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        RoutingRuleIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the routing rules to be deleted.
+      additionalProperties: false
+      x-schema-id: RoutingRuleDeleteParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    GuidUpdateValue:
+      title: Guid update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: GuidUpdateValue
+    Unit:
+      type: object
+      additionalProperties: false
+    RoutingRuleResult:
+      title: RoutingRuleResult
+      required:
+      - RoutingRules
+      type: object
+      properties:
+        RoutingRules:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/RoutingRule'
+          description: Collection of routing rules.
+        Cursor:
+          type: string
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: RoutingRuleResult
+    RoutingRuleStayItemsAddParameters:
+      title: Selected stay items parameters
+      type: object
+      properties:
+        Nights:
+          type: boolean
+          description: Whether the routing rule applies to nights.
+        CityTax:
+          type: boolean
+          description: Whether the routing rule applies to city tax.
+        ProductCategoryIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Product categories to which the routing rule applies to.
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: RoutingRuleStayItemsAddParameters
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    BooleanUpdateValue:
+      title: Boolean update value
+      type: object
+      properties:
+        Value:
+          type: boolean
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: BooleanUpdateValue
+    RoutingRuleAssignmentTargetType:
+      title: Assignment target type
+      enum:
+      - CompanyAsDetails
+      - CompanyAsOwner
+      type: string
+    RoutingRuleAddParameter:
+      title: Routing rule parameters
+      required:
+      - Applicability
+      - CompanyId
+      - CompanyRelation
+      - RouteType
+      - ServiceId
+      type: object
+      properties:
+        CompanyId:
+          type: string
+          description: Unique identifier of the Company routing rule is assigned to.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the Service routing rule is assigned to.
+          format: uuid
+        CompanyRelation:
+          $ref: '#/components/schemas/RoutingRuleCompanyRelation'
+        Applicability:
+          $ref: '#/components/schemas/RoutingRuleApplicability'
+        RouteType:
+          $ref: '#/components/schemas/RoutingRuleRouteType'
+        AssignmentTargetType:
+          anyOf:
+          - $ref: '#/components/schemas/RoutingRuleAssignmentTargetType'
+          description: Relation of company to the bill. Defaults to `CompanyAsDetails`.
+          nullable: true
+        SelectedStayItems:
+          title: Selected stay items parameters
+          allOf:
+          - $ref: '#/components/schemas/RoutingRuleStayItemsAddParameters'
+          description: To which stay items routing rule applies to. Required only if `RouteType` value is `SelectedStayItems`.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: RoutingRuleAddParameter
+    RoutingRuleAdditionResult:
+      title: RoutingRuleAdditionResult
+      required:
+      - RoutingRules
+      type: object
+      properties:
+        RoutingRules:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/RoutingRule'
+          description: Added routing rules.
+      additionalProperties: false
+      x-schema-id: RoutingRuleAdditionResult
+    RoutingRuleApplicability:
+      title: Applicability
+      enum:
+      - Always
+      - PrepaidOnly
+      type: string
+      description: Determines if routing rule applies to all future reservations with this company or travel agency, or only future reservations that are prepaid.
+    RoutingRuleUpdateParameters:
+      title: Routing rule update parameters
+      required:
+      - RoutingRuleId
+      type: object
+      properties:
+        RoutingRuleId:
+          type: string
+          description: Unique identifier of the routing rule.
+          format: uuid
+        CompanyId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidUpdateValue'
+          description: Unique identifier of the Company (or null should it not be updated).
+          nullable: true
+        ServiceId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidUpdateValue'
+          description: Unique identifier of the Service routing rule is assigned to (or null should it not be updated).
+          nullable: true
+        CompanyRelation:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          anyOf:
+          - $ref: '#/components/schemas/RoutingRuleCompanyRelation'
+          description: Company relation to the routing rule (or null should it not be updated).
+          nullable: true
+        Applicability:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          anyOf:
+          - $ref: '#/components/schemas/RoutingRuleApplicability'
+          description: Applicability that determines if routing rule apply to all future reservations with this company or travel agency attached or only future reservations that are prepaid in online travel agency (OTA) (or null should it not be updated).
+          nullable: true
+        RouteType:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          anyOf:
+          - $ref: '#/components/schemas/RoutingRuleRouteType'
+          description: What should be routed Route type (or null should it not be updated).
+          nullable: true
+        AssignmentTargetType:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          anyOf:
+          - $ref: '#/components/schemas/RoutingRuleAssignmentTargetType'
+          description: Relation of company to the bill Assignment target type (or null should it not be updated).
+          nullable: true
+        SelectedStayItems:
+          title: Selected stay items update parameters
+          allOf:
+          - $ref: '#/components/schemas/RoutingRuleStayItemsUpdateParameters'
+          description: To which stay items routing rule applies to. Required only if `RouteType` value is `SelectedStayItems`.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: RoutingRuleUpdateParameters
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    RoutingRuleUpdateResult:
+      title: RoutingRuleUpdateResult
+      required:
+      - RoutingRules
+      type: object
+      properties:
+        RoutingRules:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/RoutingRule'
+          description: Updated routing rules.
+      additionalProperties: false
+      x-schema-id: RoutingRuleUpdateResult
+    RoutingRuleStayItemsUpdateParameters:
+      title: Selected stay items update parameters
+      type: object
+      properties:
+        Nights:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Whether the routing rule applies to nights (or null should it not be updated).
+          nullable: true
+        CityTax:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Whether the routing rule applies to city tax (or null should it not be updated).
+          nullable: true
+        ProductCategoryIds:
+          title: Guid array update value
+          allOf:
+          - $ref: '#/components/schemas/GuidIEnumerableUpdateValue'
+          description: Product categories to which the routing rule applies to (or null should it not be updated).
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: RoutingRuleStayItemsUpdateParameters
+    MultipleRoutingRuleAddParameters:
+      title: MultipleRoutingRuleAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - RoutingRules
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        RoutingRules:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/RoutingRuleAddParameter'
+          description: Collection of Routing rules to be added.
+      additionalProperties: false
+      x-schema-id: MultipleRoutingRuleAddParameters
+    RoutingRuleCompanyRelation:
+      title: Company relation
+      enum:
+      - PartnerCompany
+      - TravelAgency
+      type: string
+      description: Relation of the company to the routing rule.
+    MultipleRoutingRuleUpdateParameters:
+      title: MultipleRoutingRuleUpdateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - RoutingRuleUpdates
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        RoutingRuleUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/RoutingRuleUpdateParameters'
+          description: Collection of Routing rules to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleRoutingRuleUpdateParameters
+    GuidIEnumerableUpdateValue:
+      title: Guid array update value
+      type: object
+      properties:
+        Value:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Value which is to be updated.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: GuidIEnumerableUpdateValue
+    RoutingRule:
+      title: Routing rule
+      required:
+      - Applicability
+      - CompanyId
+      - CompanyRelation
+      - CreatedUtc
+      - EnterpriseId
+      - Id
+      - RouteType
+      - ServiceId
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the routing rule.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the Enterprise.
+          format: uuid
+        CompanyId:
+          type: string
+          description: Unique identifier of the Company routing rule is assigned to.
+          format: uuid
+        CompanyRelation:
+          $ref: '#/components/schemas/RoutingRuleCompanyRelation'
+        Applicability:
+          $ref: '#/components/schemas/RoutingRuleApplicability'
+        RouteType:
+          $ref: '#/components/schemas/RoutingRuleRouteType'
+        ServiceId:
+          type: string
+          description: Unique identifier of the Service routing rule is assigned to.
+          format: uuid
+        SelectedStayItems:
+          title: Selected stay items
+          allOf:
+          - $ref: '#/components/schemas/RoutingRuleStayItems'
+          description: Specific items to which the routing rule applies. Returns only if `RouteType` value is `SelectedStayItems`.
+          nullable: true
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the routing rule in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the routing rule in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: RoutingRule

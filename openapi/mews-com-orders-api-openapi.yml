@@ -1,0 +1,317 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Orders API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Orders
+paths:
+  /api/connector/v1/orders/add:
+    post:
+      tags:
+      - Orders
+      summary: Add order
+      description: "Creates a new order, with the specified products and items. If the product being posted already exists in Mews, then use `ProductOrders`. If the product does *not* exist in Mews, then use `Items`. If the time of consumption is specified, this must be either in the future or within the Editable History Interval for the enterprise. Compared to a stay service order (i.e. a reservation), which is consumed over certain span of time, a product service order is consumed at a single point in time.\r\nNote this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).\r\n\r\n> ### Linking orders to reservations\r\n> Specify parameter `LinkedReservationId` in order to link the order to a guest reservation. This will greatly assist the property when using billing automation."
+      operationId: orders_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderAdditionParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              ServiceId: bd26d8db-86da-4f96-9efc-e5a4654a4a94
+              AccountId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+              Options:
+                DisableItemGrouping: false
+              ProductOrders:
+              - ProductId: 2eb7ad8b-8dfb-4381-aba5-ab58009f2993
+                Count: 2
+                ExternalIdentifier: EXT-PROD-001
+              Items:
+              - Name: Beer
+                UnitCount: 3
+                UnitAmount:
+                  Currency: USD
+                  TaxCodes:
+                  - US-DC-G
+                  NetValue: 7.0
+                AccountingCategoryId: 90eff5aa-36b4-4689-80c0-ab3a00bb412e
+                ExternalIdentifier: EXT-ITEM-001
+              ConsumptionUtc: '2020-02-04T00:00:00Z'
+              Notes: Order for guest room service
+              BusinessSegmentId: dc9188f6-fb61-412c-b3fd-af32dab082ed
+              BillId: ea087d64-3901-4eee-b0b7-9fce4c58a005
+              LinkedReservationId: 0f515589-99b4-423d-b83a-b237009f0509
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderAdditionResult'
+              example:
+                OrderId: cdfd5caa-2868-411b-ba95-322e70035f1a
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    OrderAdditionParameters:
+      title: OrderAdditionParameters
+      required:
+      - AccessToken
+      - AccountId
+      - Client
+      - ClientToken
+      - ServiceId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the `Enterprise`. Required when using Portfolio Access Tokens, ignored otherwise.
+          format: uuid
+          nullable: true
+        ServiceId:
+          type: string
+          description: Identifier of the `Service` to be ordered.
+          format: uuid
+        AccountId:
+          type: string
+          description: Identifier of the `Customer` or `Company` to be charged. Company billing may not be enabled for your integration.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Identifier of the [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) to be charged.  **Deprecated!**
+          format: uuid
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `AccountId`.
+        Options:
+          title: Order addition options
+          allOf:
+          - $ref: '#/components/schemas/OrderAdditionOptions'
+          description: Options for the added order.
+          nullable: true
+        ProductOrders:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductOrderAdditionData'
+          description: Parameters of the ordered products.
+          nullable: true
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemAdditionData'
+          description: Parameters of the ordered custom items.
+          nullable: true
+        ConsumptionUtc:
+          type: string
+          description: Date and time of the order consumption in UTC timezone in ISO 8601 format. If not specified, current date and time is used. Please note, as order consumption is one-time event, the optional parameters `StartUtc` and `EndUtc` in `ProductOrders` should not be used.
+          format: date-time
+          nullable: true
+        Notes:
+          type: string
+          description: Additional notes of the order.
+          nullable: true
+        BusinessSegmentId:
+          type: string
+          description: Unique identifier of the business segment.
+          format: uuid
+          nullable: true
+        BillId:
+          type: string
+          description: Identifier of the `Bill` to which the created order will be assigned. The bill needs to be issued to the same account as the order.
+          format: uuid
+          nullable: true
+        LinkedReservationId:
+          type: string
+          description: Identifier of the `Reservation` to which the created order will be linked.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: OrderAdditionParameters
+    AmountParameters:
+      title: Amount parameters
+      required:
+      - Currency
+      - TaxCodes
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        TaxCodes:
+          type: array
+          items:
+            type: string
+        NetValue:
+          type: number
+          format: double
+          nullable: true
+        GrossValue:
+          type: number
+          format: double
+          nullable: true
+      additionalProperties: false
+      description: Price of the product that overrides the price defined in Mews.
+      x-schema-id: AmountParameters
+    OrderAdditionOptions:
+      title: Order addition options
+      type: object
+      properties:
+        DisableItemGrouping:
+          type: boolean
+          description: Whether to disable item grouping. Defaults to `false` (item grouping is enabled by default).
+          nullable: true
+      additionalProperties: false
+      x-schema-id: OrderAdditionOptions
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ProductOrderAdditionData:
+      title: Product order parameters
+      required:
+      - ProductId
+      type: object
+      properties:
+        ProductId:
+          type: string
+          description: Unique identifier of the `Product` to be ordered.
+          format: uuid
+        Count:
+          type: integer
+          description: Count of products to be ordered, e.g. 10 in case of 10 beers.
+          format: int32
+          nullable: true
+        UnitAmount:
+          title: Amount parameters
+          allOf:
+          - $ref: '#/components/schemas/AmountParameters'
+          description: Unit amount of the product that overrides the amount defined in Mews.
+          nullable: true
+        StartUtc:
+          type: string
+          description: Product start in UTC timezone in ISO 8601 format. For products with charging `Once` and `PerPerson` must be set to same value as `EndUtc`. Use only with operation [Add reservations](https://mews-systems.gitbook.io/connector-api/operations/reservations#add-reservations) or [Add reservation product](https://mews-systems.gitbook.io/connector-api/operations/reservations#add-reservation-product), can be omitted for [Add order](https://mews-systems.gitbook.io/connector-api/operations/orders#add-order) operation.
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          description: Product end in UTC timezone in ISO 8601 format. For products with charging `Once` and `PerPerson` must be set to same value as `StartUtc`. Use only with operation [Add reservations](https://mews-systems.gitbook.io/connector-api/operations/reservations#add-reservations) or [Add reservation product](https://mews-systems.gitbook.io/connector-api/operations/reservations#add-reservation-product), can be omitted for [Add order](https://mews-systems.gitbook.io/connector-api/operations/orders#add-order) operation.
+          format: date-time
+          nullable: true
+        ExternalIdentifier:
+          type: string
+          description: External identifier of the product order.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ProductOrderAdditionData
+    OrderAdditionResult:
+      title: OrderAdditionResult
+      type: object
+      properties:
+        OrderId:
+          type: string
+          description: Unique identifier of the created order.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: OrderAdditionResult
+    OrderItemAdditionData:
+      title: Item parameters
+      required:
+      - Name
+      - UnitAmount
+      - UnitCount
+      type: object
+      properties:
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the item.
+        UnitCount:
+          type: integer
+          description: Count of units to be ordered, e.g. 10 in case of 10 beers.
+          format: int32
+        UnitAmount:
+          title: Amount parameters
+          allOf:
+          - $ref: '#/components/schemas/AmountParameters'
+          description: Unit amount, e.g. amount for one beer (note that total amount of the item is therefore `UnitAmount` times `UnitCount`).
+        AccountingCategoryId:
+          type: string
+          description: Unique identifier of an `AccountingCategory` to be assigned to the item.
+          format: uuid
+          nullable: true
+        ExternalIdentifier:
+          type: string
+          description: External identifier of the order item.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: OrderItemAdditionData

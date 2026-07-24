@@ -1,0 +1,3346 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Commands API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Commands
+paths:
+  /api/connector/v1/commands/getAllByIds:
+    post:
+      tags:
+      - Commands
+      summary: Get all commands by ids
+      description: Returns all commands by their identifiers.
+      operationId: commands_getAllByIds
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCommandFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              CommandIds:
+              - aa20961f-6d9e-4b35-ad25-071213530aec
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceCommandResult'
+              example:
+                Commands:
+                - Id: aa20961f-6d9e-4b35-ad25-071213530aec
+                  State: Pending
+                  CreatedUtc: '2015-09-02T19:25:44Z'
+                  Creator:
+                    FirstName: Sample
+                    LastName: User
+                    ImageUrl: '...'
+                  Device:
+                    Id: 63efb573-fc58-4065-b687-9bdd51568529
+                    Name: Test Printer
+                    Type: Printer
+                  Data:
+                    CopyCount: 1
+                    FileType: application/pdf
+                    FileData: '...'
+                    PrinterName: Printer
+                    PrinterDriverName: ''
+                    PrinterPortName: ''
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/commands/getAllActive:
+    post:
+      tags:
+      - Commands
+      summary: Get all commands
+      description: Returns all commands the are still active from the client application point of view. That means commands that are in either `Pending` or `Received` state.
+      operationId: commands_getAllActive
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetAllActiveCommandsParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceCommandResult'
+              example:
+                Commands:
+                - Id: aa20961f-6d9e-4b35-ad25-071213530aec
+                  State: Pending
+                  CreatedUtc: '2015-09-02T19:25:44Z'
+                  Creator:
+                    FirstName: Sample
+                    LastName: User
+                    ImageUrl: '...'
+                  Device:
+                    Id: 63efb573-fc58-4065-b687-9bdd51568529
+                    Name: Test Printer
+                    Type: Printer
+                  Data:
+                    CopyCount: 1
+                    FileType: application/pdf
+                    FileData: '...'
+                    PrinterName: Printer
+                    PrinterDriverName: ''
+                    PrinterPortName: ''
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/commands/addPrinter:
+    post:
+      tags:
+      - Commands
+      summary: Add printer command
+      description: Adds a new printer command representing printing of the specified document on a printer. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      operationId: commands_addPrinter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrinterCommandParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              PrinterId: d117866d-78de-4459-9077-42d7ea0120e3
+              EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              CopyCount: 1
+              Data: JVBERi0xLjcKCjEgMCBvYmogICUgZW50cnkgcG9pbnQKPDwKICAvVHlwZSAvQ2F0YWxvZwogIC9QYWdlcyAyIDAgUgo+PgplbmRvYmoKCjIgMCBvYmoKPDwKICAvVHlwZSAvUGFnZXMKICAvTWVkaWFCb3ggWyAwIDAgMjAwIDIwMCBdCiAgL0NvdW50IDEKICAvS2lkcyBbIDMgMCBSIF0KPj4KZW5kb2JqCgozIDAgb2JqCjw8CiAgL1R5cGUgL1BhZ2UKICAvUGFyZW50IDIgMCBSCiAgL1Jlc291cmNlcyA8PAogICAgL0ZvbnQgPDwKICAgICAgL0YxIDQgMCBSIAogICAgPj4KICA+PgogIC9Db250ZW50cyA1IDAgUgo+PgplbmRvYmoKCjQgMCBvYmoKPDwKICAvVHlwZSAvRm9udAogIC9TdWJ0eXBlIC9UeXBlMQogIC9CYXNlRm9udCAvVGltZXMtUm9tYW4KPj4KZW5kb2JqCgo1IDAgb2JqICAlIHBhZ2UgY29udGVudAo8PAogIC9MZW5ndGggNDQKPj4Kc3RyZWFtCkJUCjcwIDUwIFRECi9GMSAxMiBUZgooSGVsbG8sIHdvcmxkISkgVGoKRVQKZW5kc3RyZWFtCmVuZG9iagoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDEwIDAwMDAwIG4gCjAwMDAwMDAwNzkgMDAwMDAgbiAKMDAwMDAwMDE3MyAwMDAwMCBuIAowMDAwMDAwMzAxIDAwMDAwIG4gCjAwMDAwMDAzODAgMDAwMDAgbiAKdHJhaWxlcgo8PAogIC9TaXplIDYKICAvUm9vdCAxIDAgUgo+PgpzdGFydHhyZWYKNDkyCiUlRU9G
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceCommandAddResult'
+              example:
+                CommandId: 2391a3df-1c61-4131-b6f8-c85b4234adcb
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/commands/addKeyCutter:
+    post:
+      tags:
+      - Commands
+      summary: Add key cutter command
+      description: Adds a new key cutter command representing cutting of a key for the specified reservation. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      operationId: commands_addKeyCutter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KeyCutterCommandParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              KeyCutterId: 7dafffff-a727-4917-a203-bd53995f21bf
+              ReservationId: be35b39e-ad7e-460a-8de9-4c7581e016a2
+              KeyCount: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceCommandAddResult'
+              example:
+                CommandId: 2391a3df-1c61-4131-b6f8-c85b4234adcb
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/commands/addPaymentTerminal:
+    post:
+      tags:
+      - Commands
+      summary: Add payment command
+      description: "> ### Restricted!\r\n> This operation is part of a custom workflow for Mews partners such as POS systems to access Mews Payment Terminals.\r\n> See [Mews Payment Terminals](https://mews-systems.gitbook.io/connector-api/use-cases/mews-terminals).\r\n\r\nAdds a new Mews Payment Terminal command for taking a customer payment.\r\nThe operation instructs a specified terminal device to take a payment from a specified customer for a specified amount."
+      operationId: commands_addPaymentTerminal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentTerminalCommandParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: 7059D2C25BF64EA681ACAB3A00B859CC-D91BFF2B1E3047A3E0DEC1D57BE1382
+              Client: MyPOS 1.0
+              Type: Payment
+              TerminalId: be35b39e-ad7e-460a-8de9-4c7581e016a2
+              CustomerId: 35d4b117-4e60-44a3-9580-c582117eff98
+              BillId: null
+              Amount:
+                Currency: EUR
+                Value: 230
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceCommandAddResult'
+              example:
+                CommandId: 2391a3df-1c61-4131-b6f8-c85b4234adcb
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/commands/update:
+    post:
+      tags:
+      - Commands
+      summary: Update command
+      description: Updates state of a command.
+      operationId: commands_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCommandUpdateParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              CommandId: aa20961f-6d9e-4b35-ad25-071213530aec
+              State: Processed
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/fiscalMachineCommands/getAll:
+    post:
+      tags:
+      - Commands
+      summary: Get all fiscal machine commands
+      description: Returns fiscal machine commands. The commands can be filtered either by unique command identifiers or by `Device` unique identifiers and command states. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: fiscalMachineCommands_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Get all commands filter parameters
+              oneOf:
+              - $ref: '#/components/schemas/CommandsGetAllFilterByCommandIdParameters'
+              - $ref: '#/components/schemas/CommandsGetAllFilterByStatesParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              DeviceIds:
+              - d117866d-78de-4459-9077-42d7ea0120e3
+              - 7dafffff-a727-4917-a203-bd53995f21bf
+              States:
+              - Processed
+              - Processing
+              UpdatedUtc:
+                StartUtc: '2025-01-10T00:00:00Z'
+                EndUtc: '2025-01-17T00:00:00Z'
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              Limitation:
+                Count: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FiscalMachineCommandDataV20250623Result'
+              example:
+                Commands:
+                - Id: aa20961f-6d9e-4b35-ad25-071213530aec
+                  State: Processing
+                  CreatedUtc: '2025-01-15T14:30:00Z'
+                  Creator:
+                    Discriminator: Enterprise
+                    EnterpriseProfile:
+                      ProfileId: 3cd637ef-4728-47f9-8fb1-afb900c9cdcf
+                  FiscalMachineId: FM-001
+                  ApiUrl: https://fiscal-machine.example.com/api
+                  FiscalMachineData: '{"printerPort": "COM1", "baudRate": 9600}'
+                  TaxIdentifier: '12345678901'
+                  Device:
+                    Id: d117866d-78de-4459-9077-42d7ea0120e3
+                    Type: FiscalMachine
+                    Name: Fiscal Printer FP-001
+                    Identifier: null
+                  Bill:
+                    Id: ea087d64-3901-4eee-b0b7-9fce4c58a005
+                    Name: 'Hotel Invoice #1001'
+                    EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                    AccountId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                    AccountType: Customer
+                    AssociatedAccountIds: null
+                    CounterId: null
+                    State: Closed
+                    Type: Invoice
+                    Number: '1001'
+                    VariableSymbol: VS001
+                    CreatedUtc: '2025-01-15T10:00:00Z'
+                    UpdatedUtc: '2025-01-15T14:25:00Z'
+                    IssuedUtc: '2025-01-15T14:25:00Z'
+                    TaxedUtc: '2025-01-15T14:25:00Z'
+                    PaidUtc: null
+                    DueUtc: '2025-01-29T23:59:59Z'
+                    LastReminderDateUtc: null
+                    PurchaseOrderNumber: PO-2025-001
+                    Notes: Hotel accommodation services
+                    Options: null
+                    Owner: null
+                    AssociatedAccountsData: null
+                    EnterpriseData: null
+                    CorrectionState: Bill
+                    CorrectionType: null
+                    CorrectedBillId: null
+                  CommandData:
+                    Discriminator: ItalianFiscalMachineData
+                    ItalianFiscalMachineData:
+                      IsRefund: false
+                      RebatedReceiptNumber: null
+                      RebatedReceiptSequence: null
+                      RebatedReceiptDateTimeUtc: null
+                      PrinterSerialNumber: FP001-123456
+                    ItalianFiscalMachinePayload: null
+                - Id: f2e8c456-1234-4567-89ab-cdef01234567
+                  State: Processed
+                  CreatedUtc: '2025-01-15T13:15:00Z'
+                  Creator:
+                    Discriminator: Enterprise
+                    EnterpriseProfile:
+                      ProfileId: 3cd637ef-4728-47f9-8fb1-afb900c9cdcf
+                  FiscalMachineId: FM-002
+                  ApiUrl: https://fiscal-machine-2.example.com/api
+                  FiscalMachineData: '{"printerPort": "USB001", "certificatePath": "/etc/fiscal/cert.p12"}'
+                  TaxIdentifier: '98765432109'
+                  Device:
+                    Id: 7dafffff-a727-4917-a203-bd53995f21bf
+                    Type: FiscalMachine
+                    Name: Fiscal Printer FP-002
+                    Identifier: null
+                  Bill:
+                    Id: 12345678-1234-1234-1234-123456789012
+                    Name: 'Restaurant Bill #2001'
+                    EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                    AccountId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+                    AccountType: Customer
+                    AssociatedAccountIds: null
+                    CounterId: null
+                    State: Closed
+                    Type: Receipt
+                    Number: '2001'
+                    VariableSymbol: VS002
+                    CreatedUtc: '2025-01-15T12:30:00Z'
+                    UpdatedUtc: '2025-01-15T13:10:00Z'
+                    IssuedUtc: '2025-01-15T13:10:00Z'
+                    TaxedUtc: '2025-01-15T13:10:00Z'
+                    PaidUtc: '2025-01-15T13:10:00Z'
+                    DueUtc: null
+                    LastReminderDateUtc: null
+                    PurchaseOrderNumber: null
+                    Notes: Restaurant services - Table 15
+                    Options: null
+                    Owner: null
+                    AssociatedAccountsData: null
+                    EnterpriseData: null
+                    CorrectionState: Bill
+                    CorrectionType: null
+                    CorrectedBillId: null
+                  CommandData:
+                    Discriminator: ItalianFiscalMachinePayload
+                    ItalianFiscalMachineData: null
+                    ItalianFiscalMachinePayload:
+                      Payload: PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPGZ2cF9kb2M+CiAgPGhlYWRlcj4KICAgIDx0aW1lc3RhbXA+MjAyNS0wMS0xNVQxMzoxMDowMFo8L3RpbWVzdGFtcD4KICA8L2hlYWRlcj4KICA8Ym9keT4KICAgIDxyZWNlaXB0X2RhdGE+U2FtcGxlIGZpc2NhbCByZWNlaXB0IGRhdGE8L3JlY2VpcHRfZGF0YT4KICA8L2JvZHk+CjwvZnZwX2RvYz4=
+                Cursor: f2e8c456-1234-4567-89ab-cdef01234567
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+      x-restricted: true
+components:
+  schemas:
+    PaymentItemOld:
+      title: Payment item
+      required:
+      - AccountId
+      - AccountingState
+      - Amount
+      - ConsumedUtc
+      - Data
+      - Id
+      - OriginalAmount
+      - State
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the item.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of the account (for example `Customer`) the item belongs to.
+          format: uuid
+        BillId:
+          type: string
+          description: Unique identifier of the `Bill` the item is assigned to.
+          format: uuid
+          nullable: true
+        AccountingCategoryId:
+          type: string
+          description: Unique identifier of the `AccountingCategory` the item belongs to.
+          format: uuid
+          nullable: true
+        Amount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Item's amount, negative amount represents either rebate or a payment.
+        OriginalAmount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Amount of item; note a negative amount represents a rebate or payment. Contains the earliest known value in conversion chain.
+        AmountDefault:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Item's amount in property's default currency, negative amount represents either rebate or a payment.
+          nullable: true
+          deprecated: true
+        Notes:
+          type: string
+          description: Additional notes.
+          nullable: true
+        SettlementId:
+          type: string
+          description: Identifier of the settled payment from the external system (ApplePay/GooglePay).
+          nullable: true
+        ConsumedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the item consumption in UTC timezone in ISO 8601 format.
+        ClosedUtc:
+          type: string
+          description: Date and time of the item bill closure in UTC timezone in ISO 8601 format.
+          nullable: true
+        AccountingState:
+          minLength: 1
+          type: string
+          description: Accounting state of the item.
+        State:
+          minLength: 1
+          type: string
+          description: Payment state of the item.
+        Identifier:
+          type: string
+          description: External payment identifier.
+          nullable: true
+        Data:
+          title: Payment item data
+          type: object
+          properties:
+            Discriminator:
+              $ref: '#/components/schemas/PaymentType'
+            Value:
+              oneOf:
+              - $ref: '#/components/schemas/PaymentCardPaymentData'
+              - $ref: '#/components/schemas/InvoicePaymentData'
+              description: Based on payment item data discriminator or `null` for types without any additional data.
+              nullable: true
+          description: Additional data specific to particular payment item.
+          x-coproduct: true
+          x-schema-id: PaymentItemOldDataCoproductOfPaymentType
+      additionalProperties: false
+      description: ''
+      x-schema-id: PaymentItemOld
+    DeviceCommandCreator:
+      title: User
+      required:
+      - LastName
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: First name of the user.
+          nullable: true
+        LastName:
+          minLength: 1
+          type: string
+          description: Last name of the user.
+        ImageUrl:
+          type: string
+          description: URL of the profile image.
+          format: uri
+          nullable: true
+      additionalProperties: false
+      x-schema-id: DeviceCommandCreator
+    PrinterCommandData:
+      title: Printer command data
+      required:
+      - CopyCount
+      - FileData
+      - FileType
+      - PrinterDriverName
+      - PrinterName
+      - PrinterPortName
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/DeviceCommandData'
+      properties:
+        CopyCount:
+          type: integer
+          description: Number of copies to be printed.
+          format: int32
+        FileType:
+          minLength: 1
+          type: string
+          description: MIME type of the file to be printed (e.g. `application/pdf`).
+        FileData:
+          minLength: 1
+          type: string
+          description: Base64-encoded data of the file to be printed.
+        PrinterName:
+          minLength: 1
+          type: string
+          description: Name of the printer.
+        PrinterDriverName:
+          minLength: 1
+          type: string
+          description: Name of the printer driver.
+        PrinterPortName:
+          minLength: 1
+          type: string
+          description: Name of the printer port.
+      additionalProperties: false
+      x-schema-id: PrinterCommandData
+    FiscalMachineCommandData:
+      title: Fiscal machine command data
+      required:
+      - Bill
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/DeviceCommandData'
+      properties:
+        FiscalMachineId:
+          type: string
+          description: Identifier of the fiscal machine.
+          nullable: true
+        ApiUrl:
+          type: string
+          description: URL of the fiscal machine API.
+          nullable: true
+        FiscalMachineData:
+          type: string
+          description: Custom JSON data.
+          nullable: true
+        Bill:
+          title: Bill
+          allOf:
+          - $ref: '#/components/schemas/Bill'
+          description: The issued bill that should be fiscalized.
+        TaxIdentifier:
+          type: string
+          description: Tax identifier to be used for fiscalization.
+          nullable: true
+        BillFiscalMachineData:
+          title: Fiscal machine data
+          allOf:
+          - $ref: '#/components/schemas/BillFiscalMachineData'
+          description: Fiscal machine data; currently only `ItalianFiscalMachineData` is supported.
+          nullable: true
+        PayloadData:
+          title: Fiscal machine payload
+          allOf:
+          - $ref: '#/components/schemas/BillFiscalMachinePayloadData'
+          description: Fiscal machine payload data; currently only `ItalianFiscalMachinePayloadData` is supported.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: FiscalMachineCommandData
+    PaymentCardPaymentData:
+      title: Credit card payment item data
+      type: object
+      properties:
+        PaymentCardId:
+          type: string
+          description: Unique identifier of the `CreditCard`.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: PaymentCardPaymentData
+    DeviceCommandFilterParameters:
+      title: DeviceCommandFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CommandIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        CommandIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Commands](https://mews-systems.gitbook.io/connector-api/operations/#command) to be returned.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: DeviceCommandFilterParameters
+    BillAssigneeDataDiscriminator:
+      title: Bill associated account data discriminator
+      enum:
+      - BillCustomerData
+      - BillCompanyData
+      type: string
+      description: Determines type of value.
+    FiscalMachinePayloadDataDiscriminatorEnum:
+      title: Fiscal machine payload discriminator
+      enum:
+      - ItalianFiscalMachine
+      type: string
+      description: '
+
+
+        ItalianFiscalMachine'
+      x-enumNames:
+      - ItalianFiscalMachine
+      x-enumDescriptions:
+      - ''
+    BillState:
+      title: Bill state
+      enum:
+      - Open
+      - Closed
+      type: string
+      description: Whether the bill is `Open` or `Closed`.
+    Bill:
+      title: Bill
+      required:
+      - AccountId
+      - AccountType
+      - AssociatedAccountIds
+      - CorrectionState
+      - CreatedUtc
+      - EnterpriseId
+      - Id
+      - OrderItems
+      - PaymentItems
+      - Payments
+      - Revenue
+      - State
+      - Type
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the bill.
+          format: uuid
+        Name:
+          type: string
+          description: Name of the bill.
+          nullable: true
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the `Enterprise`.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of the account (`Customer` or `Company`) the bill is issued to.
+          format: uuid
+        AccountType:
+          title: Account type
+          allOf:
+          - $ref: '#/components/schemas/AccountTypeEnum'
+          description: 'A discriminator specifying the [type of account](https://mews-systems.gitbook.io/connector-api/operations/accounts/#account-type), i.e. `Customer` or `Company`.
+
+
+            Company
+
+
+            Customer'
+          x-enumNames:
+          - Company
+          - Customer
+          x-enumDescriptions:
+          - ''
+          - ''
+        CustomerId:
+          type: string
+          description: Unique identifier of the `Customer` the bill is issued to.
+          format: uuid
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `AccountId` instead.
+        CompanyId:
+          type: string
+          description: Unique identifier of the `Company` specified in `CompanyDetails` or the `Company` the bill is issued to.
+          format: uuid
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `AssociatedAccountIds` instead.
+        AssociatedAccountIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Customers` or `Companies` that are associated to the bill.
+          nullable: true
+        CounterId:
+          type: string
+          description: Unique identifier of the bill `Counter`.
+          format: uuid
+          nullable: true
+        State:
+          $ref: '#/components/schemas/BillState'
+        Type:
+          $ref: '#/components/schemas/BillType'
+        Number:
+          type: string
+          description: Number of the bill.
+          nullable: true
+        VariableSymbol:
+          type: string
+          description: Variable symbol of the bill.
+          nullable: true
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the bill creation in UTC timezone in ISO 8601 format.
+          format: date-time
+        IssuedUtc:
+          type: string
+          description: Date and time of the bill issuance in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        TaxedUtc:
+          type: string
+          description: Taxation date of the bill in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        PaidUtc:
+          type: string
+          description: Date when the bill was paid in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        DueUtc:
+          type: string
+          description: Bill due date and time in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        LastReminderDateUtc:
+          type: string
+          description: Date and time when an email reminder to pay an invoice was last sent, in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Date and time when the bill was last updated, in UTC timezone in ISO 8601 format.
+          format: date-time
+        PurchaseOrderNumber:
+          type: string
+          description: Unique number of the purchase order from the buyer.
+          nullable: true
+        Notes:
+          type: string
+          description: Additional notes.
+          nullable: true
+        Options:
+          title: Bill options
+          allOf:
+          - $ref: '#/components/schemas/BillOptions'
+          description: Options of the bill.
+          nullable: true
+        Revenue:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingItem'
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `orderItems/getAll` with `BillId` instead.
+        Payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingItem'
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `payments/getAll` with `BillId` instead.
+        OrderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemOld'
+          description: The order items (consumed items such as nights or products) on the bill.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `orderItems/getAll` with `BillId` instead.
+        PaymentItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentItemOld'
+          description: The payment items (such as cash, credit card payments or invoices) on the bill.
+          nullable: true
+          deprecated: true
+        AssigneeData:
+          title: Bill assignee data
+          type: object
+          properties:
+            Discriminator:
+              $ref: '#/components/schemas/BillAssigneeDataDiscriminator'
+            Value:
+              oneOf:
+              - $ref: '#/components/schemas/BillCompanyData'
+              - $ref: '#/components/schemas/BillCustomerData'
+          nullable: true
+          deprecated: true
+          x-coproduct: true
+          x-schema-id: BillAssigneeDataCoproductOfBillAssigneeDataDiscriminator
+          x-deprecatedMessage: Use `OwnerData` instead.
+        OwnerData:
+          title: Bill owner data
+          type: object
+          properties:
+            Discriminator:
+              $ref: '#/components/schemas/BillAssigneeDataDiscriminator'
+            Value:
+              oneOf:
+              - $ref: '#/components/schemas/BillCompanyData'
+              - $ref: '#/components/schemas/BillCustomerData'
+          description: Additional information about owner of the bill. Can be a `Customer` or `Company`. Persisted at the time of closing of the bill.
+          nullable: true
+          x-coproduct: true
+          x-schema-id: BillOwnerDataCoproductOfBillAssigneeDataDiscriminator
+        CompanyDetails:
+          title: Bill company data
+          allOf:
+          - $ref: '#/components/schemas/BillCompanyData'
+          description: Additional information about the company assigned to the bill. Not the same as the owner. Persisted at the time of closing of the bill.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `AssociatedAccountData` instead.
+        AssociatedAccountData:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillAccountData'
+          description: Additional information about the associated account of the bill. Can be a `Customer` or `Company`. Persisted at the time of closing of the bill. Currently only one account can be associated with a bill, but this may be extended in future.
+          nullable: true
+        EnterpriseData:
+          title: Bill enterprise data
+          allOf:
+          - $ref: '#/components/schemas/BillEnterpriseData'
+          description: Additional information about the enterprise issuing the bill, including bank account details. Persisted at the time of closing of the bill.
+          nullable: true
+        CorrectionState:
+          title: Bill correction state
+          allOf:
+          - $ref: '#/components/schemas/BillCorrectionStateEnum'
+          description: 'Whether the bill is a regular bill or a corrective bill.
+
+
+            Bill (Regular bill.)
+
+
+            CorrectiveBill (Corrective bill, i.e. the `CorrectionType` is either `Edit`, `Cancellation`, or `ReceivablePaymentsBalance`.)'
+          x-enumNames:
+          - Bill
+          - CorrectiveBill
+          x-enumDescriptions:
+          - Regular bill.
+          - Corrective bill, i.e. the `CorrectionType` is either `Edit`, `Cancellation`, or `ReceivablePaymentsBalance`.
+        CorrectionType:
+          allOf:
+          - $ref: '#/components/schemas/BillCorrectionTypeEnum'
+          description: 'Type of correction.
+
+
+            Cancellation
+
+
+            Edit
+
+
+            CreditNote
+
+
+            Reinstatement
+
+
+            ReceivablePaymentsBalance'
+          nullable: true
+        CorrectedBillId:
+          type: string
+          description: The ID of the bill that the corrective bill corrects. If the corrected bill was deleted, this field is `null`.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: Bill
+    DeviceCommandResult:
+      title: DeviceCommandResult
+      required:
+      - Commands
+      type: object
+      properties:
+        Commands:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceCommand'
+          description: The active commands.
+        Cursor:
+          type: string
+          description: Unique identifier of the last returned command. This can be used in Limitation in a subsequent request to fetch the next batch of commands.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: DeviceCommandResult
+    CurrencyValueOld:
+      title: Currency value (ver 2018-06-07)
+      required:
+      - Currency
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        Value:
+          type: number
+          format: double
+          nullable: true
+        Net:
+          type: number
+          format: double
+          nullable: true
+          deprecated: true
+        Tax:
+          type: number
+          format: double
+          nullable: true
+          deprecated: true
+        TaxRate:
+          type: number
+          format: double
+          nullable: true
+          deprecated: true
+      additionalProperties: false
+      description: Total price of the reservation.
+      x-schema-id: CurrencyValueOld
+    CommandsGetAllFilterByStatesParameters:
+      title: Get all commands by device identifiers and states
+      required:
+      - DeviceIds
+      - States
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/CommandsGetAllFilterParameters'
+      properties:
+        DeviceIds:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Device` to filter by.
+        States:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceCommandStateEnum'
+          description: States of the commands to filter by.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the commands were updated.
+          nullable: true
+          x-max-interval-in-months: 3
+      additionalProperties: false
+      description: Filter commands by the unique identifiers of `Device` and states, with optional filtering by update interval.
+      x-schema-id: CommandsGetAllFilterByStatesParameters
+    PaymentTerminalCommandCustomerData:
+      title: Customer data for payment terminal command.
+      required:
+      - FullName
+      type: object
+      properties:
+        FullName:
+          minLength: 1
+          type: string
+          description: Full name of the customer.
+      additionalProperties: false
+      x-schema-id: PaymentTerminalCommandCustomerData
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    BillFiscalMachineData:
+      title: Fiscal machine data
+      required:
+      - Discriminator
+      - Value
+      type: object
+      properties:
+        Discriminator:
+          title: Fiscal machine data discriminator
+          allOf:
+          - $ref: '#/components/schemas/BillFiscalMachineDataDiscriminatorEnum'
+          description: 'Discriminator of the object.
+
+
+            ItalianFiscalMachineData'
+          x-enumNames:
+          - ItalianFiscalMachineData
+          x-enumDescriptions:
+          - ''
+        Value:
+          title: Fiscal machine data for Italian fiscal machine
+          allOf:
+          - $ref: '#/components/schemas/ItalianFiscalMachineData'
+          description: Structure of the object depends on `Discriminator` (currently only `ItalianFiscalMachineData` is supported).
+      additionalProperties: false
+      x-schema-id: BillFiscalMachineData
+    OrderItemTypeOld:
+      title: Order item data discriminator
+      enum:
+      - CancellationFee
+      - Rebate
+      - Deposit
+      - ExchangeRateDifference
+      - CustomItem
+      - Surcharge
+      - SurchargeDiscount
+      - SpaceOrder
+      - ProductOrder
+      - Other
+      - TaxCorrection
+      - ResourceUpgradeFee
+      - InvoiceFee
+      type: string
+      x-enumDescriptions:
+      - No additional data.
+      - '[Rebate order item data](https://mews-systems.gitbook.io/connector-api/operations/accountingitems#rebate-order-item-data)'
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - '[Product order item data](https://mews-systems.gitbook.io/connector-api/operations/accountingitems#product-order-item-data)'
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type: string
+          description: Code corresponding to tax type.
+          nullable: true
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    PaymentTerminalCommandTypeEnum:
+      title: Payment type
+      enum:
+      - Payment
+      - Preauthorization
+      type: string
+      description: '
+
+
+        Payment
+
+
+        Preauthorization'
+      x-enumNames:
+      - Payment
+      - Preauthorization
+      x-enumDescriptions:
+      - ''
+      - ''
+    BillCustomerData:
+      title: Bill customer data
+      required:
+      - Id
+      - LastName
+      type: object
+      properties:
+        Id:
+          minLength: 1
+          type: string
+          description: ID of the `Customer` to whom the bill was assigned.
+        Address:
+          allOf:
+          - $ref: '#/components/schemas/Address'
+          description: Address of the customer.
+          nullable: true
+        LegalIdentifiers:
+          type: object
+          additionalProperties:
+            type: string
+          description: The set of `LegalIdentifiers` for the customer.
+          nullable: true
+        BillingCode:
+          type: string
+          description: A unique code for Mews to list on invoices it sends to the customer.
+          nullable: true
+        LastName:
+          minLength: 1
+          type: string
+          description: Last name of the customer.
+        FirstName:
+          type: string
+          description: First name of the customer.
+          nullable: true
+        SecondLastName:
+          type: string
+          description: Second last name of the customer.
+          nullable: true
+        TitlePrefix:
+          allOf:
+          - $ref: '#/components/schemas/Title'
+          description: 'Title prefix of the customer.
+
+
+            Mister (Mr.)
+
+
+            Miss (Ms.)
+
+
+            Misses (Mrs.)'
+          nullable: true
+        TaxIdentifier:
+          type: string
+          description: Tax identifier of the customer.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: BillCustomerData
+    DeviceCommandStateEnum:
+      title: Command state
+      enum:
+      - Pending
+      - Received
+      - Processing
+      - Processed
+      - Cancelled
+      - Error
+      type: string
+      description: '
+
+
+        Pending (Created in Mews, but not yet received by the client application.)
+
+
+        Received (Received by the client application.)
+
+
+        Processing (Being processed by the client application.)
+
+
+        Processed (Successfully processed command.)
+
+
+        Cancelled (A command whose execution has been canceled before (or during) processing.)
+
+
+        Error (A command whose execution or processing was terminated by an error.)'
+      x-enumNames:
+      - Pending
+      - Received
+      - Processing
+      - Processed
+      - Cancelled
+      - Error
+      x-enumDescriptions:
+      - Created in Mews, but not yet received by the client application.
+      - Received by the client application.
+      - Being processed by the client application.
+      - Successfully processed command.
+      - A command whose execution has been canceled before (or during) processing.
+      - A command whose execution or processing was terminated by an error.
+    DeviceCommand:
+      title: Command
+      required:
+      - CreatedUtc
+      - Data
+      - Device
+      - Id
+      - State
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the command.
+          format: uuid
+        State:
+          title: Command state
+          allOf:
+          - $ref: '#/components/schemas/DeviceCommandStateEnum'
+          description: 'State of the command.
+
+
+            Pending (Created in Mews, but not yet received by the client application.)
+
+
+            Received (Received by the client application.)
+
+
+            Processing (Being processed by the client application.)
+
+
+            Processed (Successfully processed command.)
+
+
+            Cancelled (A command whose execution has been canceled before (or during) processing.)
+
+
+            Error (A command whose execution or processing was terminated by an error.)'
+          x-enumNames:
+          - Pending
+          - Received
+          - Processing
+          - Processed
+          - Cancelled
+          - Error
+          x-enumDescriptions:
+          - Created in Mews, but not yet received by the client application.
+          - Received by the client application.
+          - Being processed by the client application.
+          - Successfully processed command.
+          - A command whose execution has been canceled before (or during) processing.
+          - A command whose execution or processing was terminated by an error.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the command.
+          format: date-time
+        Creator:
+          title: User
+          allOf:
+          - $ref: '#/components/schemas/DeviceCommandCreator'
+          description: Creator of the command.
+          nullable: true
+        Device:
+          allOf:
+          - $ref: '#/components/schemas/Device'
+          description: Device that the command should be executed on.
+        Data:
+          oneOf:
+          - $ref: '#/components/schemas/PaymentTerminalCommandData'
+          - $ref: '#/components/schemas/PrinterCommandData'
+          - $ref: '#/components/schemas/KeyCutterCommandData'
+          - $ref: '#/components/schemas/FiscalMachineCommandData'
+          - $ref: '#/components/schemas/PassportScannerCommandData'
+          description: Structure of the object depends on [Device type](https://mews-systems.gitbook.io/connector-api/operations/devices#device-type).
+      additionalProperties: false
+      x-schema-id: DeviceCommand
+    PaymentTerminalCommandData:
+      title: Payment terminal command data
+      required:
+      - AccountData
+      - AccountId
+      - Amount
+      - CustomerId
+      - PaymentTerminalId
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/DeviceCommandData'
+      properties:
+        PaymentTerminalId:
+          minLength: 1
+          type: string
+          description: Identifier of the payment terminal.
+        CustomerId:
+          type: string
+          format: uuid
+          deprecated: true
+          x-deprecatedMessage: Use `AccountId` instead.
+        AccountId:
+          type: string
+          description: Unique identifier of the account.
+          format: uuid
+        FullName:
+          type: string
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `AccountData.Customer.FullName`, if `AccountData.Discriminator` is `Customer`.
+        BillId:
+          type: string
+          description: Identifier of the bill.
+          format: uuid
+          nullable: true
+        PaymentId:
+          type: string
+          description: Identifier of the `Payment`.
+          format: uuid
+          nullable: true
+        PreauthorizationId:
+          type: string
+          description: Identifier of the `Preauthorization`.
+          format: uuid
+          nullable: true
+        Amount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Amount to be processed.
+        Fee:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Payment fee to be processed.
+          nullable: true
+        PaymentTerminalData:
+          type: string
+          description: Custom JSON data.
+          nullable: true
+        AccountData:
+          title: Account data for payment terminal command
+          allOf:
+          - $ref: '#/components/schemas/PaymentTerminalCommandAccountData'
+          description: Account data for the payment terminal command.
+      additionalProperties: false
+      x-schema-id: PaymentTerminalCommandData
+    RebateOrderItemData:
+      title: Rebate order item data
+      required:
+      - RebatedItemId
+      type: object
+      properties:
+        RebatedItemId:
+          type: string
+          description: Unique identifier of `OrderItem` which has been rebated by current item.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: RebateOrderItemData
+    BillCorrectionStateEnum:
+      title: Bill correction state
+      enum:
+      - Bill
+      - CorrectiveBill
+      type: string
+      description: '
+
+
+        Bill (Regular bill.)
+
+
+        CorrectiveBill (Corrective bill, i.e. the `CorrectionType` is either `Edit`, `Cancellation`, or `ReceivablePaymentsBalance`.)'
+      x-enumNames:
+      - Bill
+      - CorrectiveBill
+      x-enumDescriptions:
+      - Regular bill.
+      - Corrective bill, i.e. the `CorrectionType` is either `Edit`, `Cancellation`, or `ReceivablePaymentsBalance`.
+    ProductOrderItemData:
+      title: Product order item data
+      required:
+      - ProductId
+      type: object
+      properties:
+        ProductId:
+          type: string
+          description: Unique identifier of the `Product`.
+          format: uuid
+        AgeCategoryId:
+          type: string
+          description: Unique identifier of the `AgeCategory`.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ProductOrderItemData
+    InvoicePaymentData:
+      title: Invoice payment item data
+      required:
+      - InvoiceId
+      type: object
+      properties:
+        InvoiceId:
+          type: string
+          description: Unique identifier of the invoice `Bill`.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: InvoicePaymentData
+    DeviceCommandAddResult:
+      title: DeviceCommandAddResult
+      required:
+      - CommandId
+      type: object
+      properties:
+        CommandId:
+          type: string
+          description: Unique identifier of the created `Command`.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: DeviceCommandAddResult
+    AccountingItem:
+      title: Accounting item
+      type: object
+      properties:
+        Id:
+          type: string
+          format: uuid
+        AccountId:
+          type: string
+          format: uuid
+        CustomerId:
+          type: string
+          format: uuid
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use `AccountId` instead.
+        OrderId:
+          type: string
+          format: uuid
+          nullable: true
+        ServiceId:
+          type: string
+          format: uuid
+          nullable: true
+        ProductId:
+          type: string
+          format: uuid
+          nullable: true
+        BillId:
+          type: string
+          format: uuid
+          nullable: true
+        InvoiceId:
+          type: string
+          format: uuid
+          nullable: true
+        AccountingCategoryId:
+          type: string
+          format: uuid
+          nullable: true
+        CreditCardId:
+          type: string
+          format: uuid
+          nullable: true
+        Type:
+          type: string
+          nullable: true
+        SubType:
+          type: string
+          nullable: true
+        Name:
+          type: string
+          nullable: true
+        Notes:
+          type: string
+          nullable: true
+        ConsumptionUtc:
+          type: string
+          nullable: true
+        ClosedUtc:
+          type: string
+          nullable: true
+        State:
+          type: string
+          nullable: true
+        SubState:
+          type: string
+          nullable: true
+        Amount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: ''
+          nullable: true
+        TaxExemptionReasonCode:
+          type: string
+          description: Code of tax exemption reason. **Restricted!** This property is currently intended for Mews' internal usage and may be subject to change.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: AccountingItem
+    ItalianFiscalMachineData:
+      title: Fiscal machine data for Italian fiscal machine
+      type: object
+      properties:
+        IsRefund:
+          type: boolean
+          description: Indicates if the transaction is a refund.
+        RebatedReceiptNumber:
+          type: string
+          description: Number of the rebated receipt.
+          nullable: true
+        RebatedReceiptSequence:
+          type: string
+          description: Sequence of the rebated receipt.
+          nullable: true
+        RebatedReceiptDateTimeUtc:
+          type: string
+          description: Date and time of the rebated receipt in UTC.
+          format: date-time
+          nullable: true
+        PrinterSerialNumber:
+          type: string
+          description: Serial number of the printer.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ItalianFiscalMachineData
+    Unit:
+      type: object
+      additionalProperties: false
+    EnterpriseProfileData:
+      title: Enterprise profile data
+      required:
+      - ProfileId
+      type: object
+      properties:
+        ProfileId:
+          type: string
+          description: Unique identifier of the profile.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: EnterpriseProfileData
+    ItalianFiscalMachinePayloadV20250623:
+      title: Italian fiscal machine payload.
+      required:
+      - Payload
+      type: object
+      properties:
+        Payload:
+          minLength: 1
+          type: string
+          description: Base64-encoded data of the file to be printed.
+      additionalProperties: false
+      x-schema-id: ItalianFiscalMachinePayloadV20250623
+    BillType:
+      title: Bill type
+      enum:
+      - Receipt
+      - Invoice
+      type: string
+      description: After a bill is closed, the Bill Type is set to `Receipt` or `Invoice`. `Receipt` indicates that the bill has been fully paid and the balance is zero. `Invoice` indicates that the bill has not yet been fully paid but an invoice has been issued. Prior to closing, Bill Type should not be used.
+      x-enumDescriptions:
+      - Default; the bill has been paid in full; only applicable after the bill is closed.
+      - Bill has not been paid in full but an invoice has been issued to request payment.
+    ItalianFiscalMachineDataV20250623:
+      title: Italian fiscal machine data
+      type: object
+      properties:
+        IsRefund:
+          type: boolean
+          description: Indicates if the transaction is a refund.
+        RebatedReceiptNumber:
+          type: string
+          description: Number of the rebated receipt.
+          nullable: true
+        RebatedReceiptSequence:
+          type: string
+          description: Sequence of the rebated receipt.
+          nullable: true
+        RebatedReceiptDateTimeUtc:
+          type: string
+          description: Date and time of the rebated receipt in UTC.
+          format: date-time
+          nullable: true
+        PrinterSerialNumber:
+          type: string
+          description: Serial number of the printer.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ItalianFiscalMachineDataV20250623
+    DeviceCommandData:
+      type: object
+      additionalProperties: false
+    BillFiscalMachinePayloadData:
+      title: Fiscal machine payload
+      required:
+      - Discriminator
+      - Value
+      type: object
+      properties:
+        Discriminator:
+          title: Fiscal machine payload discriminator
+          allOf:
+          - $ref: '#/components/schemas/FiscalMachinePayloadDataDiscriminatorEnum'
+          description: 'Discriminator of the object.
+
+
+            ItalianFiscalMachine'
+          x-enumNames:
+          - ItalianFiscalMachine
+          x-enumDescriptions:
+          - ''
+        Value:
+          minLength: 1
+          type: string
+          description: Base64-encoded data of the file to be printed.
+      additionalProperties: false
+      x-schema-id: BillFiscalMachinePayloadData
+    GetAllActiveCommandsParameters:
+      title: GetAllActiveCommandsParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+      additionalProperties: false
+      x-schema-id: GetAllActiveCommandsParameters
+    Address:
+      title: Address
+      type: object
+      properties:
+        Line1:
+          type: string
+          nullable: true
+        Line2:
+          type: string
+          nullable: true
+        City:
+          type: string
+          nullable: true
+        PostalCode:
+          type: string
+          nullable: true
+        SubdivisionCode:
+          type: string
+          nullable: true
+        CountryCode:
+          type: string
+          nullable: true
+      additionalProperties: false
+      x-schema-id: Address
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    BillCompanyData:
+      title: Bill company data
+      required:
+      - Id
+      - Name
+      type: object
+      properties:
+        Id:
+          type: string
+          description: ID of the `Company`.
+          nullable: true
+        Address:
+          allOf:
+          - $ref: '#/components/schemas/Address'
+          description: Address of the company.
+          nullable: true
+        LegalIdentifiers:
+          type: object
+          additionalProperties:
+            type: string
+          description: The set of `LegalIdentifiers` for the company.
+          nullable: true
+        BillingCode:
+          type: string
+          description: A unique code for Mews to list on invoices it sends to the company.
+          nullable: true
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the company.
+        FiscalIdentifier:
+          type: string
+          description: Fiscal identifier of the company.
+          nullable: true
+        AdditionalTaxIdentifier:
+          type: string
+          description: Additional tax identifier of the company.
+          nullable: true
+        DUNS:
+          type: string
+          description: DUNS (Data Universal Numbering System) number of the company.
+          nullable: true
+        Telephone:
+          type: string
+          description: Company telephone number.
+          nullable: true
+        TaxIdentifier:
+          type: string
+          description: Tax identifier of the company.
+          nullable: true
+        InvoicingEmail:
+          type: string
+          description: Invoicing email of the company.
+          nullable: true
+        Department:
+          type: string
+          description: Department of the company.
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: BillCompanyData
+    BillEnterpriseData:
+      title: Bill enterprise data
+      type: object
+      properties:
+        AdditionalTaxIdentifier:
+          type: string
+          description: Enterprise additional tax identifier.
+          nullable: true
+        CompanyName:
+          type: string
+          description: Enterprise company name.
+          nullable: true
+        BankAccount:
+          type: string
+          description: Enterprise bank account.
+          nullable: true
+        BankName:
+          type: string
+          description: Enterprise bank name.
+          nullable: true
+        Iban:
+          type: string
+          description: Enterprise IBAN (International Bank Account Number).
+          nullable: true
+        Bic:
+          type: string
+          description: Enterprise BIC (Bank Identifier Code).
+          nullable: true
+      additionalProperties: false
+      description: Additional information about the enterprise issuing the bill, including bank account details. Persisted at the time of closing of the bill.
+      x-schema-id: BillEnterpriseData
+    PaymentTerminalCommandAccountData:
+      title: Account data for payment terminal command
+      required:
+      - Discriminator
+      type: object
+      properties:
+        Discriminator:
+          title: Account type
+          allOf:
+          - $ref: '#/components/schemas/AccountTypeEnum'
+          description: 'Type of the account.
+
+
+            Company
+
+
+            Customer'
+          x-enumNames:
+          - Company
+          - Customer
+          x-enumDescriptions:
+          - ''
+          - ''
+        Customer:
+          title: Customer data for payment terminal command.
+          allOf:
+          - $ref: '#/components/schemas/PaymentTerminalCommandCustomerData'
+          description: Customer data if the `Discriminator` is `Customer`.
+          nullable: true
+        Company:
+          title: Company data for payment terminal command.
+          allOf:
+          - $ref: '#/components/schemas/PaymentTerminalCommandCompanyData'
+          description: Company data if the `Discriminator` is `Company`.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: PaymentTerminalCommandAccountData
+    PaymentType:
+      title: Payment item data discriminator
+      enum:
+      - CreditCard
+      - Invoice
+      - Cash
+      - Unspecified
+      - BadDebts
+      - WireTransfer
+      - ExchangeRateDifference
+      - ExchangeRoundingDifference
+      - BankCharges
+      - Cheque
+      - Other
+      type: string
+      x-enumDescriptions:
+      - '[Credit card payment item data](https://mews-systems.gitbook.io/connector-api/operations/accountingitems#credit-card-payment-item-data)'
+      - '[Invoice payment item data](https://mews-systems.gitbook.io/connector-api/operations/accountingitems#invoice-payment-item-data)'
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+    KeyCutterCommandData:
+      title: Key cutter command data
+      required:
+      - EndUtc
+      - KeyCount
+      - LastName
+      - LockIds
+      - StartUtc
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/DeviceCommandData'
+      properties:
+        KeyCutterId:
+          type: string
+          description: Identifier of the key cutter.
+          nullable: true
+        ApiUrl:
+          type: string
+          description: URL of the key cutter server API.
+          nullable: true
+        KeyCutterData:
+          type: string
+          description: Custom JSON data.
+          nullable: true
+        KeyCount:
+          type: integer
+          description: Count of keys to cut.
+          format: int32
+        LockIds:
+          type: array
+          items:
+            type: string
+          description: Identifiers of locks/rooms the key should open.
+        StartUtc:
+          minLength: 1
+          type: string
+          description: Reservation start.
+          format: date-time
+        EndUtc:
+          minLength: 1
+          type: string
+          description: Reservation end.
+          format: date-time
+        FirstName:
+          type: string
+          description: First name of the reservation owner.
+          nullable: true
+        LastName:
+          minLength: 1
+          type: string
+          description: Last name of the reservation owner.
+        NormalizedFirstName:
+          type: string
+          description: Normalized first name of the customer without special characters.
+          nullable: true
+        NormalizedLastName:
+          type: string
+          description: Normalized last name of the customer without special characters.
+          nullable: true
+        Telephone:
+          type: string
+          description: Telephone of the reservation owner.
+          nullable: true
+        Email:
+          type: string
+          description: Email of the reservation owner.
+          nullable: true
+        ReservationId:
+          type: string
+          description: Unique identifier of the reservation.
+          format: uuid
+          nullable: true
+        ReservationNumber:
+          type: string
+          description: Confirmation number of the reservation in Mews.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: KeyCutterCommandData
+    PaymentTerminalCommandParameters:
+      title: PaymentTerminalCommandParameters
+      required:
+      - AccessToken
+      - Amount
+      - Client
+      - ClientToken
+      - CustomerId
+      - TerminalId
+      - Type
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        TerminalId:
+          type: string
+          description: Unique identifier of the payment terminal.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Unique identifier of the `Customer`.
+          format: uuid
+        Type:
+          allOf:
+          - $ref: '#/components/schemas/PaymentTerminalCommandTypeEnum'
+          description: 'The type of payment, e.g. `Preauthorization`.
+
+
+            Payment
+
+
+            Preauthorization'
+        Amount:
+          title: Currency value (ver 2018-06-07)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValueOld'
+          description: Amount of the payment.
+        BillId:
+          type: string
+          description: Unique identifier of the `Bill`.
+          format: uuid
+          nullable: true
+        PaymentRequestId:
+          type: string
+          description: Unique identifier of the `PaymentRequest`.
+          format: uuid
+          nullable: true
+        ReservationId:
+          type: string
+          description: Unique identifier of the `Reservation`.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: PaymentTerminalCommandParameters
+    OrderItemOld:
+      title: Order item
+      required:
+      - AccountId
+      - AccountingState
+      - Amount
+      - CreatedUtc
+      - CreatorProfileId
+      - Data
+      - Id
+      - OrderId
+      - OriginalAmount
+      - RevenueType
+      - UnitAmount
+      - UpdatedUtc
+      - UpdaterProfileId
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the item.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of the account (for example `Customer`) the item belongs to.
+          format: uuid
+        OrderId:
+          type: string
+          description: Unique identifier of the order (or `Reservation` which is a special type of order) the item belongs to.
+          format: uuid
+        BillId:
+          type: string
+          description: Unique identifier of the `Bill` the item is assigned to.
+          format: uuid
+          nullable: true
+        AccountingCategoryId:
+          type: string
+          description: Unique identifier of the `AccountingCategory` the item belongs to.
+          format: uuid
+          nullable: true
+        UnitCount:
+          type: integer
+          description: Unit count of item, i.e. the number of sub-items or units, if applicable.
+          format: int32
+        UnitAmount:
+          title: Amount
+          allOf:
+          - $ref: '#/components/schemas/Amount'
+          description: Unit amount of item, i.e. the amount of each individual sub-item or unit, if applicable.
+        Amount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Amount of item; note a negative amount represents a rebate or payment.
+        OriginalAmount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Amount of item; note a negative amount represents a rebate or payment. Contains the earliest known value in conversion chain.
+        RevenueType:
+          minLength: 1
+          type: string
+          description: Revenue type of the item.
+        CreatorProfileId:
+          type: string
+          description: Unique identifier of the user who created the item.
+          format: uuid
+        UpdaterProfileId:
+          type: string
+          description: Unique identifier of the user who updated the item.
+          format: uuid
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the item in UTC timezone in ISO 8601 format.
+          format: date
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the item in UTC timezone in ISO 8601 format.
+          format: date
+        ConsumedUtc:
+          type: string
+          description: Date and time of the item consumption in UTC timezone in ISO 8601 format.
+          format: date
+          nullable: true
+        CanceledUtc:
+          type: string
+          description: Cancellation date and time of the item in UTC timezone in ISO 8601 format.
+          format: date
+          nullable: true
+        ClosedUtc:
+          type: string
+          description: Date and time of the item bill closure in UTC timezone in ISO 8601 format.
+          format: date
+          nullable: true
+        StartUtc:
+          type: string
+          description: Start date and time of the item in UTC timezone in ISO 8601 format.
+          format: date
+          nullable: true
+        AccountingState:
+          minLength: 1
+          type: string
+          description: Accounting state of the item.
+        Data:
+          title: Order item data
+          type: object
+          properties:
+            Discriminator:
+              $ref: '#/components/schemas/OrderItemTypeOld'
+            Value:
+              oneOf:
+              - $ref: '#/components/schemas/RebateOrderItemData'
+              - $ref: '#/components/schemas/ProductOrderItemData'
+              description: Based on order item discriminator or `null` for types without any additional data.
+              nullable: true
+          description: Additional data specific to particular order item.
+          x-coproduct: true
+          x-schema-id: OrderItemOldDataCoproductOfOrderItemTypeOld
+      additionalProperties: false
+      x-schema-id: OrderItemOld
+    BillAccountData:
+      title: Associated account bill data
+      required:
+      - Discriminator
+      type: object
+      properties:
+        Discriminator:
+          $ref: '#/components/schemas/BillAssigneeDataDiscriminator'
+        BillCustomerData:
+          title: Bill customer data
+          allOf:
+          - $ref: '#/components/schemas/BillCustomerData'
+          description: Associated account bill data for customer.
+          nullable: true
+        BillCompanyData:
+          title: Bill company data
+          allOf:
+          - $ref: '#/components/schemas/BillCompanyData'
+          description: Associated account bill data for company.
+          nullable: true
+          readOnly: true
+      additionalProperties: false
+      x-schema-id: BillAccountData
+    AccountTypeEnum:
+      title: Account type
+      enum:
+      - Company
+      - Customer
+      type: string
+      description: 'A discriminator specifying the account type, e.g. `Customer` or `Company`
+
+
+        Company
+
+
+        Customer'
+      x-enumNames:
+      - Company
+      - Customer
+      x-enumDescriptions:
+      - ''
+      - ''
+    BillOptions:
+      title: Bill options
+      type: object
+      properties:
+        DisplayCustomer:
+          type: boolean
+          description: Display customer information on a bill.
+        DisplayTaxation:
+          type: boolean
+          description: Display taxation detail on a bill.
+        TrackReceivable:
+          type: boolean
+          description: Tracking of payments is enabled for bill, only applicable for `BillType` of `Invoice`.
+        DisplayCid:
+          type: boolean
+          description: Display CID number on bill, only applicable for `BillType` of `Invoice`.
+        Rebated:
+          type: boolean
+          description: Whether the bill is rebated (both fully or partially).
+      additionalProperties: false
+      description: Options of the bill.
+      x-schema-id: BillOptions
+    CommandsGetAllFilterParameters:
+      title: Get all commands filter parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: CommandsGetAllFilterParameters
+    FiscalMachineCommandDataV20250623Result:
+      title: FiscalMachineCommandDataV20250623Result
+      required:
+      - Commands
+      type: object
+      properties:
+        Commands:
+          type: array
+          items:
+            $ref: '#/components/schemas/FiscalMachineCommandDataV20250623'
+          description: The filtered fiscal machine commands.
+        Cursor:
+          type: string
+          description: Unique identifier of the last returned command. This can be used in Limitation in a subsequent request to fetch the next batch of commands.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: FiscalMachineCommandDataV20250623Result
+    PrinterCommandParameters:
+      title: PrinterCommandParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CopyCount
+      - Data
+      - PrinterId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        PrinterId:
+          type: string
+          description: Unique identifier of the `Printer` `Device` where to print the document.
+          format: uuid
+        Data:
+          minLength: 1
+          type: string
+          description: Base64 encoded data of PDF document to print.
+        CopyCount:
+          type: integer
+          description: Count of copies to be printed.
+          format: int32
+      additionalProperties: false
+      x-schema-id: PrinterCommandParameters
+    CommandsGetAllFilterByCommandIdParameters:
+      title: Get all commands by unique identifiers
+      required:
+      - CommandIds
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/CommandsGetAllFilterParameters'
+      properties:
+        CommandIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the commands to filter by.
+      additionalProperties: false
+      description: Filter commands by their unique identifiers.
+      x-schema-id: CommandsGetAllFilterByCommandIdParameters
+    DeviceCommandUpdateParameters:
+      title: DeviceCommandUpdateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CommandId
+      - State
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        CommandId:
+          type: string
+          description: Identifier of the `Command` to be updated.
+          format: uuid
+        State:
+          allOf:
+          - $ref: '#/components/schemas/DeviceCommandStateEnum'
+          description: 'New state of the command.
+
+
+            Pending (Created in Mews, but not yet received by the client application.)
+
+
+            Received (Received by the client application.)
+
+
+            Processing (Being processed by the client application.)
+
+
+            Processed (Successfully processed command.)
+
+
+            Cancelled (A command whose execution has been canceled before (or during) processing.)
+
+
+            Error (A command whose execution or processing was terminated by an error.)'
+        Progress:
+          type: number
+          description: Progress of the command processing. Only used if the `State` is `Processing`, otherwise ignored.
+          format: double
+          nullable: true
+        Notes:
+          type: string
+          description: Notes about command execution. Only used if the `State` is `Processed`, `Cancelled` or `Error`, otherwise ignored.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: DeviceCommandUpdateParameters
+    ExtendedAmount:
+      title: Extended amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+        Value:
+          type: number
+          format: double
+          nullable: true
+        Net:
+          type: number
+          format: double
+          nullable: true
+        Tax:
+          type: number
+          format: double
+          nullable: true
+        TaxRate:
+          type: number
+          format: double
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: ExtendedAmount
+    PassportScannerCommandData:
+      title: Passport scanner command data
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/DeviceCommandData'
+      properties:
+        PassportScannerId:
+          type: string
+          description: Identifier of the passport scanner.
+          nullable: true
+        CustomerId:
+          type: string
+          description: Unique identifier of the `Customer` who should be processed.
+          format: uuid
+          nullable: true
+        ReservationId:
+          type: string
+          description: Unique identifier of the reservation whose companions should be processed.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: PassportScannerCommandData
+    BillFiscalMachineDataDiscriminatorEnum:
+      title: Fiscal machine data discriminator
+      enum:
+      - ItalianFiscalMachineData
+      type: string
+      description: '
+
+
+        ItalianFiscalMachineData'
+      x-enumNames:
+      - ItalianFiscalMachineData
+      x-enumDescriptions:
+      - ''
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
+    PaymentTerminalCommandCompanyData:
+      title: Company data for payment terminal command.
+      required:
+      - Name
+      type: object
+      properties:
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the company.
+      additionalProperties: false
+      x-schema-id: PaymentTerminalCommandCompanyData
+    ProfileDataDiscriminator:
+      title: Profile data discriminator
+      enum:
+      - Personal
+      - Enterprise
+      - Platform
+      - Static
+      - Integration
+      type: string
+    DeviceTypeEnum:
+      title: Device type
+      enum:
+      - Printer
+      - PaymentTerminal
+      - KeyCutter
+      - FiscalMachine
+      - PassportScanner
+      type: string
+      description: 'Type of the device.
+
+
+        Printer ([Printer command data](https://mews-systems.gitbook.io/connector-api/operations/commands#printer-command-data))
+
+
+        PaymentTerminal ([Payment terminal command data](https://mews-systems.gitbook.io/connector-api/operations/commands#payment-terminal-command-data))
+
+
+        KeyCutter ([Key cutter command data](https://mews-systems.gitbook.io/connector-api/operations/commands#key-cutter-command-data))
+
+
+        FiscalMachine ([Fiscal machine command data](https://mews-systems.gitbook.io/connector-api/operations/commands#fiscal-machine-command-data))
+
+
+        PassportScanner ([Passport scanner command data](https://mews-systems.gitbook.io/connector-api/operations/commands#passport-scanner-command-data))'
+      x-enumNames:
+      - Printer
+      - PaymentTerminal
+      - KeyCutter
+      - FiscalMachine
+      - PassportScanner
+      x-enumDescriptions:
+      - '[Printer command data](https://mews-systems.gitbook.io/connector-api/operations/commands#printer-command-data)'
+      - '[Payment terminal command data](https://mews-systems.gitbook.io/connector-api/operations/commands#payment-terminal-command-data)'
+      - '[Key cutter command data](https://mews-systems.gitbook.io/connector-api/operations/commands#key-cutter-command-data)'
+      - '[Fiscal machine command data](https://mews-systems.gitbook.io/connector-api/operations/commands#fiscal-machine-command-data)'
+      - '[Passport scanner command data](https://mews-systems.gitbook.io/connector-api/operations/commands#passport-scanner-command-data)'
+    ProfileData:
+      title: Profile data
+      required:
+      - Discriminator
+      type: object
+      properties:
+        Discriminator:
+          $ref: '#/components/schemas/ProfileDataDiscriminator'
+        EnterpriseProfile:
+          title: Enterprise profile data
+          allOf:
+          - $ref: '#/components/schemas/EnterpriseProfileData'
+          description: Enterprise profile data.
+          nullable: true
+      additionalProperties: false
+      description: The profile data of the user who created or last updated the record.
+      x-schema-id: ProfileData
+    FiscalMachineDataDiscriminatorEnum:
+      title: Fiscal machine data discriminator
+      enum:
+      - ItalianFiscalMachineData
+      - ItalianFiscalMachinePayload
+      type: string
+      description: '
+
+
+        ItalianFiscalMachineData
+
+
+        ItalianFiscalMachinePayload'
+      x-enumNames:
+      - ItalianFiscalMachineData
+      - ItalianFiscalMachinePayload
+      x-enumDescriptions:
+      - ''
+      - ''
+    FiscalMachineAdditionalData:
+      title: FiscalMachineAdditionalData
+      type: object
+      properties:
+        Discriminator:
+          allOf:
+          - $ref: '#/components/schemas/FiscalMachineDataDiscriminatorEnum'
+          description: 'Type of additional data for Italian fiscal machine.
+
+
+            ItalianFiscalMachineData
+
+
+            ItalianFiscalMachinePayload'
+          nullable: true
+        ItalianFiscalMachineData:
+          title: Italian fiscal machine data
+          allOf:
+          - $ref: '#/components/schemas/ItalianFiscalMachineDataV20250623'
+          description: Fiscal machine data for Italian fiscal machine.
+          nullable: true
+        ItalianFiscalMachinePayload:
+          title: Italian fiscal machine payload.
+          allOf:
+          - $ref: '#/components/schemas/ItalianFiscalMachinePayloadV20250623'
+          description: Fiscal machine payload for Italian fiscal machine.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: FiscalMachineAdditionalData
+    Title:
+      title: Title
+      enum:
+      - Mister
+      - Miss
+      - Misses
+      type: string
+      description: "Type of the title prefix of the customer.\r\n\r\nNote that the value should not be used as-is, but localized. For example, the value `Misses` should be displayed as `Mrs.` in English and `Fr.` in German.\n\nMister (Mr.)\n\nMiss (Ms.)\n\nMisses (Mrs.)"
+      x-enumNames:
+      - Mister
+      - Miss
+      - Misses
+      x-enumDescriptions:
+      - Mr.
+      - Ms.
+      - Mrs.
+      x-schema-id: Title
+      x-showDescription: true
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount
+    BillV20250623:
+      title: Bill (ver 2025-06-23)
+      required:
+      - AccountId
+      - AccountType
+      - AssociatedAccountIds
+      - CorrectionState
+      - CreatedUtc
+      - EnterpriseId
+      - Id
+      - State
+      - Type
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the bill.
+          format: uuid
+        Name:
+          type: string
+          description: Name of the bill.
+          nullable: true
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the `Enterprise`.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of the account (`Customer` or `Company`) the bill is issued to.
+          format: uuid
+        AccountType:
+          title: Account type
+          allOf:
+          - $ref: '#/components/schemas/AccountTypeEnum'
+          description: 'A discriminator specifying the account type, i.e. `Customer` or `Company`.
+
+
+            Company
+
+
+            Customer'
+          x-enumNames:
+          - Company
+          - Customer
+          x-enumDescriptions:
+          - ''
+          - ''
+        AssociatedAccountIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Customers` or `Companies` that are associated to the bill.
+          nullable: true
+        CounterId:
+          type: string
+          description: Unique identifier of the bill `Counter`.
+          format: uuid
+          nullable: true
+        State:
+          $ref: '#/components/schemas/BillState'
+        Type:
+          $ref: '#/components/schemas/BillType'
+        Number:
+          type: string
+          description: Number of the bill.
+          nullable: true
+        VariableSymbol:
+          type: string
+          description: Variable symbol of the bill.
+          nullable: true
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the bill creation in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Date and time when the bill was last updated, in UTC timezone in ISO 8601 format.
+          format: date-time
+        IssuedUtc:
+          type: string
+          description: Date and time of the bill issuance in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        TaxedUtc:
+          type: string
+          description: Taxation date of the bill in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        PaidUtc:
+          type: string
+          description: Date when the bill was paid in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        DueUtc:
+          type: string
+          description: Bill due date and time in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        LastReminderDateUtc:
+          type: string
+          description: Date and time when an email reminder to pay an invoice was last sent, in UTC timezone in ISO 8601 format.
+          format: date-time
+          nullable: true
+        PurchaseOrderNumber:
+          type: string
+          description: Unique number of the purchase order from the buyer.
+          nullable: true
+        Notes:
+          type: string
+          description: Additional notes.
+          nullable: true
+        Options:
+          title: Bill options
+          allOf:
+          - $ref: '#/components/schemas/BillOptions'
+          description: Options of the bill.
+          nullable: true
+        Owner:
+          title: Bill owner data
+          allOf:
+          - $ref: '#/components/schemas/BillAccountData'
+          description: Additional information about owner of the bill. Can be a `Customer` or `Company`. Persisted at the time of closing of the bill.
+          nullable: true
+        AssociatedAccountsData:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillAccountData'
+          description: Additional information about the associated account of the bill. Can be a `Customer` or `Company`. Persisted at the time of closing of the bill. Currently only one account can be associated with a bill, but this may be extended in future.
+          nullable: true
+        EnterpriseData:
+          title: Bill enterprise data
+          allOf:
+          - $ref: '#/components/schemas/BillEnterpriseData'
+          description: Additional information about the enterprise issuing the bill, including bank account details. Persisted at the time of closing of the bill.
+          nullable: true
+        CorrectionState:
+          title: Bill correction state
+          allOf:
+          - $ref: '#/components/schemas/BillCorrectionStateEnum'
+          description: 'Whether the bill is a regular bill or a corrective bill.
+
+
+            Bill (Regular bill.)
+
+
+            CorrectiveBill (Corrective bill, i.e. the `CorrectionType` is either `Edit`, `Cancellation`, or `ReceivablePaymentsBalance`.)'
+          x-enumNames:
+          - Bill
+          - CorrectiveBill
+          x-enumDescriptions:
+          - Regular bill.
+          - Corrective bill, i.e. the `CorrectionType` is either `Edit`, `Cancellation`, or `ReceivablePaymentsBalance`.
+        CorrectionType:
+          allOf:
+          - $ref: '#/components/schemas/BillCorrectionTypeEnum'
+          description: 'Type of correction.
+
+
+            Cancellation
+
+
+            Edit
+
+
+            CreditNote
+
+
+            Reinstatement
+
+
+            ReceivablePaymentsBalance'
+          nullable: true
+        CorrectedBillId:
+          type: string
+          description: The ID of the bill that the corrective bill corrects. If the corrected bill was deleted, this field is `null`.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: BillV20250623
+    BillCorrectionTypeEnum:
+      title: Bill correction type
+      enum:
+      - Cancellation
+      - Edit
+      - CreditNote
+      - Reinstatement
+      - ReceivablePaymentsBalance
+      type: string
+      description: '
+
+
+        Cancellation
+
+
+        Edit
+
+
+        CreditNote
+
+
+        Reinstatement
+
+
+        ReceivablePaymentsBalance'
+      x-enumNames:
+      - Cancellation
+      - Edit
+      - CreditNote
+      - Reinstatement
+      - ReceivablePaymentsBalance
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    TaxBreakdownItem:
+      title: Tax breakdown item
+      required:
+      - NetValue
+      - TaxValue
+      type: object
+      properties:
+        TaxRateCode:
+          type: string
+          description: Tax rate code for the item. `null` for untaxed amounts.
+          nullable: true
+        NetValue:
+          type: number
+          description: The net value that the tax is calculated from.
+          format: double
+        TaxValue:
+          type: number
+          description: The value of the tax.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxBreakdownItem
+    FiscalMachineCommandDataV20250623:
+      title: Fiscal machine command data (ver. 2025-06-23)
+      required:
+      - ApiUrl
+      - Bill
+      - CreatedUtc
+      - Device
+      - FiscalMachineData
+      - FiscalMachineId
+      - Id
+      - State
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the command.
+          format: uuid
+        State:
+          title: Command state
+          allOf:
+          - $ref: '#/components/schemas/DeviceCommandStateEnum'
+          description: 'State of the command.
+
+
+            Pending (Created in Mews, but not yet received by the client application.)
+
+
+            Received (Received by the client application.)
+
+
+            Processing (Being processed by the client application.)
+
+
+            Processed (Successfully processed command.)
+
+
+            Cancelled (A command whose execution has been canceled before (or during) processing.)
+
+
+            Error (A command whose execution or processing was terminated by an error.)'
+          x-enumNames:
+          - Pending
+          - Received
+          - Processing
+          - Processed
+          - Cancelled
+          - Error
+          x-enumDescriptions:
+          - Created in Mews, but not yet received by the client application.
+          - Received by the client application.
+          - Being processed by the client application.
+          - Successfully processed command.
+          - A command whose execution has been canceled before (or during) processing.
+          - A command whose execution or processing was terminated by an error.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the command.
+          format: date-time
+        Creator:
+          title: Profile data
+          allOf:
+          - $ref: '#/components/schemas/ProfileData'
+          description: Creator of the command.
+          nullable: true
+        FiscalMachineId:
+          minLength: 1
+          type: string
+          description: Identifier of the fiscal machine.
+        ApiUrl:
+          minLength: 1
+          type: string
+          description: URL of the fiscal machine API.
+        FiscalMachineData:
+          minLength: 1
+          type: string
+          description: Custom JSON data.
+        TaxIdentifier:
+          type: string
+          description: Tax identifier to be used for fiscalization.
+          nullable: true
+        Device:
+          allOf:
+          - $ref: '#/components/schemas/Device'
+          description: Device that the command should be executed on.
+        Bill:
+          title: Bill (ver 2025-06-23)
+          allOf:
+          - $ref: '#/components/schemas/BillV20250623'
+          description: The issued bill that should be fiscalized.
+        CommandData:
+          allOf:
+          - $ref: '#/components/schemas/FiscalMachineAdditionalData'
+          description: Additional data of the fiscal machine.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: FiscalMachineCommandDataV20250623
+    KeyCutterCommandParameters:
+      title: KeyCutterCommandParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - KeyCount
+      - KeyCutterId
+      - ReservationId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        KeyCutterId:
+          type: string
+          description: Unique identifier of the KeyCutter [Device](https://mews-systems.gitbook.io/connector-api/operations/devices/#device) where to encode the key.
+          format: uuid
+        ReservationId:
+          type: string
+          description: Unique identifier of the reservation to encode the key for.
+          format: uuid
+        KeyCount:
+          type: integer
+          description: Count of keys to encode.
+          format: int32
+      additionalProperties: false
+      x-schema-id: KeyCutterCommandParameters
+    Device:
+      title: Device
+      required:
+      - Id
+      - Name
+      - Type
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the device.
+          format: uuid
+        Type:
+          title: Device type
+          allOf:
+          - $ref: '#/components/schemas/DeviceTypeEnum'
+          description: 'Type of the device.
+
+
+            Printer ([Printer command data](https://mews-systems.gitbook.io/connector-api/operations/commands#printer-command-data))
+
+
+            PaymentTerminal ([Payment terminal command data](https://mews-systems.gitbook.io/connector-api/operations/commands#payment-terminal-command-data))
+
+
+            KeyCutter ([Key cutter command data](https://mews-systems.gitbook.io/connector-api/operations/commands#key-cutter-command-data))
+
+
+            FiscalMachine ([Fiscal machine command data](https://mews-systems.gitbook.io/connector-api/operations/commands#fiscal-machine-command-data))
+
+
+            PassportScanner ([Passport scanner command data](https://mews-systems.gitbook.io/connector-api/operations/commands#passport-scanner-command-data))'
+          x-enumNames:
+          - Printer
+          - PaymentTerminal
+          - KeyCutter
+          - FiscalMachine
+          - PassportScanner
+          x-enumDescriptions:
+          - '[Printer command data](https://mews-systems.gitbook.io/connector-api/operations/commands#printer-command-data)'
+          - '[Payment terminal command data](https://mews-systems.gitbook.io/connector-api/operations/commands#payment-terminal-command-data)'
+          - '[Key cutter command data](https://mews-systems.gitbook.io/connector-api/operations/commands#key-cutter-command-data)'
+          - '[Fiscal machine command data](https://mews-systems.gitbook.io/connector-api/operations/commands#fiscal-machine-command-data)'
+          - '[Passport scanner command data](https://mews-systems.gitbook.io/connector-api/operations/commands#passport-scanner-command-data)'
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the device.
+        Identifier:
+          type: string
+          description: Device identifier (for internal purposes).
+          nullable: true
+      additionalProperties: false
+      x-schema-id: Device

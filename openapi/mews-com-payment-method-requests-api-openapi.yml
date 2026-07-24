@@ -1,0 +1,218 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Payment method requests API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Payment method requests
+paths:
+  /api/connector/v1/paymentMethodRequests/add:
+    post:
+      tags:
+      - Payment method requests
+      summary: Add payment method request
+      description: "Create a payment method request for the specified customer or company account to securely collect a payment method without charging the guest immediately. An optional email notification is sent to the account's email address or a specified override address.\r\nNote this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/)."
+      operationId: paymentMethodRequests_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentMethodRequestAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              AccountId: fadd5bb6-b428-45d5-94f8-fd0d89fece6d
+              ExpirationUtc: '2024-02-23T23:00:00Z'
+              Description: Please provide a payment card to secure your reservation.
+              Notes: Sent via Connector API
+              PaymentMethods:
+              - PaymentCard
+              - SepaDirectDebit
+              Email: john.smith@example.com
+              EmailsToSend:
+              - PaymentMethodRequestAdded
+              EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethodRequestAdditionResult'
+              example:
+                PaymentMethodRequestId: a5f5c82d-621a-4c8a-903b-1b0a9a23b71e
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+      x-restricted: true
+components:
+  schemas:
+    PaymentMethodRequestAdditionResult:
+      title: Payment method request addition result
+      required:
+      - PaymentMethodRequestId
+      type: object
+      properties:
+        PaymentMethodRequestId:
+          type: string
+          description: Unique identifier of the created payment method request.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: PaymentMethodRequestAdditionResult
+    PaymentMethodRequestEmailTypesEnum:
+      title: Supported email types
+      enum:
+      - PaymentMethodRequestAdded
+      type: string
+      description: '
+
+
+        PaymentMethodRequestAdded'
+      x-enumNames:
+      - PaymentMethodRequestAdded
+      x-enumDescriptions:
+      - ''
+    PaymentMethodRequestPaymentMethodsEnum:
+      title: Acceptable payment methods
+      enum:
+      - PaymentCard
+      - SepaDirectDebit
+      type: string
+      description: '
+
+
+        PaymentCard
+
+
+        SepaDirectDebit'
+      x-enumNames:
+      - PaymentCard
+      - SepaDirectDebit
+      x-enumDescriptions:
+      - ''
+      - ''
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    PaymentMethodRequestAddParameters:
+      title: Payment method request parameters
+      required:
+      - AccessToken
+      - AccountId
+      - Client
+      - ClientToken
+      - Description
+      - ExpirationUtc
+      - PaymentMethods
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+          nullable: true
+        AccountId:
+          type: string
+          description: Unique identifier of the account (`Customer` or `Company`) to which the payment method request is issued.
+          format: uuid
+        ExpirationUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the payment method request's expiration in ISO 8601 format.
+          format: date-time
+        Description:
+          maxLength: 1000
+          minLength: 1
+          type: string
+          description: Description of the payment method request displayed to the customer.
+        Notes:
+          maxLength: 1000
+          type: string
+          description: Payment method request's internal notes.
+          nullable: true
+        PaymentMethods:
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethodRequestPaymentMethodsEnum'
+          description: Collectable payment methods.
+        Email:
+          maxLength: 500
+          type: string
+          description: Account email address for sending the payment method request. If not provided, uses the email from the customer profile.
+          format: email
+          nullable: true
+        EmailsToSend:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethodRequestEmailTypesEnum'
+          description: Email notifications to send. If not specified, all emails will be sent. To disable all emails send an empty list. Additional email types may be added in the future.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: PaymentMethodRequestAddParameters

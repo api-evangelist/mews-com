@@ -1,0 +1,513 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Enterprises API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Enterprises
+paths:
+  /api/connector/v1/enterprises/getAll:
+    post:
+      tags:
+      - Enterprises
+      summary: Get all enterprises
+      description: Returns all enterprises within scope of the `Access Token`, optionally filtered by enterprise identifiers and external identifiers. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      operationId: enterprises_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnterpriseFilterParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              ExternalIdentifiers:
+              - Enterprise2023
+              LinkedUtc:
+                StartUtc: '2023-06-01T00:00:00Z'
+                EndUtc: '2023-06-06T00:00:00Z'
+              UpdatedUtc:
+                StartUtc: '2023-10-01T00:00:00Z'
+                EndUtc: '2023-10-31T00:00:00Z'
+              Limitation:
+                Count: 100
+                Cursor: 4d0201db-36f5-428b-8d11-4f0a65e960cc
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnterpriseResult'
+              example:
+                Enterprises:
+                - LinkedUtc: '2023-06-01T00:00:00Z'
+                  Id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  ExternalIdentifier: Enterprise2023
+                  HoldingKey: CA123
+                  ChainId: 2f6be44e-9881-4b12-aefe-afce011a9d67
+                  ChainName: Connector API Chain
+                  CreatedUtc: '2022-03-23T17:12:06Z'
+                  UpdatedUtc: '2022-03-23T17:12:06Z'
+                  Name: Sample Portfolio Hotel
+                  ShortName: null
+                  TimeZoneIdentifier: Europe/Budapest
+                  LegalEnvironmentCode: DE-2020-1
+                  AccommodationEnvironmentCode: DE
+                  AccountingEnvironmentCode: DE
+                  TaxEnvironmentCode: DE-2020-1
+                  DefaultLanguageCode: en-US
+                  EditableHistoryInterval: null
+                  AccountingEditableHistoryInterval: P0M7DT0H0M0S
+                  OperationalEditableHistoryInterval: P0M5DT0H0M0S
+                  BusinessDayClosingOffset: null
+                  WebsiteUrl: https://www.sample-portfolio-hotel-10004.com/
+                  Email: email@sample-portfolio-hotel.com
+                  Phone: (555) 555-1234
+                  LogoImageId: null
+                  CoverImageId: null
+                  Pricing: Gross
+                  TaxPrecision: 2
+                  AddressId: 31c505e9-9858-4d2f-9eab-afce011c4f47
+                  Address:
+                    Id: 8c2c4371-5d42-40a9-b551-ab0b00d75076
+                    Line1: I.P. Pavlova 5
+                    Line2: null
+                    City: Prague
+                    PostalCode: '1200'
+                    CountryCode: CZ
+                    CountrySubdivisionCode: null
+                    Latitude: 14.429645
+                    Longitude: 50.075181
+                  GroupNames:
+                  - Sample Group Name
+                  Subscription:
+                    TaxIdentifier: 123456789 RC 0001
+                Cursor: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    EnterpriseFilterParameters:
+      title: EnterpriseFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Enterprises](https://mews-systems.gitbook.io/connector-api/operations/#enterprise). If not specified, all enterprises within scope of the Access Token are returned.
+          nullable: true
+        ExternalIdentifiers:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: Identifiers of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/#enterprise) from external system.
+          nullable: true
+        LinkedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which enterprises were linked.
+          nullable: true
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which enterprises were updated.
+          nullable: true
+          x-max-interval-in-months: 3
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned.
+      additionalProperties: false
+      x-schema-id: EnterpriseFilterParameters
+    EnterprisePortfolio:
+      title: Enterprise
+      required:
+      - AccommodationEnvironmentCode
+      - AccountingEditableHistoryInterval
+      - AccountingEnvironmentCode
+      - Address
+      - AddressId
+      - ChainId
+      - ChainName
+      - CreatedUtc
+      - DefaultLanguageCode
+      - EditableHistoryInterval
+      - GroupNames
+      - Id
+      - LegalEnvironmentCode
+      - LinkedUtc
+      - Name
+      - OperationalEditableHistoryInterval
+      - Pricing
+      - Subscription
+      - TaxEnvironmentCode
+      - TimeZoneIdentifier
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the enterprise.
+          format: uuid
+        ExternalIdentifier:
+          maxLength: 255
+          type: string
+          description: Identifier of the enterprise from external system.
+          nullable: true
+        HoldingKey:
+          maxLength: 255
+          type: string
+          description: Identifies an enterprise in the external system of a holding company. The holding company may administer multiple portfolios.
+          nullable: true
+        ChainId:
+          type: string
+          description: Unique identifier of the chain to which the enterprise belongs.
+          format: uuid
+        ChainName:
+          minLength: 1
+          type: string
+          description: Name of the `Chain` to which the enterprise belongs.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the enterprise in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the enterprise in UTC timezone in ISO 8601 format.
+          format: date-time
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the enterprise.
+        ShortName:
+          maxLength: 11
+          type: string
+          description: Short name of the enterprise used in Manager Report exports.
+          nullable: true
+        TimeZoneIdentifier:
+          minLength: 1
+          type: string
+          description: IANA timezone identifier of the enterprise.
+        LegalEnvironmentCode:
+          minLength: 1
+          type: string
+          description: Unique identifier of the legal environment where the enterprise resides.
+        AccommodationEnvironmentCode:
+          minLength: 1
+          type: string
+          description: Unique code of the accommodation environment where the enterprise resides.
+        AccountingEnvironmentCode:
+          minLength: 1
+          type: string
+          description: Unique code of the accounting environment where the enterprise resides.
+        TaxEnvironmentCode:
+          minLength: 1
+          type: string
+          description: Unique code of the tax environment where the enterprise resides.
+        DefaultLanguageCode:
+          minLength: 1
+          type: string
+          description: Language-culture codes of the enterprise default `Language`.
+        EditableHistoryInterval:
+          minLength: 1
+          type: string
+          deprecated: true
+          x-deprecatedMessage: Use `AccountingEditableHistoryInterval` and `OperationalEditableHistoryInterval` instead.
+        AccountingEditableHistoryInterval:
+          minLength: 1
+          type: string
+          description: Editable history interval for accounting data in ISO 8601 duration format.
+        OperationalEditableHistoryInterval:
+          minLength: 1
+          type: string
+          description: Editable history interval for operational data in ISO 8601 duration format.
+        BusinessDayClosingOffset:
+          type: string
+          description: The offset value for the business day closing time, in ISO 8601 duration format.
+          nullable: true
+        WebsiteUrl:
+          type: string
+          description: URL of the enterprise website.
+          format: uri
+          nullable: true
+        Email:
+          type: string
+          description: Email address of the enterprise.
+          format: email
+          nullable: true
+        Phone:
+          type: string
+          description: Phone number of the enterprise.
+          format: tel
+          nullable: true
+        LogoImageId:
+          type: string
+          description: Unique identifier of the `Image` of the enterprise logo.
+          format: uuid
+          nullable: true
+        CoverImageId:
+          type: string
+          description: Unique identifier of the `Image` of the enterprise cover.
+          format: uuid
+          nullable: true
+        Pricing:
+          title: Pricing
+          allOf:
+          - $ref: '#/components/schemas/PricingModeEnum'
+          description: 'Pricing of the enterprise.
+
+
+            Gross (The enterprise shows amount with gross prices.)
+
+
+            Net (The enterprise shows amount with net prices.)'
+          x-enumNames:
+          - Gross
+          - Net
+          x-enumDescriptions:
+          - The enterprise shows amount with gross prices.
+          - The enterprise shows amount with net prices.
+        TaxPrecision:
+          type: integer
+          description: Tax precision used for financial calculations in the enterprise. If `null`, `Currency` precision is used.
+          format: int32
+          nullable: true
+        AddressId:
+          type: string
+          description: Unique identifier of the `Address` of the enterprise.
+          format: uuid
+        Address:
+          title: Address
+          allOf:
+          - $ref: '#/components/schemas/OldAddress'
+          description: Address of the enterprise.
+        GroupNames:
+          type: array
+          items:
+            type: string
+          description: A list of the group names of the enterprise.
+        Subscription:
+          title: Enterprise subscription
+          allOf:
+          - $ref: '#/components/schemas/EnterpriseSubscription'
+          description: Subscription information of the enterprise.
+        LinkedUtc:
+          minLength: 1
+          type: string
+          description: Date and time when enterprise was added to the portfolio in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      description: ''
+      x-schema-id: EnterprisePortfolio
+    OldAddress:
+      title: Address
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the address.
+          format: uuid
+        Line1:
+          type: string
+          description: First line of the address.
+          nullable: true
+        Line2:
+          type: string
+          description: Second line of the address.
+          nullable: true
+        City:
+          type: string
+          description: The city.
+          nullable: true
+        PostalCode:
+          type: string
+          description: Postal code.
+          nullable: true
+        CountryCode:
+          type: string
+          description: ISO 3166-1 code of the `Country`.
+          nullable: true
+        CountrySubdivisionCode:
+          type: string
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
+          nullable: true
+        Latitude:
+          type: number
+          description: The latitude.
+          format: double
+          nullable: true
+        Longitude:
+          type: number
+          description: The longitude.
+          format: double
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: OldAddress
+    PricingModeEnum:
+      title: Pricing
+      enum:
+      - Gross
+      - Net
+      type: string
+      description: '
+
+
+        Gross (The enterprise shows amount with gross prices.)
+
+
+        Net (The enterprise shows amount with net prices.)'
+      x-enumNames:
+      - Gross
+      - Net
+      x-enumDescriptions:
+      - The enterprise shows amount with gross prices.
+      - The enterprise shows amount with net prices.
+    EnterpriseResult:
+      title: EnterpriseResult
+      required:
+      - Enterprises
+      type: object
+      properties:
+        Enterprises:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnterprisePortfolio'
+          description: The filtered enterprises.
+        Cursor:
+          type: string
+          description: Unique identifier of the last and hence oldest enterprise returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older enterprises.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: EnterpriseResult
+    EnterpriseSubscription:
+      title: Enterprise subscription
+      type: object
+      properties:
+        TaxIdentifier:
+          type: string
+          description: Tax identifier of the `Enterprise`.
+          nullable: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: EnterpriseSubscription
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation

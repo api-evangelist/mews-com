@@ -1,0 +1,682 @@
+openapi: 3.0.4
+info:
+  title: BookingEngineApi Account notes Resource blocks API
+  version: v1
+servers:
+- url: https://api.mews.com
+tags:
+- name: Resource blocks
+paths:
+  /api/connector/v1/resourceBlocks/getAll:
+    post:
+      tags:
+      - Resource blocks
+      summary: Get all resource blocks
+      description: "Returns all resource blocks (out of order blocks or internal use blocks). \nNote this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property)."
+      operationId: resourceBlocks_getAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceBlockParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ResourceBlockIds:
+              - 7f8e9d0c-1b2a-3c4d-5e6f-7a8b9c0d1e2f
+              - 8e9f0a1b-2c3d-4e5f-6a7b-8c9d0e1f2a3b
+              - 63f4ebee-7e36-4ca9-b7d8-6331a8b009e5
+              AssignedResourceIds:
+              - 20e00c32-d561-4008-8609-82d8aa525714
+              - 1ec29188-01ca-4294-9983-fac59f85a448
+              - a1b2c3d4-e5f6-7890-abcd-ef1234567890
+              ActivityStates:
+              - Active
+              - Deleted
+              CollidingUtc:
+                StartUtc: '2023-06-01T00:00:00Z'
+                EndUtc: '2023-07-31T23:59:59Z'
+              CreatedUtc:
+                StartUtc: '2023-06-01T00:00:00Z'
+                EndUtc: '2023-08-31T00:00:00Z'
+              UpdatedUtc:
+                StartUtc: '2023-06-01T00:00:00Z'
+                EndUtc: '2023-07-31T23:59:59Z'
+              EnterpriseIds:
+              - 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              - 4d0201db-36f5-428b-8d11-4f0a65e960cc
+              Limitation:
+                Count: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBlockResult'
+              example:
+                ResourceBlocks:
+                - Id: 7f8e9d0c-1b2a-3c4d-5e6f-7a8b9c0d1e2f
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  AssignedResourceId: 20e00c32-d561-4008-8609-82d8aa525714
+                  IsActive: true
+                  Type: OutOfOrder
+                  StartUtc: '2023-07-15T14:00:00Z'
+                  EndUtc: '2023-07-15T18:00:00Z'
+                  CreatedUtc: '2023-07-10T09:30:00Z'
+                  UpdatedUtc: '2023-07-10T09:30:00Z'
+                  DeletedUtc: null
+                  Name: Maintenance Block - Room 101
+                  Notes: Scheduled maintenance for air conditioning unit
+                - Id: 8e9f0a1b-2c3d-4e5f-6a7b-8c9d0e1f2a3b
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  AssignedResourceId: 1ec29188-01ca-4294-9983-fac59f85a448
+                  IsActive: true
+                  Type: InternalUse
+                  StartUtc: '2023-07-20T10:00:00Z'
+                  EndUtc: '2023-07-22T12:00:00Z'
+                  CreatedUtc: '2023-07-18T14:20:00Z'
+                  UpdatedUtc: '2023-07-18T14:20:00Z'
+                  DeletedUtc: null
+                  Name: Staff Training Session
+                  Notes: null
+                - Id: 63f4ebee-7e36-4ca9-b7d8-6331a8b009e5
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  AssignedResourceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                  IsActive: false
+                  Type: OutOfOrder
+                  StartUtc: '2023-06-01T20:00:00Z'
+                  EndUtc: '2023-06-03T23:59:59Z'
+                  CreatedUtc: '2023-06-01T16:45:00Z'
+                  UpdatedUtc: '2023-06-04T08:15:00Z'
+                  DeletedUtc: '2023-06-04T08:15:00Z'
+                  Name: Renovation Block - Suite 1
+                  Notes: Room renovation completed, block removed
+                Cursor: 9f0a1b2c-3d4e-5f6a-7b8c-9d0e1f2a3b4c
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/resourceBlocks/add:
+    post:
+      tags:
+      - Resource blocks
+      summary: Add resource block
+      description: Adds a new resource block to the specified resource for a defined period of time.
+      operationId: resourceBlocks_add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleResourceBlockAddParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ResourceBlocks:
+              - ResourceId: 20e00c32-d561-4008-8609-82d8aa525714
+                Name: Maintenance Block - Room 101
+                Type: OutOfOrder
+                StartUtc: '2023-08-01T14:00:00Z'
+                EndUtc: '2023-08-01T18:00:00Z'
+                Notes: Scheduled maintenance for air conditioning unit
+              - ResourceId: 1ec29188-01ca-4294-9983-fac59f85a448
+                Name: Staff Training Session
+                Type: InternalUse
+                StartUtc: '2023-08-05T10:00:00Z'
+                EndUtc: '2023-08-05T16:00:00Z'
+                Notes: Internal training session for new staff members
+              - ResourceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                Name: Deep Cleaning Block
+                Type: OutOfOrder
+                StartUtc: '2023-08-10T09:00:00Z'
+                EndUtc: '2023-08-10T17:00:00Z'
+                Notes: Deep cleaning and sanitization process
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBlockAdditionResult'
+              example:
+                ResourceBlocks:
+                - Id: 7f8e9d0c-1b2a-3c4d-5e6f-7a8b9c0d1e2f
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  AssignedResourceId: 20e00c32-d561-4008-8609-82d8aa525714
+                  IsActive: true
+                  Type: OutOfOrder
+                  StartUtc: '2023-08-01T14:00:00Z'
+                  EndUtc: '2023-08-01T18:00:00Z'
+                  CreatedUtc: '2023-07-25T10:30:00Z'
+                  UpdatedUtc: '2023-07-25T10:30:00Z'
+                  DeletedUtc: null
+                  Name: Maintenance Block - Room 101
+                  Notes: Scheduled maintenance for air conditioning unit
+                - Id: 8e9f0a1b-2c3d-4e5f-6a7b-8c9d0e1f2a3b
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  AssignedResourceId: 1ec29188-01ca-4294-9983-fac59f85a448
+                  IsActive: true
+                  Type: InternalUse
+                  StartUtc: '2023-08-05T10:00:00Z'
+                  EndUtc: '2023-08-05T16:00:00Z'
+                  CreatedUtc: '2023-07-25T10:30:00Z'
+                  UpdatedUtc: '2023-07-25T10:30:00Z'
+                  DeletedUtc: null
+                  Name: Staff Training Session
+                  Notes: Internal training session for new staff members
+                - Id: 9f0a1b2c-3d4e-5f6a-7b8c-9d0e1f2a3b4c
+                  EnterpriseId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+                  AssignedResourceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                  IsActive: true
+                  Type: OutOfOrder
+                  StartUtc: '2023-08-10T09:00:00Z'
+                  EndUtc: '2023-08-10T17:00:00Z'
+                  CreatedUtc: '2023-07-25T10:30:00Z'
+                  UpdatedUtc: '2023-07-25T10:30:00Z'
+                  DeletedUtc: null
+                  Name: Deep Cleaning Block
+                  Notes: Deep cleaning and sanitization process
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+  /api/connector/v1/resourceBlocks/delete:
+    post:
+      tags:
+      - Resource blocks
+      summary: Delete resource blocks
+      description: Removes specified resource blocks from the resources.
+      operationId: resourceBlocks_delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceBlockDeleteParameters'
+            example:
+              ClientToken: E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D
+              AccessToken: C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D
+              Client: Sample Client 1.0.0
+              ResourceBlockIds:
+              - 63f4ebee-7e36-4ca9-b7d8-6331a8b009e5
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '400':
+          description: Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '401':
+          description: Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '403':
+          description: Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '408':
+          description: Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '204':
+          description: Server has successfully fulfilled the request and there is no additional information to send back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '429':
+          description: Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+        '500':
+          description: Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorApiExceptionResult'
+components:
+  schemas:
+    MultipleResourceBlockAddParameters:
+      title: MultipleResourceBlockAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - ResourceBlocks
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ResourceBlocks:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceBlockAddParameters'
+          description: Resource block parameters.
+      additionalProperties: false
+      x-schema-id: MultipleResourceBlockAddParameters
+    ResourceBlockAddParameters:
+      title: Resource block parameters
+      required:
+      - EndUtc
+      - Name
+      - ResourceId
+      - StartUtc
+      - Type
+      type: object
+      properties:
+        ResourceId:
+          type: string
+          description: Unique identifier of `Resource`.
+          format: uuid
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the resource block.
+        Type:
+          $ref: '#/components/schemas/ResourceBlockType'
+        StartUtc:
+          minLength: 1
+          type: string
+          description: Start of the interval in UTC timezone in ISO 8601 format.
+          format: date-time
+        EndUtc:
+          minLength: 1
+          type: string
+          description: End of the interval in UTC timezone in ISO 8601 format.
+          format: date-time
+        Notes:
+          type: string
+          description: Note describing the resource block.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceBlockAddParameters
+    ResourceBlockParameters:
+      title: Resource block parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+          nullable: true
+        Extent:
+          title: Resource block extent
+          allOf:
+          - $ref: '#/components/schemas/ResourceBlockExtent'
+          description: Extent of data to be returned.
+          nullable: true
+          deprecated: true
+          x-deprecatedMessage: Use ActivityStates with `["Active", "Deleted"]` instead.
+        ResourceBlockIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the requested resource block.
+          nullable: true
+        AssignedResourceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the requested Assigned `Resource`.
+          nullable: true
+        ActivityStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records. Defaults to `Active` if not specified.
+          nullable: true
+        CollidingUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource block is active.
+          nullable: true
+          x-max-interval-in-months: 3
+        CreatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource block was created.
+          nullable: true
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource block was updated.
+          nullable: true
+          x-max-interval-in-months: 3
+      additionalProperties: false
+      x-schema-id: ResourceBlockParameters
+    Unit:
+      type: object
+      additionalProperties: false
+    ResourceBlockResult:
+      title: ResourceBlockResult
+      required:
+      - ResourceBlocks
+      type: object
+      properties:
+        ResourceBlocks:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceBlock'
+          description: The resource blocks colliding with the interval or matching the filter parameters.
+        Cursor:
+          type: string
+          description: Unique identifier of the last returned resource block. This can be used in `Limitation` in a subsequent request to fetch the next batch of resource blocks.
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceBlockResult
+    ResourceBlockType:
+      title: Resource block type
+      enum:
+      - OutOfOrder
+      - InternalUse
+      type: string
+      description: Type of the resource block.
+    ResourceBlockAdditionResult:
+      title: ResourceBlockAdditionResult
+      required:
+      - ResourceBlocks
+      type: object
+      properties:
+        ResourceBlocks:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceBlock'
+          description: The resource blocks that were added.
+      additionalProperties: false
+      x-schema-id: ResourceBlockAdditionResult
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type: string
+          nullable: true
+        RequestId:
+          type: string
+          nullable: true
+        Details:
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ResourceBlockExtent:
+      title: Resource block extent
+      type: object
+      properties:
+        Inactive:
+          type: boolean
+          description: Whether the response should contain inactive entities.
+      additionalProperties: false
+      description: ''
+      x-schema-id: ResourceBlockExtent
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type: string
+          format: date-time
+          nullable: true
+        EndUtc:
+          type: string
+          format: date-time
+          nullable: true
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ResourceBlockDeleteParameters:
+      title: ResourceBlockDeleteParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - ResourceBlockIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ResourceBlockIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifier of the resource blocks to be removed.
+      additionalProperties: false
+      x-schema-id: ResourceBlockDeleteParameters
+    ResourceBlock:
+      title: Resource block
+      required:
+      - AssignedResourceId
+      - CreatedUtc
+      - EndUtc
+      - EnterpriseId
+      - Id
+      - IsActive
+      - Name
+      - StartUtc
+      - Type
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the resource block.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the `Enterprise` the resource block belongs to.
+          format: uuid
+        AssignedResourceId:
+          type: string
+          description: Unique identifier of the assigned `Resource`.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the resource block is still active.
+        Type:
+          $ref: '#/components/schemas/ResourceBlockType'
+        StartUtc:
+          minLength: 1
+          type: string
+          description: Start of the resource block in UTC timezone in ISO 8601 format.
+        EndUtc:
+          minLength: 1
+          type: string
+          description: End of the resource block in UTC timezone in ISO 8601 format.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the resource block in UTC timezone in ISO 8601 format.
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the resource block in UTC timezone in ISO 8601 format.
+        DeletedUtc:
+          type: string
+          description: Date and time when the resource block was deleted (for inactive ones) in UTC timezone in ISO 8601 format.
+          nullable: true
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the resource block.
+        Notes:
+          type: string
+          description: Note describing the resource block.
+          nullable: true
+      additionalProperties: false
+      x-schema-id: ResourceBlock
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
