@@ -1,152 +1,2315 @@
 aid: mews-com
 url: https://raw.githubusercontent.com/api-evangelist/mews-com/refs/heads/main/apis.yml
 apis:
-  - aid: mews-com:mews-connector-api
-    name: Mews Connector API
-    tags:
-      - Hospitality
-      - Hotel
-      - PMS
-      - Property Management
-      - Reservations
-      - Connector
-    humanURL: https://docs.mews.com/connector-api
-    baseURL: https://api.mews.com/api/connector/v1
-    properties:
-      - url: https://docs.mews.com/connector-api
-        type: Documentation
-      - url: https://docs.mews.com/connector-api/guidelines
-        name: Usage Guidelines
-        type: Documentation
-      - url: https://docs.mews.com/connector-api/concepts
-        name: Concepts
-        type: Documentation
-      - url: https://docs.mews.com/connector-api/operations
-        name: API Operations
-        type: Documentation
-      - url: https://docs.mews.com/connector-api/api-events
-        name: API Events
-        type: Webhooks
-      - url: https://api.mews.com/Swagger/connector/swagger.yaml
-        name: Connector API Swagger (OpenAPI)
-        type: OpenAPI
-      - url: openapi/mews-connector-api-openapi.yml
-        type: OpenAPI
-      - url: json-schema/mews-reservation-schema.json
-        type: JSONSchema
-      - url: json-schema/mews-customer-schema.json
-        type: JSONSchema
-      - url: json-ld/mews-com-context.jsonld
-        type: JSONLD
-    description: >-
-      General-purpose API that gives partners of Mews access to data and services in Mews Operations. Covers
-      reservations, customers, companies, accounting, bills, payments, rates and availability, products and services,
-      enterprises and resources, cashiers and counters, exports, loyalty memberships, devices and printers, customer
-      messaging, billing automations, vouchers, restrictions, and resource access tokens. JSON-over-HTTPS
-      request/response with `ClientToken` + `AccessToken` authentication; 197 operations across ~30 resource groups;
-      webhooks delivered as API Events.
-  - aid: mews-com:mews-booking-engine-api
-    name: Mews Booking Engine API
-    tags:
-      - Hospitality
-      - Hotel
-      - Booking Engine
-      - Reservations
-      - Direct Bookings
-    humanURL: https://docs.mews.com/booking-engine-guide/booking-engine-api
-    baseURL: https://api.mews.com/api/bookingEngine/v1
-    properties:
-      - url: https://docs.mews.com/booking-engine-guide/booking-engine-api
-        type: Documentation
-      - url: https://api.mews.com/Swagger/bookingEngine/swagger.yaml
-        name: Booking Engine API Swagger (OpenAPI)
-        type: OpenAPI
-      - url: openapi/mews-booking-engine-api-openapi.yml
-        type: OpenAPI
-    description: >-
-      Web API for booking engines and booking widgets to interact programmatically with Mews — fetch offered rooms and
-      spaces, check availability and pricing, retrieve products and promotions, authorize payment cards, and create
-      reservation groups. Covers services, restrictions, exchange rates, payment configuration, and reservation pricing
-      for a single property.
-  - aid: mews-com:mews-distributor-api
-    name: Mews Distributor API
-    tags:
-      - Hospitality
-      - Hotel
-      - Booking
-      - Distribution
-      - Direct Bookings
-    humanURL: https://docs.mews.com/distributor-api
-    baseURL: https://api.mews.com/api/distributor/v1
-    properties:
-      - url: https://docs.mews.com/distributor-api
-        type: Documentation
-      - url: https://api.mews.com/Swagger/distributor/swagger.yaml
-        name: Distributor API Swagger (OpenAPI)
-        type: OpenAPI
-      - url: openapi/mews-distributor-api-openapi.yml
-        type: OpenAPI
-    description: >-
-      Legacy/distribution surface used by the Mews-hosted booking widget. Retrieves hotel info, availability and
-      pricing, language/currency/country reference data, payment configuration, voucher validation, exchange rates, and
-      reservation creation. Same JSON-over-HTTPS shape and token auth as the Connector API.
-  - aid: mews-com:mews-channel-manager-api
-    name: Mews Channel Manager API
-    tags:
-      - Hospitality
-      - Hotel
-      - Channel Manager
-      - Distribution
-      - Inventory
-    humanURL: https://docs.mews.com/channel-manager-api
-    properties:
-      - url: https://docs.mews.com/channel-manager-api
-        type: Documentation
-      - url: https://docs.mews.com/channel-manager-api/usage-guidelines
-        name: Usage Guidelines
-        type: Documentation
-      - url: https://docs.mews.com/channel-manager-api/concepts
-        name: Concepts
-        type: Documentation
-      - url: https://docs.mews.com/channel-manager-api/changelog
-        name: Changelog
-        type: ChangeLog
-    description: >-
-      Two-way API for channel managers and distribution channels. Mews-side operations let channel managers receive
-      reservations from Mews; channel-manager-side endpoints let Mews push availability, rate, and inventory updates
-      outbound. Mediates OTA, GDS, and metasearch traffic into the Mews reservation graph.
-  - aid: mews-com:mews-pos-api
-    name: Mews POS API
-    tags:
-      - Hospitality
-      - Hotel
-      - POS
-      - Point of Sale
-      - Food and Beverage
-    humanURL: https://docs.mews.com/pos-api
-    properties:
-      - url: https://docs.mews.com/pos-api
-        type: Documentation
-    description: >-
-      API for Point-of-Sale systems to integrate with Mews — provides real-time visibility into F&B operations including
-      outlets, items, orders, and invoices, and pushes charges onto guest bills inside the Mews PMS. Used by partner POS
-      vendors and Mews POS itself.
-  - aid: mews-com:mews-loyalty-partner-api
-    name: Mews Loyalty Partner API
-    tags:
-      - Hospitality
-      - Hotel
-      - Loyalty
-      - Members
-      - Rewards
-    humanURL: https://docs.mews.com/loyalty-partner-api
-    properties:
-      - url: https://docs.mews.com/loyalty-partner-api
-        type: Documentation
-    description: >-
-      Reverse API for loyalty program providers — Mews calls the partner's endpoints to look up members, validate
-      enrollment, fetch tier and benefit data, and record earn/redeem activity during the guest journey. Complements the
-      Connector API Loyalty operation group on the Mews side.
+- aid: mews-com:mews-channel-manager-api
+  name: Mews Channel Manager API
+  tags:
+  - Hospitality
+  - Hotel
+  - Channel Manager
+  - Distribution
+  - Inventory
+  humanURL: https://docs.mews.com/channel-manager-api
+  properties:
+  - url: https://docs.mews.com/channel-manager-api
+    type: Documentation
+  - url: https://docs.mews.com/channel-manager-api/usage-guidelines
+    name: Usage Guidelines
+    type: Documentation
+  - url: https://docs.mews.com/channel-manager-api/concepts
+    name: Concepts
+    type: Documentation
+  - url: https://docs.mews.com/channel-manager-api/changelog
+    name: Changelog
+    type: ChangeLog
+  description: >-
+    Two-way API for channel managers and distribution channels. Mews-side operations let channel managers
+    receive reservations from Mews; channel-manager-side endpoints let Mews push availability, rate, and
+    inventory updates outbound. Mediates OTA, GDS, and metasearch traffic into the Mews reservation graph.
+- aid: mews-com:mews-pos-api
+  name: Mews POS API
+  tags:
+  - Hospitality
+  - Hotel
+  - POS
+  - Point of Sale
+  - Food and Beverage
+  humanURL: https://docs.mews.com/pos-api
+  properties:
+  - url: https://docs.mews.com/pos-api
+    type: Documentation
+  description: >-
+    API for Point-of-Sale systems to integrate with Mews — provides real-time visibility into F&B operations
+    including outlets, items, orders, and invoices, and pushes charges onto guest bills inside the Mews
+    PMS. Used by partner POS vendors and Mews POS itself.
+- aid: mews-com:mews-loyalty-partner-api
+  name: Mews Loyalty Partner API
+  tags:
+  - Hospitality
+  - Hotel
+  - Loyalty
+  - Members
+  - Rewards
+  humanURL: https://docs.mews.com/loyalty-partner-api
+  properties:
+  - url: https://docs.mews.com/loyalty-partner-api
+    type: Documentation
+  description: >-
+    Reverse API for loyalty program providers — Mews calls the partner's endpoints to look up members,
+    validate enrollment, fetch tier and benefit data, and record earn/redeem activity during the guest
+    journey. Complements the Connector API Loyalty operation group on the Mews side.
+- aid: mews-com:mews-com-account-notes-api
+  name: Mews Account notes API
+  description: The Account notes API from Mews — 4 operation(s) for account notes.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Account notes
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-account-notes-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-accounting-categories-api
+  name: Mews Accounting categories API
+  description: The Accounting categories API from Mews — 1 operation(s) for accounting categories.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Accounting categories
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-accounting-categories-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-accounting-items-api
+  name: Mews Accounting items API
+  description: The Accounting items API from Mews — 2 operation(s) for accounting items.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Accounting items
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-accounting-items-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-accounts-api
+  name: Mews Accounts API
+  description: The Accounts API from Mews — 3 operation(s) for accounts.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-accounts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-addresses-api
+  name: Mews Addresses API
+  description: The Addresses API from Mews — 4 operation(s) for addresses.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Addresses
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-addresses-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-age-categories-api
+  name: Mews Age categories API
+  description: The Age categories API from Mews — 1 operation(s) for age categories.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Age categories
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-age-categories-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-availability-adjustments-api
+  name: Mews Availability adjustments API
+  description: >-
+    The Availability adjustments API from Mews — 1 operation(s) for availability adjustments.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Availability adjustments
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-availability-adjustments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-availability-blocks-api
+  name: Mews Availability blocks API
+  description: The Availability blocks API from Mews — 4 operation(s) for availability blocks.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Availability blocks
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-availability-blocks-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-billing-automations-api
+  name: Mews Billing automations API
+  description: The Billing automations API from Mews — 5 operation(s) for billing automations.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Billing automations
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-billing-automations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-bills-api
+  name: Mews Bills API
+  description: The Bills API from Mews — 6 operation(s) for bills.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Bills
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-bills-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-bookingengineapi-api
+  name: Mews BookingEngineApi API
+  description: The BookingEngineApi API from Mews — 21 operation(s) for bookingengineapi.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - BookingEngineApi
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-bookingengineapi-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-business-segments-api
+  name: Mews Business segments API
+  description: The Business segments API from Mews — 1 operation(s) for business segments.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Business segments
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-business-segments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-cancellation-policies-api
+  name: Mews Cancellation policies API
+  description: The Cancellation policies API from Mews — 3 operation(s) for cancellation policies.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Cancellation policies
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-cancellation-policies-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-cashier-transactions-api
+  name: Mews Cashier transactions API
+  description: The Cashier transactions API from Mews — 1 operation(s) for cashier transactions.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Cashier transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-cashier-transactions-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-cashiers-api
+  name: Mews Cashiers API
+  description: The Cashiers API from Mews — 1 operation(s) for cashiers.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Cashiers
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-cashiers-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-commands-api
+  name: Mews Commands API
+  description: The Commands API from Mews — 7 operation(s) for commands.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Commands
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-commands-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-companies-api
+  name: Mews Companies API
+  description: The Companies API from Mews — 4 operation(s) for companies.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Companies
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-companies-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-companionships-api
+  name: Mews Companionships API
+  description: The Companionships API from Mews — 1 operation(s) for companionships.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Companionships
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-companionships-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-company-contracts-api
+  name: Mews Company contracts API
+  description: The Company contracts API from Mews — 4 operation(s) for company contracts.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Company contracts
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-company-contracts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-configuration-api
+  name: Mews Configuration API
+  description: The Configuration API from Mews — 1 operation(s) for configuration.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Configuration
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-configuration-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-counters-api
+  name: Mews Counters API
+  description: The Counters API from Mews — 1 operation(s) for counters.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Counters
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-counters-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-countries-api
+  name: Mews Countries API
+  description: The Countries API from Mews — 1 operation(s) for countries.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Countries
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-countries-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-credit-cards-api
+  name: Mews Credit cards API
+  description: The Credit cards API from Mews — 4 operation(s) for credit cards.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Credit cards
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-credit-cards-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-currencies-api
+  name: Mews Currencies API
+  description: The Currencies API from Mews — 1 operation(s) for currencies.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Currencies
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-currencies-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-customers-api
+  name: Mews Customers API
+  description: The Customers API from Mews — 8 operation(s) for customers.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Customers
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-customers-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-departments-api
+  name: Mews Departments API
+  description: The Departments API from Mews — 1 operation(s) for departments.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Departments
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-departments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-devices-api
+  name: Mews Devices API
+  description: The Devices API from Mews — 1 operation(s) for devices.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Devices
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-devices-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-distributorapi-api
+  name: Mews DistributorApi API
+  description: The DistributorApi API from Mews — 20 operation(s) for distributorapi.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - DistributorApi
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-distributorapi-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-enterprises-api
+  name: Mews Enterprises API
+  description: The Enterprises API from Mews — 1 operation(s) for enterprises.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Enterprises
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-enterprises-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-exchange-rates-api
+  name: Mews Exchange rates API
+  description: The Exchange rates API from Mews — 1 operation(s) for exchange rates.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Exchange rates
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-exchange-rates-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-exports-api
+  name: Mews Exports API
+  description: The Exports API from Mews — 2 operation(s) for exports.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Exports
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-exports-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-identity-documents-api
+  name: Mews Identity documents API
+  description: The Identity documents API from Mews — 5 operation(s) for identity documents.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Identity documents
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-identity-documents-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-images-api
+  name: Mews Images API
+  description: The Images API from Mews — 1 operation(s) for images.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Images
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-images-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-languages-api
+  name: Mews Languages API
+  description: The Languages API from Mews — 2 operation(s) for languages.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Languages
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-languages-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-ledger-balances-api
+  name: Mews Ledger balances API
+  description: The Ledger balances API from Mews — 1 operation(s) for ledger balances.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Ledger balances
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-ledger-balances-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-loyalty-memberships-api
+  name: Mews Loyalty memberships API
+  description: The Loyalty memberships API from Mews — 4 operation(s) for loyalty memberships.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Loyalty memberships
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-loyalty-memberships-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-loyalty-programs-api
+  name: Mews Loyalty programs API
+  description: The Loyalty programs API from Mews — 4 operation(s) for loyalty programs.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Loyalty programs
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-loyalty-programs-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-loyalty-tiers-api
+  name: Mews Loyalty tiers API
+  description: The Loyalty tiers API from Mews — 4 operation(s) for loyalty tiers.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Loyalty tiers
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-loyalty-tiers-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-message-threads-api
+  name: Mews Message threads API
+  description: The Message threads API from Mews — 2 operation(s) for message threads.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Message threads
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-message-threads-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-messages-api
+  name: Mews Messages API
+  description: The Messages API from Mews — 2 operation(s) for messages.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Messages
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-messages-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-order-items-api
+  name: Mews Order items API
+  description: The Order items API from Mews — 2 operation(s) for order items.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Order items
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-order-items-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-orders-api
+  name: Mews Orders API
+  description: The Orders API from Mews — 1 operation(s) for orders.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Orders
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-orders-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-outlet-bills-api
+  name: Mews Outlet bills API
+  description: The Outlet bills API from Mews — 1 operation(s) for outlet bills.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Outlet bills
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-outlet-bills-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-outlet-items-api
+  name: Mews Outlet items API
+  description: The Outlet items API from Mews — 1 operation(s) for outlet items.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Outlet items
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-outlet-items-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-outlets-api
+  name: Mews Outlets API
+  description: The Outlets API from Mews — 1 operation(s) for outlets.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Outlets
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-outlets-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-payment-method-requests-api
+  name: Mews Payment method requests API
+  description: The Payment method requests API from Mews — 1 operation(s) for payment method requests.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Payment method requests
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-payment-method-requests-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-payment-plans-api
+  name: Mews Payment plans API
+  description: The Payment plans API from Mews — 1 operation(s) for payment plans.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Payment plans
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-payment-plans-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-payment-requests-api
+  name: Mews Payment requests API
+  description: The Payment requests API from Mews — 3 operation(s) for payment requests.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Payment requests
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-payment-requests-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-payments-api
+  name: Mews Payments API
+  description: The Payments API from Mews — 5 operation(s) for payments.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Payments
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-payments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-preauthorizations-api
+  name: Mews Preauthorizations API
+  description: The Preauthorizations API from Mews — 1 operation(s) for preauthorizations.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Preauthorizations
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-preauthorizations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-product-categories-api
+  name: Mews Product categories API
+  description: The Product categories API from Mews — 1 operation(s) for product categories.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Product categories
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-product-categories-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-product-service-orders-api
+  name: Mews Product service orders API
+  description: The Product service orders API from Mews — 1 operation(s) for product service orders.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Product service orders
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-product-service-orders-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-products-api
+  name: Mews Products API
+  description: The Products API from Mews — 4 operation(s) for products.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Products
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-products-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-rate-groups-api
+  name: Mews Rate groups API
+  description: The Rate groups API from Mews — 1 operation(s) for rate groups.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Rate groups
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-rate-groups-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-rates-api
+  name: Mews Rates API
+  description: The Rates API from Mews — 7 operation(s) for rates.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Rates
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-rates-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-reservation-groups-api
+  name: Mews Reservation groups API
+  description: The Reservation groups API from Mews — 1 operation(s) for reservation groups.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Reservation groups
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-reservation-groups-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-reservations-api
+  name: Mews Reservations API
+  description: The Reservations API from Mews — 16 operation(s) for reservations.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Reservations
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-reservations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-resource-access-tokens-api
+  name: Mews Resource access tokens API
+  description: The Resource access tokens API from Mews — 4 operation(s) for resource access tokens.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Resource access tokens
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-resource-access-tokens-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-resource-blocks-api
+  name: Mews Resource blocks API
+  description: The Resource blocks API from Mews — 3 operation(s) for resource blocks.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Resource blocks
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-resource-blocks-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-resource-categories-api
+  name: Mews Resource categories API
+  description: The Resource categories API from Mews — 3 operation(s) for resource categories.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Resource categories
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-resource-categories-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-resource-features-api
+  name: Mews Resource features API
+  description: The Resource features API from Mews — 2 operation(s) for resource features.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Resource features
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-resource-features-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-resources-api
+  name: Mews Resources API
+  description: The Resources API from Mews — 3 operation(s) for resources.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Resources
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-resources-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-restrictions-api
+  name: Mews Restrictions API
+  description: The Restrictions API from Mews — 3 operation(s) for restrictions.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Restrictions
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-restrictions-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-routing-rules-api
+  name: Mews Routing rules API
+  description: The Routing rules API from Mews — 4 operation(s) for routing rules.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Routing rules
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-routing-rules-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-rules-api
+  name: Mews Rules API
+  description: The Rules API from Mews — 1 operation(s) for rules.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Rules
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-rules-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-service-order-notes-api
+  name: Mews Service order notes API
+  description: The Service order notes API from Mews — 4 operation(s) for service order notes.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Service order notes
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-service-order-notes-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-service-overbooking-limits-api
+  name: Mews Service overbooking limits API
+  description: >-
+    The Service overbooking limits API from Mews — 3 operation(s) for service overbooking limits.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Service overbooking limits
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-service-overbooking-limits-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-services-api
+  name: Mews Services API
+  description: The Services API from Mews — 4 operation(s) for services.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Services
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-services-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-source-assignments-api
+  name: Mews Source assignments API
+  description: The Source assignments API from Mews — 2 operation(s) for source assignments.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Source assignments
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-source-assignments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-sources-api
+  name: Mews Sources API
+  description: The Sources API from Mews — 1 operation(s) for sources.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Sources
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-sources-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-tasks-api
+  name: Mews Tasks API
+  description: The Tasks API from Mews — 3 operation(s) for tasks.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Tasks
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-tasks-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-tax-environments-api
+  name: Mews Tax environments API
+  description: The Tax environments API from Mews — 1 operation(s) for tax environments.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Tax environments
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-tax-environments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-taxations-api
+  name: Mews Taxations API
+  description: The Taxations API from Mews — 1 operation(s) for taxations.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Taxations
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-taxations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-voucher-codes-api
+  name: Mews Voucher codes API
+  description: The Voucher codes API from Mews — 3 operation(s) for voucher codes.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Voucher codes
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-voucher-codes-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
+- aid: mews-com:mews-com-vouchers-api
+  name: Mews Vouchers API
+  description: The Vouchers API from Mews — 4 operation(s) for vouchers.
+  humanURL: https://docs.mews.com/connector-api
+  baseURL: https://api.mews.com/api/connector/v1
+  tags:
+  - Vouchers
+  properties:
+  - type: OpenAPI
+    url: openapi/mews-com-vouchers-api-openapi.yml
+  - type: Documentation
+    url: https://docs.mews.com/connector-api
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/guidelines
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/concepts
+  - type: Documentation
+    url: https://docs.mews.com/connector-api/operations
+  - type: Webhooks
+    url: https://docs.mews.com/connector-api/api-events
+  - type: JSONSchema
+    url: json-schema/mews-reservation-schema.json
+  - type: JSONSchema
+    url: json-schema/mews-customer-schema.json
+  - type: JSONLD
+    url: json-ld/mews-com-context.jsonld
+  - type: Documentation
+    url: https://docs.mews.com/booking-engine-guide/booking-engine-api
+  - type: Documentation
+    url: https://docs.mews.com/distributor-api
 name: Mews
 tags:
   - Hospitality
@@ -159,7 +2322,19 @@ tags:
   - Cloud
   - SaaS
 kind: contract
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: paid
+  onboarding: unknown
+  trial: false
+  try_now: false
+  public: false
+  label: Paid
+  confidence: medium
+  source:
+  - plans
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/mews-com.png
 access: 3rd-Party
 common:
   - type: AgenticAccess
