@@ -1,0 +1,460 @@
+{
+  "item": [
+    {
+      "id": "783882b7-2d58-4621-9a3f-0affbdf821ca",
+      "name": "Orders",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "1404d50e-dae6-4073-889c-7d46aaab5032",
+          "name": "Add order",
+          "request": {
+            "name": "Add order",
+            "description": {
+              "content": "Creates a new order, with the specified products and items. If the product being posted already exists in Mews, then use `ProductOrders`. If the product does *not* exist in Mews, then use `Items`. If the time of consumption is specified, this must be either in the future or within the Editable History Interval for the enterprise. Compared to a stay service order (i.e. a reservation), which is consumed over certain span of time, a product service order is consumed at a single point in time.\r\nNote this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).\r\n\r\n> ### Linking orders to reservations\r\n> Specify parameter `LinkedReservationId` in order to link the order to a guest reservation. This will greatly assist the property when using billing automation.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "connector",
+                "v1",
+                "orders",
+                "add"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"AccessToken\": \"<string>\",\n  \"AccountId\": \"<uuid>\",\n  \"Client\": \"<string>\",\n  \"ClientToken\": \"<string>\",\n  \"ServiceId\": \"<uuid>\",\n  \"EnterpriseId\": \"<uuid>\",\n  \"CustomerId\": \"<uuid>\",\n  \"Options\": {\n    \"DisableItemGrouping\": \"<boolean>\"\n  },\n  \"ProductOrders\": [\n    {\n      \"ProductId\": \"<uuid>\",\n      \"Count\": \"<integer>\",\n      \"UnitAmount\": {\n        \"Currency\": \"<currency>\",\n        \"TaxCodes\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"NetValue\": \"<double>\",\n        \"GrossValue\": \"<double>\"\n      },\n      \"StartUtc\": \"<dateTime>\",\n      \"EndUtc\": \"<dateTime>\",\n      \"ExternalIdentifier\": \"<string>\"\n    },\n    {\n      \"ProductId\": \"<uuid>\",\n      \"Count\": \"<integer>\",\n      \"UnitAmount\": {\n        \"Currency\": \"<currency>\",\n        \"TaxCodes\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"NetValue\": \"<double>\",\n        \"GrossValue\": \"<double>\"\n      },\n      \"StartUtc\": \"<dateTime>\",\n      \"EndUtc\": \"<dateTime>\",\n      \"ExternalIdentifier\": \"<string>\"\n    }\n  ],\n  \"Items\": [\n    {\n      \"Name\": \"<string>\",\n      \"UnitAmount\": {\n        \"Currency\": \"<currency>\",\n        \"TaxCodes\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"NetValue\": \"<double>\",\n        \"GrossValue\": \"<double>\"\n      },\n      \"UnitCount\": \"<integer>\",\n      \"AccountingCategoryId\": \"<uuid>\",\n      \"ExternalIdentifier\": \"<string>\"\n    },\n    {\n      \"Name\": \"<string>\",\n      \"UnitAmount\": {\n        \"Currency\": \"<currency>\",\n        \"TaxCodes\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"NetValue\": \"<double>\",\n        \"GrossValue\": \"<double>\"\n      },\n      \"UnitCount\": \"<integer>\",\n      \"AccountingCategoryId\": \"<uuid>\",\n      \"ExternalIdentifier\": \"<string>\"\n    }\n  ],\n  \"ConsumptionUtc\": \"<dateTime>\",\n  \"Notes\": \"<string>\",\n  \"BusinessSegmentId\": \"<uuid>\",\n  \"BillId\": \"<uuid>\",\n  \"LinkedReservationId\": \"<uuid>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "968b6e39-f62a-41d4-b03c-3feebce9a6b1",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "orders",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"EnterpriseId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n  \"AccountId\": \"fadd5bb6-b428-45d5-94f8-fd0d89fece6d\",\n  \"Options\": {\n    \"DisableItemGrouping\": false\n  },\n  \"ProductOrders\": [\n    {\n      \"ProductId\": \"2eb7ad8b-8dfb-4381-aba5-ab58009f2993\",\n      \"Count\": 2,\n      \"ExternalIdentifier\": \"EXT-PROD-001\"\n    }\n  ],\n  \"Items\": [\n    {\n      \"Name\": \"Beer\",\n      \"UnitCount\": 3,\n      \"UnitAmount\": {\n        \"Currency\": \"USD\",\n        \"TaxCodes\": [\n          \"US-DC-G\"\n        ],\n        \"NetValue\": 7\n      },\n      \"AccountingCategoryId\": \"90eff5aa-36b4-4689-80c0-ab3a00bb412e\",\n      \"ExternalIdentifier\": \"EXT-ITEM-001\"\n    }\n  ],\n  \"ConsumptionUtc\": \"2020-02-04T00:00:00Z\",\n  \"Notes\": \"Order for guest room service\",\n  \"BusinessSegmentId\": \"dc9188f6-fb61-412c-b3fd-af32dab082ed\",\n  \"BillId\": \"ea087d64-3901-4eee-b0b7-9fce4c58a005\",\n  \"LinkedReservationId\": \"0f515589-99b4-423d-b83a-b237009f0509\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"OrderId\": \"cdfd5caa-2868-411b-ba95-322e70035f1a\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9102d395-502d-4344-8285-92dc42f3e043",
+              "name": "Server has successfully fulfilled the request and there is no additional information to send back.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "orders",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"EnterpriseId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n  \"AccountId\": \"fadd5bb6-b428-45d5-94f8-fd0d89fece6d\",\n  \"Options\": {\n    \"DisableItemGrouping\": false\n  },\n  \"ProductOrders\": [\n    {\n      \"ProductId\": \"2eb7ad8b-8dfb-4381-aba5-ab58009f2993\",\n      \"Count\": 2,\n      \"ExternalIdentifier\": \"EXT-PROD-001\"\n    }\n  ],\n  \"Items\": [\n    {\n      \"Name\": \"Beer\",\n      \"UnitCount\": 3,\n      \"UnitAmount\": {\n        \"Currency\": \"USD\",\n        \"TaxCodes\": [\n          \"US-DC-G\"\n        ],\n        \"NetValue\": 7\n      },\n      \"AccountingCategoryId\": \"90eff5aa-36b4-4689-80c0-ab3a00bb412e\",\n      \"ExternalIdentifier\": \"EXT-ITEM-001\"\n    }\n  ],\n  \"ConsumptionUtc\": \"2020-02-04T00:00:00Z\",\n  \"Notes\": \"Order for guest room service\",\n  \"BusinessSegmentId\": \"dc9188f6-fb61-412c-b3fd-af32dab082ed\",\n  \"BillId\": \"ea087d64-3901-4eee-b0b7-9fce4c58a005\",\n  \"LinkedReservationId\": \"0f515589-99b4-423d-b83a-b237009f0509\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "8c7bde53-0e6d-4958-9af8-a0134734f4c9",
+              "name": "Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "orders",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"EnterpriseId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n  \"AccountId\": \"fadd5bb6-b428-45d5-94f8-fd0d89fece6d\",\n  \"Options\": {\n    \"DisableItemGrouping\": false\n  },\n  \"ProductOrders\": [\n    {\n      \"ProductId\": \"2eb7ad8b-8dfb-4381-aba5-ab58009f2993\",\n      \"Count\": 2,\n      \"ExternalIdentifier\": \"EXT-PROD-001\"\n    }\n  ],\n  \"Items\": [\n    {\n      \"Name\": \"Beer\",\n      \"UnitCount\": 3,\n      \"UnitAmount\": {\n        \"Currency\": \"USD\",\n        \"TaxCodes\": [\n          \"US-DC-G\"\n        ],\n        \"NetValue\": 7\n      },\n      \"AccountingCategoryId\": \"90eff5aa-36b4-4689-80c0-ab3a00bb412e\",\n      \"ExternalIdentifier\": \"EXT-ITEM-001\"\n    }\n  ],\n  \"ConsumptionUtc\": \"2020-02-04T00:00:00Z\",\n  \"Notes\": \"Order for guest room service\",\n  \"BusinessSegmentId\": \"dc9188f6-fb61-412c-b3fd-af32dab082ed\",\n  \"BillId\": \"ea087d64-3901-4eee-b0b7-9fce4c58a005\",\n  \"LinkedReservationId\": \"0f515589-99b4-423d-b83a-b237009f0509\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "802ba751-f988-45f8-9aac-777db72c9776",
+              "name": "Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "orders",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"EnterpriseId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n  \"AccountId\": \"fadd5bb6-b428-45d5-94f8-fd0d89fece6d\",\n  \"Options\": {\n    \"DisableItemGrouping\": false\n  },\n  \"ProductOrders\": [\n    {\n      \"ProductId\": \"2eb7ad8b-8dfb-4381-aba5-ab58009f2993\",\n      \"Count\": 2,\n      \"ExternalIdentifier\": \"EXT-PROD-001\"\n    }\n  ],\n  \"Items\": [\n    {\n      \"Name\": \"Beer\",\n      \"UnitCount\": 3,\n      \"UnitAmount\": {\n        \"Currency\": \"USD\",\n        \"TaxCodes\": [\n          \"US-DC-G\"\n        ],\n        \"NetValue\": 7\n      },\n      \"AccountingCategoryId\": \"90eff5aa-36b4-4689-80c0-ab3a00bb412e\",\n      \"ExternalIdentifier\": \"EXT-ITEM-001\"\n    }\n  ],\n  \"ConsumptionUtc\": \"2020-02-04T00:00:00Z\",\n  \"Notes\": \"Order for guest room service\",\n  \"BusinessSegmentId\": \"dc9188f6-fb61-412c-b3fd-af32dab082ed\",\n  \"BillId\": \"ea087d64-3901-4eee-b0b7-9fce4c58a005\",\n  \"LinkedReservationId\": \"0f515589-99b4-423d-b83a-b237009f0509\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "48c89369-9fdd-4ae0-ad95-6f0c683c5f2d",
+              "name": "Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "orders",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"EnterpriseId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n  \"AccountId\": \"fadd5bb6-b428-45d5-94f8-fd0d89fece6d\",\n  \"Options\": {\n    \"DisableItemGrouping\": false\n  },\n  \"ProductOrders\": [\n    {\n      \"ProductId\": \"2eb7ad8b-8dfb-4381-aba5-ab58009f2993\",\n      \"Count\": 2,\n      \"ExternalIdentifier\": \"EXT-PROD-001\"\n    }\n  ],\n  \"Items\": [\n    {\n      \"Name\": \"Beer\",\n      \"UnitCount\": 3,\n      \"UnitAmount\": {\n        \"Currency\": \"USD\",\n        \"TaxCodes\": [\n          \"US-DC-G\"\n        ],\n        \"NetValue\": 7\n      },\n      \"AccountingCategoryId\": \"90eff5aa-36b4-4689-80c0-ab3a00bb412e\",\n      \"ExternalIdentifier\": \"EXT-ITEM-001\"\n    }\n  ],\n  \"ConsumptionUtc\": \"2020-02-04T00:00:00Z\",\n  \"Notes\": \"Order for guest room service\",\n  \"BusinessSegmentId\": \"dc9188f6-fb61-412c-b3fd-af32dab082ed\",\n  \"BillId\": \"ea087d64-3901-4eee-b0b7-9fce4c58a005\",\n  \"LinkedReservationId\": \"0f515589-99b4-423d-b83a-b237009f0509\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2600401c-1b78-45fd-997f-2f6151c7afee",
+              "name": "Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "orders",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"EnterpriseId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n  \"AccountId\": \"fadd5bb6-b428-45d5-94f8-fd0d89fece6d\",\n  \"Options\": {\n    \"DisableItemGrouping\": false\n  },\n  \"ProductOrders\": [\n    {\n      \"ProductId\": \"2eb7ad8b-8dfb-4381-aba5-ab58009f2993\",\n      \"Count\": 2,\n      \"ExternalIdentifier\": \"EXT-PROD-001\"\n    }\n  ],\n  \"Items\": [\n    {\n      \"Name\": \"Beer\",\n      \"UnitCount\": 3,\n      \"UnitAmount\": {\n        \"Currency\": \"USD\",\n        \"TaxCodes\": [\n          \"US-DC-G\"\n        ],\n        \"NetValue\": 7\n      },\n      \"AccountingCategoryId\": \"90eff5aa-36b4-4689-80c0-ab3a00bb412e\",\n      \"ExternalIdentifier\": \"EXT-ITEM-001\"\n    }\n  ],\n  \"ConsumptionUtc\": \"2020-02-04T00:00:00Z\",\n  \"Notes\": \"Order for guest room service\",\n  \"BusinessSegmentId\": \"dc9188f6-fb61-412c-b3fd-af32dab082ed\",\n  \"BillId\": \"ea087d64-3901-4eee-b0b7-9fce4c58a005\",\n  \"LinkedReservationId\": \"0f515589-99b4-423d-b83a-b237009f0509\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Request Timeout",
+              "code": 408,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "af6b62a1-78a0-4285-90cf-7bc7d98e7a30",
+              "name": "Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "orders",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"EnterpriseId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n  \"AccountId\": \"fadd5bb6-b428-45d5-94f8-fd0d89fece6d\",\n  \"Options\": {\n    \"DisableItemGrouping\": false\n  },\n  \"ProductOrders\": [\n    {\n      \"ProductId\": \"2eb7ad8b-8dfb-4381-aba5-ab58009f2993\",\n      \"Count\": 2,\n      \"ExternalIdentifier\": \"EXT-PROD-001\"\n    }\n  ],\n  \"Items\": [\n    {\n      \"Name\": \"Beer\",\n      \"UnitCount\": 3,\n      \"UnitAmount\": {\n        \"Currency\": \"USD\",\n        \"TaxCodes\": [\n          \"US-DC-G\"\n        ],\n        \"NetValue\": 7\n      },\n      \"AccountingCategoryId\": \"90eff5aa-36b4-4689-80c0-ab3a00bb412e\",\n      \"ExternalIdentifier\": \"EXT-ITEM-001\"\n    }\n  ],\n  \"ConsumptionUtc\": \"2020-02-04T00:00:00Z\",\n  \"Notes\": \"Order for guest room service\",\n  \"BusinessSegmentId\": \"dc9188f6-fb61-412c-b3fd-af32dab082ed\",\n  \"BillId\": \"ea087d64-3901-4eee-b0b7-9fce4c58a005\",\n  \"LinkedReservationId\": \"0f515589-99b4-423d-b83a-b237009f0509\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "764b73bd-b347-4834-9656-d37b3e896659",
+              "name": "Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "orders",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"EnterpriseId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n  \"AccountId\": \"fadd5bb6-b428-45d5-94f8-fd0d89fece6d\",\n  \"Options\": {\n    \"DisableItemGrouping\": false\n  },\n  \"ProductOrders\": [\n    {\n      \"ProductId\": \"2eb7ad8b-8dfb-4381-aba5-ab58009f2993\",\n      \"Count\": 2,\n      \"ExternalIdentifier\": \"EXT-PROD-001\"\n    }\n  ],\n  \"Items\": [\n    {\n      \"Name\": \"Beer\",\n      \"UnitCount\": 3,\n      \"UnitAmount\": {\n        \"Currency\": \"USD\",\n        \"TaxCodes\": [\n          \"US-DC-G\"\n        ],\n        \"NetValue\": 7\n      },\n      \"AccountingCategoryId\": \"90eff5aa-36b4-4689-80c0-ab3a00bb412e\",\n      \"ExternalIdentifier\": \"EXT-ITEM-001\"\n    }\n  ],\n  \"ConsumptionUtc\": \"2020-02-04T00:00:00Z\",\n  \"Notes\": \"Order for guest room service\",\n  \"BusinessSegmentId\": \"dc9188f6-fb61-412c-b3fd-af32dab082ed\",\n  \"BillId\": \"ea087d64-3901-4eee-b0b7-9fce4c58a005\",\n  \"LinkedReservationId\": \"0f515589-99b4-423d-b83a-b237009f0509\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.mews.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "29097e3d-8fab-4f3a-b679-9610431077a7",
+    "name": "BookingEngineApi Account notes Orders API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "",
+      "type": "text/plain"
+    }
+  }
+}

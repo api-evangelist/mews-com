@@ -1,0 +1,460 @@
+{
+  "item": [
+    {
+      "id": "e4a507d7-81d9-4757-b5f7-3df30ea4b38f",
+      "name": "Product service orders",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "8dd4b8aa-100b-4b51-8a32-ecd76a52e344",
+          "name": "Get all product service orders",
+          "request": {
+            "name": "Get all product service orders",
+            "description": {
+              "content": "Returns all product service orders associated with the given enterprise. This operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "connector",
+                "v1",
+                "productServiceOrders",
+                "getAll"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"AccessToken\": \"<string>\",\n  \"Client\": \"<string>\",\n  \"ClientToken\": \"<string>\",\n  \"Limitation\": {\n    \"Count\": \"<integer>\",\n    \"Cursor\": \"<uuid>\"\n  },\n  \"ServiceIds\": [\n    \"<uuid>\"\n  ],\n  \"EnterpriseIds\": [\n    \"<uuid>\"\n  ],\n  \"ProductServiceOrderIds\": [\n    \"<uuid>\"\n  ],\n  \"AccountIds\": [\n    \"<uuid>\"\n  ],\n  \"LinkedReservationIds\": [\n    \"<uuid>\"\n  ],\n  \"UpdatedUtc\": {\n    \"StartUtc\": \"<dateTime>\",\n    \"EndUtc\": \"<dateTime>\"\n  },\n  \"States\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "5f443b6e-0416-4d6d-9324-20423b7583b0",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "productServiceOrders",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"ProductServiceOrderIds\": [\n    \"9e6d4492-315b-4089-b9d6-5b1bd2eddc1b\"\n  ],\n  \"ServiceIds\": [\n    \"ae8da28c-e8a4-4141-9df0-8c998976c691\",\n    \"6b02d015-47ac-4c41-8e9f-5b4db61d4284\"\n  ],\n  \"LinkedReservationIds\": [\n    \"0f515589-99b4-423d-b83a-b237009f0509\",\n    \"b7a3f5cb-1e69-4a5f-a069-10f461996d7f\"\n  ],\n  \"UpdatedUtc\": {\n    \"StartUtc\": \"2023-04-01T00:00:00Z\",\n    \"EndUtc\": \"2023-05-05T00:00:00Z\"\n  },\n  \"States\": [\n    \"Confirmed\",\n    \"Started\"\n  ],\n  \"Limitation\": {\n    \"Count\": 10,\n    \"Cursor\": \"819e3435-7d5e-441f-bc68-76d89c69b8f5\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ProductServiceOrders\": [\n    {\n      \"Id\": \"9e6d4492-315b-4089-b9d6-5b1bd2eddc1b\",\n      \"ServiceId\": \"ae8da28c-e8a4-4141-9df0-8c998976c691\",\n      \"AccountId\": \"fadd5bb6-b428-45d5-94f8-fd0d89fece6d\",\n      \"AccountType\": \"Customer\",\n      \"CreatorProfileId\": \"3cd637ef-4728-47f9-8fb1-afb900c9cdcf\",\n      \"UpdaterProfileId\": \"122fc063-ec6e-4198-b8db-6b168a59ffae\",\n      \"BookerId\": \"bccdafd1-3e44-439d-861f-341526b597a9\",\n      \"Number\": \"52\",\n      \"State\": \"Confirmed\",\n      \"Origin\": \"Connector\",\n      \"CommanderOrigin\": null,\n      \"OriginDetails\": null,\n      \"CreatedUtc\": \"2023-04-23T14:58:02Z\",\n      \"UpdatedUtc\": \"2023-04-23T14:58:02Z\",\n      \"CancelledUtc\": null,\n      \"VoucherId\": null,\n      \"BusinessSegmentId\": null,\n      \"LinkedReservationId\": \"0f515589-99b4-423d-b83a-b237009f0509\",\n      \"Options\": {\n        \"OwnerCheckedIn\": true,\n        \"AllCompanionsCheckedIn\": true,\n        \"AnyCompanionCheckedIn\": true,\n        \"ConnectorCheckIn\": true\n      }\n    }\n  ],\n  \"Cursor\": \"9e6d4492-315b-4089-b9d6-5b1bd2eddc1b\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "092c9964-7c5b-406d-a3bf-db6bcea24108",
+              "name": "Server has successfully fulfilled the request and there is no additional information to send back.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "productServiceOrders",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"ProductServiceOrderIds\": [\n    \"9e6d4492-315b-4089-b9d6-5b1bd2eddc1b\"\n  ],\n  \"ServiceIds\": [\n    \"ae8da28c-e8a4-4141-9df0-8c998976c691\",\n    \"6b02d015-47ac-4c41-8e9f-5b4db61d4284\"\n  ],\n  \"LinkedReservationIds\": [\n    \"0f515589-99b4-423d-b83a-b237009f0509\",\n    \"b7a3f5cb-1e69-4a5f-a069-10f461996d7f\"\n  ],\n  \"UpdatedUtc\": {\n    \"StartUtc\": \"2023-04-01T00:00:00Z\",\n    \"EndUtc\": \"2023-05-05T00:00:00Z\"\n  },\n  \"States\": [\n    \"Confirmed\",\n    \"Started\"\n  ],\n  \"Limitation\": {\n    \"Count\": 10,\n    \"Cursor\": \"819e3435-7d5e-441f-bc68-76d89c69b8f5\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "bf0703e6-1835-49f4-a742-2a0bc8ae982d",
+              "name": "Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "productServiceOrders",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"ProductServiceOrderIds\": [\n    \"9e6d4492-315b-4089-b9d6-5b1bd2eddc1b\"\n  ],\n  \"ServiceIds\": [\n    \"ae8da28c-e8a4-4141-9df0-8c998976c691\",\n    \"6b02d015-47ac-4c41-8e9f-5b4db61d4284\"\n  ],\n  \"LinkedReservationIds\": [\n    \"0f515589-99b4-423d-b83a-b237009f0509\",\n    \"b7a3f5cb-1e69-4a5f-a069-10f461996d7f\"\n  ],\n  \"UpdatedUtc\": {\n    \"StartUtc\": \"2023-04-01T00:00:00Z\",\n    \"EndUtc\": \"2023-05-05T00:00:00Z\"\n  },\n  \"States\": [\n    \"Confirmed\",\n    \"Started\"\n  ],\n  \"Limitation\": {\n    \"Count\": 10,\n    \"Cursor\": \"819e3435-7d5e-441f-bc68-76d89c69b8f5\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "29e1729f-76d0-4ff4-9900-6304a14f44a6",
+              "name": "Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "productServiceOrders",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"ProductServiceOrderIds\": [\n    \"9e6d4492-315b-4089-b9d6-5b1bd2eddc1b\"\n  ],\n  \"ServiceIds\": [\n    \"ae8da28c-e8a4-4141-9df0-8c998976c691\",\n    \"6b02d015-47ac-4c41-8e9f-5b4db61d4284\"\n  ],\n  \"LinkedReservationIds\": [\n    \"0f515589-99b4-423d-b83a-b237009f0509\",\n    \"b7a3f5cb-1e69-4a5f-a069-10f461996d7f\"\n  ],\n  \"UpdatedUtc\": {\n    \"StartUtc\": \"2023-04-01T00:00:00Z\",\n    \"EndUtc\": \"2023-05-05T00:00:00Z\"\n  },\n  \"States\": [\n    \"Confirmed\",\n    \"Started\"\n  ],\n  \"Limitation\": {\n    \"Count\": 10,\n    \"Cursor\": \"819e3435-7d5e-441f-bc68-76d89c69b8f5\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "925d7a43-7f57-4ef8-ae1b-7cbe5efa37cc",
+              "name": "Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "productServiceOrders",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"ProductServiceOrderIds\": [\n    \"9e6d4492-315b-4089-b9d6-5b1bd2eddc1b\"\n  ],\n  \"ServiceIds\": [\n    \"ae8da28c-e8a4-4141-9df0-8c998976c691\",\n    \"6b02d015-47ac-4c41-8e9f-5b4db61d4284\"\n  ],\n  \"LinkedReservationIds\": [\n    \"0f515589-99b4-423d-b83a-b237009f0509\",\n    \"b7a3f5cb-1e69-4a5f-a069-10f461996d7f\"\n  ],\n  \"UpdatedUtc\": {\n    \"StartUtc\": \"2023-04-01T00:00:00Z\",\n    \"EndUtc\": \"2023-05-05T00:00:00Z\"\n  },\n  \"States\": [\n    \"Confirmed\",\n    \"Started\"\n  ],\n  \"Limitation\": {\n    \"Count\": 10,\n    \"Cursor\": \"819e3435-7d5e-441f-bc68-76d89c69b8f5\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d7453b04-00dc-4ba0-a384-c3a068a66b3f",
+              "name": "Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "productServiceOrders",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"ProductServiceOrderIds\": [\n    \"9e6d4492-315b-4089-b9d6-5b1bd2eddc1b\"\n  ],\n  \"ServiceIds\": [\n    \"ae8da28c-e8a4-4141-9df0-8c998976c691\",\n    \"6b02d015-47ac-4c41-8e9f-5b4db61d4284\"\n  ],\n  \"LinkedReservationIds\": [\n    \"0f515589-99b4-423d-b83a-b237009f0509\",\n    \"b7a3f5cb-1e69-4a5f-a069-10f461996d7f\"\n  ],\n  \"UpdatedUtc\": {\n    \"StartUtc\": \"2023-04-01T00:00:00Z\",\n    \"EndUtc\": \"2023-05-05T00:00:00Z\"\n  },\n  \"States\": [\n    \"Confirmed\",\n    \"Started\"\n  ],\n  \"Limitation\": {\n    \"Count\": 10,\n    \"Cursor\": \"819e3435-7d5e-441f-bc68-76d89c69b8f5\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Request Timeout",
+              "code": 408,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2b3ef7df-2a46-4675-be54-157e5158efa5",
+              "name": "Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "productServiceOrders",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"ProductServiceOrderIds\": [\n    \"9e6d4492-315b-4089-b9d6-5b1bd2eddc1b\"\n  ],\n  \"ServiceIds\": [\n    \"ae8da28c-e8a4-4141-9df0-8c998976c691\",\n    \"6b02d015-47ac-4c41-8e9f-5b4db61d4284\"\n  ],\n  \"LinkedReservationIds\": [\n    \"0f515589-99b4-423d-b83a-b237009f0509\",\n    \"b7a3f5cb-1e69-4a5f-a069-10f461996d7f\"\n  ],\n  \"UpdatedUtc\": {\n    \"StartUtc\": \"2023-04-01T00:00:00Z\",\n    \"EndUtc\": \"2023-05-05T00:00:00Z\"\n  },\n  \"States\": [\n    \"Confirmed\",\n    \"Started\"\n  ],\n  \"Limitation\": {\n    \"Count\": 10,\n    \"Cursor\": \"819e3435-7d5e-441f-bc68-76d89c69b8f5\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c3ba2fed-6fcb-4f9e-9ccb-7fc13b19d6fd",
+              "name": "Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "productServiceOrders",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"ProductServiceOrderIds\": [\n    \"9e6d4492-315b-4089-b9d6-5b1bd2eddc1b\"\n  ],\n  \"ServiceIds\": [\n    \"ae8da28c-e8a4-4141-9df0-8c998976c691\",\n    \"6b02d015-47ac-4c41-8e9f-5b4db61d4284\"\n  ],\n  \"LinkedReservationIds\": [\n    \"0f515589-99b4-423d-b83a-b237009f0509\",\n    \"b7a3f5cb-1e69-4a5f-a069-10f461996d7f\"\n  ],\n  \"UpdatedUtc\": {\n    \"StartUtc\": \"2023-04-01T00:00:00Z\",\n    \"EndUtc\": \"2023-05-05T00:00:00Z\"\n  },\n  \"States\": [\n    \"Confirmed\",\n    \"Started\"\n  ],\n  \"Limitation\": {\n    \"Count\": 10,\n    \"Cursor\": \"819e3435-7d5e-441f-bc68-76d89c69b8f5\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.mews.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "21269823-7cc3-4f82-a9a3-377ae89df798",
+    "name": "BookingEngineApi Account notes Product service orders API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "",
+      "type": "text/plain"
+    }
+  }
+}

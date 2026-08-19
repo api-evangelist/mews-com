@@ -1,0 +1,2172 @@
+{
+  "item": [
+    {
+      "id": "5fd5c738-8bc2-42d2-9134-ca085280bdbd",
+      "name": "Billing automations",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "39f0ff45-dc25-4405-b6dd-b0e338154f66",
+          "name": "Get all billing automations",
+          "request": {
+            "name": "Get all billing automations",
+            "description": {
+              "content": "Returns all billing automations. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "connector",
+                "v1",
+                "billingAutomations",
+                "getAll"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"AccessToken\": \"<string>\",\n  \"Client\": \"<string>\",\n  \"ClientToken\": \"<string>\",\n  \"Limitation\": {\n    \"Count\": \"<integer>\",\n    \"Cursor\": \"<uuid>\"\n  },\n  \"EnterpriseIds\": [\n    \"<uuid>\"\n  ],\n  \"CompanyIds\": [\n    \"<uuid>\",\n    \"<uuid>\"\n  ],\n  \"BillingAutomationIds\": [\n    \"<uuid>\",\n    \"<uuid>\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "ccf7f5b8-73fb-4d80-a698-01c79c459507",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"CompanyIds\": [\n    \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n    \"956aa0f0-a090-42c8-bee2-991972d32f80\"\n  ],\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ],\n  \"EnterpriseIds\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"4d0201db-36f5-428b-8d11-4f0a65e960cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"BillingAutomations\": [\n    {\n      \"Id\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n      \"EnterpriseId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"Name\": \"Continuous billing automation for company XYZ\",\n      \"Description\": \"Billing Automation for company XYZ with prepayment all, company as owner.\",\n      \"CompaniesWithRelations\": [\n        {\n          \"CompanyId\": \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": true,\n            \"TravelAgency\": false\n          }\n        }\n      ],\n      \"Prepayment\": \"All\",\n      \"AssignmentTargetType\": \"CompanyAsOwner\",\n      \"TriggerType\": \"Continuous\",\n      \"BillAggregationType\": \"AggregateAll\",\n      \"CreatedUtc\": \"2017-01-31T10:58:06Z\",\n      \"UpdatedUtc\": \"2023-10-28T14:23:00Z\",\n      \"CreatorProfileId\": \"3cd637ef-4728-47f9-8fb1-afb900c9cdcf\",\n      \"UpdaterProfileId\": \"122fc063-ec6e-4198-b8db-6b168a59ffae\",\n      \"ProcessingStartOffset\": null,\n      \"OrderItemConsumptionPeriod\": null,\n      \"Assignments\": [\n        {\n          \"Id\": \"d6b550e9-9c4b-42dd-9daa-555312b030e6\",\n          \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n          \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n          \"RoutedItemTypes\": {\n            \"SpaceOrder\": true,\n            \"CityTax\": true,\n            \"AllProducts\": true,\n            \"Deposits\": true,\n            \"AdditionalExpenses\": false,\n            \"AllCustomItems\": false\n          },\n          \"RateIds\": [\n            \"ab3682ba-4493-4eb0-bcdc-8d000f5bad65\"\n          ],\n          \"ProductCategoryIds\": [\n            \"599c477e-b826-4444-8ded-4fa7276ef0c1\"\n          ],\n          \"ProductIds\": [\n            \"f0184ec2-9f02-4026-9b70-0b2bed2adde7\"\n          ],\n          \"AccountingCategoryAssignments\": [\n            {\n              \"AccountingCategoryId\": \"2e0f5930-605e-4a23-9994-a7701a56b576\",\n              \"ItemTypes\": {\n                \"Products\": true,\n                \"CustomItems\": false\n              }\n            }\n          ]\n        }\n      ]\n    }\n  ],\n  \"Cursor\": \"54ec08b6-e6fc-48e9-b8ae-02943e0ac693\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "7f2b4933-0d88-4c7c-9a55-33df2f94d480",
+              "name": "Server has successfully fulfilled the request and there is no additional information to send back.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"CompanyIds\": [\n    \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n    \"956aa0f0-a090-42c8-bee2-991972d32f80\"\n  ],\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ],\n  \"EnterpriseIds\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"4d0201db-36f5-428b-8d11-4f0a65e960cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "76d1bf54-8aaf-4da8-890a-d78243cc0513",
+              "name": "Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"CompanyIds\": [\n    \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n    \"956aa0f0-a090-42c8-bee2-991972d32f80\"\n  ],\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ],\n  \"EnterpriseIds\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"4d0201db-36f5-428b-8d11-4f0a65e960cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "8fdf6e81-eaed-4e03-a052-23be1f7f672b",
+              "name": "Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"CompanyIds\": [\n    \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n    \"956aa0f0-a090-42c8-bee2-991972d32f80\"\n  ],\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ],\n  \"EnterpriseIds\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"4d0201db-36f5-428b-8d11-4f0a65e960cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "171e2fa8-6e76-4b2f-a19e-724832a5bc14",
+              "name": "Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"CompanyIds\": [\n    \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n    \"956aa0f0-a090-42c8-bee2-991972d32f80\"\n  ],\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ],\n  \"EnterpriseIds\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"4d0201db-36f5-428b-8d11-4f0a65e960cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ca24caf2-8e70-45f9-8039-5c9aab1834da",
+              "name": "Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"CompanyIds\": [\n    \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n    \"956aa0f0-a090-42c8-bee2-991972d32f80\"\n  ],\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ],\n  \"EnterpriseIds\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"4d0201db-36f5-428b-8d11-4f0a65e960cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Request Timeout",
+              "code": 408,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "cceb3b77-3db5-40eb-b296-72fb1bc2556a",
+              "name": "Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"CompanyIds\": [\n    \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n    \"956aa0f0-a090-42c8-bee2-991972d32f80\"\n  ],\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ],\n  \"EnterpriseIds\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"4d0201db-36f5-428b-8d11-4f0a65e960cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2b82e55c-44e3-401f-9114-833002a7d4e5",
+              "name": "Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "getAll"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"CompanyIds\": [\n    \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n    \"956aa0f0-a090-42c8-bee2-991972d32f80\"\n  ],\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ],\n  \"EnterpriseIds\": [\n    \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"4d0201db-36f5-428b-8d11-4f0a65e960cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a79edf8f-de69-4658-9830-6bc15f0d3ffa",
+          "name": "Add billing automations",
+          "request": {
+            "name": "Add billing automations",
+            "description": {
+              "content": "Adds billing automations.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "connector",
+                "v1",
+                "billingAutomations",
+                "add"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"AccessToken\": \"<string>\",\n  \"BillingAutomations\": [\n    {\n      \"Assignments\": [\n        {\n          \"RoutedItemTypes\": {\n            \"AdditionalExpenses\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"AllCustomItems\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"AllProducts\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"CityTax\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"Deposits\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"SpaceOrder\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          \"ServiceId\": \"<uuid>\",\n          \"RateIds\": [\n            \"<uuid>\",\n            \"<uuid>\"\n          ],\n          \"ProductCategoryIds\": [\n            \"<uuid>\",\n            \"<uuid>\"\n          ],\n          \"ProductIds\": [\n            \"<uuid>\",\n            \"<uuid>\"\n          ],\n          \"AccountingCategories\": [\n            {\n              \"AccountingCategoryId\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"ItemTypes\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            {\n              \"AccountingCategoryId\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"ItemTypes\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          ]\n        }\n      ],\n      \"AssignmentTargetType\": \"<string>\",\n      \"BillAggregationType\": \"<string>\",\n      \"Name\": \"<string>\",\n      \"Prepayment\": \"<string>\",\n      \"TriggerType\": \"<string>\",\n      \"Description\": \"<string>\",\n      \"CompaniesWithRelations\": [\n        {\n          \"CompanyId\": \"<uuid>\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"TravelAgency\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        },\n        {\n          \"CompanyId\": \"<uuid>\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"TravelAgency\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        }\n      ],\n      \"OrderItemConsumptionPeriod\": \"<string>\",\n      \"ProcessingStartOffset\": \"<string>\"\n    }\n  ],\n  \"Client\": \"<string>\",\n  \"ClientToken\": \"<string>\",\n  \"EnterpriseId\": \"<uuid>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "d33d5602-9497-45bd-8cc1-ccf23616d7ca",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomations\": [\n    {\n      \"Name\": \"Company A billing automation\",\n      \"Description\": \"Billing automation routing reservations made for Company A to bills where company is an owner, aggregating all reservations onto one bill.\",\n      \"CompaniesWithRelations\": [\n        {\n          \"CompanyId\": \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": true,\n            \"TravelAgency\": false\n          }\n        }\n      ],\n      \"Prepayment\": \"All\",\n      \"AssignmentTargetType\": \"CompanyAsOwner\",\n      \"TriggerType\": \"Continuous\",\n      \"BillAggregationType\": \"AggregateAll\",\n      \"Assignments\": [\n        {\n          \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n          \"RoutedItemTypes\": {\n            \"SpaceOrder\": true,\n            \"CityTax\": true,\n            \"AllProducts\": false,\n            \"Deposits\": true,\n            \"AdditionalExpenses\": true,\n            \"AllCustomItems\": false\n          },\n          \"ProductIds\": [\n            \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"BillingAutomations\": [\n    {\n      \"Id\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n      \"EnterpriseId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"Name\": \"Continuous billing automation for company XYZ\",\n      \"Description\": \"Billing Automation for company XYZ with prepayment all, company as owner.\",\n      \"CompaniesWithRelations\": [\n        {\n          \"CompanyId\": \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": true,\n            \"TravelAgency\": false\n          }\n        }\n      ],\n      \"Prepayment\": \"All\",\n      \"AssignmentTargetType\": \"CompanyAsOwner\",\n      \"TriggerType\": \"Continuous\",\n      \"BillAggregationType\": \"AggregateAll\",\n      \"CreatedUtc\": \"2017-01-31T10:58:06Z\",\n      \"UpdatedUtc\": \"2023-10-28T14:23:00Z\",\n      \"CreatorProfileId\": \"3cd637ef-4728-47f9-8fb1-afb900c9cdcf\",\n      \"UpdaterProfileId\": \"122fc063-ec6e-4198-b8db-6b168a59ffae\",\n      \"ProcessingStartOffset\": null,\n      \"OrderItemConsumptionPeriod\": null,\n      \"Assignments\": [\n        {\n          \"Id\": \"d6b550e9-9c4b-42dd-9daa-555312b030e6\",\n          \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n          \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n          \"RoutedItemTypes\": {\n            \"SpaceOrder\": true,\n            \"CityTax\": true,\n            \"AllProducts\": true,\n            \"Deposits\": true,\n            \"AdditionalExpenses\": false,\n            \"AllCustomItems\": false\n          },\n          \"RateIds\": [\n            \"ab3682ba-4493-4eb0-bcdc-8d000f5bad65\"\n          ],\n          \"ProductCategoryIds\": [\n            \"599c477e-b826-4444-8ded-4fa7276ef0c1\"\n          ],\n          \"ProductIds\": [\n            \"f0184ec2-9f02-4026-9b70-0b2bed2adde7\"\n          ],\n          \"AccountingCategoryAssignments\": [\n            {\n              \"AccountingCategoryId\": \"2e0f5930-605e-4a23-9994-a7701a56b576\",\n              \"ItemTypes\": {\n                \"Products\": true,\n                \"CustomItems\": false\n              }\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5c97af5f-259d-49f2-9d8e-f47fce2a16a3",
+              "name": "Server has successfully fulfilled the request and there is no additional information to send back.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomations\": [\n    {\n      \"Name\": \"Company A billing automation\",\n      \"Description\": \"Billing automation routing reservations made for Company A to bills where company is an owner, aggregating all reservations onto one bill.\",\n      \"CompaniesWithRelations\": [\n        {\n          \"CompanyId\": \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": true,\n            \"TravelAgency\": false\n          }\n        }\n      ],\n      \"Prepayment\": \"All\",\n      \"AssignmentTargetType\": \"CompanyAsOwner\",\n      \"TriggerType\": \"Continuous\",\n      \"BillAggregationType\": \"AggregateAll\",\n      \"Assignments\": [\n        {\n          \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n          \"RoutedItemTypes\": {\n            \"SpaceOrder\": true,\n            \"CityTax\": true,\n            \"AllProducts\": false,\n            \"Deposits\": true,\n            \"AdditionalExpenses\": true,\n            \"AllCustomItems\": false\n          },\n          \"ProductIds\": [\n            \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9c89ce76-cf42-481e-865c-33e4d2417be5",
+              "name": "Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomations\": [\n    {\n      \"Name\": \"Company A billing automation\",\n      \"Description\": \"Billing automation routing reservations made for Company A to bills where company is an owner, aggregating all reservations onto one bill.\",\n      \"CompaniesWithRelations\": [\n        {\n          \"CompanyId\": \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": true,\n            \"TravelAgency\": false\n          }\n        }\n      ],\n      \"Prepayment\": \"All\",\n      \"AssignmentTargetType\": \"CompanyAsOwner\",\n      \"TriggerType\": \"Continuous\",\n      \"BillAggregationType\": \"AggregateAll\",\n      \"Assignments\": [\n        {\n          \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n          \"RoutedItemTypes\": {\n            \"SpaceOrder\": true,\n            \"CityTax\": true,\n            \"AllProducts\": false,\n            \"Deposits\": true,\n            \"AdditionalExpenses\": true,\n            \"AllCustomItems\": false\n          },\n          \"ProductIds\": [\n            \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e121cb15-45c0-40f1-8050-31c5269f2ba2",
+              "name": "Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomations\": [\n    {\n      \"Name\": \"Company A billing automation\",\n      \"Description\": \"Billing automation routing reservations made for Company A to bills where company is an owner, aggregating all reservations onto one bill.\",\n      \"CompaniesWithRelations\": [\n        {\n          \"CompanyId\": \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": true,\n            \"TravelAgency\": false\n          }\n        }\n      ],\n      \"Prepayment\": \"All\",\n      \"AssignmentTargetType\": \"CompanyAsOwner\",\n      \"TriggerType\": \"Continuous\",\n      \"BillAggregationType\": \"AggregateAll\",\n      \"Assignments\": [\n        {\n          \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n          \"RoutedItemTypes\": {\n            \"SpaceOrder\": true,\n            \"CityTax\": true,\n            \"AllProducts\": false,\n            \"Deposits\": true,\n            \"AdditionalExpenses\": true,\n            \"AllCustomItems\": false\n          },\n          \"ProductIds\": [\n            \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "73c7f539-dea5-4a8c-b458-013c82519682",
+              "name": "Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomations\": [\n    {\n      \"Name\": \"Company A billing automation\",\n      \"Description\": \"Billing automation routing reservations made for Company A to bills where company is an owner, aggregating all reservations onto one bill.\",\n      \"CompaniesWithRelations\": [\n        {\n          \"CompanyId\": \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": true,\n            \"TravelAgency\": false\n          }\n        }\n      ],\n      \"Prepayment\": \"All\",\n      \"AssignmentTargetType\": \"CompanyAsOwner\",\n      \"TriggerType\": \"Continuous\",\n      \"BillAggregationType\": \"AggregateAll\",\n      \"Assignments\": [\n        {\n          \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n          \"RoutedItemTypes\": {\n            \"SpaceOrder\": true,\n            \"CityTax\": true,\n            \"AllProducts\": false,\n            \"Deposits\": true,\n            \"AdditionalExpenses\": true,\n            \"AllCustomItems\": false\n          },\n          \"ProductIds\": [\n            \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "fb409b5e-20f7-4daf-9358-13700cd44b87",
+              "name": "Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomations\": [\n    {\n      \"Name\": \"Company A billing automation\",\n      \"Description\": \"Billing automation routing reservations made for Company A to bills where company is an owner, aggregating all reservations onto one bill.\",\n      \"CompaniesWithRelations\": [\n        {\n          \"CompanyId\": \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": true,\n            \"TravelAgency\": false\n          }\n        }\n      ],\n      \"Prepayment\": \"All\",\n      \"AssignmentTargetType\": \"CompanyAsOwner\",\n      \"TriggerType\": \"Continuous\",\n      \"BillAggregationType\": \"AggregateAll\",\n      \"Assignments\": [\n        {\n          \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n          \"RoutedItemTypes\": {\n            \"SpaceOrder\": true,\n            \"CityTax\": true,\n            \"AllProducts\": false,\n            \"Deposits\": true,\n            \"AdditionalExpenses\": true,\n            \"AllCustomItems\": false\n          },\n          \"ProductIds\": [\n            \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Request Timeout",
+              "code": 408,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "89691ba1-fda4-477d-93d5-8106764fedd6",
+              "name": "Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomations\": [\n    {\n      \"Name\": \"Company A billing automation\",\n      \"Description\": \"Billing automation routing reservations made for Company A to bills where company is an owner, aggregating all reservations onto one bill.\",\n      \"CompaniesWithRelations\": [\n        {\n          \"CompanyId\": \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": true,\n            \"TravelAgency\": false\n          }\n        }\n      ],\n      \"Prepayment\": \"All\",\n      \"AssignmentTargetType\": \"CompanyAsOwner\",\n      \"TriggerType\": \"Continuous\",\n      \"BillAggregationType\": \"AggregateAll\",\n      \"Assignments\": [\n        {\n          \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n          \"RoutedItemTypes\": {\n            \"SpaceOrder\": true,\n            \"CityTax\": true,\n            \"AllProducts\": false,\n            \"Deposits\": true,\n            \"AdditionalExpenses\": true,\n            \"AllCustomItems\": false\n          },\n          \"ProductIds\": [\n            \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ac09a2ca-5cce-4d4b-92d1-24aacac73aca",
+              "name": "Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "add"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomations\": [\n    {\n      \"Name\": \"Company A billing automation\",\n      \"Description\": \"Billing automation routing reservations made for Company A to bills where company is an owner, aggregating all reservations onto one bill.\",\n      \"CompaniesWithRelations\": [\n        {\n          \"CompanyId\": \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": true,\n            \"TravelAgency\": false\n          }\n        }\n      ],\n      \"Prepayment\": \"All\",\n      \"AssignmentTargetType\": \"CompanyAsOwner\",\n      \"TriggerType\": \"Continuous\",\n      \"BillAggregationType\": \"AggregateAll\",\n      \"Assignments\": [\n        {\n          \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n          \"RoutedItemTypes\": {\n            \"SpaceOrder\": true,\n            \"CityTax\": true,\n            \"AllProducts\": false,\n            \"Deposits\": true,\n            \"AdditionalExpenses\": true,\n            \"AllCustomItems\": false\n          },\n          \"ProductIds\": [\n            \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "126fe7d2-0e26-4484-81cc-13db528fb048",
+          "name": "Update billing automations",
+          "request": {
+            "name": "Update billing automations",
+            "description": {
+              "content": "Updates one or more existing billing automations.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "connector",
+                "v1",
+                "billingAutomations",
+                "update"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"AccessToken\": \"<string>\",\n  \"BillingAutomationUpdates\": [\n    {\n      \"BillingAutomationId\": \"<uuid>\",\n      \"Name\": {\n        \"Value\": \"<string>\"\n      },\n      \"Description\": {\n        \"Value\": \"<string>\"\n      },\n      \"Companies\": {\n        \"Value\": [\n          {\n            \"CompanyId\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"CompanyRelations\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"CompanyId\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"CompanyRelations\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ]\n      },\n      \"Prepayment\": {\n        \"Value\": \"<string>\"\n      },\n      \"AssignmentTargetType\": {\n        \"Value\": \"<string>\"\n      },\n      \"BillAggregationType\": {\n        \"Value\": \"<string>\"\n      },\n      \"OrderItemConsumptionPeriod\": {\n        \"Value\": \"<string>\"\n      },\n      \"ProcessingStartOffset\": {\n        \"Value\": \"<string>\"\n      }\n    }\n  ],\n  \"Client\": \"<string>\",\n  \"ClientToken\": \"<string>\",\n  \"EnterpriseId\": \"<uuid>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "aea665a1-c5d8-406e-a256-1086baaecdc5",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "update"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationUpdates\": [\n    {\n      \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n      \"Name\": {\n        \"Value\": \"New name.\"\n      },\n      \"Description\": {\n        \"Value\": \"Billing Automation that has prepayment changed to All, Assignment target to Company as owner and Bill aggregation to aggregate all items into one bill.\"\n      },\n      \"Prepayment\": {\n        \"Value\": \"All\"\n      },\n      \"AssignmentTargetType\": {\n        \"Value\": \"CompanyAsOwner\"\n      },\n      \"BillAggregationType\": {\n        \"Value\": \"AggregateAll\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"BillingAutomations\": [\n    {\n      \"Id\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n      \"EnterpriseId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"Name\": \"Continuous billing automation for company XYZ\",\n      \"Description\": \"Billing Automation for company XYZ with prepayment all, company as owner.\",\n      \"CompaniesWithRelations\": [\n        {\n          \"CompanyId\": \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": true,\n            \"TravelAgency\": false\n          }\n        }\n      ],\n      \"Prepayment\": \"All\",\n      \"AssignmentTargetType\": \"CompanyAsOwner\",\n      \"TriggerType\": \"Continuous\",\n      \"BillAggregationType\": \"AggregateAll\",\n      \"CreatedUtc\": \"2017-01-31T10:58:06Z\",\n      \"UpdatedUtc\": \"2023-10-28T14:23:00Z\",\n      \"CreatorProfileId\": \"3cd637ef-4728-47f9-8fb1-afb900c9cdcf\",\n      \"UpdaterProfileId\": \"122fc063-ec6e-4198-b8db-6b168a59ffae\",\n      \"ProcessingStartOffset\": null,\n      \"OrderItemConsumptionPeriod\": null,\n      \"Assignments\": [\n        {\n          \"Id\": \"d6b550e9-9c4b-42dd-9daa-555312b030e6\",\n          \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n          \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n          \"RoutedItemTypes\": {\n            \"SpaceOrder\": true,\n            \"CityTax\": true,\n            \"AllProducts\": true,\n            \"Deposits\": true,\n            \"AdditionalExpenses\": false,\n            \"AllCustomItems\": false\n          },\n          \"RateIds\": [\n            \"ab3682ba-4493-4eb0-bcdc-8d000f5bad65\"\n          ],\n          \"ProductCategoryIds\": [\n            \"599c477e-b826-4444-8ded-4fa7276ef0c1\"\n          ],\n          \"ProductIds\": [\n            \"f0184ec2-9f02-4026-9b70-0b2bed2adde7\"\n          ],\n          \"AccountingCategoryAssignments\": [\n            {\n              \"AccountingCategoryId\": \"2e0f5930-605e-4a23-9994-a7701a56b576\",\n              \"ItemTypes\": {\n                \"Products\": true,\n                \"CustomItems\": false\n              }\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "129ed2d0-5263-4db4-a4ec-c38e5f360502",
+              "name": "Server has successfully fulfilled the request and there is no additional information to send back.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "update"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationUpdates\": [\n    {\n      \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n      \"Name\": {\n        \"Value\": \"New name.\"\n      },\n      \"Description\": {\n        \"Value\": \"Billing Automation that has prepayment changed to All, Assignment target to Company as owner and Bill aggregation to aggregate all items into one bill.\"\n      },\n      \"Prepayment\": {\n        \"Value\": \"All\"\n      },\n      \"AssignmentTargetType\": {\n        \"Value\": \"CompanyAsOwner\"\n      },\n      \"BillAggregationType\": {\n        \"Value\": \"AggregateAll\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "744a83d6-916e-43bb-bcc9-1193c04265cd",
+              "name": "Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "update"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationUpdates\": [\n    {\n      \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n      \"Name\": {\n        \"Value\": \"New name.\"\n      },\n      \"Description\": {\n        \"Value\": \"Billing Automation that has prepayment changed to All, Assignment target to Company as owner and Bill aggregation to aggregate all items into one bill.\"\n      },\n      \"Prepayment\": {\n        \"Value\": \"All\"\n      },\n      \"AssignmentTargetType\": {\n        \"Value\": \"CompanyAsOwner\"\n      },\n      \"BillAggregationType\": {\n        \"Value\": \"AggregateAll\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3825b5fe-ceda-4581-adeb-f916625cfbf4",
+              "name": "Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "update"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationUpdates\": [\n    {\n      \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n      \"Name\": {\n        \"Value\": \"New name.\"\n      },\n      \"Description\": {\n        \"Value\": \"Billing Automation that has prepayment changed to All, Assignment target to Company as owner and Bill aggregation to aggregate all items into one bill.\"\n      },\n      \"Prepayment\": {\n        \"Value\": \"All\"\n      },\n      \"AssignmentTargetType\": {\n        \"Value\": \"CompanyAsOwner\"\n      },\n      \"BillAggregationType\": {\n        \"Value\": \"AggregateAll\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0aa9a8a8-5a41-438d-a75d-c783b973e851",
+              "name": "Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "update"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationUpdates\": [\n    {\n      \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n      \"Name\": {\n        \"Value\": \"New name.\"\n      },\n      \"Description\": {\n        \"Value\": \"Billing Automation that has prepayment changed to All, Assignment target to Company as owner and Bill aggregation to aggregate all items into one bill.\"\n      },\n      \"Prepayment\": {\n        \"Value\": \"All\"\n      },\n      \"AssignmentTargetType\": {\n        \"Value\": \"CompanyAsOwner\"\n      },\n      \"BillAggregationType\": {\n        \"Value\": \"AggregateAll\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "976684b9-d92c-4786-a5a2-596372e69af8",
+              "name": "Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "update"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationUpdates\": [\n    {\n      \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n      \"Name\": {\n        \"Value\": \"New name.\"\n      },\n      \"Description\": {\n        \"Value\": \"Billing Automation that has prepayment changed to All, Assignment target to Company as owner and Bill aggregation to aggregate all items into one bill.\"\n      },\n      \"Prepayment\": {\n        \"Value\": \"All\"\n      },\n      \"AssignmentTargetType\": {\n        \"Value\": \"CompanyAsOwner\"\n      },\n      \"BillAggregationType\": {\n        \"Value\": \"AggregateAll\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Request Timeout",
+              "code": 408,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "99999d02-4a6c-4c1f-8355-7f36659c22b9",
+              "name": "Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "update"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationUpdates\": [\n    {\n      \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n      \"Name\": {\n        \"Value\": \"New name.\"\n      },\n      \"Description\": {\n        \"Value\": \"Billing Automation that has prepayment changed to All, Assignment target to Company as owner and Bill aggregation to aggregate all items into one bill.\"\n      },\n      \"Prepayment\": {\n        \"Value\": \"All\"\n      },\n      \"AssignmentTargetType\": {\n        \"Value\": \"CompanyAsOwner\"\n      },\n      \"BillAggregationType\": {\n        \"Value\": \"AggregateAll\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "7c2984ff-efc4-4040-937d-f69c43d88c67",
+              "name": "Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "update"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationUpdates\": [\n    {\n      \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n      \"Name\": {\n        \"Value\": \"New name.\"\n      },\n      \"Description\": {\n        \"Value\": \"Billing Automation that has prepayment changed to All, Assignment target to Company as owner and Bill aggregation to aggregate all items into one bill.\"\n      },\n      \"Prepayment\": {\n        \"Value\": \"All\"\n      },\n      \"AssignmentTargetType\": {\n        \"Value\": \"CompanyAsOwner\"\n      },\n      \"BillAggregationType\": {\n        \"Value\": \"AggregateAll\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a6757b76-c915-4f0a-b5f7-243c1a497bb7",
+          "name": "Update billing automations assignments",
+          "request": {
+            "name": "Update billing automations assignments",
+            "description": {
+              "content": "Add, update or remove billing automation assignments of a specific billing automation.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "connector",
+                "v1",
+                "billingAutomations",
+                "updateAssignments"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"AccessToken\": \"<string>\",\n  \"BillingAutomationId\": \"<uuid>\",\n  \"Client\": \"<string>\",\n  \"ClientToken\": \"<string>\",\n  \"EnterpriseId\": \"<uuid>\",\n  \"AssignmentsToAdd\": [\n    {\n      \"RoutedItemTypes\": {\n        \"AdditionalExpenses\": \"<boolean>\",\n        \"AllCustomItems\": \"<boolean>\",\n        \"AllProducts\": \"<boolean>\",\n        \"CityTax\": \"<boolean>\",\n        \"Deposits\": \"<boolean>\",\n        \"SpaceOrder\": \"<boolean>\"\n      },\n      \"ServiceId\": \"<uuid>\",\n      \"RateIds\": [\n        \"<uuid>\",\n        \"<uuid>\"\n      ],\n      \"ProductCategoryIds\": [\n        \"<uuid>\",\n        \"<uuid>\"\n      ],\n      \"ProductIds\": [\n        \"<uuid>\",\n        \"<uuid>\"\n      ],\n      \"AccountingCategories\": [\n        {\n          \"AccountingCategoryId\": \"<uuid>\",\n          \"ItemTypes\": {\n            \"CustomItems\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"Products\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        },\n        {\n          \"AccountingCategoryId\": \"<uuid>\",\n          \"ItemTypes\": {\n            \"CustomItems\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"Products\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        }\n      ]\n    },\n    {\n      \"RoutedItemTypes\": {\n        \"AdditionalExpenses\": \"<boolean>\",\n        \"AllCustomItems\": \"<boolean>\",\n        \"AllProducts\": \"<boolean>\",\n        \"CityTax\": \"<boolean>\",\n        \"Deposits\": \"<boolean>\",\n        \"SpaceOrder\": \"<boolean>\"\n      },\n      \"ServiceId\": \"<uuid>\",\n      \"RateIds\": [\n        \"<uuid>\",\n        \"<uuid>\"\n      ],\n      \"ProductCategoryIds\": [\n        \"<uuid>\",\n        \"<uuid>\"\n      ],\n      \"ProductIds\": [\n        \"<uuid>\",\n        \"<uuid>\"\n      ],\n      \"AccountingCategories\": [\n        {\n          \"AccountingCategoryId\": \"<uuid>\",\n          \"ItemTypes\": {\n            \"CustomItems\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"Products\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        },\n        {\n          \"AccountingCategoryId\": \"<uuid>\",\n          \"ItemTypes\": {\n            \"CustomItems\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"Products\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        }\n      ]\n    }\n  ],\n  \"AssignmentsToUpdate\": [\n    {\n      \"BillingAutomationAssignmentId\": \"<uuid>\",\n      \"RoutedItemTypes\": {\n        \"SpaceOrder\": {\n          \"Value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"CityTax\": {\n          \"Value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"AllProducts\": {\n          \"Value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"Deposits\": {\n          \"Value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"AdditionalExpenses\": {\n          \"Value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"AllCustomItems\": {\n          \"Value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      },\n      \"RateIds\": {\n        \"Value\": [\n          \"<uuid>\",\n          \"<uuid>\"\n        ]\n      },\n      \"ProductCategoryIds\": {\n        \"Value\": [\n          \"<uuid>\",\n          \"<uuid>\"\n        ]\n      },\n      \"ProductIds\": {\n        \"Value\": [\n          \"<uuid>\",\n          \"<uuid>\"\n        ]\n      },\n      \"AccountingCategories\": {\n        \"Value\": [\n          {\n            \"AccountingCategoryId\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"ItemTypes\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"AccountingCategoryId\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"ItemTypes\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ]\n      }\n    },\n    {\n      \"BillingAutomationAssignmentId\": \"<uuid>\",\n      \"RoutedItemTypes\": {\n        \"SpaceOrder\": {\n          \"Value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"CityTax\": {\n          \"Value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"AllProducts\": {\n          \"Value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"Deposits\": {\n          \"Value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"AdditionalExpenses\": {\n          \"Value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"AllCustomItems\": {\n          \"Value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      },\n      \"RateIds\": {\n        \"Value\": [\n          \"<uuid>\",\n          \"<uuid>\"\n        ]\n      },\n      \"ProductCategoryIds\": {\n        \"Value\": [\n          \"<uuid>\",\n          \"<uuid>\"\n        ]\n      },\n      \"ProductIds\": {\n        \"Value\": [\n          \"<uuid>\",\n          \"<uuid>\"\n        ]\n      },\n      \"AccountingCategories\": {\n        \"Value\": [\n          {\n            \"AccountingCategoryId\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"ItemTypes\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          {\n            \"AccountingCategoryId\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"ItemTypes\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          }\n        ]\n      }\n    }\n  ],\n  \"AssignmentIdsToRemove\": [\n    \"<uuid>\",\n    \"<uuid>\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "5d538a7a-e80e-4d59-886e-66a5f58d65d3",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "updateAssignments"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n  \"AssignmentsToUpdate\": [\n    {\n      \"BillingAutomationAssignmentId\": \"00000000-0000-0000-0000-000000000000\",\n      \"RoutedItemTypes\": {\n        \"SpaceOrder\": {\n          \"Value\": true\n        },\n        \"CityTax\": {\n          \"Value\": true\n        },\n        \"AllProducts\": {\n          \"Value\": false\n        },\n        \"Deposits\": {\n          \"Value\": true\n        },\n        \"AdditionalExpenses\": {\n          \"Value\": true\n        },\n        \"AllCustomItems\": {\n          \"Value\": false\n        }\n      },\n      \"ProductIds\": {\n        \"Value\": [\n          \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n        ]\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"BillingAutomations\": [\n    {\n      \"Id\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n      \"EnterpriseId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"Name\": \"Continuous billing automation for company XYZ\",\n      \"Description\": \"Billing Automation for company XYZ with prepayment all, company as owner.\",\n      \"CompaniesWithRelations\": [\n        {\n          \"CompanyId\": \"c6f5c82d-621a-4c8a-903b-1b0a9a23b71f\",\n          \"CompanyRelations\": {\n            \"PartnerCompany\": true,\n            \"TravelAgency\": false\n          }\n        }\n      ],\n      \"Prepayment\": \"All\",\n      \"AssignmentTargetType\": \"CompanyAsOwner\",\n      \"TriggerType\": \"Continuous\",\n      \"BillAggregationType\": \"AggregateAll\",\n      \"CreatedUtc\": \"2017-01-31T10:58:06Z\",\n      \"UpdatedUtc\": \"2023-10-28T14:23:00Z\",\n      \"CreatorProfileId\": \"3cd637ef-4728-47f9-8fb1-afb900c9cdcf\",\n      \"UpdaterProfileId\": \"122fc063-ec6e-4198-b8db-6b168a59ffae\",\n      \"ProcessingStartOffset\": null,\n      \"OrderItemConsumptionPeriod\": null,\n      \"Assignments\": [\n        {\n          \"Id\": \"d6b550e9-9c4b-42dd-9daa-555312b030e6\",\n          \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n          \"ServiceId\": \"bd26d8db-86da-4f96-9efc-e5a4654a4a94\",\n          \"RoutedItemTypes\": {\n            \"SpaceOrder\": true,\n            \"CityTax\": true,\n            \"AllProducts\": true,\n            \"Deposits\": true,\n            \"AdditionalExpenses\": false,\n            \"AllCustomItems\": false\n          },\n          \"RateIds\": [\n            \"ab3682ba-4493-4eb0-bcdc-8d000f5bad65\"\n          ],\n          \"ProductCategoryIds\": [\n            \"599c477e-b826-4444-8ded-4fa7276ef0c1\"\n          ],\n          \"ProductIds\": [\n            \"f0184ec2-9f02-4026-9b70-0b2bed2adde7\"\n          ],\n          \"AccountingCategoryAssignments\": [\n            {\n              \"AccountingCategoryId\": \"2e0f5930-605e-4a23-9994-a7701a56b576\",\n              \"ItemTypes\": {\n                \"Products\": true,\n                \"CustomItems\": false\n              }\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "67674d25-4890-449a-863e-8dbc1fb3f3eb",
+              "name": "Server has successfully fulfilled the request and there is no additional information to send back.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "updateAssignments"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n  \"AssignmentsToUpdate\": [\n    {\n      \"BillingAutomationAssignmentId\": \"00000000-0000-0000-0000-000000000000\",\n      \"RoutedItemTypes\": {\n        \"SpaceOrder\": {\n          \"Value\": true\n        },\n        \"CityTax\": {\n          \"Value\": true\n        },\n        \"AllProducts\": {\n          \"Value\": false\n        },\n        \"Deposits\": {\n          \"Value\": true\n        },\n        \"AdditionalExpenses\": {\n          \"Value\": true\n        },\n        \"AllCustomItems\": {\n          \"Value\": false\n        }\n      },\n      \"ProductIds\": {\n        \"Value\": [\n          \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n        ]\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5813f68b-cca3-4b1a-bce7-8e6e5a2f53e7",
+              "name": "Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "updateAssignments"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n  \"AssignmentsToUpdate\": [\n    {\n      \"BillingAutomationAssignmentId\": \"00000000-0000-0000-0000-000000000000\",\n      \"RoutedItemTypes\": {\n        \"SpaceOrder\": {\n          \"Value\": true\n        },\n        \"CityTax\": {\n          \"Value\": true\n        },\n        \"AllProducts\": {\n          \"Value\": false\n        },\n        \"Deposits\": {\n          \"Value\": true\n        },\n        \"AdditionalExpenses\": {\n          \"Value\": true\n        },\n        \"AllCustomItems\": {\n          \"Value\": false\n        }\n      },\n      \"ProductIds\": {\n        \"Value\": [\n          \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n        ]\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "582a847c-5141-40f8-bd53-b00a81fc2e7c",
+              "name": "Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "updateAssignments"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n  \"AssignmentsToUpdate\": [\n    {\n      \"BillingAutomationAssignmentId\": \"00000000-0000-0000-0000-000000000000\",\n      \"RoutedItemTypes\": {\n        \"SpaceOrder\": {\n          \"Value\": true\n        },\n        \"CityTax\": {\n          \"Value\": true\n        },\n        \"AllProducts\": {\n          \"Value\": false\n        },\n        \"Deposits\": {\n          \"Value\": true\n        },\n        \"AdditionalExpenses\": {\n          \"Value\": true\n        },\n        \"AllCustomItems\": {\n          \"Value\": false\n        }\n      },\n      \"ProductIds\": {\n        \"Value\": [\n          \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n        ]\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "91d8d9de-9b25-4f92-8b14-ede06f021b02",
+              "name": "Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "updateAssignments"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n  \"AssignmentsToUpdate\": [\n    {\n      \"BillingAutomationAssignmentId\": \"00000000-0000-0000-0000-000000000000\",\n      \"RoutedItemTypes\": {\n        \"SpaceOrder\": {\n          \"Value\": true\n        },\n        \"CityTax\": {\n          \"Value\": true\n        },\n        \"AllProducts\": {\n          \"Value\": false\n        },\n        \"Deposits\": {\n          \"Value\": true\n        },\n        \"AdditionalExpenses\": {\n          \"Value\": true\n        },\n        \"AllCustomItems\": {\n          \"Value\": false\n        }\n      },\n      \"ProductIds\": {\n        \"Value\": [\n          \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n        ]\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c0bdf26c-ad2d-4588-b6a7-39abdae7aa66",
+              "name": "Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "updateAssignments"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n  \"AssignmentsToUpdate\": [\n    {\n      \"BillingAutomationAssignmentId\": \"00000000-0000-0000-0000-000000000000\",\n      \"RoutedItemTypes\": {\n        \"SpaceOrder\": {\n          \"Value\": true\n        },\n        \"CityTax\": {\n          \"Value\": true\n        },\n        \"AllProducts\": {\n          \"Value\": false\n        },\n        \"Deposits\": {\n          \"Value\": true\n        },\n        \"AdditionalExpenses\": {\n          \"Value\": true\n        },\n        \"AllCustomItems\": {\n          \"Value\": false\n        }\n      },\n      \"ProductIds\": {\n        \"Value\": [\n          \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n        ]\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Request Timeout",
+              "code": 408,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "bd25ceaf-28cb-4ff8-98ed-41563eb75ad8",
+              "name": "Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "updateAssignments"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n  \"AssignmentsToUpdate\": [\n    {\n      \"BillingAutomationAssignmentId\": \"00000000-0000-0000-0000-000000000000\",\n      \"RoutedItemTypes\": {\n        \"SpaceOrder\": {\n          \"Value\": true\n        },\n        \"CityTax\": {\n          \"Value\": true\n        },\n        \"AllProducts\": {\n          \"Value\": false\n        },\n        \"Deposits\": {\n          \"Value\": true\n        },\n        \"AdditionalExpenses\": {\n          \"Value\": true\n        },\n        \"AllCustomItems\": {\n          \"Value\": false\n        }\n      },\n      \"ProductIds\": {\n        \"Value\": [\n          \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n        ]\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "48f30903-5b43-45a7-9aa0-862a96a8f7a2",
+              "name": "Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "updateAssignments"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationId\": \"ecd64eec-4423-4c65-b844-814b9199856d\",\n  \"AssignmentsToUpdate\": [\n    {\n      \"BillingAutomationAssignmentId\": \"00000000-0000-0000-0000-000000000000\",\n      \"RoutedItemTypes\": {\n        \"SpaceOrder\": {\n          \"Value\": true\n        },\n        \"CityTax\": {\n          \"Value\": true\n        },\n        \"AllProducts\": {\n          \"Value\": false\n        },\n        \"Deposits\": {\n          \"Value\": true\n        },\n        \"AdditionalExpenses\": {\n          \"Value\": true\n        },\n        \"AllCustomItems\": {\n          \"Value\": false\n        }\n      },\n      \"ProductIds\": {\n        \"Value\": [\n          \"507d93e6-9fb5-4734-a6d1-977afc4dfdff\"\n        ]\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "146c1165-4c53-4095-8b6e-bd5e0d8f9641",
+          "name": "Delete billing automations",
+          "request": {
+            "name": "Delete billing automations",
+            "description": {
+              "content": "Deletes specified billing automations.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "connector",
+                "v1",
+                "billingAutomations",
+                "delete"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"AccessToken\": \"<string>\",\n  \"BillingAutomationIds\": [\n    \"<uuid>\",\n    \"<uuid>\"\n  ],\n  \"Client\": \"<string>\",\n  \"ClientToken\": \"<string>\",\n  \"EnterpriseId\": \"<uuid>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "d3bd5992-5b49-47e2-bbf3-00e32cc2cc84",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "delete"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "cbe07313-cc83-4626-8141-4d5801d003b3",
+              "name": "Server has successfully fulfilled the request and there is no additional information to send back.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "delete"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9a1cdaf8-0b4b-4c81-9c8e-6d13c54a93be",
+              "name": "Error caused by the client app, e.g. in case of malformed request or invalid identifier of a resource. In most cases, such an error signifies a bug in the client app (consumer of the API).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "delete"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "af62d862-b663-4cd8-803f-024dae7db069",
+              "name": "Error caused by usage of invalid ClientToken, AccessToken, or you may not have the necessary permission to use the endpoint.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "delete"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e14173f8-4d3a-4b31-a3ea-995a22759c09",
+              "name": "Server error that should be reported to the end user of the client app. Happens for example when the server-side validation fails or when a business-logic check is violated.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "delete"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "43a848fa-e7d7-4c20-b9fe-9635e6bf1c4c",
+              "name": "Error caused by heavy request that takes too long to process (typically tens of seconds). To get around this, request data in smaller batches. For more information, see [Request timeouts](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-timeouts)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "delete"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Request Timeout",
+              "code": 408,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "0e61ac8e-ddc4-4793-b19e-2ebecc71df0c",
+              "name": "Error caused by too many requests sent in a given amount of time. Response contains `Retry-After` header indicating how long the user agent should wait before making a follow-up request. For more information, see [Request limits](https://mews-systems.gitbook.io/connector-api/guidelines/requests#request-limits).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "delete"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2674771e-ca79-435a-ae86-c6802cfc600f",
+              "name": "Unexpected error on the Mews side. This may be due to a software fault. If such a situation occurs, the error will be logged and the development team notified, however you can raise an issue through GitHub on our [documentation repository](https://github.com/MewsSystems/gitbook-connector-api).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "connector",
+                    "v1",
+                    "billingAutomations",
+                    "delete"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ClientToken\": \"E0D439EE522F44368DC78E1BFB03710C-D24FB11DBE31D4621C4817E028D9E1D\",\n  \"AccessToken\": \"C66EF7B239D24632943D115EDE9CB810-EA00F8FD8294692C940F6B5A8F9453D\",\n  \"Client\": \"Sample Client 1.0.0\",\n  \"BillingAutomationIds\": [\n    \"ecd64eec-4423-4c65-b844-814b9199856d\",\n    \"13e6b16e-39bc-4cb1-8610-70ecdb4f91cc\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"RequestId\": \"string\",\n  \"Details\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.mews.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "005659dc-c03c-40a1-9e8f-b6e99a80cb9f",
+    "name": "BookingEngineApi Account notes Billing automations API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "",
+      "type": "text/plain"
+    }
+  }
+}

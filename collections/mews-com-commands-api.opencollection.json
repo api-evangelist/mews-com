@@ -1,0 +1,123 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "BookingEngineApi Account notes Commands API",
+    "version": "v1"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Commands",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get all commands by ids",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mews.com/api/connector/v1/commands/getAllByIds",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns all commands by their identifiers."
+        },
+        {
+          "info": {
+            "name": "Get all commands",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mews.com/api/connector/v1/commands/getAllActive",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns all commands the are still active from the client application point of view. That means commands that are in either `Pending` or `Received` state."
+        },
+        {
+          "info": {
+            "name": "Add printer command",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mews.com/api/connector/v1/commands/addPrinter",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Adds a new printer command representing printing of the specified document on a printer. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property)."
+        },
+        {
+          "info": {
+            "name": "Add key cutter command",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mews.com/api/connector/v1/commands/addKeyCutter",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Adds a new key cutter command representing cutting of a key for the specified reservation. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property)."
+        },
+        {
+          "info": {
+            "name": "Add payment command",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mews.com/api/connector/v1/commands/addPaymentTerminal",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "> ### Restricted!\r\n> This operation is part of a custom workflow for Mews partners such as POS systems to access Mews Payment Terminals.\r\n> See [Mews Payment Terminals](https://mews-systems.gitbook.io/connector-api/use-cases/mews-terminals).\r\n\r\nAdds a new Mews Payment Terminal command for taking a customer payment.\r\nThe operation instructs a specified terminal device to take a payment from a specified customer for a specified amount."
+        },
+        {
+          "info": {
+            "name": "Update command",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mews.com/api/connector/v1/commands/update",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates state of a command."
+        },
+        {
+          "info": {
+            "name": "Get all fiscal machine commands",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mews.com/api/connector/v1/fiscalMachineCommands/getAll",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns fiscal machine commands. The commands can be filtered either by unique command identifiers or by `Device` unique identifiers and command states. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/)."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

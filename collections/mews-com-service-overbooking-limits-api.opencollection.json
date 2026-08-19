@@ -1,0 +1,63 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "BookingEngineApi Account notes Service overbooking limits API",
+    "version": "v1"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Service overbooking limits",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get all service overbooking limits",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mews.com/api/connector/v1/serviceOverbookingLimits/getAll",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns all service overbooking limits. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/)."
+        },
+        {
+          "info": {
+            "name": "Set service overbooking limits",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mews.com/api/connector/v1/serviceOverbookingLimits/set",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Adds new service overbooking limits with the specified conditions. Past overbooking limits cannot be updated outside of `OperationalEditableHistoryInterval`. Care is needed to specify `FirstTimeUnitStartUtc` and `LastTimeUnitStartUtc` in the correct format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes). This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/)."
+        },
+        {
+          "info": {
+            "name": "Clear service overbooking limits",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.mews.com/api/connector/v1/serviceOverbookingLimits/clear",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Deletes service overbooking limits that exactly match the specified conditions. This operation is intended to be used alongside `serviceOverbookingLimits/set`. The specified conditions must be met exactly. The time interval, however, does not need to correspond to an existing service overbooking limit in the system, instead the API uses a splicing algorithm to work out how to divide up any existing service overbooking limit to meet the specified time interval. Past overbooking limits cannot be c"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
