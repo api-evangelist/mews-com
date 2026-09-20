@@ -1,0 +1,187 @@
+slug: mews-com
+provider: Mews
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Travel & Hospitality
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 17
+edges:
+- tag: Reservations
+  spec_file: mews-com-reservations-api-openapi.yml
+  capability_id: BC-4020
+  capability_id_l1: BC-4020
+  capability_name: Reservation & Booking Management
+  confidence: 0.95
+  evidence: POST /api/connector/v1/reservations/add "Add reservations"; reservations_confirm "Confirm
+    reservation"; reservations_cancel "Cancel reservation"; reservations_price "Price reservations"
+  reason: Full reservation lifecycle in a hotel PMS — capture, confirm, update, cancel, pricing. Spans
+    capture, modification and confirmation sub-capabilities, so the L1 Reservation & Booking Management
+    is the honest level.
+- tag: Customers
+  spec_file: mews-com-customers-api-openapi.yml
+  capability_id: BC-4040.10
+  capability_id_l1: BC-4040
+  capability_name: Guest Profile & Identity Management
+  confidence: 0.85
+  evidence: customers_add  Add customer; customers_merge  Merge customers; customers_getRelationships  Get
+    customers relationships
+  reason: Creation, update, search and de-duplication (merge) of the guest profile record in a hospitality
+    PMS — squarely Guest Profile & Identity Management. Slight overlap with generic Customer Data Management,
+    but the vendor context is hotel guests.
+- tag: Service overbooking limits
+  spec_file: mews-com-service-overbooking-limits-api-openapi.yml
+  capability_id: BC-4030.30
+  capability_id_l1: BC-4030
+  capability_name: Inventory & Capacity Controls
+  confidence: 0.85
+  evidence: '"Set service overbooking limits" / "Clear service overbooking limits", schema ServiceOverbookingLimitSetData'
+  reason: Explicit overbooking limit configuration is an inventory and capacity control (overbooking strategy)
+    in travel revenue management.
+- tag: Credit cards
+  spec_file: mews-com-credit-cards-api-openapi.yml
+  capability_id: BC-4020.60
+  capability_id_l1: BC-4020
+  capability_name: Booking Payment & Settlement
+  confidence: 0.8
+  evidence: creditCards_charge  Charge credit card; creditCards_addTokenized  Add tokenized credit card
+  reason: Operations tokenise and charge guest credit cards within the hospitality PMS, i.e. booking-level
+    payment and charge capture. Maps to Booking Payment & Settlement; some ambiguity as it could be seen
+    as generic payment processing.
+- tag: Identity documents
+  spec_file: mews-com-identity-documents-api-openapi.yml
+  capability_id: BC-4040.60
+  capability_id_l1: BC-4040
+  capability_name: Traveller Document & Compliance Data Management
+  confidence: 0.8
+  evidence: identityDocuments_add  Add identity documents; IdentityDocumentTypeEnum, IdentityDocumentV20241025
+  reason: CRUD over guest travel/identity documents (passport, ID) held against the guest record for registration
+    and border/reporting obligations — Traveller Document & Compliance Data Management.
+- tag: Loyalty memberships
+  spec_file: mews-com-loyalty-memberships-api-openapi.yml
+  capability_id: BC-4050
+  capability_id_l1: BC-4050
+  capability_name: Travel Loyalty Programme Management
+  confidence: 0.8
+  evidence: loyaltyMemberships_getAll / add / update / delete; schemas LoyaltyMembership, LoyaltyMembershipStateEnum
+  reason: Full CRUD over guest loyalty memberships in a hospitality platform — operation of a traveller
+    loyalty programme. Kept at L1 because membership records span enrolment, status and recognition rather
+    than one named sub-capability.
+- tag: Resource categories
+  spec_file: mews-com-resource-categories-api-openapi.yml
+  capability_id: BC-4000.10
+  capability_id_l1: BC-4000
+  capability_name: Lodging Product Management
+  confidence: 0.78
+  evidence: '"Get all resource categories", schemas ResourceCategory, ResourceCategoryType, ResourceClassification,
+    ResourceCategoryImageAssignment'
+  reason: Resource categories in a hotel PMS are room-type/space-type definitions with classifications
+    and imagery — accommodation product definition.
+- tag: Vouchers
+  spec_file: mews-com-vouchers-api-openapi.yml
+  capability_id: BC-4030.50
+  capability_id_l1: BC-4030
+  capability_name: Promotion & Discount Management
+  confidence: 0.78
+  evidence: 'POST /api/connector/v1/vouchers/add  Add vouchers; schemas: VoucherExtent, RateForExtent,
+    VoucherTypeEnum, VoucherAssignment'
+  reason: Vouchers are defined with an extent and RateForExtent, i.e. they grant access to particular
+    rates for particular companies — definition and operation of promotions/closed-user-group pricing
+    on lodging products. Full CRUD lifecycle supports the promotion-management reading.
+- tag: DistributorApi
+  spec_file: mews-com-distributorapi-api-openapi.yml
+  capability_id: BC-4010.10
+  capability_id_l1: BC-4010
+  capability_name: Direct Channel Distribution Management
+  confidence: 0.75
+  evidence: POST /api/distributor/v1/hotels/getAvailability; POST /api/distributor/v1/reservations/getPricing;
+    schema BookingEngineParameters
+  reason: The Distributor API powers the Mews Booking Engine — availability, pricing, vouchers and payment
+    configuration exposed for the property's own direct booking channel, i.e. Direct Channel Distribution
+    Management. Some ambiguity as it also touches reservation capture.
+- tag: Loyalty programs
+  spec_file: mews-com-loyalty-programs-api-openapi.yml
+  capability_id: BC-4050.10
+  capability_id_l1: BC-4050
+  capability_name: Loyalty Programme Design
+  confidence: 0.75
+  evidence: loyaltyPrograms_add  Add loyalty programs; schemas LoyaltyProgram, LoyaltyProgramType, LoyaltyProgramSubscription
+  reason: Defines and maintains loyalty programme entities and their types/subscriptions for hotels —
+    programme architecture definition rather than earn/burn operation.
+- tag: Rates
+  spec_file: mews-com-rates-api-openapi.yml
+  capability_id: BC-4030.20
+  capability_id_l1: BC-4030
+  capability_name: Pricing & Rate Strategy Management
+  confidence: 0.75
+  evidence: '"Add rates", "Set rates", "Update rate price", "Get rate pricing"; LengthRestriction, EarlinessRestriction,
+    RatePriceUpdate, CategoryAdjustment'
+  reason: Creating and adjusting hotel rate plans, their prices, adjustments and stay restrictions is
+    rate strategy and pricing management for lodging products.
+- tag: Accounts
+  spec_file: mews-com-accounts-api-openapi.yml
+  capability_id: BC-4040.10
+  capability_id_l1: BC-4040
+  capability_name: Guest Profile & Identity Management
+  confidence: 0.72
+  evidence: accounts_merge 'Merge accounts'; accounts_update 'Update accounts'; schemas CustomerAccount,
+    CompanyAccount
+  reason: Maintenance and merging (deduplication) of customer/company account records in the PMS maps
+    to guest profile and identity stewardship.
+- tag: Restrictions
+  spec_file: mews-com-restrictions-api-openapi.yml
+  capability_id: BC-4030.30
+  capability_id_l1: BC-4030
+  capability_name: Inventory & Capacity Controls
+  confidence: 0.72
+  evidence: '"Set restrictions" / "Clear restrictions", schemas RestrictionConditions, RestrictionTypeEnum,
+    RestrictionExceptions, Hours, DaysParameters'
+  reason: Setting and clearing booking restrictions (length-of-stay/closed-to-arrival style conditions)
+    against resource categories is inventory and capacity control in revenue management.
+- tag: Voucher codes
+  spec_file: mews-com-voucher-codes-api-openapi.yml
+  capability_id: BC-4030.50
+  capability_id_l1: BC-4030
+  capability_name: Promotion & Discount Management
+  confidence: 0.72
+  evidence: 'POST /api/connector/v1/voucherCodes/add  Add voucher codes; schemas: VoucherCode, VoucherCodeFilterParameters,
+    ActivityStateEnum'
+  reason: Voucher codes in the Mews booking engine are the discount/promotional codes that unlock specific
+    rates; creating and retiring them is promotion and discount operation across travel products. Codes
+    alone (without the parent voucher's rate extent) leave some ambiguity, so not higher.
+- tag: BookingEngineApi
+  spec_file: mews-com-bookingengineapi-api-openapi.yml
+  capability_id: BC-4010.10
+  capability_id_l1: BC-4010
+  capability_name: Direct Channel Distribution Management
+  confidence: 0.7
+  evidence: POST /api/bookingEngine/v1/services/getAvailability; POST /api/bookingEngine/v1/reservations/getPricing;
+    /api/bookingEngine/v1/enterprises/getPaymentConfiguration
+  reason: The Booking Engine surface exposes availability, pricing, availability blocks and payment configuration
+    for the property's own web/mobile booking channel — direct channel distribution of lodging products.
+- tag: Loyalty tiers
+  spec_file: mews-com-loyalty-tiers-api-openapi.yml
+  capability_id: BC-4050.10
+  capability_id_l1: BC-4050
+  capability_name: Loyalty Programme Design
+  confidence: 0.7
+  evidence: loyaltyTiers_add  Add loyalty tiers; schemas LoyaltyTier, LoyaltyTierUpdateParameters
+  reason: Creates and maintains the tier structure of loyalty programmes, which the frame places under
+    programme design (tier structure, benefit catalogue). Could arguably be tier status operations, hence
+    0.7.
+- tag: Payments
+  spec_file: mews-com-payments-api-openapi.yml
+  capability_id: BC-4020.60
+  capability_id_l1: BC-4020
+  capability_name: Booking Payment & Settlement
+  confidence: 0.7
+  evidence: '"Refund payment", "Add credit card payment", "Add external payment", "Add alternative payment";
+    CreditCardPaymentParameters, PaymentRefundParameters'
+  reason: Capture, recording and refund of guest payments against folios in a property management system
+    — booking-level payment and charge capture rather than corporate treasury or subscription billing.
