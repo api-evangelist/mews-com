@@ -11,7 +11,7 @@ capability_model:
   attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
     CC BY 4.0
   notice: NOTICE
-edge_count: 17
+edge_count: 20
 edges:
 - tag: Reservations
   spec_file: mews-com-reservations-api-openapi.yml
@@ -134,6 +134,17 @@ edges:
     CompanyAccount
   reason: Maintenance and merging (deduplication) of customer/company account records in the PMS maps
     to guest profile and identity stewardship.
+- tag: Bills
+  spec_file: mews-com-bills-api-openapi.yml
+  capability_id: BC-200.30
+  capability_id_l1: BC-200
+  capability_name: Accounts Receivable Management
+  confidence: 0.72
+  evidence: bills_getPdf  Get bill PDF; bills_close  Close bill; schemas BillPdfFile, InvoicePaymentData,
+    TaxBreakdownItem
+  reason: Creation, closing and PDF issuance of guest bills/invoices is customer invoicing — accounts
+    receivable management.
+  recovered_from: sweep-20260828T235257Z-edges.json
 - tag: Restrictions
   spec_file: mews-com-restrictions-api-openapi.yml
   capability_id: BC-4030.30
@@ -165,6 +176,17 @@ edges:
     /api/bookingEngine/v1/enterprises/getPaymentConfiguration
   reason: The Booking Engine surface exposes availability, pricing, availability blocks and payment configuration
     for the property's own web/mobile booking channel — direct channel distribution of lodging products.
+- tag: Companies
+  spec_file: mews-com-companies-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.7
+  evidence: POST /api/connector/v1/companies/add 'Add company', 'Update company', 'Delete companies';
+    schemas Company, CreditRating, CompanyOptions
+  reason: Full CRUD over company (corporate/agency account) master records including credit rating attributes
+    — maintenance of the business-customer master record.
+  recovered_from: sweep-20260828T235257Z-edges.json
 - tag: Loyalty tiers
   spec_file: mews-com-loyalty-tiers-api-openapi.yml
   capability_id: BC-4050.10
@@ -185,3 +207,15 @@ edges:
     CreditCardPaymentParameters, PaymentRefundParameters'
   reason: Capture, recording and refund of guest payments against folios in a property management system
     — booking-level payment and charge capture rather than corporate treasury or subscription billing.
+- tag: Products
+  spec_file: mews-com-products-api-openapi.yml
+  capability_id: BC-440.20
+  capability_id_l1: BC-440
+  capability_name: Price List Management
+  confidence: 0.7
+  evidence: products_getPricing  Get product pricing; products_updatePrice  Update product pricing; schemas
+    ProductPricing, RelativeProductPrice, ProductPriceUpdate
+  reason: Beyond listing products, the write operations set and update product prices, which is price
+    book / price list maintenance for the property's sellable products. Catalogue listing is secondary;
+    pricing is the explicit and dominant surface.
+  recovered_from: sweep-20260828T235257Z-edges.json
