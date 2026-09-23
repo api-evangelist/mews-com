@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Enterprises API
+  title: Connector Enterprises API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -12,7 +17,7 @@ paths:
       tags:
       - Enterprises
       summary: Get all enterprises
-      description: Returns all enterprises within scope of the `Access Token`, optionally filtered by enterprise identifiers and external identifiers. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Returns all enterprises within scope of the `Access Token`, optionally filtered by enterprise identifiers and external identifiers. Note this operation uses Pagination and supports Portfolio Access Tokens.
       operationId: enterprises_getAll
       requestBody:
         content:
@@ -133,6 +138,38 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     EnterpriseFilterParameters:
       title: EnterpriseFilterParameters
       required:
@@ -157,33 +194,33 @@ components:
         EnterpriseIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of the [Enterprises](https://mews-systems.gitbook.io/connector-api/operations/#enterprise). If not specified, all enterprises within scope of the Access Token are returned.
-          nullable: true
         ExternalIdentifiers:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
           description: Identifiers of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/#enterprise) from external system.
-          nullable: true
         LinkedUtc:
           title: Time interval
           allOf:
           - $ref: '#/components/schemas/TimeFilterInterval'
           description: Interval in which enterprises were linked.
-          nullable: true
           x-max-interval-in-months: 3
         UpdatedUtc:
           title: Time interval
           allOf:
           - $ref: '#/components/schemas/TimeFilterInterval'
           description: Interval in which enterprises were updated.
-          nullable: true
           x-max-interval-in-months: 3
         Limitation:
           allOf:
@@ -191,6 +228,107 @@ components:
           description: Limitation on the quantity of data returned.
       additionalProperties: false
       x-schema-id: EnterpriseFilterParameters
+    PricingModeEnum:
+      title: Pricing
+      enum:
+      - Gross
+      - Net
+      type: string
+      description: '
+
+
+        Gross (The enterprise shows amount with gross prices.)
+
+
+        Net (The enterprise shows amount with net prices.)'
+      x-enumNames:
+      - Gross
+      - Net
+      x-enumDescriptions:
+      - The enterprise shows amount with gross prices.
+      - The enterprise shows amount with net prices.
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    EnterpriseSubscription:
+      title: Enterprise subscription
+      type: object
+      properties:
+        TaxIdentifier:
+          type:
+          - string
+          - 'null'
+          description: Tax identifier of the `Enterprise`.
+      additionalProperties: false
+      description: ''
+      x-schema-id: EnterpriseSubscription
+    OldAddress:
+      title: Address
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the address.
+          format: uuid
+        Line1:
+          type:
+          - string
+          - 'null'
+          description: First line of the address.
+        Line2:
+          type:
+          - string
+          - 'null'
+          description: Second line of the address.
+        City:
+          type:
+          - string
+          - 'null'
+          description: The city.
+        PostalCode:
+          type:
+          - string
+          - 'null'
+          description: Postal code.
+        CountryCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-1 code of the `Country`.
+        CountrySubdivisionCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
+        Latitude:
+          type:
+          - number
+          - 'null'
+          description: The latitude.
+          format: double
+        Longitude:
+          type:
+          - number
+          - 'null'
+          description: The longitude.
+          format: double
+      additionalProperties: false
+      description: ''
+      x-schema-id: OldAddress
     EnterprisePortfolio:
       title: Enterprise
       required:
@@ -223,14 +361,16 @@ components:
           format: uuid
         ExternalIdentifier:
           maxLength: 255
-          type: string
+          type:
+          - string
+          - 'null'
           description: Identifier of the enterprise from external system.
-          nullable: true
         HoldingKey:
           maxLength: 255
-          type: string
+          type:
+          - string
+          - 'null'
           description: Identifies an enterprise in the external system of a holding company. The holding company may administer multiple portfolios.
-          nullable: true
         ChainId:
           type: string
           description: Unique identifier of the chain to which the enterprise belongs.
@@ -255,9 +395,10 @@ components:
           description: Name of the enterprise.
         ShortName:
           maxLength: 11
-          type: string
+          type:
+          - string
+          - 'null'
           description: Short name of the enterprise used in Manager Report exports.
-          nullable: true
         TimeZoneIdentifier:
           minLength: 1
           type: string
@@ -296,34 +437,40 @@ components:
           type: string
           description: Editable history interval for operational data in ISO 8601 duration format.
         BusinessDayClosingOffset:
-          type: string
+          type:
+          - string
+          - 'null'
           description: The offset value for the business day closing time, in ISO 8601 duration format.
-          nullable: true
         WebsiteUrl:
-          type: string
+          type:
+          - string
+          - 'null'
           description: URL of the enterprise website.
           format: uri
-          nullable: true
         Email:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Email address of the enterprise.
           format: email
-          nullable: true
         Phone:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Phone number of the enterprise.
           format: tel
-          nullable: true
         LogoImageId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the `Image` of the enterprise logo.
           format: uuid
-          nullable: true
         CoverImageId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the `Image` of the enterprise cover.
           format: uuid
-          nullable: true
         Pricing:
           title: Pricing
           allOf:
@@ -342,10 +489,11 @@ components:
           - The enterprise shows amount with gross prices.
           - The enterprise shows amount with net prices.
         TaxPrecision:
-          type: integer
+          type:
+          - integer
+          - 'null'
           description: Tax precision used for financial calculations in the enterprise. If `null`, `Currency` precision is used.
           format: int32
-          nullable: true
         AddressId:
           type: string
           description: Unique identifier of the `Address` of the enterprise.
@@ -373,70 +521,6 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: EnterprisePortfolio
-    OldAddress:
-      title: Address
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the address.
-          format: uuid
-        Line1:
-          type: string
-          description: First line of the address.
-          nullable: true
-        Line2:
-          type: string
-          description: Second line of the address.
-          nullable: true
-        City:
-          type: string
-          description: The city.
-          nullable: true
-        PostalCode:
-          type: string
-          description: Postal code.
-          nullable: true
-        CountryCode:
-          type: string
-          description: ISO 3166-1 code of the `Country`.
-          nullable: true
-        CountrySubdivisionCode:
-          type: string
-          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
-          nullable: true
-        Latitude:
-          type: number
-          description: The latitude.
-          format: double
-          nullable: true
-        Longitude:
-          type: number
-          description: The longitude.
-          format: double
-          nullable: true
-      additionalProperties: false
-      description: ''
-      x-schema-id: OldAddress
-    PricingModeEnum:
-      title: Pricing
-      enum:
-      - Gross
-      - Net
-      type: string
-      description: '
-
-
-        Gross (The enterprise shows amount with gross prices.)
-
-
-        Net (The enterprise shows amount with net prices.)'
-      x-enumNames:
-      - Gross
-      - Net
-      x-enumDescriptions:
-      - The enterprise shows amount with gross prices.
-      - The enterprise shows amount with net prices.
     EnterpriseResult:
       title: EnterpriseResult
       required:
@@ -449,65 +533,10 @@ components:
             $ref: '#/components/schemas/EnterprisePortfolio'
           description: The filtered enterprises.
         Cursor:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the last and hence oldest enterprise returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older enterprises.
           format: uuid
-          nullable: true
       additionalProperties: false
       x-schema-id: EnterpriseResult
-    EnterpriseSubscription:
-      title: Enterprise subscription
-      type: object
-      properties:
-        TaxIdentifier:
-          type: string
-          description: Tax identifier of the `Enterprise`.
-          nullable: true
-      additionalProperties: false
-      description: ''
-      x-schema-id: EnterpriseSubscription
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type: string
-          format: date-time
-          nullable: true
-        EndUtc:
-          type: string
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type: string
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation

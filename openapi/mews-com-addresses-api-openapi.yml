@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Addresses API
+  title: Connector Addresses API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -12,7 +17,9 @@ paths:
       tags:
       - Addresses
       summary: Get all addresses
-      description: "Returns all addresses associated with the specified accounts within the enterprise. \nNote this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property)."
+      description: 'Returns all addresses associated with the specified accounts within the enterprise.
+
+        Note this operation uses Pagination and supports Portfolio Access Tokens.'
       operationId: addresses_getAll
       requestBody:
         content:
@@ -106,7 +113,7 @@ paths:
       tags:
       - Addresses
       summary: Add addresses
-      description: Adds one or more new addresses to the system and assigns them to specified accounts. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      description: Adds one or more new addresses to the system and assigns them to specified accounts. Note this operation supports Portfolio Access Tokens.
       operationId: addresses_add
       requestBody:
         content:
@@ -197,7 +204,7 @@ paths:
       tags:
       - Addresses
       summary: Update addresses
-      description: Updates one or more existing addresses in the system, assigned to specified accounts. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      description: Updates one or more existing addresses in the system, assigned to specified accounts. Note this operation supports Portfolio Access Tokens.
       operationId: addresses_update
       requestBody:
         content:
@@ -293,7 +300,7 @@ paths:
       tags:
       - Addresses
       summary: Delete addresses
-      description: Deletes one or more addresses in the system. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      description: Deletes one or more addresses in the system. Note this operation supports Portfolio Access Tokens.
       operationId: addresses_delete
       requestBody:
         content:
@@ -359,71 +366,34 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    StringUpdateValue:
-      title: String update value
-      type: object
-      properties:
-        Value:
-          type: string
-          description: Value which is to be updated.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: StringUpdateValue
-    AddressAddParameters:
-      title: Account address parameters
+    AddressResult:
+      title: AddressResult
       required:
-      - AccountId
+      - Addresses
       type: object
       properties:
-        AccountId:
-          type: string
-          description: Unique identifier of a Company or a Customer within the enterprise.
-          format: uuid
-        Line1:
-          maxLength: 255
-          type: string
-          description: First line of the address.
-          nullable: true
-        Line2:
-          maxLength: 255
-          type: string
-          description: Second line of the address.
-          nullable: true
-        City:
-          maxLength: 255
-          type: string
-          description: The city.
-          nullable: true
-        PostalCode:
-          maxLength: 255
-          type: string
-          description: Postal code.
-          format: postal-code
-          nullable: true
-        CountryCode:
-          type: string
-          description: ISO 3166-1 alpha-2 code of the Country.
-          nullable: true
-        CountrySubdivisionCode:
-          type: string
-          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
-          nullable: true
-        Latitude:
-          maximum: 90
-          minimum: -90
-          type: number
-          description: The latitude in range of -90 to 90.
-          format: double
-          nullable: true
-        Longitude:
-          maximum: 180
-          minimum: -180
-          type: number
-          description: The longitude in range of -180 to 180.
-          format: double
-          nullable: true
+        Addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountAddress'
+          description: The collection of added or modified Account addresses, containing address and account information.
       additionalProperties: false
-      x-schema-id: AddressAddParameters
+      x-schema-id: AddressResult
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     AddressFilterParameters:
       title: AddressFilterParameters
       required:
@@ -452,124 +422,138 @@ components:
         ChainIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
-          nullable: true
         AccountIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of [Companies](https://mews-systems.gitbook.io/connector-api/operations/companies/#company) or [Customers](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) within the enterprise. Required if no other filter is provided.
-          nullable: true
         AddressIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of [Addresses](https://mews-systems.gitbook.io/connector-api/operations/#account-address) within the enterprise. Use this property if you want to fetch specific addresses. Required if no other filter is provided.
-          nullable: true
         UpdatedUtc:
           title: Time interval
           allOf:
           - $ref: '#/components/schemas/TimeFilterInterval'
           description: Interval of Address last update date and time. Required if no other filter is provided.
-          nullable: true
           x-max-interval-in-months: 3
         ActivityStates:
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             $ref: '#/components/schemas/ActivityStates'
           description: Whether to return only active, only deleted or both records.
-          nullable: true
       additionalProperties: false
       x-schema-id: AddressFilterParameters
-    AccountAddress:
-      title: Account address
+    Limitation:
+      title: Limitation
       required:
-      - AccountType
+      - Count
       type: object
       properties:
-        Id:
-          type: string
-          description: Unique identifier of the address.
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
           format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    AddressAddParameters:
+      title: Account address parameters
+      required:
+      - AccountId
+      type: object
+      properties:
         AccountId:
           type: string
-          description: Unique identifier of a [Company](https://mews-systems.gitbook.io/connector-api/operations/companies/#company) or a [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) within the enterprise.
+          description: Unique identifier of a Company or a Customer within the enterprise.
           format: uuid
-        ChainId:
-          type: string
-          description: Unique identifier of the chain.
-          format: uuid
-          nullable: true
-        AccountType:
-          $ref: '#/components/schemas/AccountType'
         Line1:
-          maxLength: 1023
-          type: string
+          maxLength: 255
+          type:
+          - string
+          - 'null'
           description: First line of the address.
-          nullable: true
         Line2:
           maxLength: 255
-          type: string
+          type:
+          - string
+          - 'null'
           description: Second line of the address.
-          nullable: true
         City:
           maxLength: 255
-          type: string
+          type:
+          - string
+          - 'null'
           description: The city.
-          nullable: true
         PostalCode:
           maxLength: 255
-          type: string
+          type:
+          - string
+          - 'null'
           description: Postal code.
-          nullable: true
+          format: postal-code
         CountryCode:
-          type: string
+          type:
+          - string
+          - 'null'
           description: ISO 3166-1 alpha-2 code of the Country.
-          nullable: true
         CountrySubdivisionCode:
-          type: string
-          description: ISO 3166-2 code of the administrative division, e.g. DE-BW.
-          nullable: true
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
         Latitude:
-          type: number
-          description: The latitude.
+          maximum: 90
+          minimum: -90
+          type:
+          - number
+          - 'null'
+          description: The latitude in range of -90 to 90.
           format: double
-          nullable: true
         Longitude:
-          type: number
-          description: The longitude.
+          maximum: 180
+          minimum: -180
+          type:
+          - number
+          - 'null'
+          description: The longitude in range of -180 to 180.
           format: double
-          nullable: true
-        UpdatedUtc:
-          type: string
-          description: Last update date and time of the address in UTC timezone in ISO 8601 format.
-          format: date-time
-          nullable: true
-        IsActive:
-          type: boolean
-          description: Whether the address is still active.
       additionalProperties: false
-      x-schema-id: AccountAddress
-    AccountType:
-      title: Account type
-      enum:
-      - Company
-      - Customer
-      type: string
-      description: A discriminator specifying the account type, e.g. `Customer` or `Company`
+      x-schema-id: AddressAddParameters
     Unit:
       type: object
       additionalProperties: false
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
     MultipleAddressAddParameters:
       title: MultipleAddressAddParameters
       required:
@@ -592,10 +576,11 @@ components:
           type: string
           description: Name and version of the client application.
         ChainId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
           format: uuid
-          nullable: true
         Addresses:
           maxItems: 1000
           minItems: 1
@@ -605,161 +590,29 @@ components:
           description: Collection of addresses to be created.
       additionalProperties: false
       x-schema-id: MultipleAddressAddParameters
-    AddressDeleteParameters:
-      title: AddressDeleteParameters
-      required:
-      - AccessToken
-      - AddressIds
-      - Client
-      - ClientToken
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ChainId:
-          type: string
-          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        AddressIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Addresses](https://mews-systems.gitbook.io/connector-api/operations/#account-address) within the enterprise to be deleted.
-      additionalProperties: false
-      x-schema-id: AddressDeleteParameters
-    AddressResult:
-      title: AddressResult
-      required:
-      - Addresses
-      type: object
-      properties:
-        Addresses:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountAddress'
-          description: The collection of added or modified Account addresses, containing address and account information.
-      additionalProperties: false
-      x-schema-id: AddressResult
-    AddressUpdateParameters:
-      title: Account address update parameters
-      required:
-      - AddressId
-      type: object
-      properties:
-        AddressId:
-          type: string
-          description: Unique identifier of the address.
-          format: uuid
-        Line1:
-          title: String update value
-          maxLength: 255
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: First line of the address.
-          nullable: true
-        Line2:
-          title: String update value
-          maxLength: 255
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Second line of the address.
-          nullable: true
-        City:
-          title: String update value
-          maxLength: 255
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: The city.
-          nullable: true
-        PostalCode:
-          title: String update value
-          maxLength: 255
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Postal code.
-          format: postal-code
-          nullable: true
-        CountryCode:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: ISO 3166-1 alpha-2 code of the Country.
-          nullable: true
-        CountrySubdivisionCode:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: AddressUpdateParameters
-    ActivityStates:
-      title: Activity state
+    AccountType:
+      title: Account type
       enum:
-      - Deleted
-      - Active
+      - Company
+      - Customer
       type: string
-      description: Activity states used for filtering.
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    AddressResultPage:
-      title: AddressResultPage
-      required:
-      - Addresses
-      type: object
-      properties:
-        Addresses:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountAddress'
-          description: The collection of Account addresses, containing address and account information.
-        Cursor:
-          type: string
-          description: Unique identifier of the last and hence oldest address item returned. This can be used in Limitation in a subsequent request to fetch the next batch of older Account address.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: AddressResultPage
+      description: A discriminator specifying the account type, e.g. `Customer` or `Company`
     TimeFilterInterval:
       title: Time interval
       type: object
       properties:
         StartUtc:
-          type: string
+          type:
+          - string
+          - 'null'
           format: date-time
-          nullable: true
         EndUtc:
-          type: string
+          type:
+          - string
+          - 'null'
           format: date-time
-          nullable: true
       additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
       x-schema-id: TimeFilterInterval
     MultipleAddressUpdateParameters:
       title: MultipleAddressUpdateParameters
@@ -783,10 +636,11 @@ components:
           type: string
           description: Name and version of the client application.
         ChainId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
           format: uuid
-          nullable: true
         AddressUpdates:
           maxItems: 1000
           minItems: 1
@@ -796,19 +650,196 @@ components:
           description: Collection of addresses to be updated.
       additionalProperties: false
       x-schema-id: MultipleAddressUpdateParameters
-    Limitation:
-      title: Limitation
+    AddressResultPage:
+      title: AddressResultPage
       required:
-      - Count
+      - Addresses
       type: object
       properties:
-        Count:
-          type: integer
-          format: int32
+        Addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountAddress'
+          description: The collection of Account addresses, containing address and account information.
         Cursor:
-          type: string
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest address item returned. This can be used in Limitation in a subsequent request to fetch the next batch of older Account address.
           format: uuid
-          nullable: true
       additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
+      x-schema-id: AddressResultPage
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    AddressDeleteParameters:
+      title: AddressDeleteParameters
+      required:
+      - AccessToken
+      - AddressIds
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        AddressIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Addresses](https://mews-systems.gitbook.io/connector-api/operations/#account-address) within the enterprise to be deleted.
+      additionalProperties: false
+      x-schema-id: AddressDeleteParameters
+    AddressUpdateParameters:
+      title: Account address update parameters
+      required:
+      - AddressId
+      type: object
+      properties:
+        AddressId:
+          type: string
+          description: Unique identifier of the address.
+          format: uuid
+        Line1:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: First line of the address.
+        Line2:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Second line of the address.
+        City:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The city.
+        PostalCode:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Postal code.
+          format: postal-code
+        CountryCode:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: ISO 3166-1 alpha-2 code of the Country.
+        CountrySubdivisionCode:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
+      additionalProperties: false
+      x-schema-id: AddressUpdateParameters
+    AccountAddress:
+      title: Account address
+      required:
+      - AccountType
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the address.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of a [Company](https://mews-systems.gitbook.io/connector-api/operations/companies/#company) or a [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) within the enterprise.
+          format: uuid
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain.
+          format: uuid
+        AccountType:
+          $ref: '#/components/schemas/AccountType'
+        Line1:
+          maxLength: 1023
+          type:
+          - string
+          - 'null'
+          description: First line of the address.
+        Line2:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: Second line of the address.
+        City:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: The city.
+        PostalCode:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: Postal code.
+        CountryCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-1 alpha-2 code of the Country.
+        CountrySubdivisionCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-2 code of the administrative division, e.g. DE-BW.
+        Latitude:
+          type:
+          - number
+          - 'null'
+          description: The latitude.
+          format: double
+        Longitude:
+          type:
+          - number
+          - 'null'
+          description: The longitude.
+          format: double
+        UpdatedUtc:
+          type:
+          - string
+          - 'null'
+          description: Last update date and time of the address in UTC timezone in ISO 8601 format.
+          format: date-time
+        IsActive:
+          type: boolean
+          description: Whether the address is still active.
+      additionalProperties: false
+      x-schema-id: AccountAddress

@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Service overbooking limits API
+  title: Connector Service overbooking limits API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -12,7 +17,7 @@ paths:
       tags:
       - Service overbooking limits
       summary: Get all service overbooking limits
-      description: Returns all service overbooking limits. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Returns all service overbooking limits. Note this operation uses Pagination and supports Portfolio Access Tokens.
       operationId: serviceOverbookingLimits_getAll
       requestBody:
         content:
@@ -108,7 +113,7 @@ paths:
       tags:
       - Service overbooking limits
       summary: Set service overbooking limits
-      description: Adds new service overbooking limits with the specified conditions. Past overbooking limits cannot be updated outside of `OperationalEditableHistoryInterval`. Care is needed to specify `FirstTimeUnitStartUtc` and `LastTimeUnitStartUtc` in the correct format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes). This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Adds new service overbooking limits with the specified conditions. Past overbooking limits cannot be updated outside of `OperationalEditableHistoryInterval`. Care is needed to specify `FirstTimeUnitStartUtc` and `LastTimeUnitStartUtc` in the correct format - see Datetimes. This operation supports Portfolio Access Tokens.
       operationId: serviceOverbookingLimits_set
       requestBody:
         content:
@@ -180,7 +185,7 @@ paths:
       tags:
       - Service overbooking limits
       summary: Clear service overbooking limits
-      description: Deletes service overbooking limits that exactly match the specified conditions. This operation is intended to be used alongside `serviceOverbookingLimits/set`. The specified conditions must be met exactly. The time interval, however, does not need to correspond to an existing service overbooking limit in the system, instead the API uses a splicing algorithm to work out how to divide up any existing service overbooking limit to meet the specified time interval. Past overbooking limits cannot be cleared outside of `OperationalEditableHistoryInterval`. Care is needed to specify `FirstTimeUnitStartUtc` and `LastTimeUnitStartUtc` in the correct format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes). This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Deletes service overbooking limits that exactly match the specified conditions. This operation is intended to be used alongside `serviceOverbookingLimits/set`. The specified conditions must be met exactly. The time interval, however, does not need to correspond to an existing service overbooking limit in the system, instead the API uses a splicing algorithm to work out how to divide up any existing service overbooking limit to meet the specified time interval. Past overbooking limits cannot be cleared outside of `OperationalEditableHistoryInterval`. Care is needed to specify `FirstTimeUnitStartUtc` and `LastTimeUnitStartUtc` in the correct format - see Datetimes. This operation supports Portfolio Access Tokens.
       operationId: serviceOverbookingLimits_clear
       requestBody:
         content:
@@ -248,6 +253,99 @@ paths:
       x-restricted: true
 components:
   schemas:
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    Unit:
+      type: object
+      additionalProperties: false
+    ServiceOverbookingLimitSetParameters:
+      title: ServiceOverbookingLimitSetParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - ServiceId
+      - SetServiceOverbookingLimits
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services#service) overbooking limits will be set in.
+          format: uuid
+        SetServiceOverbookingLimits:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceOverbookingLimitSetData'
+          description: Collection of service overbooking limits to be set.
+      additionalProperties: false
+      x-schema-id: ServiceOverbookingLimitSetParameters
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
     ServiceOverbookingLimitFilterParameters:
       title: ServiceOverbookingLimitFilterParameters
       required:
@@ -277,12 +375,13 @@ components:
         EnterpriseIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-          nullable: true
         ServiceIds:
           maxItems: 1000
           minItems: 1
@@ -294,33 +393,144 @@ components:
         ServiceOverbookingLimitIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of the service overbooking limits.
-          nullable: true
         CollidingUtc:
           title: Time interval
           allOf:
           - $ref: '#/components/schemas/TimeFilterInterval'
           description: Interval in which the service overbooking limit is active.
-          nullable: true
         UpdatedUtc:
           title: Time interval
           allOf:
           - $ref: '#/components/schemas/TimeFilterInterval'
           description: Interval in which the service overbooking limits were updated.
-          nullable: true
           x-max-interval-in-months: 3
         ActivityStates:
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             $ref: '#/components/schemas/ActivityState'
           description: Whether to return only active, only deleted, or both types of record. If not specified, only active records will be returned.
-          nullable: true
       additionalProperties: false
       x-schema-id: ServiceOverbookingLimitFilterParameters
+    ServiceOverbookingLimitResult:
+      title: ServiceOverbookingLimitResult
+      required:
+      - ServiceOverbookingLimits
+      type: object
+      properties:
+        ServiceOverbookingLimits:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceOverbookingLimit'
+          description: Service overbooking limits of the default service.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ServiceOverbookingLimitResult
+    ServiceOverbookingLimitClearParameters:
+      title: ServiceOverbookingLimitClearParameters
+      required:
+      - AccessToken
+      - ClearServiceOverbookingLimits
+      - Client
+      - ClientToken
+      - ServiceId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services#service) overbooking limits will be set in.
+          format: uuid
+        ClearServiceOverbookingLimits:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceOverbookingLimitClearData'
+          description: Collection of service overbooking limits to be cleared.
+      additionalProperties: false
+      x-schema-id: ServiceOverbookingLimitClearParameters
+    ServiceOverbookingLimitSetData:
+      title: Service overbooking limits set parameters
+      required:
+      - FirstTimeUnitStartUtc
+      - LastTimeUnitStartUtc
+      - Limit
+      type: object
+      properties:
+        FirstTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format.
+          format: date-time
+        LastTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units): 367 days.'
+          format: date-time
+        Limit:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Number of overbookings allowed for the `Service`. Must be non-negative.
+          format: int32
+      additionalProperties: false
+      x-schema-id: ServiceOverbookingLimitSetData
+    ActivityState:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+    ServiceOverbookingLimitClearData:
+      title: Service overbooking limits clear parameters
+      required:
+      - FirstTimeUnitStartUtc
+      - LastTimeUnitStartUtc
+      type: object
+      properties:
+        FirstTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format.
+          format: date-time
+        LastTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s time unit: 367 hours if hours, 367 days if days, or 60 months if months.'
+          format: date-time
+      additionalProperties: false
+      x-schema-id: ServiceOverbookingLimitClearData
     ServiceOverbookingLimit:
       title: Service overbooking limit
       required:
@@ -371,200 +581,3 @@ components:
           description: Whether the service overbooking limit is still active.
       additionalProperties: false
       x-schema-id: ServiceOverbookingLimit
-    Unit:
-      type: object
-      additionalProperties: false
-    ActivityState:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-    ServiceOverbookingLimitClearData:
-      title: Service overbooking limits clear parameters
-      required:
-      - FirstTimeUnitStartUtc
-      - LastTimeUnitStartUtc
-      type: object
-      properties:
-        FirstTimeUnitStartUtc:
-          minLength: 1
-          type: string
-          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format.
-          format: date-time
-        LastTimeUnitStartUtc:
-          minLength: 1
-          type: string
-          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s time unit: 367 hours if hours, 367 days if days, or 60 months if months.'
-          format: date-time
-      additionalProperties: false
-      x-schema-id: ServiceOverbookingLimitClearData
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    ServiceOverbookingLimitSetParameters:
-      title: ServiceOverbookingLimitSetParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - ServiceId
-      - SetServiceOverbookingLimits
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        ServiceId:
-          type: string
-          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services#service) overbooking limits will be set in.
-          format: uuid
-        SetServiceOverbookingLimits:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceOverbookingLimitSetData'
-          description: Collection of service overbooking limits to be set.
-      additionalProperties: false
-      x-schema-id: ServiceOverbookingLimitSetParameters
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type: string
-          format: date-time
-          nullable: true
-        EndUtc:
-          type: string
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    ServiceOverbookingLimitClearParameters:
-      title: ServiceOverbookingLimitClearParameters
-      required:
-      - AccessToken
-      - ClearServiceOverbookingLimits
-      - Client
-      - ClientToken
-      - ServiceId
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        ServiceId:
-          type: string
-          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services#service) overbooking limits will be set in.
-          format: uuid
-        ClearServiceOverbookingLimits:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceOverbookingLimitClearData'
-          description: Collection of service overbooking limits to be cleared.
-      additionalProperties: false
-      x-schema-id: ServiceOverbookingLimitClearParameters
-    ServiceOverbookingLimitResult:
-      title: ServiceOverbookingLimitResult
-      required:
-      - ServiceOverbookingLimits
-      type: object
-      properties:
-        ServiceOverbookingLimits:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceOverbookingLimit'
-          description: Service overbooking limits of the default service.
-        Cursor:
-          type: string
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ServiceOverbookingLimitResult
-    ServiceOverbookingLimitSetData:
-      title: Service overbooking limits set parameters
-      required:
-      - FirstTimeUnitStartUtc
-      - LastTimeUnitStartUtc
-      - Limit
-      type: object
-      properties:
-        FirstTimeUnitStartUtc:
-          minLength: 1
-          type: string
-          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format.
-          format: date-time
-        LastTimeUnitStartUtc:
-          minLength: 1
-          type: string
-          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units): 367 days.'
-          format: date-time
-        Limit:
-          maximum: 2147483647
-          minimum: 0
-          type: integer
-          description: Number of overbookings allowed for the `Service`. Must be non-negative.
-          format: int32
-      additionalProperties: false
-      x-schema-id: ServiceOverbookingLimitSetData
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type: string
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation

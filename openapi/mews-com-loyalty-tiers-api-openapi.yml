@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Loyalty tiers API
+  title: Connector Loyalty tiers API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -12,7 +17,7 @@ paths:
       tags:
       - Loyalty tiers
       summary: Get all loyalty tiers
-      description: Returns all loyalty tiers of the chain or chains, filtered by loyalty program identifiers and optionally filtered by specific loyalty tier identifiers, activity states, or other filter parameters. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Returns all loyalty tiers of the chain or chains, filtered by loyalty program identifiers and optionally filtered by specific loyalty tier identifiers, activity states, or other filter parameters. Note this operation uses Pagination and supports Portfolio Access Tokens.
       operationId: loyaltyTiers_getAll
       requestBody:
         content:
@@ -106,7 +111,7 @@ paths:
       tags:
       - Loyalty tiers
       summary: Add loyalty tiers
-      description: Adds loyalty tiers to a loyalty program of the enterprise chain. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Adds loyalty tiers to a loyalty program of the enterprise chain. Note this operation supports Portfolio Access Tokens.
       operationId: loyaltyTiers_add
       requestBody:
         content:
@@ -329,311 +334,23 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    LoyaltyTier:
-      title: Loyalty tier
+    Limitation:
+      title: Limitation
       required:
-      - Code
-      - Id
-      - LoyaltyProgramId
-      - Name
-      - Ordering
+      - Count
       type: object
       properties:
-        Id:
-          type: string
-          description: Unique identifier of the loyalty tier.
-          format: uuid
-        LoyaltyProgramId:
-          type: string
-          description: Unique identifier of the loyalty program of that loyalty tier.
-          format: uuid
-        Name:
-          maxLength: 50
-          minLength: 1
-          type: string
-          description: Name of the loyalty tier.
-        Code:
-          maxLength: 50
-          minLength: 1
-          type: string
-          description: Code of the loyalty tier.
-        Ordering:
+        Count:
           type: integer
-          description: Ordering of the loyalty tier.
           format: int32
-      additionalProperties: false
-      x-schema-id: LoyaltyTier
-    StringUpdateValue:
-      title: String update value
-      type: object
-      properties:
-        Value:
-          type: string
-          description: Value which is to be updated.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: StringUpdateValue
-    LoyaltyTierAddParameters:
-      title: Loyalty tier add parameters
-      required:
-      - Code
-      - LoyaltyProgramId
-      - Name
-      - Ordering
-      type: object
-      properties:
-        LoyaltyProgramId:
-          type: string
-          description: Unique identifier of the loyalty program the tier belongs to.
-          format: uuid
-        Name:
-          maxLength: 50
-          minLength: 1
-          type: string
-          description: Name of the loyalty tier.
-        Code:
-          maxLength: 50
-          minLength: 1
-          type: string
-          description: Code of the loyalty tier.
-        Ordering:
-          type: integer
-          description: Ordering of the loyalty tier.
-          format: int32
-      additionalProperties: false
-      x-schema-id: LoyaltyTierAddParameters
-    MultipleLoyaltyTierUpdateParameters:
-      title: MultipleLoyaltyTierUpdateParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - LoyaltyTierUpdates
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        LoyaltyTierUpdates:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/LoyaltyTierUpdateParameters'
-          description: Loyalty tiers to be updated.
-      additionalProperties: false
-      x-schema-id: MultipleLoyaltyTierUpdateParameters
-    LoyaltyTierResult:
-      title: LoyaltyTierResult
-      required:
-      - LoyaltyTiers
-      type: object
-      properties:
-        LoyaltyTiers:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/LoyaltyTier'
-          description: The loyalty tiers of the loyalty program within the chain.
         Cursor:
-          type: string
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          type:
+          - string
+          - 'null'
           format: uuid
-          nullable: true
       additionalProperties: false
-      x-schema-id: LoyaltyTierResult
-    LoyaltyTierUpdateParameters:
-      title: Loyalty tier update parameters
-      required:
-      - LoyaltyTierId
-      type: object
-      properties:
-        LoyaltyTierId:
-          type: string
-          description: Unique identifier of the loyalty tier.
-          format: uuid
-        Name:
-          title: String update value
-          maxLength: 50
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Name of the loyalty tier \(or `null` if the name should not be updated\).
-          nullable: true
-        Code:
-          title: String update value
-          maxLength: 50
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Code of the loyalty tier, \(or `null` if the code should not be updated\).
-          nullable: true
-        Ordering:
-          title: Int32 update value
-          allOf:
-          - $ref: '#/components/schemas/Int32UpdateValue'
-          description: Ordering of the loyalty tier, \(or `null` if the ordering should not be updated\).
-          nullable: true
-      additionalProperties: false
-      x-schema-id: LoyaltyTierUpdateParameters
-    Unit:
-      type: object
-      additionalProperties: false
-    LoyaltyTierFilterParameters:
-      title: LoyaltyTierFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      - LoyaltyProgramIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ChainIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the chain. If not specified, the operation returns data for all chains within scope of the Access Token.
-          nullable: true
-        LoyaltyProgramIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Loyalty programs](https://mews-systems.gitbook.io/connector-api/operations/#loyalty-program).
-        LoyaltyTierIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Loyalty tiers](https://mews-systems.gitbook.io/connector-api/operations/#loyalty-tier).
-          nullable: true
-        ActivityStates:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted or both records.
-          nullable: true
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval of `Loyalty tier` last update date and time.
-          nullable: true
-          x-max-interval-in-months: 3
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned.
-      additionalProperties: false
-      x-schema-id: LoyaltyTierFilterParameters
-    ActivityStates:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: Activity states used for filtering.
-    Int32UpdateValue:
-      title: Int32 update value
-      type: object
-      properties:
-        Value:
-          type: integer
-          description: Value which is to be updated.
-          format: int32
-      additionalProperties: false
-      x-schema-id: Int32UpdateValue
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    MultipleLoyaltyTierAddParameters:
-      title: MultipleLoyaltyTierAddParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - LoyaltyTiers
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ChainId:
-          type: string
-          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        LoyaltyTiers:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/LoyaltyTierAddParameters'
-          description: Loyalty tiers to be added.
-      additionalProperties: false
-      x-schema-id: MultipleLoyaltyTierAddParameters
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type: string
-          format: date-time
-          nullable: true
-        EndUtc:
-          type: string
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
     LoyaltyTierWriteResult:
       title: LoyaltyTierWriteResult
       required:
@@ -679,19 +396,313 @@ components:
           description: Unique identifier of the loyalty tiers to be deleted.
       additionalProperties: false
       x-schema-id: LoyaltyTierDeleteParameters
-    Limitation:
-      title: Limitation
+    LoyaltyTier:
+      title: Loyalty tier
       required:
-      - Count
+      - Code
+      - Id
+      - LoyaltyProgramId
+      - Name
+      - Ordering
       type: object
       properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
+        Id:
           type: string
+          description: Unique identifier of the loyalty tier.
           format: uuid
-          nullable: true
+        LoyaltyProgramId:
+          type: string
+          description: Unique identifier of the loyalty program of that loyalty tier.
+          format: uuid
+        Name:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: Name of the loyalty tier.
+        Code:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: Code of the loyalty tier.
+        Ordering:
+          type: integer
+          description: Ordering of the loyalty tier.
+          format: int32
       additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
+      x-schema-id: LoyaltyTier
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    LoyaltyTierResult:
+      title: LoyaltyTierResult
+      required:
+      - LoyaltyTiers
+      type: object
+      properties:
+        LoyaltyTiers:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/LoyaltyTier'
+          description: The loyalty tiers of the loyalty program within the chain.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: LoyaltyTierResult
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    Unit:
+      type: object
+      additionalProperties: false
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    LoyaltyTierUpdateParameters:
+      title: Loyalty tier update parameters
+      required:
+      - LoyaltyTierId
+      type: object
+      properties:
+        LoyaltyTierId:
+          type: string
+          description: Unique identifier of the loyalty tier.
+          format: uuid
+        Name:
+          title: String update value
+          maxLength: 50
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Name of the loyalty tier \(or `null` if the name should not be updated\).
+        Code:
+          title: String update value
+          maxLength: 50
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Code of the loyalty tier, \(or `null` if the code should not be updated\).
+        Ordering:
+          title: Int32 update value
+          allOf:
+          - $ref: '#/components/schemas/Int32UpdateValue'
+          description: Ordering of the loyalty tier, \(or `null` if the ordering should not be updated\).
+      additionalProperties: false
+      x-schema-id: LoyaltyTierUpdateParameters
+    Int32UpdateValue:
+      title: Int32 update value
+      type: object
+      properties:
+        Value:
+          type: integer
+          description: Value which is to be updated.
+          format: int32
+      additionalProperties: false
+      x-schema-id: Int32UpdateValue
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    LoyaltyTierAddParameters:
+      title: Loyalty tier add parameters
+      required:
+      - Code
+      - LoyaltyProgramId
+      - Name
+      - Ordering
+      type: object
+      properties:
+        LoyaltyProgramId:
+          type: string
+          description: Unique identifier of the loyalty program the tier belongs to.
+          format: uuid
+        Name:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: Name of the loyalty tier.
+        Code:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: Code of the loyalty tier.
+        Ordering:
+          type: integer
+          description: Ordering of the loyalty tier.
+          format: int32
+      additionalProperties: false
+      x-schema-id: LoyaltyTierAddParameters
+    MultipleLoyaltyTierAddParameters:
+      title: MultipleLoyaltyTierAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - LoyaltyTiers
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        LoyaltyTiers:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/LoyaltyTierAddParameters'
+          description: Loyalty tiers to be added.
+      additionalProperties: false
+      x-schema-id: MultipleLoyaltyTierAddParameters
+    MultipleLoyaltyTierUpdateParameters:
+      title: MultipleLoyaltyTierUpdateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - LoyaltyTierUpdates
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        LoyaltyTierUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/LoyaltyTierUpdateParameters'
+          description: Loyalty tiers to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleLoyaltyTierUpdateParameters
+    LoyaltyTierFilterParameters:
+      title: LoyaltyTierFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - LoyaltyProgramIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the chain. If not specified, the operation returns data for all chains within scope of the Access Token.
+        LoyaltyProgramIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Loyalty programs](https://mews-systems.gitbook.io/connector-api/operations/#loyalty-program).
+        LoyaltyTierIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Loyalty tiers](https://mews-systems.gitbook.io/connector-api/operations/#loyalty-tier).
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval of `Loyalty tier` last update date and time.
+          x-max-interval-in-months: 3
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned.
+      additionalProperties: false
+      x-schema-id: LoyaltyTierFilterParameters

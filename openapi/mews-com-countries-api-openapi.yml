@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Countries API
+  title: Connector Countries API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -95,27 +100,21 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    CountryRule:
-      title: Country rules
-      required:
-      - CountryCode
-      - DriverLicenceExpirationDateNotRequired
-      - IdentityCardExpirationDateNotRequired
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        CountryCode:
-          minLength: 1
-          type: string
-          description: ISO 3166-1 alpha-2 code, e.g. US or GB.
-        IdentityCardExpirationDateNotRequired:
-          type: boolean
-          description: Whether the country requires expiration date for identity card.
-        DriverLicenceExpirationDateNotRequired:
-          type: boolean
-          description: Whether the country requires expiration date for driver's license.
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      description: Country-specific rules
-      x-schema-id: CountryRule
+      x-schema-id: ConnectorApiExceptionResult
     Parameters:
       title: Parameters
       required:
@@ -214,20 +213,27 @@ components:
           description: The supported country groups.
       additionalProperties: false
       x-schema-id: CountryResult
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
+    CountryRule:
+      title: Country rules
+      required:
+      - CountryCode
+      - DriverLicenceExpirationDateNotRequired
+      - IdentityCardExpirationDateNotRequired
       type: object
       properties:
-        Message:
+        CountryCode:
+          minLength: 1
           type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
+          description: ISO 3166-1 alpha-2 code, e.g. US or GB.
+        IdentityCardExpirationDateNotRequired:
+          type: boolean
+          description: Whether the country requires expiration date for identity card.
+        DriverLicenceExpirationDateNotRequired:
+          type: boolean
+          description: Whether the country requires expiration date for driver's license.
       additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
+      description: Country-specific rules
+      x-schema-id: CountryRule
     CountryGroup:
       title: Country group
       required:

@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Taxations API
+  title: Connector Taxations API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -157,6 +162,58 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    DependentTaxRateStrategy:
+      title: Dependent tax rate strategy data
+      required:
+      - BaseTaxationCodes
+      - Value
+      type: object
+      properties:
+        Value:
+          type: number
+          description: Tax rate, e.g. `0.1` in case of 10% tax rate.
+          format: double
+        BaseTaxationCodes:
+          type: array
+          items:
+            type: string
+          description: Codes of the taxations that are included in the base of calculation.
+      additionalProperties: false
+      x-schema-id: DependentTaxRateStrategy
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TaxationResult:
+      title: TaxationResult
+      required:
+      - Taxations
+      - TaxRates
+      type: object
+      properties:
+        Taxations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Taxation'
+          description: The supported taxations.
+        TaxRates:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxRate'
+          description: The supported tax rates.
+      additionalProperties: false
+      x-schema-id: TaxationResult
     Parameters:
       title: Parameters
       required:
@@ -179,80 +236,18 @@ components:
           description: Name and version of the client application.
       additionalProperties: false
       x-schema-id: Parameters
-    TaxationResult:
-      title: TaxationResult
+    RelativeTaxRateStrategy:
+      title: Relative tax rate strategy data
       required:
-      - Taxations
-      - TaxRates
+      - Value
       type: object
       properties:
-        Taxations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Taxation'
-          description: The supported taxations.
-        TaxRates:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxRate'
-          description: The supported tax rates.
-      additionalProperties: false
-      x-schema-id: TaxationResult
-    DateTimeIntervalUtc:
-      title: DateTimeIntervalUtc
-      type: object
-      properties:
-        StartUtc:
-          type: string
-          nullable: true
-        EndUtc:
-          type: string
-          nullable: true
-      additionalProperties: false
-      x-schema-id: DateTimeIntervalUtc
-    TaxRate:
-      title: Tax rate
-      required:
-      - Code
-      - Strategy
-      - TaxationCode
-      type: object
-      properties:
-        Code:
-          minLength: 1
-          type: string
-          description: Code of the tax rate. To be used when posting revenue items which should be accompanied by the tax rate(s) applicable to the nature of the item and the tax environment.
-        TaxationCode:
-          minLength: 1
-          type: string
-          description: Code of the `Taxation` the rate is part of.
         Value:
           type: number
           description: Tax rate, e.g. `0.21` in case of 21% tax rate.
           format: double
-        ValidityInvervalsUtc:
-          type: array
-          items:
-            $ref: '#/components/schemas/DateTimeIntervalUtc'
-          description: Validity intervals in UTC.
-          nullable: true
-        Strategy:
-          title: Tax rate strategy
-          type: object
-          properties:
-            Discriminator:
-              $ref: '#/components/schemas/TaxRateStrategyDiscriminator'
-            Value:
-              oneOf:
-              - $ref: '#/components/schemas/RelativeTaxRateStrategy'
-              - $ref: '#/components/schemas/FlatTaxRateStrategy'
-              - $ref: '#/components/schemas/DependentTaxRateStrategy'
-          description: Tax strategy type, e.g. relative, flat or dependent.
-          x-coproduct: true
-          x-schema-id: TaxRateStrategyCoproductOfTaxRateStrategyDiscriminator
       additionalProperties: false
-      description: Definition of single tax rate.
-      x-schema-id: TaxRate
+      x-schema-id: RelativeTaxRateStrategy
     Taxation:
       title: Taxation
       required:
@@ -293,18 +288,20 @@ components:
           format: double
       additionalProperties: false
       x-schema-id: FlatTaxRateStrategy
-    RelativeTaxRateStrategy:
-      title: Relative tax rate strategy data
-      required:
-      - Value
+    DateTimeIntervalUtc:
+      title: DateTimeIntervalUtc
       type: object
       properties:
-        Value:
-          type: number
-          description: Tax rate, e.g. `0.21` in case of 21% tax rate.
-          format: double
+        StartUtc:
+          type:
+          - string
+          - 'null'
+        EndUtc:
+          type:
+          - string
+          - 'null'
       additionalProperties: false
-      x-schema-id: RelativeTaxRateStrategy
+      x-schema-id: DateTimeIntervalUtc
     TaxRateStrategyDiscriminator:
       title: Tax rate strategy discriminator
       enum:
@@ -317,35 +314,47 @@ components:
       - Used with Relative tax rate strategy (e.g. 21%). Relative tax is calculated only from net base value.
       - Used with Flat tax rate strategy (e.g. 5.00 EUR).
       - Used with Dependent tax rate strategy (e.g. 10%). Dependent tax is calculated from net base value and all taxes it depends on.
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    DependentTaxRateStrategy:
-      title: Dependent tax rate strategy data
+    TaxRate:
+      title: Tax rate
       required:
-      - BaseTaxationCodes
-      - Value
+      - Code
+      - Strategy
+      - TaxationCode
       type: object
       properties:
+        Code:
+          minLength: 1
+          type: string
+          description: Code of the tax rate. To be used when posting revenue items which should be accompanied by the tax rate(s) applicable to the nature of the item and the tax environment.
+        TaxationCode:
+          minLength: 1
+          type: string
+          description: Code of the `Taxation` the rate is part of.
         Value:
           type: number
-          description: Tax rate, e.g. `0.1` in case of 10% tax rate.
+          description: Tax rate, e.g. `0.21` in case of 21% tax rate.
           format: double
-        BaseTaxationCodes:
-          type: array
+        ValidityInvervalsUtc:
+          type:
+          - array
+          - 'null'
           items:
-            type: string
-          description: Codes of the taxations that are included in the base of calculation.
+            $ref: '#/components/schemas/DateTimeIntervalUtc'
+          description: Validity intervals in UTC.
+        Strategy:
+          title: Tax rate strategy
+          type: object
+          properties:
+            Discriminator:
+              $ref: '#/components/schemas/TaxRateStrategyDiscriminator'
+            Value:
+              oneOf:
+              - $ref: '#/components/schemas/RelativeTaxRateStrategy'
+              - $ref: '#/components/schemas/FlatTaxRateStrategy'
+              - $ref: '#/components/schemas/DependentTaxRateStrategy'
+          description: Tax strategy type, e.g. relative, flat or dependent.
+          x-coproduct: true
+          x-schema-id: TaxRateStrategyCoproductOfTaxRateStrategyDiscriminator
       additionalProperties: false
-      x-schema-id: DependentTaxRateStrategy
+      description: Definition of single tax rate.
+      x-schema-id: TaxRate

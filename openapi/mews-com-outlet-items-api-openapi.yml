@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Outlet items API
+  title: Connector Outlet items API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -14,7 +19,7 @@ paths:
       summary: Get all outlet items
       description: 'Returns all outlet items of the enterprise that were consumed (posted) or will be consumed within the specified interval. If the `Currency` is specified, costs of the items are converted to that currency.
 
-        Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).'
+        Note this operation uses Pagination and supports Portfolio Access Tokens.'
       operationId: outletItems_getAll
       requestBody:
         content:
@@ -169,81 +174,64 @@ components:
         EnterpriseIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-          nullable: true
         Ids:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of the [Outlet items](#outlet-item). If not specified, the operation returns data for all [Outlet items](#outlet-item) within scope of the Access Token.
-          nullable: true
         ConsumedUtc:
           title: Time interval
           allOf:
           - $ref: '#/components/schemas/TimeFilterInterval'
           description: Interval in which the [Outlet item](#outlet-item) was consumed. Required if no other filter is provided.
-          nullable: true
           x-max-interval-in-months: 3
         UpdatedUtc:
           title: Time interval
           allOf:
           - $ref: '#/components/schemas/TimeFilterInterval'
           description: Interval in which the [Outlet bill](#outlet-bill) was updated.
-          nullable: true
           x-max-interval-in-months: 3
         ClosedUtc:
           title: Time interval
           allOf:
           - $ref: '#/components/schemas/TimeFilterInterval'
           description: Interval in which the [Outlet bill](#outlet-bill) was closed.
-          nullable: true
           x-max-interval-in-months: 3
         Currency:
-          type: string
+          type:
+          - string
+          - 'null'
           description: ISO-4217 code of the [Currency](#currency) the item costs should be converted to.
           format: currency
-          nullable: true
       additionalProperties: false
       x-schema-id: OutletItemsFilterParameters
-    OutletItemResult:
-      title: OutletItemResult
-      required:
-      - OutletBills
-      - OutletItems
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        OutletItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/OutletItem'
-          description: The outlet items.
-        OutletBills:
-          type: array
-          items:
-            $ref: '#/components/schemas/OutletBill'
-          description: The outlet bills of the items.
-        Cursor:
-          type: string
-          description: Unique identifier of the last and hence oldest outlet item returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older outlet items.
-          format: uuid
-          nullable: true
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      x-schema-id: OutletItemResult
-    OutletItemType:
-      title: Outlet item type
-      enum:
-      - Revenue
-      - NonRevenue
-      - Payment
-      type: string
-      description: Type of the outlet item.
+      x-schema-id: ConnectorApiExceptionResult
     Amount:
       title: Amount
       required:
@@ -280,104 +268,23 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: Amount
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type: string
-          format: date-time
-          nullable: true
-        EndUtc:
-          type: string
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    CurrencyValueOld:
-      title: Currency value (ver 2018-06-07)
+    Limitation:
+      title: Limitation
       required:
-      - Currency
+      - Count
       type: object
       properties:
-        Currency:
-          minLength: 1
-          type: string
-          format: currency
-        Value:
-          type: number
-          format: double
-          nullable: true
-        Net:
-          type: number
-          format: double
-          nullable: true
-          deprecated: true
-        Tax:
-          type: number
-          format: double
-          nullable: true
-          deprecated: true
-        TaxRate:
-          type: number
-          format: double
-          nullable: true
-          deprecated: true
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
       additionalProperties: false
-      description: Total price of the reservation.
-      x-schema-id: CurrencyValueOld
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    TaxBreakdownItem:
-      title: Tax breakdown item
-      required:
-      - NetValue
-      - TaxValue
-      type: object
-      properties:
-        TaxRateCode:
-          type: string
-          description: Tax rate code for the item. `null` for untaxed amounts.
-          nullable: true
-        NetValue:
-          type: number
-          description: The net value that the tax is calculated from.
-          format: double
-        TaxValue:
-          type: number
-          description: The value of the tax.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxBreakdownItem
-    TaxValue:
-      title: Tax value
-      required:
-      - Value
-      type: object
-      properties:
-        Code:
-          type: string
-          description: Code corresponding to tax type.
-          nullable: true
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxValue
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
     TaxBreakdown:
       title: Tax breakdown
       required:
@@ -391,6 +298,153 @@ components:
           description: Tax breakdown items per each tax rate applied.
       additionalProperties: false
       x-schema-id: TaxBreakdown
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    OutletItemType:
+      title: Outlet item type
+      enum:
+      - Revenue
+      - NonRevenue
+      - Payment
+      type: string
+      description: Type of the outlet item.
+    CurrencyValueOld:
+      title: Currency value (ver 2018-06-07)
+      required:
+      - Currency
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        Value:
+          type:
+          - number
+          - 'null'
+          format: double
+        Net:
+          type:
+          - number
+          - 'null'
+          format: double
+          deprecated: true
+        Tax:
+          type:
+          - number
+          - 'null'
+          format: double
+          deprecated: true
+        TaxRate:
+          type:
+          - number
+          - 'null'
+          format: double
+          deprecated: true
+      additionalProperties: false
+      description: Total price of the reservation.
+      x-schema-id: CurrencyValueOld
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    OutletBill:
+      title: Outlet bill
+      required:
+      - ClosedUtc
+      - EnterpriseId
+      - Id
+      - OutletId
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the bill.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the Enterprise.
+          format: uuid
+        OutletId:
+          type: string
+          description: Unique identifier of the [Outlet](https://mews-systems.gitbook.io/connector-api/operations/outlets/#outlet) where the bill was issued.
+          format: uuid
+        Number:
+          type:
+          - string
+          - 'null'
+          description: Number of the bill.
+        ClosedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the bill closure in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the bill in UTC timezone in ISO 8601 format.
+          format: date-time
+        Notes:
+          type:
+          - string
+          - 'null'
+          description: Additional notes on the bill.
+      additionalProperties: false
+      x-schema-id: OutletBill
+    OutletItemResult:
+      title: OutletItemResult
+      required:
+      - OutletBills
+      - OutletItems
+      type: object
+      properties:
+        OutletItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutletItem'
+          description: The outlet items.
+        OutletBills:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutletBill'
+          description: The outlet bills of the items.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest outlet item returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older outlet items.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: OutletItemResult
     OutletItem:
       title: Outlet item
       required:
@@ -418,16 +472,18 @@ components:
           description: Unique identifier of the [Outlet bill](https://mews-systems.gitbook.io/connector-api/operations/#outlet-bill) the item belongs to.
           format: uuid
         AccountingCategoryId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the [Accounting category](https://mews-systems.gitbook.io/connector-api/operations/accountingcategories/#accounting-category) the item belongs to.
           format: uuid
-          nullable: true
         Type:
           $ref: '#/components/schemas/OutletItemType'
         Name:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Name of the item.
-          nullable: true
         UnitCount:
           type: integer
           description: Unit count of the item.
@@ -453,83 +509,49 @@ components:
           description: Date and time of the item consumption in UTC timezone in ISO 8601 format.
           format: date-time
         ExternalIdentifier:
-          type: string
+          type:
+          - string
+          - 'null'
           description: An identifier of this item from another system.
-          nullable: true
         Notes:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Additional notes.
-          nullable: true
         PaymentCardPaymentId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the payment card `Payment` this item is linked to. This is only applicable to items where `Type` is `Payment`.
           format: uuid
-          nullable: true
         UnitCost:
           title: Currency value (ver 2018-06-07)
           allOf:
           - $ref: '#/components/schemas/CurrencyValueOld'
           description: Total price of the reservation.
-          nullable: true
           deprecated: true
           x-deprecatedMessage: Use `UnitAmount` instead.
       additionalProperties: false
       x-schema-id: OutletItem
-    OutletBill:
-      title: Outlet bill
+    TaxBreakdownItem:
+      title: Tax breakdown item
       required:
-      - ClosedUtc
-      - EnterpriseId
-      - Id
-      - OutletId
-      - UpdatedUtc
+      - NetValue
+      - TaxValue
       type: object
       properties:
-        Id:
-          type: string
-          description: Unique identifier of the bill.
-          format: uuid
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the Enterprise.
-          format: uuid
-        OutletId:
-          type: string
-          description: Unique identifier of the [Outlet](https://mews-systems.gitbook.io/connector-api/operations/outlets/#outlet) where the bill was issued.
-          format: uuid
-        Number:
-          type: string
-          description: Number of the bill.
-          nullable: true
-        ClosedUtc:
-          minLength: 1
-          type: string
-          description: Date and time of the bill closure in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the bill in UTC timezone in ISO 8601 format.
-          format: date-time
-        Notes:
-          type: string
-          description: Additional notes on the bill.
-          nullable: true
+        TaxRateCode:
+          type:
+          - string
+          - 'null'
+          description: Tax rate code for the item. `null` for untaxed amounts.
+        NetValue:
+          type: number
+          description: The net value that the tax is calculated from.
+          format: double
+        TaxValue:
+          type: number
+          description: The value of the tax.
+          format: double
       additionalProperties: false
-      x-schema-id: OutletBill
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type: string
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
+      x-schema-id: TaxBreakdownItem

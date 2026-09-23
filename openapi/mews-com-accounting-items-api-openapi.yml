@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Accounting items API
+  title: Connector Accounting items API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -12,7 +17,18 @@ paths:
       tags:
       - Accounting items
       summary: Update accounting items
-      description: "Updates specified accounting items. You can use this operation to assign an accounting item to a different account or bill. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).\r\n\r\n> **State Restrictions**: Only accounting items in specific states can be moved:\r\n> - **Order items**: Must be in `Open` state\r\n> - **Payments**: Must be in `Pending` state\r\n> \r\n> Attempting to move items in other states (e.g., `Closed`, `Inactive`, `Charged`, `Failed`, `Canceled`) will result in an `Invalid AccountingItemId` error."
+      description: 'Updates specified accounting items. You can use this operation to assign an accounting item to a different account or bill. Note this operation supports Portfolio Access Tokens.
+
+
+        > **State Restrictions**: Only accounting items in specific states can be moved:
+
+        > - **Order items**: Must be in `Open` state
+
+        > - **Payments**: Must be in `Pending` state
+
+        >
+
+        > Attempting to move items in other states (e.g., `Closed`, `Inactive`, `Charged`, `Failed`, `Canceled`) will result in an `Invalid AccountingItemId` error.'
       operationId: accountingItems_update
       requestBody:
         content:
@@ -111,7 +127,7 @@ paths:
       tags:
       - Accounting items
       summary: Get all accounting items
-      description: Use [Get all payments](https://mews-systems.gitbook.io/connector-api/operations/payments#get-all-payments) and [Get all order items](https://mews-systems.gitbook.io/connector-api/operations/orderitems#get-all-order-items) instead.
+      description: Use Get all payments and Get all order items instead.
       operationId: accountingItems_getAll
       requestBody:
         content:
@@ -304,411 +320,21 @@ paths:
       x-deprecatedMessage: Use [Get all payments](https://mews-systems.gitbook.io/connector-api/operations/payments#get-all-payments) and [Get all order items](https://mews-systems.gitbook.io/connector-api/operations/orderitems#get-all-order-items) instead.
 components:
   schemas:
-    PaymentItemOld:
-      title: Payment item
-      required:
-      - AccountId
-      - AccountingState
-      - Amount
-      - ConsumedUtc
-      - Data
-      - Id
-      - OriginalAmount
-      - State
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the item.
-          format: uuid
-        AccountId:
-          type: string
-          description: Unique identifier of the account (for example `Customer`) the item belongs to.
-          format: uuid
-        BillId:
-          type: string
-          description: Unique identifier of the `Bill` the item is assigned to.
-          format: uuid
-          nullable: true
-        AccountingCategoryId:
-          type: string
-          description: Unique identifier of the `AccountingCategory` the item belongs to.
-          format: uuid
-          nullable: true
-        Amount:
-          title: Extended amount
-          allOf:
-          - $ref: '#/components/schemas/ExtendedAmount'
-          description: Item's amount, negative amount represents either rebate or a payment.
-        OriginalAmount:
-          title: Extended amount
-          allOf:
-          - $ref: '#/components/schemas/ExtendedAmount'
-          description: Amount of item; note a negative amount represents a rebate or payment. Contains the earliest known value in conversion chain.
-        AmountDefault:
-          title: Extended amount
-          allOf:
-          - $ref: '#/components/schemas/ExtendedAmount'
-          description: Item's amount in property's default currency, negative amount represents either rebate or a payment.
-          nullable: true
-          deprecated: true
-        Notes:
-          type: string
-          description: Additional notes.
-          nullable: true
-        SettlementId:
-          type: string
-          description: Identifier of the settled payment from the external system (ApplePay/GooglePay).
-          nullable: true
-        ConsumedUtc:
-          minLength: 1
-          type: string
-          description: Date and time of the item consumption in UTC timezone in ISO 8601 format.
-        ClosedUtc:
-          type: string
-          description: Date and time of the item bill closure in UTC timezone in ISO 8601 format.
-          nullable: true
-        AccountingState:
-          minLength: 1
-          type: string
-          description: Accounting state of the item.
-        State:
-          minLength: 1
-          type: string
-          description: Payment state of the item.
-        Identifier:
-          type: string
-          description: External payment identifier.
-          nullable: true
-        Data:
-          title: Payment item data
-          type: object
-          properties:
-            Discriminator:
-              $ref: '#/components/schemas/PaymentType'
-            Value:
-              oneOf:
-              - $ref: '#/components/schemas/PaymentCardPaymentData'
-              - $ref: '#/components/schemas/InvoicePaymentData'
-              description: Based on payment item data discriminator or `null` for types without any additional data.
-              nullable: true
-          description: Additional data specific to particular payment item.
-          x-coproduct: true
-          x-schema-id: PaymentItemOldDataCoproductOfPaymentType
-      additionalProperties: false
-      description: ''
-      x-schema-id: PaymentItemOld
-    PaymentCardPaymentData:
-      title: Credit card payment item data
-      type: object
-      properties:
-        PaymentCardId:
-          type: string
-          description: Unique identifier of the `CreditCard`.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: PaymentCardPaymentData
-    AccountingItemResult:
-      title: AccountingItemResult
-      type: object
-      properties:
-        OrderItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/OrderItemOld'
-          description: The order items (consumed items such as nights or products).
-          nullable: true
-        PaymentItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentItemOld'
-          description: The payment items (such as cash, credit card payments or invoices).
-          nullable: true
-        CreditCardTransactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreditCardTransaction'
-          description: The credit card payment transactions.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: AccountingItemResult
-    AccountingState:
-      title: Order item accounting state
-      enum:
-      - Open
-      - Closed
-      - Inactive
-      - Canceled
-      type: string
-      x-enumDescriptions:
-      - Order items which carry a non-zero value, are open, and have not been closed on a bill or invoice.
-      - Order items which carry a non-zero value and have been closed on a bill or invoice.
-      - Order items which are either of zero value and have not been canceled, if the state of the payment item is Pending or Failed, or items of optional reservations. Until the reservation is confirmed, all its accounting items are Inactive.
-      - Order items which have been canceled, regardless of whether the item is of zero value.
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
       properties:
         Message:
-          type: string
-          nullable: true
+          type:
+          - string
+          - 'null'
         RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
       x-schema-id: ConnectorApiExceptionResult
-    OrderItemTypeOld:
-      title: Order item data discriminator
-      enum:
-      - CancellationFee
-      - Rebate
-      - Deposit
-      - ExchangeRateDifference
-      - CustomItem
-      - Surcharge
-      - SurchargeDiscount
-      - SpaceOrder
-      - ProductOrder
-      - Other
-      - TaxCorrection
-      - ResourceUpgradeFee
-      - InvoiceFee
-      type: string
-      x-enumDescriptions:
-      - No additional data.
-      - '[Rebate order item data](https://mews-systems.gitbook.io/connector-api/operations/accountingitems#rebate-order-item-data)'
-      - No additional data.
-      - No additional data.
-      - No additional data.
-      - No additional data.
-      - No additional data.
-      - No additional data.
-      - '[Product order item data](https://mews-systems.gitbook.io/connector-api/operations/accountingitems#product-order-item-data)'
-      - No additional data.
-      - No additional data.
-      - No additional data.
-      - No additional data.
-    TaxValue:
-      title: Tax value
-      required:
-      - Value
-      type: object
-      properties:
-        Code:
-          type: string
-          description: Code corresponding to tax type.
-          nullable: true
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxValue
-    RebateOrderItemData:
-      title: Rebate order item data
-      required:
-      - RebatedItemId
-      type: object
-      properties:
-        RebatedItemId:
-          type: string
-          description: Unique identifier of `OrderItem` which has been rebated by current item.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: RebateOrderItemData
-    ProductOrderItemData:
-      title: Product order item data
-      required:
-      - ProductId
-      type: object
-      properties:
-        ProductId:
-          type: string
-          description: Unique identifier of the `Product`.
-          format: uuid
-        AgeCategoryId:
-          type: string
-          description: Unique identifier of the `AgeCategory`.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ProductOrderItemData
-    GuidUpdateValue:
-      title: Guid update value
-      type: object
-      properties:
-        Value:
-          type: string
-          description: Value which is to be updated.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: GuidUpdateValue
-    InvoicePaymentData:
-      title: Invoice payment item data
-      required:
-      - InvoiceId
-      type: object
-      properties:
-        InvoiceId:
-          type: string
-          description: Unique identifier of the invoice `Bill`.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: InvoicePaymentData
-    AccountingItemUpdateParameters:
-      title: Accounting item update
-      required:
-      - AccountingItemId
-      - BillId
-      type: object
-      properties:
-        AccountingItemId:
-          type: string
-          description: Unique identifier of the `AccountingItem`.
-          format: uuid
-        AccountId:
-          title: Guid update value
-          allOf:
-          - $ref: '#/components/schemas/GuidUpdateValue'
-          description: Unique identifier of the account (for example `Customer`) the item is assigned to (or `null` if the assigned account should not be updated). If defined, valid account identifier must be provided.
-          nullable: true
-        BillId:
-          title: Guid update value
-          allOf:
-          - $ref: '#/components/schemas/GuidUpdateValue'
-          description: Unique identifier of the `Bill` the items is assigned to. It's possible to assign item to bill belonging to another account, in that case both `AccountId` and `BillId` must be provided.
-      additionalProperties: false
-      x-schema-id: AccountingItemUpdateParameters
-    AccountingItemParameters:
-      title: AccountingItemParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Extent
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Extent:
-          title: Accounting item extent
-          allOf:
-          - $ref: '#/components/schemas/AccountingItemExtent'
-          description: Extent of data to be returned. E.g. it is possible to specify that together with the accounting items, credit card transactions should be also returned.
-        ItemIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Accounting items. Required if no other filter is provided.
-          nullable: true
-        RebatedItemIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Accounting items we are finding rebates for. Required if no other filter is provided.
-          nullable: true
-        ClosedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the accounting item was closed. Required if no other filter is provided.
-          nullable: true
-          x-max-interval-in-months: 3
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the accounting item was updated. Required if no other filter is provided.
-          nullable: true
-          x-max-interval-in-months: 3
-        ConsumedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the accounting item was consumed. Required if no other filter is provided.
-          nullable: true
-          x-max-interval-in-months: 3
-        Currency:
-          type: string
-          description: ISO-4217 code of the `Currency` the item costs should be converted to.
-          format: currency
-          nullable: true
-        States:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountingState'
-          description: States the accounting items should be in. If not specified, accounting items in `Open` or `Closed` states are returned.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: AccountingItemParameters
-    MultipleAccountingItemsUpdateParameters:
-      title: MultipleAccountingItemsUpdateParameters
-      required:
-      - AccessToken
-      - AccountingItemUpdates
-      - Client
-      - ClientToken
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        AccountingItemUpdates:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountingItemUpdateParameters'
-          description: List of requested updates.
-      additionalProperties: false
-      x-schema-id: MultipleAccountingItemsUpdateParameters
-    AccountingItemExtent:
-      title: Accounting item extent
-      type: object
-      properties:
-        OrderItems:
-          type: boolean
-          description: Whether the response should contain order items (consumed items such as nights or products).
-        PaymentItems:
-          type: boolean
-          description: Whether the response should contain payment items (such as cash, credit card payments or invoices).
-        CreditCardTransactions:
-          type: boolean
-          description: Whether the response should contain credit card transactions of the payment items.
-      additionalProperties: false
-      description: ''
-      x-schema-id: AccountingItemExtent
     PaymentType:
       title: Payment item data discriminator
       enum:
@@ -736,6 +362,134 @@ components:
       - No additional data.
       - No additional data.
       - No additional data.
+    AccountingState:
+      title: Order item accounting state
+      enum:
+      - Open
+      - Closed
+      - Inactive
+      - Canceled
+      type: string
+      x-enumDescriptions:
+      - Order items which carry a non-zero value, are open, and have not been closed on a bill or invoice.
+      - Order items which carry a non-zero value and have been closed on a bill or invoice.
+      - Order items which are either of zero value and have not been canceled, if the state of the payment item is Pending or Failed, or items of optional reservations. Until the reservation is confirmed, all its accounting items are Inactive.
+      - Order items which have been canceled, regardless of whether the item is of zero value.
+    AccountingItemExtent:
+      title: Accounting item extent
+      type: object
+      properties:
+        OrderItems:
+          type: boolean
+          description: Whether the response should contain order items (consumed items such as nights or products).
+        PaymentItems:
+          type: boolean
+          description: Whether the response should contain payment items (such as cash, credit card payments or invoices).
+        CreditCardTransactions:
+          type: boolean
+          description: Whether the response should contain credit card transactions of the payment items.
+      additionalProperties: false
+      description: ''
+      x-schema-id: AccountingItemExtent
+    AccountingItemUpdateResult:
+      title: AccountingItemUpdateResult
+      type: object
+      properties:
+        OrderItems:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/OrderItemOld'
+          description: Updated order items.
+        PaymentItems:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PaymentItemOld'
+          description: Updated payment items.
+      additionalProperties: false
+      x-schema-id: AccountingItemUpdateResult
+    ExtendedAmount:
+      title: Extended amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+        Value:
+          type:
+          - number
+          - 'null'
+          format: double
+        Net:
+          type:
+          - number
+          - 'null'
+          format: double
+        Tax:
+          type:
+          - number
+          - 'null'
+          format: double
+        TaxRate:
+          type:
+          - number
+          - 'null'
+          format: double
+      additionalProperties: false
+      description: ''
+      x-schema-id: ExtendedAmount
+    AccountingItemUpdateParameters:
+      title: Accounting item update
+      required:
+      - AccountingItemId
+      - BillId
+      type: object
+      properties:
+        AccountingItemId:
+          type: string
+          description: Unique identifier of the `AccountingItem`.
+          format: uuid
+        AccountId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidUpdateValue'
+          description: Unique identifier of the account (for example `Customer`) the item is assigned to (or `null` if the assigned account should not be updated). If defined, valid account identifier must be provided.
+        BillId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidUpdateValue'
+          description: Unique identifier of the `Bill` the items is assigned to. It's possible to assign item to bill belonging to another account, in that case both `AccountId` and `BillId` must be provided.
+      additionalProperties: false
+      x-schema-id: AccountingItemUpdateParameters
     OrderItemOld:
       title: Order item
       required:
@@ -767,15 +521,17 @@ components:
           description: Unique identifier of the order (or `Reservation` which is a special type of order) the item belongs to.
           format: uuid
         BillId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the `Bill` the item is assigned to.
           format: uuid
-          nullable: true
         AccountingCategoryId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the `AccountingCategory` the item belongs to.
           format: uuid
-          nullable: true
         UnitCount:
           type: integer
           description: Unit count of item, i.e. the number of sub-items or units, if applicable.
@@ -818,25 +574,29 @@ components:
           description: Last update date and time of the item in UTC timezone in ISO 8601 format.
           format: date
         ConsumedUtc:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Date and time of the item consumption in UTC timezone in ISO 8601 format.
           format: date
-          nullable: true
         CanceledUtc:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Cancellation date and time of the item in UTC timezone in ISO 8601 format.
           format: date
-          nullable: true
         ClosedUtc:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Date and time of the item bill closure in UTC timezone in ISO 8601 format.
           format: date
-          nullable: true
         StartUtc:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Start date and time of the item in UTC timezone in ISO 8601 format.
           format: date
-          nullable: true
         AccountingState:
           minLength: 1
           type: string
@@ -852,155 +612,45 @@ components:
               - $ref: '#/components/schemas/RebateOrderItemData'
               - $ref: '#/components/schemas/ProductOrderItemData'
               description: Based on order item discriminator or `null` for types without any additional data.
-              nullable: true
           description: Additional data specific to particular order item.
           x-coproduct: true
           x-schema-id: OrderItemOldDataCoproductOfOrderItemTypeOld
       additionalProperties: false
       x-schema-id: OrderItemOld
-    ExtendedAmount:
-      title: Extended amount
+    MultipleAccountingItemsUpdateParameters:
+      title: MultipleAccountingItemsUpdateParameters
       required:
-      - Breakdown
-      - Currency
-      - GrossValue
-      - NetValue
-      - TaxValues
+      - AccessToken
+      - AccountingItemUpdates
+      - Client
+      - ClientToken
       type: object
       properties:
-        Currency:
+        ClientToken:
           minLength: 1
           type: string
-          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
-          format: currency
-        NetValue:
-          type: number
-          description: Net value without taxes.
-          format: double
-        GrossValue:
-          type: number
-          description: Gross value including all taxes.
-          format: double
-        TaxValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxValue'
-          description: The tax values applied.
-        Breakdown:
-          title: Tax breakdown
-          allOf:
-          - $ref: '#/components/schemas/TaxBreakdown'
-          description: Information about individual tax amounts.
-        Value:
-          type: number
-          format: double
-          nullable: true
-        Net:
-          type: number
-          format: double
-          nullable: true
-        Tax:
-          type: number
-          format: double
-          nullable: true
-        TaxRate:
-          type: number
-          format: double
-          nullable: true
-      additionalProperties: false
-      description: ''
-      x-schema-id: ExtendedAmount
-    AccountingItemUpdateResult:
-      title: AccountingItemUpdateResult
-      type: object
-      properties:
-        OrderItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/OrderItemOld'
-          description: Updated order items.
-          nullable: true
-        PaymentItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentItemOld'
-          description: Updated payment items.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: AccountingItemUpdateResult
-    TaxBreakdown:
-      title: Tax breakdown
-      required:
-      - Items
-      type: object
-      properties:
-        Items:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxBreakdownItem'
-          description: Tax breakdown items per each tax rate applied.
-      additionalProperties: false
-      x-schema-id: TaxBreakdown
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
           type: string
-          format: date-time
-          nullable: true
-        EndUtc:
+          description: Access token of the client application.
+        Client:
+          minLength: 1
           type: string
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    CreditCardTransaction:
-      title: Credit card transaction
-      required:
-      - ChargedAmount
-      - PaymentId
-      type: object
-      properties:
-        PaymentId:
-          type: string
-          description: Unique identifier of the `PaymentItem`.
+          description: Name and version of the client application.
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
           format: uuid
-        SettlementId:
-          type: string
-          description: Identifier of the settlement.
-          nullable: true
-        SettledUtc:
-          type: string
-          description: Settlement date and time in UTC timezone in ISO 8601 format.
-          format: date-time
-          nullable: true
-        Fee:
-          title: Extended amount
-          allOf:
-          - $ref: '#/components/schemas/ExtendedAmount'
-          description: Transaction fee - this includes an estimate of bank charges.
-          nullable: true
-        AdjustedFee:
-          title: Extended amount
-          allOf:
-          - $ref: '#/components/schemas/ExtendedAmount'
-          description: Transaction fee (adjusted) - this is the final confirmed transaction fee, including confirmed bank charges.
-          nullable: true
-        ChargedAmount:
-          title: Extended amount
-          allOf:
-          - $ref: '#/components/schemas/ExtendedAmount'
-          description: Charged amount of the transaction.
-        SettledAmount:
-          title: Extended amount
-          allOf:
-          - $ref: '#/components/schemas/ExtendedAmount'
-          description: Settled amount of the transaction.
-          nullable: true
+        AccountingItemUpdates:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingItemUpdateParameters'
+          description: List of requested updates.
       additionalProperties: false
-      x-schema-id: CreditCardTransaction
+      x-schema-id: MultipleAccountingItemsUpdateParameters
     Amount:
       title: Amount
       required:
@@ -1037,6 +687,103 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: Amount
+    InvoicePaymentData:
+      title: Invoice payment item data
+      required:
+      - InvoiceId
+      type: object
+      properties:
+        InvoiceId:
+          type: string
+          description: Unique identifier of the invoice `Bill`.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: InvoicePaymentData
+    CreditCardTransaction:
+      title: Credit card transaction
+      required:
+      - ChargedAmount
+      - PaymentId
+      type: object
+      properties:
+        PaymentId:
+          type: string
+          description: Unique identifier of the `PaymentItem`.
+          format: uuid
+        SettlementId:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the settlement.
+        SettledUtc:
+          type:
+          - string
+          - 'null'
+          description: Settlement date and time in UTC timezone in ISO 8601 format.
+          format: date-time
+        Fee:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Transaction fee - this includes an estimate of bank charges.
+        AdjustedFee:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Transaction fee (adjusted) - this is the final confirmed transaction fee, including confirmed bank charges.
+        ChargedAmount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Charged amount of the transaction.
+        SettledAmount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Settled amount of the transaction.
+      additionalProperties: false
+      x-schema-id: CreditCardTransaction
+    GuidUpdateValue:
+      title: Guid update value
+      type: object
+      properties:
+        Value:
+          type: string
+          description: Value which is to be updated.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: GuidUpdateValue
+    OrderItemTypeOld:
+      title: Order item data discriminator
+      enum:
+      - CancellationFee
+      - Rebate
+      - Deposit
+      - ExchangeRateDifference
+      - CustomItem
+      - Surcharge
+      - SurchargeDiscount
+      - SpaceOrder
+      - ProductOrder
+      - Other
+      - TaxCorrection
+      - ResourceUpgradeFee
+      - InvoiceFee
+      type: string
+      x-enumDescriptions:
+      - No additional data.
+      - '[Rebate order item data](https://mews-systems.gitbook.io/connector-api/operations/accountingitems#rebate-order-item-data)'
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - '[Product order item data](https://mews-systems.gitbook.io/connector-api/operations/accountingitems#product-order-item-data)'
+      - No additional data.
+      - No additional data.
+      - No additional data.
+      - No additional data.
     TaxBreakdownItem:
       title: Tax breakdown item
       required:
@@ -1045,9 +792,10 @@ components:
       type: object
       properties:
         TaxRateCode:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Tax rate code for the item. `null` for untaxed amounts.
-          nullable: true
         NetValue:
           type: number
           description: The net value that the tax is calculated from.
@@ -1058,3 +806,296 @@ components:
           format: double
       additionalProperties: false
       x-schema-id: TaxBreakdownItem
+    PaymentCardPaymentData:
+      title: Credit card payment item data
+      type: object
+      properties:
+        PaymentCardId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `CreditCard`.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: PaymentCardPaymentData
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
+    ProductOrderItemData:
+      title: Product order item data
+      required:
+      - ProductId
+      type: object
+      properties:
+        ProductId:
+          type: string
+          description: Unique identifier of the `Product`.
+          format: uuid
+        AgeCategoryId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `AgeCategory`.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ProductOrderItemData
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    PaymentItemOld:
+      title: Payment item
+      required:
+      - AccountId
+      - AccountingState
+      - Amount
+      - ConsumedUtc
+      - Data
+      - Id
+      - OriginalAmount
+      - State
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the item.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of the account (for example `Customer`) the item belongs to.
+          format: uuid
+        BillId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `Bill` the item is assigned to.
+          format: uuid
+        AccountingCategoryId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `AccountingCategory` the item belongs to.
+          format: uuid
+        Amount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Item's amount, negative amount represents either rebate or a payment.
+        OriginalAmount:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Amount of item; note a negative amount represents a rebate or payment. Contains the earliest known value in conversion chain.
+        AmountDefault:
+          title: Extended amount
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmount'
+          description: Item's amount in property's default currency, negative amount represents either rebate or a payment.
+          deprecated: true
+        Notes:
+          type:
+          - string
+          - 'null'
+          description: Additional notes.
+        SettlementId:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the settled payment from the external system (ApplePay/GooglePay).
+        ConsumedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the item consumption in UTC timezone in ISO 8601 format.
+        ClosedUtc:
+          type:
+          - string
+          - 'null'
+          description: Date and time of the item bill closure in UTC timezone in ISO 8601 format.
+        AccountingState:
+          minLength: 1
+          type: string
+          description: Accounting state of the item.
+        State:
+          minLength: 1
+          type: string
+          description: Payment state of the item.
+        Identifier:
+          type:
+          - string
+          - 'null'
+          description: External payment identifier.
+        Data:
+          title: Payment item data
+          type: object
+          properties:
+            Discriminator:
+              $ref: '#/components/schemas/PaymentType'
+            Value:
+              oneOf:
+              - $ref: '#/components/schemas/PaymentCardPaymentData'
+              - $ref: '#/components/schemas/InvoicePaymentData'
+              description: Based on payment item data discriminator or `null` for types without any additional data.
+          description: Additional data specific to particular payment item.
+          x-coproduct: true
+          x-schema-id: PaymentItemOldDataCoproductOfPaymentType
+      additionalProperties: false
+      description: ''
+      x-schema-id: PaymentItemOld
+    AccountingItemResult:
+      title: AccountingItemResult
+      type: object
+      properties:
+        OrderItems:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/OrderItemOld'
+          description: The order items (consumed items such as nights or products).
+        PaymentItems:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PaymentItemOld'
+          description: The payment items (such as cash, credit card payments or invoices).
+        CreditCardTransactions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CreditCardTransaction'
+          description: The credit card payment transactions.
+      additionalProperties: false
+      x-schema-id: AccountingItemResult
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    AccountingItemParameters:
+      title: AccountingItemParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Extent
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Extent:
+          title: Accounting item extent
+          allOf:
+          - $ref: '#/components/schemas/AccountingItemExtent'
+          description: Extent of data to be returned. E.g. it is possible to specify that together with the accounting items, credit card transactions should be also returned.
+        ItemIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Accounting items. Required if no other filter is provided.
+        RebatedItemIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Accounting items we are finding rebates for. Required if no other filter is provided.
+        ClosedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the accounting item was closed. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the accounting item was updated. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        ConsumedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the accounting item was consumed. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        Currency:
+          type:
+          - string
+          - 'null'
+          description: ISO-4217 code of the `Currency` the item costs should be converted to.
+          format: currency
+        States:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AccountingState'
+          description: States the accounting items should be in. If not specified, accounting items in `Open` or `Closed` states are returned.
+      additionalProperties: false
+      x-schema-id: AccountingItemParameters
+    RebateOrderItemData:
+      title: Rebate order item data
+      required:
+      - RebatedItemId
+      type: object
+      properties:
+        RebatedItemId:
+          type: string
+          description: Unique identifier of `OrderItem` which has been rebated by current item.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: RebateOrderItemData

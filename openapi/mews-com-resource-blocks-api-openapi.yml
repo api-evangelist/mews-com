@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Resource blocks API
+  title: Connector Resource blocks API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -12,7 +17,9 @@ paths:
       tags:
       - Resource blocks
       summary: Get all resource blocks
-      description: "Returns all resource blocks (out of order blocks or internal use blocks). \nNote this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property)."
+      description: 'Returns all resource blocks (out of order blocks or internal use blocks).
+
+        Note this operation uses Pagination and supports Portfolio Access Tokens.'
       operationId: resourceBlocks_getAll
       requestBody:
         content:
@@ -327,6 +334,149 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ResourceBlockResult:
+      title: ResourceBlockResult
+      required:
+      - ResourceBlocks
+      type: object
+      properties:
+        ResourceBlocks:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceBlock'
+          description: The resource blocks colliding with the interval or matching the filter parameters.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last returned resource block. This can be used in `Limitation` in a subsequent request to fetch the next batch of resource blocks.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ResourceBlockResult
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    ResourceBlock:
+      title: Resource block
+      required:
+      - AssignedResourceId
+      - CreatedUtc
+      - EndUtc
+      - EnterpriseId
+      - Id
+      - IsActive
+      - Name
+      - StartUtc
+      - Type
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the resource block.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the `Enterprise` the resource block belongs to.
+          format: uuid
+        AssignedResourceId:
+          type: string
+          description: Unique identifier of the assigned `Resource`.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the resource block is still active.
+        Type:
+          $ref: '#/components/schemas/ResourceBlockType'
+        StartUtc:
+          minLength: 1
+          type: string
+          description: Start of the resource block in UTC timezone in ISO 8601 format.
+        EndUtc:
+          minLength: 1
+          type: string
+          description: End of the resource block in UTC timezone in ISO 8601 format.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the resource block in UTC timezone in ISO 8601 format.
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the resource block in UTC timezone in ISO 8601 format.
+        DeletedUtc:
+          type:
+          - string
+          - 'null'
+          description: Date and time when the resource block was deleted (for inactive ones) in UTC timezone in ISO 8601 format.
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the resource block.
+        Notes:
+          type:
+          - string
+          - 'null'
+          description: Note describing the resource block.
+      additionalProperties: false
+      x-schema-id: ResourceBlock
+    Unit:
+      type: object
+      additionalProperties: false
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
     MultipleResourceBlockAddParameters:
       title: MultipleResourceBlockAddParameters
       required:
@@ -388,122 +538,12 @@ components:
           description: End of the interval in UTC timezone in ISO 8601 format.
           format: date-time
         Notes:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Note describing the resource block.
-          nullable: true
       additionalProperties: false
       x-schema-id: ResourceBlockAddParameters
-    ResourceBlockParameters:
-      title: Resource block parameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-          nullable: true
-        Extent:
-          title: Resource block extent
-          allOf:
-          - $ref: '#/components/schemas/ResourceBlockExtent'
-          description: Extent of data to be returned.
-          nullable: true
-          deprecated: true
-          x-deprecatedMessage: Use ActivityStates with `["Active", "Deleted"]` instead.
-        ResourceBlockIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the requested resource block.
-          nullable: true
-        AssignedResourceIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the requested Assigned `Resource`.
-          nullable: true
-        ActivityStates:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted or both records. Defaults to `Active` if not specified.
-          nullable: true
-        CollidingUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the resource block is active.
-          nullable: true
-          x-max-interval-in-months: 3
-        CreatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the resource block was created.
-          nullable: true
-          x-max-interval-in-months: 3
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the resource block was updated.
-          nullable: true
-          x-max-interval-in-months: 3
-      additionalProperties: false
-      x-schema-id: ResourceBlockParameters
-    Unit:
-      type: object
-      additionalProperties: false
-    ResourceBlockResult:
-      title: ResourceBlockResult
-      required:
-      - ResourceBlocks
-      type: object
-      properties:
-        ResourceBlocks:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceBlock'
-          description: The resource blocks colliding with the interval or matching the filter parameters.
-        Cursor:
-          type: string
-          description: Unique identifier of the last returned resource block. This can be used in `Limitation` in a subsequent request to fetch the next batch of resource blocks.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ResourceBlockResult
     ResourceBlockType:
       title: Resource block type
       enum:
@@ -511,66 +551,6 @@ components:
       - InternalUse
       type: string
       description: Type of the resource block.
-    ResourceBlockAdditionResult:
-      title: ResourceBlockAdditionResult
-      required:
-      - ResourceBlocks
-      type: object
-      properties:
-        ResourceBlocks:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceBlock'
-          description: The resource blocks that were added.
-      additionalProperties: false
-      x-schema-id: ResourceBlockAdditionResult
-    ActivityStates:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: Activity states used for filtering.
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    ResourceBlockExtent:
-      title: Resource block extent
-      type: object
-      properties:
-        Inactive:
-          type: boolean
-          description: Whether the response should contain inactive entities.
-      additionalProperties: false
-      description: ''
-      x-schema-id: ResourceBlockExtent
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type: string
-          format: date-time
-          nullable: true
-        EndUtc:
-          type: string
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
     ResourceBlockDeleteParameters:
       title: ResourceBlockDeleteParameters
       required:
@@ -602,81 +582,116 @@ components:
           description: Unique identifier of the resource blocks to be removed.
       additionalProperties: false
       x-schema-id: ResourceBlockDeleteParameters
-    ResourceBlock:
-      title: Resource block
+    ResourceBlockParameters:
+      title: Resource block parameters
       required:
-      - AssignedResourceId
-      - CreatedUtc
-      - EndUtc
-      - EnterpriseId
-      - Id
-      - IsActive
-      - Name
-      - StartUtc
-      - Type
-      - UpdatedUtc
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
       type: object
       properties:
-        Id:
-          type: string
-          description: Unique identifier of the resource block.
-          format: uuid
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the `Enterprise` the resource block belongs to.
-          format: uuid
-        AssignedResourceId:
-          type: string
-          description: Unique identifier of the assigned `Resource`.
-          format: uuid
-        IsActive:
-          type: boolean
-          description: Whether the resource block is still active.
-        Type:
-          $ref: '#/components/schemas/ResourceBlockType'
-        StartUtc:
+        ClientToken:
           minLength: 1
           type: string
-          description: Start of the resource block in UTC timezone in ISO 8601 format.
-        EndUtc:
+          description: Token identifying the client application.
+        AccessToken:
           minLength: 1
           type: string
-          description: End of the resource block in UTC timezone in ISO 8601 format.
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        Extent:
+          title: Resource block extent
+          allOf:
+          - $ref: '#/components/schemas/ResourceBlockExtent'
+          description: Extent of data to be returned.
+          deprecated: true
+          x-deprecatedMessage: Use ActivityStates with `["Active", "Deleted"]` instead.
+        ResourceBlockIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the requested resource block.
+        AssignedResourceIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the requested Assigned `Resource`.
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records. Defaults to `Active` if not specified.
+        CollidingUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource block is active.
+          x-max-interval-in-months: 3
         CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the resource block in UTC timezone in ISO 8601 format.
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource block was created.
+          x-max-interval-in-months: 3
         UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the resource block in UTC timezone in ISO 8601 format.
-        DeletedUtc:
-          type: string
-          description: Date and time when the resource block was deleted (for inactive ones) in UTC timezone in ISO 8601 format.
-          nullable: true
-        Name:
-          minLength: 1
-          type: string
-          description: Name of the resource block.
-        Notes:
-          type: string
-          description: Note describing the resource block.
-          nullable: true
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource block was updated.
+          x-max-interval-in-months: 3
       additionalProperties: false
-      x-schema-id: ResourceBlock
-    Limitation:
-      title: Limitation
-      required:
-      - Count
+      x-schema-id: ResourceBlockParameters
+    ResourceBlockExtent:
+      title: Resource block extent
       type: object
       properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type: string
-          format: uuid
-          nullable: true
+        Inactive:
+          type: boolean
+          description: Whether the response should contain inactive entities.
       additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
+      description: ''
+      x-schema-id: ResourceBlockExtent
+    ResourceBlockAdditionResult:
+      title: ResourceBlockAdditionResult
+      required:
+      - ResourceBlocks
+      type: object
+      properties:
+        ResourceBlocks:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceBlock'
+          description: The resource blocks that were added.
+      additionalProperties: false
+      x-schema-id: ResourceBlockAdditionResult

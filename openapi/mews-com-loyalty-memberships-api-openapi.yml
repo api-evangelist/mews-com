@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Loyalty memberships API
+  title: Connector Loyalty memberships API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -12,7 +17,7 @@ paths:
       tags:
       - Loyalty memberships
       summary: Get all loyalty memberships
-      description: Returns all loyalty memberships of the enterprise, optionally filtered by specific loyalty membership identifiers, activity states, or other filter parameters. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Returns all loyalty memberships of the enterprise, optionally filtered by specific loyalty membership identifiers, activity states, or other filter parameters. Note this operation uses Pagination and supports Portfolio Access Tokens.
       operationId: loyaltyMemberships_getAll
       requestBody:
         content:
@@ -124,7 +129,7 @@ paths:
       tags:
       - Loyalty memberships
       summary: Add loyalty memberships
-      description: Adds loyalty memberships to the enterprise. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Adds loyalty memberships to the enterprise. Note this operation supports Portfolio Access Tokens.
       operationId: loyaltyMemberships_add
       requestBody:
         content:
@@ -218,7 +223,7 @@ paths:
       tags:
       - Loyalty memberships
       summary: Update loyalty memberships
-      description: Updates information about the specified loyalty memberships. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Updates information about the specified loyalty memberships. Note this operation supports Portfolio Access Tokens.
       operationId: loyaltyMemberships_update
       requestBody:
         content:
@@ -320,7 +325,7 @@ paths:
       tags:
       - Loyalty memberships
       summary: Delete loyalty memberships
-      description: Deletes loyalty memberships. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Deletes loyalty memberships. Note this operation supports Portfolio Access Tokens.
       operationId: loyaltyMemberships_delete
       requestBody:
         content:
@@ -386,13 +391,65 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    LoyaltyMembershipDeleteParameters:
-      title: Loyalty membership delete parameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    LoyaltyMembershipStateEnum:
+      title: Loyalty membership state
+      enum:
+      - New
+      - Pending
+      - Enrolled
+      - Canceled
+      - Declined
+      type: string
+      description: 'State of the loyalty membership.
+
+
+        New
+
+
+        Pending
+
+
+        Enrolled
+
+
+        Canceled
+
+
+        Declined'
+      x-enumNames:
+      - New
+      - Pending
+      - Enrolled
+      - Canceled
+      - Declined
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    MultipleLoyaltyMembershipUpdateParameters:
+      title: MultipleLoyaltyMembershipUpdateParameters
       required:
       - AccessToken
       - Client
       - ClientToken
-      - LoyaltyMembershipIds
+      - LoyaltyMembershipUpdates
       type: object
       properties:
         ClientToken:
@@ -408,53 +465,226 @@ components:
           type: string
           description: Name and version of the client application.
         ChainId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
           format: uuid
-          nullable: true
-        LoyaltyMembershipIds:
+        LoyaltyMembershipUpdates:
           maxItems: 1000
           minItems: 1
           type: array
           items:
-            type: string
-            format: uuid
-          description: Unique identifier of the loyalty memberships to be deleted.
+            $ref: '#/components/schemas/LoyaltyMembershipUpdateParameters'
+          description: Loyalty memberships to be updated.
       additionalProperties: false
-      x-schema-id: LoyaltyMembershipDeleteParameters
-    StringUpdateValue:
-      title: String update value
+      x-schema-id: MultipleLoyaltyMembershipUpdateParameters
+    EnterpriseProfileData:
+      title: Enterprise profile data
+      required:
+      - ProfileId
+      type: object
+      properties:
+        ProfileId:
+          type: string
+          description: Unique identifier of the profile.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: EnterpriseProfileData
+    ProfileData:
+      title: Profile data
+      required:
+      - Discriminator
+      type: object
+      properties:
+        Discriminator:
+          $ref: '#/components/schemas/ProfileDataDiscriminator'
+        EnterpriseProfile:
+          title: Enterprise profile data
+          allOf:
+          - $ref: '#/components/schemas/EnterpriseProfileData'
+          description: Enterprise profile data.
+      additionalProperties: false
+      description: The profile data of the user who created or last updated the record.
+      x-schema-id: ProfileData
+    BooleanUpdateValue:
+      title: Boolean update value
+      type: object
+      properties:
+        Value:
+          type: boolean
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: BooleanUpdateValue
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    Int32NullableUpdateValue:
+      title: Int32 update value
+      type: object
+      properties:
+        Value:
+          type:
+          - integer
+          - 'null'
+          description: Value which is to be updated.
+          format: int32
+      additionalProperties: false
+      x-schema-id: Int32NullableUpdateValue
+    MultipleLoyaltyMembershipAddParameters:
+      title: MultipleLoyaltyMembershipAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - LoyaltyMemberships
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        LoyaltyMemberships:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/LoyaltyMembershipAddParameters'
+          description: Loyalty memberships to be added.
+      additionalProperties: false
+      x-schema-id: MultipleLoyaltyMembershipAddParameters
+    LoyaltyMembershipResult:
+      title: Loyalty membership result
+      required:
+      - LoyaltyMemberships
+      type: object
+      properties:
+        LoyaltyMemberships:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoyaltyMembership'
+          description: The loyalty memberships of the enterprise.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: LoyaltyMembershipResult
+    LoyaltyMembershipUpdateParameters:
+      title: Loyalty membership update parameters
+      required:
+      - LoyaltyMembershipId
+      type: object
+      properties:
+        LoyaltyMembershipId:
+          type: string
+          description: Unique identifier of the loyalty membership.
+          format: uuid
+        LoyaltyProgramId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidUpdateValue'
+          description: Unique identifier of the loyalty program (or `null` if the program should not be updated).
+        State:
+          title: Loyalty membership state update value
+          allOf:
+          - $ref: '#/components/schemas/LoyaltyMembershipStateUpdateValue'
+          description: State of the loyalty membership, (or `null` if the state should not be updated).
+        IsPrimary:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Boolean value defining the primary loyalty membership for the account (or `null` if the value should not be updated).
+        Code:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Code of the loyalty membership. (or `null` if the code should not be updated).
+          deprecated: true
+          x-deprecatedMessage: Use `MembershipNumber` instead.
+        MembershipNumber:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Customer-facing membership numbers, e.g., printed on a loyalty card.
+        ProviderMembershipId:
+          title: String update value
+          maxLength: 100
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Loyalty membership identifier assigned by the external loyalty provider's system (or `null` if the value should not be updated).
+        Points:
+          title: Int32 update value
+          allOf:
+          - $ref: '#/components/schemas/Int32NullableUpdateValue'
+          description: The loyalty points the account has in the loyalty membership (or `null` if the points should not be updated).
+        ExpirationDate:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Expiration date of the loyalty membership in UTC timezone in ISO 8601 format (or `null` if the date should not be updated).
+          format: date
+        Url:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: URL of the loyalty membership (or `null` if the URL should not be updated).
+          format: uri
+        LoyaltyTierId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidNullableUpdateValue'
+          description: Unique identifier of the loyalty tier (or `null` if the tier should not be updated).
+      additionalProperties: false
+      x-schema-id: LoyaltyMembershipUpdateParameters
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    GuidUpdateValue:
+      title: Guid update value
       type: object
       properties:
         Value:
           type: string
           description: Value which is to be updated.
-          nullable: true
+          format: uuid
       additionalProperties: false
-      x-schema-id: StringUpdateValue
-    LoyaltyMembershipStateUpdateValue:
-      title: Loyalty membership state update value
-      type: object
-      properties:
-        Value:
-          title: Loyalty membership state
-          allOf:
-          - $ref: '#/components/schemas/LoyaltyMembershipStateEnum'
-          description: Value which is to be updated.
-          x-enumNames:
-          - New
-          - Pending
-          - Enrolled
-          - Canceled
-          - Declined
-          x-enumDescriptions:
-          - ''
-          - ''
-          - ''
-          - ''
-          - ''
-      additionalProperties: false
-      x-schema-id: LoyaltyMembershipStateUpdateValue
+      x-schema-id: GuidUpdateValue
     LoyaltyMembership:
       title: Loyalty membership
       required:
@@ -520,38 +750,45 @@ components:
           type: boolean
           description: Defines the primary loyalty membership.
         ProviderMembershipId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier for the loyalty membership in the loyalty provider's system.
-          nullable: true
         Code:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Code of the loyalty membership.
-          nullable: true
           deprecated: true
           x-deprecatedMessage: Use `MembershipNumber` instead.
         MembershipNumber:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Customer-facing membership numbers, e.g., printed on a loyalty card.
-          nullable: true
         Points:
-          type: integer
+          type:
+          - integer
+          - 'null'
           description: The loyalty points for the account in that membership.
           format: int32
-          nullable: true
         ExpirationDate:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Expiration date of the loyalty membership in UTC timezone in ISO 8601 format.
           format: date-time
-          nullable: true
         Url:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Url of the loyalty membership.
-          nullable: true
         LoyaltyTierId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the loyalty tier.
           format: uuid
-          nullable: true
         CreatorProfile:
           title: Profile data
           allOf:
@@ -564,153 +801,17 @@ components:
           description: The profile data of the user who created or last updated the record.
       additionalProperties: false
       x-schema-id: LoyaltyMembership
-    LoyaltyMembershipStateEnum:
-      title: Loyalty membership state
-      enum:
-      - New
-      - Pending
-      - Enrolled
-      - Canceled
-      - Declined
-      type: string
-      description: 'State of the loyalty membership.
-
-
-        New
-
-
-        Pending
-
-
-        Enrolled
-
-
-        Canceled
-
-
-        Declined'
-      x-enumNames:
-      - New
-      - Pending
-      - Enrolled
-      - Canceled
-      - Declined
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    MultipleLoyaltyMembershipAddParameters:
-      title: MultipleLoyaltyMembershipAddParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - LoyaltyMemberships
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ChainId:
-          type: string
-          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        LoyaltyMemberships:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/LoyaltyMembershipAddParameters'
-          description: Loyalty memberships to be added.
-      additionalProperties: false
-      x-schema-id: MultipleLoyaltyMembershipAddParameters
-    GuidUpdateValue:
-      title: Guid update value
+    StringUpdateValue:
+      title: String update value
       type: object
       properties:
         Value:
-          type: string
-          description: Value which is to be updated.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: GuidUpdateValue
-    Unit:
-      type: object
-      additionalProperties: false
-    EnterpriseProfileData:
-      title: Enterprise profile data
-      required:
-      - ProfileId
-      type: object
-      properties:
-        ProfileId:
-          type: string
-          description: Unique identifier of the profile.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: EnterpriseProfileData
-    Int32NullableUpdateValue:
-      title: Int32 update value
-      type: object
-      properties:
-        Value:
-          type: integer
-          description: Value which is to be updated.
-          format: int32
-          nullable: true
-      additionalProperties: false
-      x-schema-id: Int32NullableUpdateValue
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type: string
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    BooleanUpdateValue:
-      title: Boolean update value
-      type: object
-      properties:
-        Value:
-          type: boolean
+          type:
+          - string
+          - 'null'
           description: Value which is to be updated.
       additionalProperties: false
-      x-schema-id: BooleanUpdateValue
+      x-schema-id: StringUpdateValue
     LoyaltyMembershipAddParameters:
       title: Loyalty membership parameters
       required:
@@ -749,48 +850,83 @@ components:
 
 
             Declined'
-          nullable: true
         Code:
           maxLength: 255
-          type: string
+          type:
+          - string
+          - 'null'
           description: Loyalty membership code, such as an identification number printed on a loyalty card visible to the customer.
-          nullable: true
           deprecated: true
           x-deprecatedMessage: Use `MembershipNumber` instead.
         MembershipNumber:
           maxLength: 255
-          type: string
+          type:
+          - string
+          - 'null'
           description: Customer-facing membership numbers, e.g., printed on a loyalty card.
-          nullable: true
         Points:
-          type: integer
+          type:
+          - integer
+          - 'null'
           description: The loyalty points for the account in that membership.
           format: int32
-          nullable: true
         ExpirationDate:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Expiration date of the loyalty membership in UTC timezone in ISO 8601 format.
           format: date
-          nullable: true
         Url:
-          type: string
+          type:
+          - string
+          - 'null'
           description: URL of the loyalty membership in external loyalty system.
           format: uri
-          nullable: true
         LoyaltyTierId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the loyalty tier.
           format: uuid
-          nullable: true
       additionalProperties: false
       x-schema-id: LoyaltyMembershipAddParameters
-    ActivityStates:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: Activity states used for filtering.
+    LoyaltyMembershipDeleteParameters:
+      title: Loyalty membership delete parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - LoyaltyMembershipIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        LoyaltyMembershipIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifier of the loyalty memberships to be deleted.
+      additionalProperties: false
+      x-schema-id: LoyaltyMembershipDeleteParameters
     LoyaltyMembershipFilterParameters:
       title: Loyalty membership filter parameters
       required:
@@ -815,112 +951,159 @@ components:
         ChainIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of the chain. If not specified, the operation returns data for all chains within scope of the Access Token.
-          nullable: true
         CreatedUtc:
           title: Time interval
           allOf:
           - $ref: '#/components/schemas/TimeFilterInterval'
           description: The time interval during which the membership was created.
-          nullable: true
           x-max-interval-in-months: 3
         UpdatedUtc:
           title: Time interval
           allOf:
           - $ref: '#/components/schemas/TimeFilterInterval'
           description: The time interval during which the membership was last updated.
-          nullable: true
           x-max-interval-in-months: 3
         LoyaltyMembershipIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of [Loyalty memberships](https://mews-systems.gitbook.io/connector-api/operations/#loyalty-membership).
-          nullable: true
         AccountIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of accounts (for example [Customers](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) or [Companies](https://mews-systems.gitbook.io/connector-api/operations/companies/#company)) the membership is associated with.
-          nullable: true
         LoyaltyProgramIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of [Loyalty programs](https://mews-systems.gitbook.io/connector-api/operations/loyaltyprograms/#loyalty-program).
-          nullable: true
         MembershipStates:
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             $ref: '#/components/schemas/LoyaltyMembershipStateEnum'
           description: States of the loyalty memberships.
-          nullable: true
         ActivityStates:
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             $ref: '#/components/schemas/ActivityStates'
           description: Whether to return only active, only deleted or both records.
-          nullable: true
         Codes:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
           description: List of loyalty membership codes, such as identification numbers printed on loyalty cards visible to the customer.
-          nullable: true
           deprecated: true
           x-deprecatedMessage: Use `MembershipNumbers` instead.
         MembershipNumbers:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
           description: Customer-facing membership numbers, e.g., printed on a loyalty card.
-          nullable: true
         ProviderMembershipIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
           description: List of unique loyalty membership identifiers assigned and managed by the external loyalty provider's system.
-          nullable: true
         Limitation:
           allOf:
           - $ref: '#/components/schemas/Limitation'
           description: Limitation on the quantity of data returned.
       additionalProperties: false
       x-schema-id: LoyaltyMembershipFilterParameters
+    Unit:
+      type: object
+      additionalProperties: false
     TimeFilterInterval:
       title: Time interval
       type: object
       properties:
         StartUtc:
-          type: string
+          type:
+          - string
+          - 'null'
           format: date-time
-          nullable: true
         EndUtc:
-          type: string
+          type:
+          - string
+          - 'null'
           format: date-time
-          nullable: true
       additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
       x-schema-id: TimeFilterInterval
+    GuidNullableUpdateValue:
+      title: Guid update value
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value which is to be updated.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: GuidNullableUpdateValue
+    LoyaltyMembershipStateUpdateValue:
+      title: Loyalty membership state update value
+      type: object
+      properties:
+        Value:
+          title: Loyalty membership state
+          allOf:
+          - $ref: '#/components/schemas/LoyaltyMembershipStateEnum'
+          description: Value which is to be updated.
+          x-enumNames:
+          - New
+          - Pending
+          - Enrolled
+          - Canceled
+          - Declined
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+          - ''
+      additionalProperties: false
+      x-schema-id: LoyaltyMembershipStateUpdateValue
     ProfileDataDiscriminator:
       title: Profile data discriminator
       enum:
@@ -930,162 +1113,3 @@ components:
       - Static
       - Integration
       type: string
-    MultipleLoyaltyMembershipUpdateParameters:
-      title: MultipleLoyaltyMembershipUpdateParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - LoyaltyMembershipUpdates
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ChainId:
-          type: string
-          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        LoyaltyMembershipUpdates:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/LoyaltyMembershipUpdateParameters'
-          description: Loyalty memberships to be updated.
-      additionalProperties: false
-      x-schema-id: MultipleLoyaltyMembershipUpdateParameters
-    ProfileData:
-      title: Profile data
-      required:
-      - Discriminator
-      type: object
-      properties:
-        Discriminator:
-          $ref: '#/components/schemas/ProfileDataDiscriminator'
-        EnterpriseProfile:
-          title: Enterprise profile data
-          allOf:
-          - $ref: '#/components/schemas/EnterpriseProfileData'
-          description: Enterprise profile data.
-          nullable: true
-      additionalProperties: false
-      description: The profile data of the user who created or last updated the record.
-      x-schema-id: ProfileData
-    LoyaltyMembershipResult:
-      title: Loyalty membership result
-      required:
-      - LoyaltyMemberships
-      type: object
-      properties:
-        LoyaltyMemberships:
-          type: array
-          items:
-            $ref: '#/components/schemas/LoyaltyMembership'
-          description: The loyalty memberships of the enterprise.
-        Cursor:
-          type: string
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: LoyaltyMembershipResult
-    GuidNullableUpdateValue:
-      title: Guid update value
-      type: object
-      properties:
-        Value:
-          type: string
-          description: Value which is to be updated.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: GuidNullableUpdateValue
-    LoyaltyMembershipUpdateParameters:
-      title: Loyalty membership update parameters
-      required:
-      - LoyaltyMembershipId
-      type: object
-      properties:
-        LoyaltyMembershipId:
-          type: string
-          description: Unique identifier of the loyalty membership.
-          format: uuid
-        LoyaltyProgramId:
-          title: Guid update value
-          allOf:
-          - $ref: '#/components/schemas/GuidUpdateValue'
-          description: Unique identifier of the loyalty program (or `null` if the program should not be updated).
-          nullable: true
-        State:
-          title: Loyalty membership state update value
-          allOf:
-          - $ref: '#/components/schemas/LoyaltyMembershipStateUpdateValue'
-          description: State of the loyalty membership, (or `null` if the state should not be updated).
-          nullable: true
-        IsPrimary:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: Boolean value defining the primary loyalty membership for the account (or `null` if the value should not be updated).
-          nullable: true
-        Code:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Code of the loyalty membership. (or `null` if the code should not be updated).
-          nullable: true
-          deprecated: true
-          x-deprecatedMessage: Use `MembershipNumber` instead.
-        MembershipNumber:
-          title: String update value
-          maxLength: 255
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Customer-facing membership numbers, e.g., printed on a loyalty card.
-          nullable: true
-        ProviderMembershipId:
-          title: String update value
-          maxLength: 100
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Loyalty membership identifier assigned by the external loyalty provider's system (or `null` if the value should not be updated).
-          nullable: true
-        Points:
-          title: Int32 update value
-          allOf:
-          - $ref: '#/components/schemas/Int32NullableUpdateValue'
-          description: The loyalty points the account has in the loyalty membership (or `null` if the points should not be updated).
-          nullable: true
-        ExpirationDate:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Expiration date of the loyalty membership in UTC timezone in ISO 8601 format (or `null` if the date should not be updated).
-          format: date
-          nullable: true
-        Url:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: URL of the loyalty membership (or `null` if the URL should not be updated).
-          format: uri
-          nullable: true
-        LoyaltyTierId:
-          title: Guid update value
-          allOf:
-          - $ref: '#/components/schemas/GuidNullableUpdateValue'
-          description: Unique identifier of the loyalty tier (or `null` if the tier should not be updated).
-          nullable: true
-      additionalProperties: false
-      x-schema-id: LoyaltyMembershipUpdateParameters

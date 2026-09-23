@@ -1,18 +1,23 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Product categories API
+  title: Connector Product categories API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
 tags:
-- name: Product categories
+- name: Product Categories
 paths:
   /api/connector/v1/productCategories/getAll:
     post:
       tags:
-      - Product categories
+      - Product Categories
       summary: Get all product categories
-      description: Returns all categories of products. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      description: Returns all categories of products. Note this operation uses Pagination and supports Portfolio Access Tokens.
       operationId: productCategories_getAll
       requestBody:
         content:
@@ -119,20 +124,96 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    ProductCategoryResult:
+      title: ProductCategoryResult
+      required:
+      - ProductCategories
+      type: object
+      properties:
+        ProductCategories:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductCategory'
+          description: Product categories.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last product category returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of product categories.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ProductCategoryResult
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
       properties:
         Message:
-          type: string
-          nullable: true
+          type:
+          - string
+          - 'null'
         RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
       x-schema-id: ConnectorApiExceptionResult
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ParentProductCategory:
+      title: Parent product category
+      required:
+      - Id
+      - Names
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the product category.
+          format: uuid
+        Names:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the name.
+          x-schema-id: LocalizedStrings
+      additionalProperties: false
+      description: ''
+      x-schema-id: ParentProductCategory
     ProductCategoryFilterParameters:
       title: ProductCategoryFilterParameters
       required:
@@ -162,21 +243,23 @@ components:
         EnterpriseIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-          nullable: true
         ProductCategoryIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of `ProductCategory`.
-          nullable: true
         ServiceIds:
           maxItems: 1000
           minItems: 1
@@ -190,25 +273,9 @@ components:
           allOf:
           - $ref: '#/components/schemas/TimeFilterInterval'
           description: Interval in which the product categories were updated.
-          nullable: true
           x-max-interval-in-months: 3
       additionalProperties: false
       x-schema-id: ProductCategoryFilterParameters
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type: string
-          format: date-time
-          nullable: true
-        EndUtc:
-          type: string
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
     ProductCategory:
       title: Product category
       required:
@@ -261,7 +328,6 @@ components:
           allOf:
           - $ref: '#/components/schemas/ParentProductCategory'
           description: Parent product category, if set.
-          nullable: true
         UpdatedUtc:
           minLength: 1
           type: string
@@ -278,59 +344,3 @@ components:
           format: int32
       additionalProperties: false
       x-schema-id: ProductCategory
-    ProductCategoryResult:
-      title: ProductCategoryResult
-      required:
-      - ProductCategories
-      type: object
-      properties:
-        ProductCategories:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/ProductCategory'
-          description: Product categories.
-        Cursor:
-          type: string
-          description: Unique identifier of the last product category returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of product categories.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ProductCategoryResult
-    ParentProductCategory:
-      title: Parent product category
-      required:
-      - Id
-      - Names
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the product category.
-          format: uuid
-        Names:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of the name.
-          x-schema-id: LocalizedStrings
-      additionalProperties: false
-      description: ''
-      x-schema-id: ParentProductCategory
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type: string
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation

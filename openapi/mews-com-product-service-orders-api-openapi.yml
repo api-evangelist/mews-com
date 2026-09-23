@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Product service orders API
+  title: Connector Product service orders API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -12,7 +17,7 @@ paths:
       tags:
       - Product service orders
       summary: Get all product service orders
-      description: Returns all product service orders associated with the given enterprise. This operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Returns all product service orders associated with the given enterprise. This operation uses Pagination and supports Portfolio Access Tokens.
       operationId: productServiceOrders_getAll
       requestBody:
         content:
@@ -117,131 +122,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ServiceOrderOptions:
-      title: Service Order Options
-      required:
-      - AllCompanionsCheckedIn
-      - AnyCompanionCheckedIn
-      - ConnectorCheckIn
-      - OwnerCheckedIn
-      type: object
-      properties:
-        OwnerCheckedIn:
-          type: boolean
-          description: Owner of the reservation checked in.
-        AllCompanionsCheckedIn:
-          type: boolean
-          description: All companions of the reservation checked in.
-        AnyCompanionCheckedIn:
-          type: boolean
-          description: Any of the companions of the reservation checked in.
-        ConnectorCheckIn:
-          type: boolean
-          description: Check in was done via Connector API.
-      additionalProperties: false
-      x-schema-id: ServiceOrderOptions
-    ServiceOrderState:
-      title: Service order state
-      enum:
-      - Inquired
-      - Confirmed
-      - Started
-      - Processed
-      - Canceled
-      - Optional
-      - Requested
-      type: string
-      x-enumDescriptions:
-      - Confirmed neither by the customer nor enterprise.
-      - Confirmed by both parties, before check-in.
-      - Checked in.
-      - Checked out.
-      - Canceled.
-      - Confirmed by enterprise but not by the guest (the enterprise is holding resource for the guest).
-      - Confirmed by the customer but not by the enterprise (waitlist).
-    ServiceOrderStateEnum:
-      title: Service order state
-      enum:
-      - Inquired
-      - Confirmed
-      - Started
-      - Processed
-      - Canceled
-      - Optional
-      - Requested
-      type: string
-      description: '
-
-
-        Inquired (Confirmed neither by the customer nor enterprise.)
-
-
-        Confirmed (Confirmed by both parties, before check-in.)
-
-
-        Started (Checked in.)
-
-
-        Processed (Checked out.)
-
-
-        Canceled (Canceled.)
-
-
-        Optional (Confirmed by enterprise but not by the guest (the enterprise is holding resource for the guest).)
-
-
-        Requested (Confirmed by the customer but not by the enterprise (waitlist).)'
-      x-enumNames:
-      - Inquired
-      - Confirmed
-      - Started
-      - Processed
-      - Canceled
-      - Optional
-      - Requested
-      x-enumDescriptions:
-      - Confirmed neither by the customer nor enterprise.
-      - Confirmed by both parties, before check-in.
-      - Checked in.
-      - Checked out.
-      - Canceled.
-      - Confirmed by enterprise but not by the guest (the enterprise is holding resource for the guest).
-      - Confirmed by the customer but not by the enterprise (waitlist).
-    AccountTypeEnum:
-      title: Account type
-      enum:
-      - Company
-      - Customer
-      type: string
-      description: 'A discriminator specifying the account type, e.g. `Customer` or `Company`
-
-
-        Company
-
-
-        Customer'
-      x-enumNames:
-      - Company
-      - Customer
-      x-enumDescriptions:
-      - ''
-      - ''
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type: string
-          format: date-time
-          nullable: true
-        EndUtc:
-          type: string
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
     ProductServiceOrderResult:
       title: ProductServiceOrderResult
       required:
@@ -254,69 +134,13 @@ components:
             $ref: '#/components/schemas/ServiceOrder'
           description: The collection of product service orders.
         Cursor:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
           format: uuid
-          nullable: true
       additionalProperties: false
       x-schema-id: ProductServiceOrderResult
-    ServiceOrderOriginEnum:
-      title: Service order origin
-      enum:
-      - Distributor
-      - ChannelManager
-      - Commander
-      - Import
-      - Connector
-      - Navigator
-      type: string
-      description: '
-
-
-        Distributor (From the Mews Booking Engine or Booking Engine API.)
-
-
-        ChannelManager (From a channel manager.)
-
-
-        Commander (From Mews Operations.)
-
-
-        Import (From an import process.)
-
-
-        Connector (From the Mews Connector API.)
-
-
-        Navigator (From Mews Guest Services.)'
-      x-enumNames:
-      - Distributor
-      - ChannelManager
-      - Commander
-      - Import
-      - Connector
-      - Navigator
-      x-enumDescriptions:
-      - From the Mews Booking Engine or Booking Engine API.
-      - From a channel manager.
-      - From Mews Operations.
-      - From an import process.
-      - From the Mews Connector API.
-      - From Mews Guest Services.
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     ServiceOrder:
       title: Product service order
       required:
@@ -365,10 +189,11 @@ components:
           description: Unique identifier of the user who updated the product service order.
           format: uuid
         BookerId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the Customer on whose behalf the service order was made.
           format: uuid
-          nullable: true
         Number:
           minLength: 1
           type: string
@@ -480,11 +305,11 @@ components:
 
 
             RoomingList'
-          nullable: true
         OriginDetails:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Details about the product service order Origin.
-          nullable: true
         CreatedUtc:
           minLength: 1
           type: string
@@ -496,25 +321,29 @@ components:
           description: Last update date and time of the product service order in UTC timezone in ISO 8601 format.
           format: date-time
         CancelledUtc:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Cancellation date and time in UTC timezone in ISO 8601 format.
           format: date-time
-          nullable: true
         VoucherId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the Voucher that has been used to create product service order.
           format: uuid
-          nullable: true
         BusinessSegmentId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Identifier of the Business segment.
           format: uuid
-          nullable: true
         LinkedReservationId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Identifier of the linked Reservation.
           format: uuid
-          nullable: true
         Options:
           title: Service order options
           allOf:
@@ -522,91 +351,38 @@ components:
           description: Options of the service order.
       additionalProperties: false
       x-schema-id: ServiceOrder
-    ProductServiceOrderFilterParameters:
-      title: ProductServiceOrderFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      - ServiceIds
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-          nullable: true
-        ProductServiceOrderIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Product service order.
-          nullable: true
-        ServiceIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the `Service`.
-        AccountIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Customer or Company who owns the product service order.
-          nullable: true
-        LinkedReservationIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of linked Reservations.
-          nullable: true
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the Product service orders were updated.
-          nullable: true
-          x-max-interval-in-months: 3
-        States:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceOrderState'
-          description: A list of product service order states to filter by.
-          nullable: true
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      x-schema-id: ProductServiceOrderFilterParameters
+      x-schema-id: ConnectorApiExceptionResult
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
     ServiceOrderCommanderOriginEnum:
       title: Commander origin
       enum:
@@ -662,19 +438,262 @@ components:
       - ''
       - ''
       - ''
-    Limitation:
-      title: Limitation
-      required:
-      - Count
+    ServiceOrderState:
+      title: Service order state
+      enum:
+      - Inquired
+      - Confirmed
+      - Started
+      - Processed
+      - Canceled
+      - Optional
+      - Requested
+      type: string
+      x-enumDescriptions:
+      - Confirmed neither by the customer nor enterprise.
+      - Confirmed by both parties, before check-in.
+      - Checked in.
+      - Checked out.
+      - Canceled.
+      - Confirmed by enterprise but not by the guest (the enterprise is holding resource for the guest).
+      - Confirmed by the customer but not by the enterprise (waitlist).
+    TimeFilterInterval:
+      title: Time interval
       type: object
       properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type: string
-          format: uuid
-          nullable: true
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
       additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ServiceOrderOptions:
+      title: Service Order Options
+      required:
+      - AllCompanionsCheckedIn
+      - AnyCompanionCheckedIn
+      - ConnectorCheckIn
+      - OwnerCheckedIn
+      type: object
+      properties:
+        OwnerCheckedIn:
+          type: boolean
+          description: Owner of the reservation checked in.
+        AllCompanionsCheckedIn:
+          type: boolean
+          description: All companions of the reservation checked in.
+        AnyCompanionCheckedIn:
+          type: boolean
+          description: Any of the companions of the reservation checked in.
+        ConnectorCheckIn:
+          type: boolean
+          description: Check in was done via Connector API.
+      additionalProperties: false
+      x-schema-id: ServiceOrderOptions
+    AccountTypeEnum:
+      title: Account type
+      enum:
+      - Company
+      - Customer
+      type: string
+      description: 'A discriminator specifying the account type, e.g. `Customer` or `Company`
+
+
+        Company
+
+
+        Customer'
+      x-enumNames:
+      - Company
+      - Customer
+      x-enumDescriptions:
+      - ''
+      - ''
+    ServiceOrderOriginEnum:
+      title: Service order origin
+      enum:
+      - Distributor
+      - ChannelManager
+      - Commander
+      - Import
+      - Connector
+      - Navigator
+      type: string
+      description: '
+
+
+        Distributor (From the Mews Booking Engine or Booking Engine API.)
+
+
+        ChannelManager (From a channel manager.)
+
+
+        Commander (From Mews Operations.)
+
+
+        Import (From an import process.)
+
+
+        Connector (From the Mews Connector API.)
+
+
+        Navigator (From Mews Guest Services.)'
+      x-enumNames:
+      - Distributor
+      - ChannelManager
+      - Commander
+      - Import
+      - Connector
+      - Navigator
+      x-enumDescriptions:
+      - From the Mews Booking Engine or Booking Engine API.
+      - From a channel manager.
+      - From Mews Operations.
+      - From an import process.
+      - From the Mews Connector API.
+      - From Mews Guest Services.
+    ServiceOrderStateEnum:
+      title: Service order state
+      enum:
+      - Inquired
+      - Confirmed
+      - Started
+      - Processed
+      - Canceled
+      - Optional
+      - Requested
+      type: string
+      description: '
+
+
+        Inquired (Confirmed neither by the customer nor enterprise.)
+
+
+        Confirmed (Confirmed by both parties, before check-in.)
+
+
+        Started (Checked in.)
+
+
+        Processed (Checked out.)
+
+
+        Canceled (Canceled.)
+
+
+        Optional (Confirmed by enterprise but not by the guest (the enterprise is holding resource for the guest).)
+
+
+        Requested (Confirmed by the customer but not by the enterprise (waitlist).)'
+      x-enumNames:
+      - Inquired
+      - Confirmed
+      - Started
+      - Processed
+      - Canceled
+      - Optional
+      - Requested
+      x-enumDescriptions:
+      - Confirmed neither by the customer nor enterprise.
+      - Confirmed by both parties, before check-in.
+      - Checked in.
+      - Checked out.
+      - Canceled.
+      - Confirmed by enterprise but not by the guest (the enterprise is holding resource for the guest).
+      - Confirmed by the customer but not by the enterprise (waitlist).
+    ProductServiceOrderFilterParameters:
+      title: ProductServiceOrderFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ServiceIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        ProductServiceOrderIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Product service order.
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Service`.
+        AccountIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Customer or Company who owns the product service order.
+        LinkedReservationIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of linked Reservations.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the Product service orders were updated.
+          x-max-interval-in-months: 3
+        States:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ServiceOrderState'
+          description: A list of product service order states to filter by.
+      additionalProperties: false
+      x-schema-id: ProductServiceOrderFilterParameters

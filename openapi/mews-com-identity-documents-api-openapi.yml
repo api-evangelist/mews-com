@@ -1,18 +1,23 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Identity documents API
+  title: Connector Identity documents API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
 tags:
-- name: Identity documents
+- name: Identity Documents
 paths:
   /api/connector/v1/identityDocuments/getAll:
     post:
       tags:
-      - Identity documents
+      - Identity Documents
       summary: Get all identity documents
-      description: Returns all identity documents for the specified customers, with additional filtering options available. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Returns all identity documents for the specified customers, with additional filtering options available. This operation supports Portfolio Access Tokens.
       operationId: identityDocuments_getAll
       requestBody:
         content:
@@ -107,9 +112,9 @@ paths:
   /api/connector/v1/identityDocuments/delete:
     post:
       tags:
-      - Identity documents
+      - Identity Documents
       summary: Delete identity documents
-      description: Deletes specified identity documents. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Deletes specified identity documents. This operation supports Portfolio Access Tokens.
       operationId: identityDocuments_delete
       requestBody:
         content:
@@ -176,9 +181,9 @@ paths:
   /api/connector/v1/identityDocuments/clear:
     post:
       tags:
-      - Identity documents
+      - Identity Documents
       summary: Clear identity documents
-      description: Deletes all identity documents for the specified customers. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Deletes all identity documents for the specified customers. This operation supports Portfolio Access Tokens.
       operationId: identityDocuments_clear
       requestBody:
         content:
@@ -245,9 +250,9 @@ paths:
   /api/connector/v1/identityDocuments/update:
     post:
       tags:
-      - Identity documents
+      - Identity Documents
       summary: Update identity documents
-      description: Updates specified identity documents. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Updates specified identity documents. This operation supports Portfolio Access Tokens.
       operationId: identityDocuments_update
       requestBody:
         content:
@@ -339,9 +344,9 @@ paths:
   /api/connector/v1/identityDocuments/add:
     post:
       tags:
-      - Identity documents
+      - Identity Documents
       summary: Add identity documents
-      description: Adds identity documents. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Adds identity documents. This operation supports Portfolio Access Tokens.
       operationId: identityDocuments_add
       requestBody:
         content:
@@ -425,6 +430,317 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    IdentityDocumentFilterParameters:
+      title: IdentityDocumentFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CustomerIds
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        ChainIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
+        IdentityDocumentIds:
+          maxItems: 100
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Identity document`.
+        CustomerIds:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Customer`.
+        Types:
+          uniqueItems: true
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/IdentityDocumentTypeEnum'
+          description: Type of the identity document.
+      additionalProperties: false
+      x-schema-id: IdentityDocumentFilterParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    IdentityDocumentTypeUpdateValue:
+      title: Identity document type update value
+      type: object
+      properties:
+        Value:
+          title: Document type
+          allOf:
+          - $ref: '#/components/schemas/IdentityDocumentTypeEnum'
+          description: 'Type of the document (or `null` if the type should not be updated).
+
+
+            IdentityCard
+
+
+            Passport
+
+
+            Visa
+
+
+            DriversLicense'
+          x-enumNames:
+          - IdentityCard
+          - Passport
+          - Visa
+          - DriversLicense
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+      additionalProperties: false
+      description: Has same structure as [String update value](https://mews-systems.gitbook.io/connector-api/operations/_objects#string-update-value).
+      x-schema-id: IdentityDocumentTypeUpdateValue
+    IdentityDocumentClearParameters:
+      title: IdentityDocumentClearParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CustomerIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        CustomerIds:
+          maxItems: 10
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Customer` for whom documents will be deleted.
+      additionalProperties: false
+      x-schema-id: IdentityDocumentClearParameters
+    IdentityDocumentTypeEnum:
+      title: Document type
+      enum:
+      - IdentityCard
+      - Passport
+      - Visa
+      - DriversLicense
+      type: string
+      description: '
+
+
+        IdentityCard
+
+
+        Passport
+
+
+        Visa
+
+
+        DriversLicense'
+      x-enumNames:
+      - IdentityCard
+      - Passport
+      - Visa
+      - DriversLicense
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+    MultipleIdentityDocumentUpdateParameters:
+      title: Multiple identity document update parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - IdentityDocuments
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        IdentityDocuments:
+          maxItems: 10
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityDocumentUpdateParameters'
+          description: Identity documents to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleIdentityDocumentUpdateParameters
+    IdentityDocumentsAddData:
+      title: Identity document parameters
+      required:
+      - CustomerId
+      - Number
+      - Type
+      type: object
+      properties:
+        CustomerId:
+          type: string
+          description: Identifier of the `Customer`.
+          format: uuid
+        Type:
+          title: Document type
+          allOf:
+          - $ref: '#/components/schemas/IdentityDocumentTypeEnum'
+          description: 'Type of the document.
+
+
+            IdentityCard
+
+
+            Passport
+
+
+            Visa
+
+
+            DriversLicense'
+          x-enumNames:
+          - IdentityCard
+          - Passport
+          - Visa
+          - DriversLicense
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+        Number:
+          minLength: 1
+          type: string
+          description: Number of the document (e.g. passport number). If the number is not collected in certain regions, such as The Netherlands, use an empty string. In all other cases, a value should be supplied.
+        ExpirationDate:
+          type:
+          - string
+          - 'null'
+          description: Expiration date in ISO 8601 format.
+          format: date
+        IssuanceDate:
+          type:
+          - string
+          - 'null'
+          description: Date of issuance in ISO 8601 format.
+          format: date
+        IssuingCountryCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-1 code of the `Country`).
+        IssuingCountrySubdivisionCode:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the country subdivision where the document was issued (province, state or region).
+        IssuingCity:
+          type:
+          - string
+          - 'null'
+          description: City where the document was issued.
+        IdentityDocumentSupportNumber:
+          type:
+          - string
+          - 'null'
+          description: Identity document support number. Only required for Spanish identity cards in Spanish hotels.
+      additionalProperties: false
+      x-schema-id: IdentityDocumentsAddData
     IdentityDocumentDeleteParameters:
       title: IdentityDocumentDeleteParameters
       required:
@@ -447,10 +763,11 @@ components:
           type: string
           description: Name and version of the client application.
         ChainId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
           format: uuid
-          nullable: true
         IdentityDocumentIds:
           maxItems: 100
           minItems: 1
@@ -461,30 +778,65 @@ components:
           description: Unique identifiers of the identity documents to be deleted.
       additionalProperties: false
       x-schema-id: IdentityDocumentDeleteParameters
-    StringUpdateValue:
-      title: String update value
-      type: object
-      properties:
-        Value:
-          type: string
-          description: Value which is to be updated.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: StringUpdateValue
-    IdentityDocumentWriteResult:
-      title: IdentityDocumentWriteResult
+    IdentityDocumentResult:
+      title: IdentityDocumentResult
       required:
       - IdentityDocuments
       type: object
       properties:
         IdentityDocuments:
-          maxItems: 10
+          maxItems: 1000
           type: array
           items:
             $ref: '#/components/schemas/IdentityDocumentV20241025'
-          description: Modified identity documents.
+          description: The identity documents of customers.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
       additionalProperties: false
-      x-schema-id: IdentityDocumentWriteResult
+      x-schema-id: IdentityDocumentResult
+    Unit:
+      type: object
+      additionalProperties: false
+    IdentityDocumentsAddParameters:
+      title: Identity document add parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - IdentityDocuments
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        IdentityDocuments:
+          maxItems: 10
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityDocumentsAddData'
+          description: Identity documents to be added.
+      additionalProperties: false
+      x-schema-id: IdentityDocumentsAddParameters
     IdentityDocumentV20241025:
       title: Identity document (ver 2024-10-25)
       required:
@@ -534,388 +886,39 @@ components:
           type: string
           description: Number of the document (e.g. passport number). The value is an empty string when the number is not collected in certain regions, such as The Netherlands.
         ExpirationDate:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Expiration date in ISO 8601 format.
           format: date
-          nullable: true
         IssuanceDate:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Date of issuance in ISO 8601 format.
           format: date
-          nullable: true
         IssuingCountryCode:
-          type: string
+          type:
+          - string
+          - 'null'
           description: ISO 3166-1 code of the `Country`.
-          nullable: true
         IssuingCountrySubdivisionCode:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Identifier of the country subdivision where the document was issued (province, state or region).
-          nullable: true
         IssuingCity:
-          type: string
+          type:
+          - string
+          - 'null'
           description: City where the document was issued.
-          nullable: true
         IdentityDocumentSupportNumber:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Identity document support number. Only required for Spanish identity cards in Spanish hotels.
-          nullable: true
       additionalProperties: false
       x-schema-id: IdentityDocumentV20241025
-    IdentityDocumentClearParameters:
-      title: IdentityDocumentClearParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - CustomerIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ChainId:
-          type: string
-          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        CustomerIds:
-          maxItems: 10
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the `Customer` for whom documents will be deleted.
-      additionalProperties: false
-      x-schema-id: IdentityDocumentClearParameters
-    IdentityDocumentResult:
-      title: IdentityDocumentResult
-      required:
-      - IdentityDocuments
-      type: object
-      properties:
-        IdentityDocuments:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/IdentityDocumentV20241025'
-          description: The identity documents of customers.
-        Cursor:
-          type: string
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: IdentityDocumentResult
-    IdentityDocumentFilterParameters:
-      title: IdentityDocumentFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - CustomerIds
-      - Limitation
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        ChainIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
-          nullable: true
-        IdentityDocumentIds:
-          maxItems: 100
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Identity document`.
-          nullable: true
-        CustomerIds:
-          maxItems: 100
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Customer`.
-        Types:
-          uniqueItems: true
-          type: array
-          items:
-            $ref: '#/components/schemas/IdentityDocumentTypeEnum'
-          description: Type of the identity document.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: IdentityDocumentFilterParameters
-    Unit:
-      type: object
-      additionalProperties: false
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type: string
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    IdentityDocumentTypeEnum:
-      title: Document type
-      enum:
-      - IdentityCard
-      - Passport
-      - Visa
-      - DriversLicense
-      type: string
-      description: '
-
-
-        IdentityCard
-
-
-        Passport
-
-
-        Visa
-
-
-        DriversLicense'
-      x-enumNames:
-      - IdentityCard
-      - Passport
-      - Visa
-      - DriversLicense
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-    IdentityDocumentsAddData:
-      title: Identity document parameters
-      required:
-      - CustomerId
-      - Number
-      - Type
-      type: object
-      properties:
-        CustomerId:
-          type: string
-          description: Identifier of the `Customer`.
-          format: uuid
-        Type:
-          title: Document type
-          allOf:
-          - $ref: '#/components/schemas/IdentityDocumentTypeEnum'
-          description: 'Type of the document.
-
-
-            IdentityCard
-
-
-            Passport
-
-
-            Visa
-
-
-            DriversLicense'
-          x-enumNames:
-          - IdentityCard
-          - Passport
-          - Visa
-          - DriversLicense
-          x-enumDescriptions:
-          - ''
-          - ''
-          - ''
-          - ''
-        Number:
-          minLength: 1
-          type: string
-          description: Number of the document (e.g. passport number). If the number is not collected in certain regions, such as The Netherlands, use an empty string. In all other cases, a value should be supplied.
-        ExpirationDate:
-          type: string
-          description: Expiration date in ISO 8601 format.
-          format: date
-          nullable: true
-        IssuanceDate:
-          type: string
-          description: Date of issuance in ISO 8601 format.
-          format: date
-          nullable: true
-        IssuingCountryCode:
-          type: string
-          description: ISO 3166-1 code of the `Country`).
-          nullable: true
-        IssuingCountrySubdivisionCode:
-          type: string
-          description: Identifier of the country subdivision where the document was issued (province, state or region).
-          nullable: true
-        IssuingCity:
-          type: string
-          description: City where the document was issued.
-          nullable: true
-        IdentityDocumentSupportNumber:
-          type: string
-          description: Identity document support number. Only required for Spanish identity cards in Spanish hotels.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: IdentityDocumentsAddData
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    MultipleIdentityDocumentUpdateParameters:
-      title: Multiple identity document update parameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - IdentityDocuments
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ChainId:
-          type: string
-          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        IdentityDocuments:
-          maxItems: 10
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/IdentityDocumentUpdateParameters'
-          description: Identity documents to be updated.
-      additionalProperties: false
-      x-schema-id: MultipleIdentityDocumentUpdateParameters
-    IdentityDocumentTypeUpdateValue:
-      title: Identity document type update value
-      type: object
-      properties:
-        Value:
-          title: Document type
-          allOf:
-          - $ref: '#/components/schemas/IdentityDocumentTypeEnum'
-          description: 'Type of the document (or `null` if the type should not be updated).
-
-
-            IdentityCard
-
-
-            Passport
-
-
-            Visa
-
-
-            DriversLicense'
-          x-enumNames:
-          - IdentityCard
-          - Passport
-          - Visa
-          - DriversLicense
-          x-enumDescriptions:
-          - ''
-          - ''
-          - ''
-          - ''
-      additionalProperties: false
-      description: Has same structure as [String update value](https://mews-systems.gitbook.io/connector-api/operations/_objects#string-update-value).
-      x-schema-id: IdentityDocumentTypeUpdateValue
-    IdentityDocumentsAddParameters:
-      title: Identity document add parameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - IdentityDocuments
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ChainId:
-          type: string
-          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        IdentityDocuments:
-          maxItems: 10
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/IdentityDocumentsAddData'
-          description: Identity documents to be added.
-      additionalProperties: false
-      x-schema-id: IdentityDocumentsAddParameters
     IdentityDocumentUpdateParameters:
       title: Identity document update parameters
       required:
@@ -931,50 +934,67 @@ components:
           allOf:
           - $ref: '#/components/schemas/IdentityDocumentTypeUpdateValue'
           description: Type of the document (or `null` if the type should not be updated).
-          nullable: true
         Number:
           title: String update value
           allOf:
           - $ref: '#/components/schemas/StringUpdateValue'
           description: Number of the document (e.g. passport number or `null` if the number should not be updated).
-          nullable: true
         ExpirationDate:
           title: String update value
           allOf:
           - $ref: '#/components/schemas/StringUpdateValue'
           description: Expiration date in ISO 8601 format (or `null` if the expiration date should not be updated).
           format: date
-          nullable: true
         IssuanceDate:
           title: String update value
           allOf:
           - $ref: '#/components/schemas/StringUpdateValue'
           description: Date of issuance in ISO 8601 format (or `null` if the issuance date should not be updated).
           format: date
-          nullable: true
         IssuingCountryCode:
           title: String update value
           allOf:
           - $ref: '#/components/schemas/StringUpdateValue'
           description: ISO 3166-1 code of the `Country` (or `null` if the issuing country code should not be updated).
-          nullable: true
         IssuingCountrySubdivisionCode:
           title: String update value
           allOf:
           - $ref: '#/components/schemas/StringUpdateValue'
           description: Identifier of the country subdivision where the document was issued (province, state or region) (or `null` if the value should not be updated).
-          nullable: true
         IssuingCity:
           title: String update value
           allOf:
           - $ref: '#/components/schemas/StringUpdateValue'
           description: City where the document was issued (or `null` if the issuing city should not be updated).
-          nullable: true
         IdentityDocumentSupportNumber:
           title: String update value
           allOf:
           - $ref: '#/components/schemas/StringUpdateValue'
           description: Identity document support number. Only required for Spanish identity cards in Spanish hotels.
-          nullable: true
       additionalProperties: false
       x-schema-id: IdentityDocumentUpdateParameters
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    IdentityDocumentWriteResult:
+      title: IdentityDocumentWriteResult
+      required:
+      - IdentityDocuments
+      type: object
+      properties:
+        IdentityDocuments:
+          maxItems: 10
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityDocumentV20241025'
+          description: Modified identity documents.
+      additionalProperties: false
+      x-schema-id: IdentityDocumentWriteResult

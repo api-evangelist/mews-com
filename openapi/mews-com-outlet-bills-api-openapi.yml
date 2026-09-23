@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Outlet bills API
+  title: Connector Outlet bills API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -102,6 +107,21 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     AddOutletBillsResult:
       title: AddOutletBillsResult
       required:
@@ -116,32 +136,45 @@ components:
           description: Array of unique identifiers of the added Outlet bills.
       additionalProperties: false
       x-schema-id: AddOutletBillsResult
-    AmountParameters:
-      title: Amount parameters
+    OutletBillParameters:
+      title: Outlet bill parameters
       required:
-      - Currency
-      - TaxCodes
+      - ClosedUtc
+      - Items
+      - Number
+      - OutletId
       type: object
       properties:
-        Currency:
+        OutletId:
+          type: string
+          description: Unique identifier of the `Outlet` where the bill was issued.
+          format: uuid
+        Number:
           minLength: 1
           type: string
-          format: currency
-        TaxCodes:
+          description: Number of the bill.
+        ClosedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the bill closure in UTC timezone in ISO 8601 format.
+        Items:
           type: array
           items:
-            type: string
-        NetValue:
-          type: number
-          format: double
-          nullable: true
-        GrossValue:
-          type: number
-          format: double
-          nullable: true
+            $ref: '#/components/schemas/OutletItemParameters'
+          description: The items on the bill.
+        AccountId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `Account` to be assigned to the bill.
+          format: uuid
+        Notes:
+          type:
+          - string
+          - 'null'
+          description: Additional notes on the bill.
       additionalProperties: false
-      description: Price of the product that overrides the price defined in Mews.
-      x-schema-id: AmountParameters
+      x-schema-id: OutletBillParameters
     AddOutletBillsParameters:
       title: AddOutletBillsParameters
       required:
@@ -180,57 +213,6 @@ components:
       - Payment
       type: string
       description: Type of the outlet item.
-    OutletBillParameters:
-      title: Outlet bill parameters
-      required:
-      - ClosedUtc
-      - Items
-      - Number
-      - OutletId
-      type: object
-      properties:
-        OutletId:
-          type: string
-          description: Unique identifier of the `Outlet` where the bill was issued.
-          format: uuid
-        Number:
-          minLength: 1
-          type: string
-          description: Number of the bill.
-        ClosedUtc:
-          minLength: 1
-          type: string
-          description: Date and time of the bill closure in UTC timezone in ISO 8601 format.
-        Items:
-          type: array
-          items:
-            $ref: '#/components/schemas/OutletItemParameters'
-          description: The items on the bill.
-        AccountId:
-          type: string
-          description: Unique identifier of the `Account` to be assigned to the bill.
-          format: uuid
-          nullable: true
-        Notes:
-          type: string
-          description: Additional notes on the bill.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: OutletBillParameters
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     OutletItemParameters:
       title: Outlet item parameters
       required:
@@ -263,17 +245,48 @@ components:
           $ref: '#/components/schemas/OutletItemType'
         ExternalIdentifier:
           maxLength: 255
-          type: string
+          type:
+          - string
+          - 'null'
           description: An identifier of this item from another system.
-          nullable: true
         Notes:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Additional notes of the item.
-          nullable: true
         AccountingCategoryId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of an `AccountingCategory` to be assigned to the item.
           format: uuid
-          nullable: true
       additionalProperties: false
       x-schema-id: OutletItemParameters
+    AmountParameters:
+      title: Amount parameters
+      required:
+      - Currency
+      - TaxCodes
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        TaxCodes:
+          type: array
+          items:
+            type: string
+        NetValue:
+          type:
+          - number
+          - 'null'
+          format: double
+        GrossValue:
+          type:
+          - number
+          - 'null'
+          format: double
+      additionalProperties: false
+      description: Price of the product that overrides the price defined in Mews.
+      x-schema-id: AmountParameters

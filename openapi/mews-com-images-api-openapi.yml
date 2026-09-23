@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Images API
+  title: Connector Images API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -83,19 +88,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ImageUrlResult:
-      title: ImageUrlResult
-      required:
-      - ImageUrls
-      type: object
-      properties:
-        ImageUrls:
-          type: array
-          items:
-            $ref: '#/components/schemas/ImageUrl'
-          description: URLs of the images.
-      additionalProperties: false
-      x-schema-id: ImageUrlResult
     ImageSizeParameters:
       title: Image size parameters
       required:
@@ -107,15 +99,17 @@ components:
           description: Unique identifier of the image.
           format: uuid
         Width:
-          type: integer
+          type:
+          - integer
+          - 'null'
           description: Desired width of the image.
           format: int32
-          nullable: true
         Height:
-          type: integer
+          type:
+          - integer
+          - 'null'
           description: Desired height of the image.
           format: int32
-          nullable: true
         ResizeMode:
           allOf:
           - $ref: '#/components/schemas/ImageResizeModeEnum'
@@ -132,9 +126,53 @@ components:
 
 
             FitExact (Resize and pad to exactly fit within the specified size.)'
-          nullable: true
       additionalProperties: false
       x-schema-id: ImageSizeParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ImageUrlResult:
+      title: ImageUrlResult
+      required:
+      - ImageUrls
+      type: object
+      properties:
+        ImageUrls:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageUrl'
+          description: URLs of the images.
+      additionalProperties: false
+      x-schema-id: ImageUrlResult
+    ImageUrl:
+      title: Image URL
+      required:
+      - ImageId
+      - Url
+      type: object
+      properties:
+        ImageId:
+          type: string
+          description: Unique identifier of the image.
+          format: uuid
+        Url:
+          minLength: 1
+          type: string
+          description: URL of the image.
+      additionalProperties: false
+      x-schema-id: ImageUrl
     ImageResizeModeEnum:
       title: Image resize mode
       enum:
@@ -166,37 +204,6 @@ components:
       - Resize and pad to exactly fit within the specified size.
       - Resize to fit within the specified size, so the result might be smaller than requested.
       - Resize and pad to exactly fit within the specified size.
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    ImageUrl:
-      title: Image URL
-      required:
-      - ImageId
-      - Url
-      type: object
-      properties:
-        ImageId:
-          type: string
-          description: Unique identifier of the image.
-          format: uuid
-        Url:
-          minLength: 1
-          type: string
-          description: URL of the image.
-      additionalProperties: false
-      x-schema-id: ImageUrl
     ImageUrlParameters:
       title: ImageUrlParameters
       required:

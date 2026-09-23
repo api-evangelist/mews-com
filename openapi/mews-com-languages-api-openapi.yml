@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Languages API
+  title: Connector Languages API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -163,6 +168,21 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     Parameters:
       title: Parameters
       required:
@@ -185,6 +205,26 @@ components:
           description: Name and version of the client application.
       additionalProperties: false
       x-schema-id: Parameters
+    LanguageTexts:
+      title: Language texts
+      required:
+      - LanguageCode
+      - Texts
+      type: object
+      properties:
+        LanguageCode:
+          minLength: 1
+          type: string
+          description: Language-culture code of the `Language`.
+        Texts:
+          title: Dictionary
+          type: object
+          additionalProperties:
+            type: string
+          description: Texts in the specified language by their keys.
+          x-schema-id: Dictionary
+      additionalProperties: false
+      x-schema-id: LanguageTexts
     Language:
       title: Language
       required:
@@ -198,9 +238,10 @@ components:
           type: string
           description: Language-culture code of the language.
         FallbackLanguageCode:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Language-culture code of the fallback language.
-          nullable: true
         EnglishName:
           minLength: 1
           type: string
@@ -224,6 +265,19 @@ components:
           description: Texts in the specified languages.
       additionalProperties: false
       x-schema-id: LanguageTextResult
+    LanguageResult:
+      title: LanguageResult
+      required:
+      - Languages
+      type: object
+      properties:
+        Languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Language'
+          description: The supported languages.
+      additionalProperties: false
+      x-schema-id: LanguageResult
     LanguageTextParameters:
       title: LanguageTextParameters
       required:
@@ -257,50 +311,3 @@ components:
           description: Scope of texts to return.
       additionalProperties: false
       x-schema-id: LanguageTextParameters
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    LanguageResult:
-      title: LanguageResult
-      required:
-      - Languages
-      type: object
-      properties:
-        Languages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Language'
-          description: The supported languages.
-      additionalProperties: false
-      x-schema-id: LanguageResult
-    LanguageTexts:
-      title: Language texts
-      required:
-      - LanguageCode
-      - Texts
-      type: object
-      properties:
-        LanguageCode:
-          minLength: 1
-          type: string
-          description: Language-culture code of the `Language`.
-        Texts:
-          title: Dictionary
-          type: object
-          additionalProperties:
-            type: string
-          description: Texts in the specified language by their keys.
-          x-schema-id: Dictionary
-      additionalProperties: false
-      x-schema-id: LanguageTexts

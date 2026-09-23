@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Resource features API
+  title: Connector Resource features API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -12,7 +17,7 @@ paths:
       tags:
       - Resource features
       summary: Get all resource feature assignments
-      description: Returns all resource feature assignments. This operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/).
+      description: Returns all resource feature assignments. This operation uses Pagination.
       operationId: resourceFeatureAssignments_getAll
       requestBody:
         content:
@@ -100,7 +105,7 @@ paths:
       tags:
       - Resource features
       summary: Get all resource features
-      description: Returns all resource features. This operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/).
+      description: Returns all resource features. This operation uses Pagination.
       operationId: resourceFeatures_getAll
       requestBody:
         content:
@@ -188,6 +193,238 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ResourceFeatureAssignmentFilterParameters:
+      title: ResourceFeatureAssignmentFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ResourceFeatureIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        ResourceFeatureAssignmentIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+        ResourceFeatureIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Resource features](https://mews-systems.gitbook.io/connector-api/operations/#resource-feature) to which the resource feature assignments belong.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource feature assignments were updated.
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+      additionalProperties: false
+      x-schema-id: ResourceFeatureAssignmentFilterParameters
+    ResourceFeatureFilterParameters:
+      title: ResourceFeatureFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ServiceIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        ResourceFeatureIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `ResourceFeature`.
+        ServiceIds:
+          maxItems: 1000
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Service` to which the resource features belong.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Last update date and time of the resource feature in UTC timezone in ISO 8601 format.
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+      additionalProperties: false
+      x-schema-id: ResourceFeatureFilterParameters
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ResourceFeatureAssignmentResult:
+      title: ResourceFeatureAssignmentResult
+      required:
+      - ResourceFeatureAssignments
+      type: object
+      properties:
+        ResourceFeatureAssignments:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceFeatureAssignment'
+          description: Resource feature assignments.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest resource feature assignments returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older resource feature assignments.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ResourceFeatureAssignmentResult
+    ResourceFeatureResult:
+      title: ResourceFeatureResult
+      required:
+      - ResourceFeatures
+      type: object
+      properties:
+        ResourceFeatures:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceFeature'
+          description: Resource features.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ResourceFeatureResult
     ResourceFeatureAssignment:
       title: Resource feature assignment
       required:
@@ -226,6 +463,31 @@ components:
           format: date-time
       additionalProperties: false
       x-schema-id: ResourceFeatureAssignment
+    ResourceFeatureClassification:
+      title: Resource feature classification
+      enum:
+      - SeaView
+      - RiverView
+      - OceanView
+      - TwinBeds
+      - DoubleBed
+      - RollawayBed
+      - UpperBed
+      - LowerBed
+      - Balcony
+      - AccessibleBathroom
+      - AccessibleRoom
+      - ElevatorAccess
+      - HighFloor
+      - Kitchenette
+      - AirConditioning
+      - PrivateJacuzzi
+      - PrivateSauna
+      - EnsuiteRoom
+      - PrivateBathroom
+      - SharedBathroom
+      type: string
+      description: Classification of `ResourceFeature`.
     ResourceFeature:
       title: Resource feature
       required:
@@ -286,250 +548,3 @@ components:
           format: date-time
       additionalProperties: false
       x-schema-id: ResourceFeature
-    ResourceFeatureFilterParameters:
-      title: ResourceFeatureFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      - ServiceIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-          nullable: true
-        ResourceFeatureIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `ResourceFeature`.
-          nullable: true
-        ServiceIds:
-          maxItems: 1000
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Service` to which the resource features belong.
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Last update date and time of the resource feature in UTC timezone in ISO 8601 format.
-          nullable: true
-          x-max-interval-in-months: 3
-        ActivityStates:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted or both records.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ResourceFeatureFilterParameters
-    ResourceFeatureResult:
-      title: ResourceFeatureResult
-      required:
-      - ResourceFeatures
-      type: object
-      properties:
-        ResourceFeatures:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceFeature'
-          description: Resource features.
-        Cursor:
-          type: string
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ResourceFeatureResult
-    ResourceFeatureAssignmentFilterParameters:
-      title: ResourceFeatureAssignmentFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      - ResourceFeatureIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-          nullable: true
-        ResourceFeatureAssignmentIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          nullable: true
-        ResourceFeatureIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Resource features](https://mews-systems.gitbook.io/connector-api/operations/#resource-feature) to which the resource feature assignments belong.
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the resource feature assignments were updated.
-          nullable: true
-          x-max-interval-in-months: 3
-        ActivityStates:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted or both records.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ResourceFeatureAssignmentFilterParameters
-    ActivityStates:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: Activity states used for filtering.
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    ResourceFeatureAssignmentResult:
-      title: ResourceFeatureAssignmentResult
-      required:
-      - ResourceFeatureAssignments
-      type: object
-      properties:
-        ResourceFeatureAssignments:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceFeatureAssignment'
-          description: Resource feature assignments.
-        Cursor:
-          type: string
-          description: Unique identifier of the last and hence oldest resource feature assignments returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older resource feature assignments.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ResourceFeatureAssignmentResult
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type: string
-          format: date-time
-          nullable: true
-        EndUtc:
-          type: string
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    ResourceFeatureClassification:
-      title: Resource feature classification
-      enum:
-      - SeaView
-      - RiverView
-      - OceanView
-      - TwinBeds
-      - DoubleBed
-      - RollawayBed
-      - UpperBed
-      - LowerBed
-      - Balcony
-      - AccessibleBathroom
-      - AccessibleRoom
-      - ElevatorAccess
-      - HighFloor
-      - Kitchenette
-      - AirConditioning
-      - PrivateJacuzzi
-      - PrivateSauna
-      - EnsuiteRoom
-      - PrivateBathroom
-      - SharedBathroom
-      type: string
-      description: Classification of `ResourceFeature`.
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type: string
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation

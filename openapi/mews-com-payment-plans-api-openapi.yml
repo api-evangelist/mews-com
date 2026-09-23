@@ -1,18 +1,25 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Payment plans API
+  title: Connector Payment plans API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
 tags:
-- name: Payment plans
+- name: Payment Plans
 paths:
   /api/connector/v1/billingAutomationPaymentPlans/add:
     post:
       tags:
-      - Payment plans
+      - Payment Plans
       summary: Add billing automation payment plan
-      description: "Adds a payment plan connected to a `Billing automation` and returns the payment request URL associated with the created payment plan. The fulfillment of the payment request will activate the payment plan.\r\nNote this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/)."
+      description: 'Adds a payment plan connected to a `Billing automation` and returns the payment request URL associated with the created payment plan. The fulfillment of the payment request will activate the payment plan.
+
+        Note this operation supports Portfolio Access Tokens.'
       operationId: billingAutomationPaymentPlans_add
       requestBody:
         content:
@@ -90,124 +97,19 @@ paths:
       x-restricted: true
 components:
   schemas:
-    PaymentPlanAddResult:
-      title: PaymentPlanAddResult
-      required:
-      - PaymentRequestUrl
-      type: object
-      properties:
-        PaymentRequestUrl:
-          minLength: 1
-          type: string
-          description: Payment request URL associated with the created payment plan.
-      additionalProperties: false
-      x-schema-id: PaymentPlanAddResult
-    BillingAutomationPaymentPlanPaymentRequest:
-      title: Billing automation payment plan payment request
-      required:
-      - ExpirationDateUtc
-      - Message
-      - PaymentMethods
-      - SendEmail
-      type: object
-      properties:
-        PaymentMethods:
-          minItems: 1
-          uniqueItems: true
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentMethodsEnum'
-          description: Allowed payment methods to use for the payment plan.
-        Message:
-          maxLength: 1000
-          minLength: 1
-          type: string
-          description: Message for customer in the payment request email.
-        Note:
-          maxLength: 2000
-          type: string
-          description: Internal note for the payment request.
-          nullable: true
-        ExpirationDateUtc:
-          minLength: 1
-          type: string
-          description: Expiration date (UTC time) of the payment request. Must be within 30 days of payment plan creation. ISO-8601 format.
-          format: date-time
-        SendEmail:
-          type: boolean
-          description: Specifies whether a payment request email is sent to the customer.
-      additionalProperties: false
-      x-schema-id: BillingAutomationPaymentPlanPaymentRequest
-    BillingAutomationPaymentPlanAddParameters:
-      title: BillingAutomationPaymentPlanAddParameters
-      required:
-      - AccessToken
-      - BillingAutomationId
-      - Client
-      - ClientToken
-      - CustomerId
-      - Name
-      - PaymentOffsetDays
-      - PaymentRequest
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        BillingAutomationId:
-          type: string
-          description: Unique identifier of the `Billing automation` associated with the payment plan.
-          format: uuid
-        CustomerId:
-          type: string
-          description: Unique identifier of the `Customer` associated with the payment plan.
-          format: uuid
-        Name:
-          maxLength: 255
-          minLength: 1
-          type: string
-          description: Name of the payment plan.
-        PaymentRequest:
-          title: Billing automation payment plan payment request
-          allOf:
-          - $ref: '#/components/schemas/BillingAutomationPaymentPlanPaymentRequest'
-          description: Data related to the payment request associated with the payment plan created.
-        PaymentOffsetDays:
-          type: integer
-          description: Number of days since the bill creation when the payment will be charged.
-          format: int32
-        StartMonth:
-          type: string
-          description: Specifies the month when the payment plan begins collecting payments, in the 'YYYY-MM' format. The month must be in the future. If a value is not set, it'll start with the earliest available bill created from billing automation.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: BillingAutomationPaymentPlanAddParameters
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
       properties:
         Message:
-          type: string
-          nullable: true
+          type:
+          - string
+          - 'null'
         RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
       x-schema-id: ConnectorApiExceptionResult
     PaymentMethodsEnum:
@@ -253,3 +155,112 @@ components:
       - Google Pay
       - SEPA Direct Debit
       - ''
+    BillingAutomationPaymentPlanPaymentRequest:
+      title: Billing automation payment plan payment request
+      required:
+      - ExpirationDateUtc
+      - Message
+      - PaymentMethods
+      - SendEmail
+      type: object
+      properties:
+        PaymentMethods:
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethodsEnum'
+          description: Allowed payment methods to use for the payment plan.
+        Message:
+          maxLength: 1000
+          minLength: 1
+          type: string
+          description: Message for customer in the payment request email.
+        Note:
+          maxLength: 2000
+          type:
+          - string
+          - 'null'
+          description: Internal note for the payment request.
+        ExpirationDateUtc:
+          minLength: 1
+          type: string
+          description: Expiration date (UTC time) of the payment request. Must be within 30 days of payment plan creation. ISO-8601 format.
+          format: date-time
+        SendEmail:
+          type: boolean
+          description: Specifies whether a payment request email is sent to the customer.
+      additionalProperties: false
+      x-schema-id: BillingAutomationPaymentPlanPaymentRequest
+    PaymentPlanAddResult:
+      title: PaymentPlanAddResult
+      required:
+      - PaymentRequestUrl
+      type: object
+      properties:
+        PaymentRequestUrl:
+          minLength: 1
+          type: string
+          description: Payment request URL associated with the created payment plan.
+      additionalProperties: false
+      x-schema-id: PaymentPlanAddResult
+    BillingAutomationPaymentPlanAddParameters:
+      title: BillingAutomationPaymentPlanAddParameters
+      required:
+      - AccessToken
+      - BillingAutomationId
+      - Client
+      - ClientToken
+      - CustomerId
+      - Name
+      - PaymentOffsetDays
+      - PaymentRequest
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        BillingAutomationId:
+          type: string
+          description: Unique identifier of the `Billing automation` associated with the payment plan.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Unique identifier of the `Customer` associated with the payment plan.
+          format: uuid
+        Name:
+          maxLength: 255
+          minLength: 1
+          type: string
+          description: Name of the payment plan.
+        PaymentRequest:
+          title: Billing automation payment plan payment request
+          allOf:
+          - $ref: '#/components/schemas/BillingAutomationPaymentPlanPaymentRequest'
+          description: Data related to the payment request associated with the payment plan created.
+        PaymentOffsetDays:
+          type: integer
+          description: Number of days since the bill creation when the payment will be charged.
+          format: int32
+        StartMonth:
+          type:
+          - string
+          - 'null'
+          description: Specifies the month when the payment plan begins collecting payments, in the 'YYYY-MM' format. The month must be in the future. If a value is not set, it'll start with the earliest available bill created from billing automation.
+      additionalProperties: false
+      x-schema-id: BillingAutomationPaymentPlanAddParameters

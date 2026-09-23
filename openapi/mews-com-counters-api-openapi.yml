@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Counters API
+  title: Connector Counters API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -14,7 +19,7 @@ paths:
       summary: Get all counters
       description: 'Returns all counters of an enterprise associated with the connector integration.
 
-        Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).'
+        Note this operation uses Pagination and supports Portfolio Access Tokens.'
       operationId: counters_getAll
       requestBody:
         content:
@@ -132,6 +137,193 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    EnterpriseScopeCounterDiscriminator:
+      title: Counter type discriminator
+      enum:
+      - Counter
+      - AccountingCounter
+      - AvailabilityBlockCounter
+      - BillCounter
+      - BillPreviewCounter
+      - FiscalCounter
+      - ProformaCounter
+      - RegistrationCardCounter
+      - ServiceOrderCounter
+      - CorrectionBillCounter
+      - PaymentConfirmationBillCounter
+      - CreditNoteBillCounter
+      type: string
+      description: Type of the counter.
+      x-enumDescriptions:
+      - Any type of counter.
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    Counter:
+      title: Counter
+      required:
+      - CreatedUtc
+      - EnterpriseId
+      - Format
+      - Id
+      - IsDefault
+      - Name
+      - Type
+      - UpdatedUtc
+      - Value
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the counter.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise to which the counter belongs.
+          format: uuid
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the counter.
+        IsDefault:
+          type: boolean
+          description: Whether the counter is used by default.
+        Value:
+          type: integer
+          description: Current value of the counter.
+          format: int64
+        Format:
+          minLength: 1
+          type: string
+          description: Display format of the counter.
+        Type:
+          $ref: '#/components/schemas/EnterpriseScopeCounterDiscriminator'
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the counter in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the counter in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: Counter
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    CounterFilterParameters:
+      title: CounterFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        CounterIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the counters. If not specified, the operation returns all counters.
+        Type:
+          anyOf:
+          - $ref: '#/components/schemas/EnterpriseScopeCounterDiscriminator'
+          description: Type of the counter. If not specified, the operation returns all types.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which `Counter` was updated.
+          x-max-interval-in-months: 3
+      additionalProperties: false
+      x-schema-id: CounterFilterParameters
     CounterResult:
       title: CounterResult
       required:
@@ -184,192 +376,10 @@ components:
           deprecated: true
           x-deprecatedMessage: Use `Counters` instead.
         Cursor:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the last returned counter in `Counters`. This can be used in Limitation in a subsequent request to fetch the next batch of counters.
           format: uuid
-          nullable: true
       additionalProperties: false
       x-schema-id: CounterResult
-    CounterFilterParameters:
-      title: CounterFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-          nullable: true
-        CounterIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the counters. If not specified, the operation returns all counters.
-          nullable: true
-        Type:
-          anyOf:
-          - $ref: '#/components/schemas/EnterpriseScopeCounterDiscriminator'
-          description: Type of the counter. If not specified, the operation returns all types.
-          nullable: true
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which `Counter` was updated.
-          nullable: true
-          x-max-interval-in-months: 3
-      additionalProperties: false
-      x-schema-id: CounterFilterParameters
-    Counter:
-      title: Counter
-      required:
-      - CreatedUtc
-      - EnterpriseId
-      - Format
-      - Id
-      - IsDefault
-      - Name
-      - Type
-      - UpdatedUtc
-      - Value
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the counter.
-          format: uuid
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the enterprise to which the counter belongs.
-          format: uuid
-        Name:
-          minLength: 1
-          type: string
-          description: Name of the counter.
-        IsDefault:
-          type: boolean
-          description: Whether the counter is used by default.
-        Value:
-          type: integer
-          description: Current value of the counter.
-          format: int64
-        Format:
-          minLength: 1
-          type: string
-          description: Display format of the counter.
-        Type:
-          $ref: '#/components/schemas/EnterpriseScopeCounterDiscriminator'
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the counter in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the counter in UTC timezone in ISO 8601 format.
-          format: date-time
-      additionalProperties: false
-      x-schema-id: Counter
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    EnterpriseScopeCounterDiscriminator:
-      title: Counter type discriminator
-      enum:
-      - Counter
-      - AccountingCounter
-      - AvailabilityBlockCounter
-      - BillCounter
-      - BillPreviewCounter
-      - FiscalCounter
-      - ProformaCounter
-      - RegistrationCardCounter
-      - ServiceOrderCounter
-      - CorrectionBillCounter
-      - PaymentConfirmationBillCounter
-      - CreditNoteBillCounter
-      type: string
-      description: Type of the counter.
-      x-enumDescriptions:
-      - Any type of counter.
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type: string
-          format: date-time
-          nullable: true
-        EndUtc:
-          type: string
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type: string
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation

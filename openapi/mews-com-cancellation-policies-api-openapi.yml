@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Cancellation policies API
+  title: Connector Cancellation policies API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -12,7 +17,13 @@ paths:
       tags:
       - Cancellation policies
       summary: Get all cancellation policies
-      description: "> ### Restricted!\n> This operation is currently in beta-test and as such it is subject to change.\nReturns all cancellation policies, filtered by services, rate groups and other filters. \nNote this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property)."
+      description: '> ### Restricted!
+
+        > This operation is currently in beta-test and as such it is subject to change.
+
+        Returns all cancellation policies, filtered by services, rate groups and other filters.
+
+        Note this operation uses Pagination and supports Portfolio Access Tokens.'
       operationId: cancellationPolicies_getAll
       requestBody:
         content:
@@ -108,7 +119,7 @@ paths:
       tags:
       - Cancellation policies
       summary: Get cancellation policies by reservations
-      description: Gets cancellation policies for enterprise grouped by reservation for granular cancellation policies flow. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Gets cancellation policies for enterprise grouped by reservation for granular cancellation policies flow. This operation supports Portfolio Access Tokens.
       operationId: cancellationPolicies_getByReservations
       requestBody:
         content:
@@ -213,7 +224,7 @@ paths:
       tags:
       - Cancellation policies
       summary: Get cancellation policies by rates
-      description: Gets cancellation policies for enterprise grouped by rate for granular cancellation policies flow. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Gets cancellation policies for enterprise grouped by rate for granular cancellation policies flow. This operation supports Portfolio Access Tokens.
       operationId: cancellationPolicies_getByRates
       requestBody:
         content:
@@ -315,98 +326,30 @@ paths:
       x-restricted: true
 components:
   schemas:
-    CancellationPolicyApplicabilityEnum:
-      title: Cancellation Policy Applicability
-      enum:
-      - Creation
-      - Start
-      - StartDate
-      type: string
-      description: 'Applicability mode of the cancellation policy.
-
-
-        Creation
-
-
-        Start
-
-
-        StartDate'
-      x-enumNames:
-      - Creation
-      - Start
-      - StartDate
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-    CancellationFeeExtentEnum:
-      title: Cancellation Fee Extent
-      enum:
-      - Nothing
-      - TimeUnits
-      - Products
-      - Everything
-      type: string
-      description: 'Extent for the cancellation fee, i.e. what should be in scope for the automatic payment.
-
-
-        Nothing
-
-
-        TimeUnits
-
-
-        Products
-
-
-        Everything'
-      x-enumNames:
-      - Nothing
-      - TimeUnits
-      - Products
-      - Everything
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
       properties:
         Message:
-          type: string
-          nullable: true
+          type:
+          - string
+          - 'null'
         RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
       x-schema-id: ConnectorApiExceptionResult
-    CancellationPolicyByRateResult:
-      title: CancellationPolicyByRateResult
-      required:
-      - CancellationPolicies
-      type: object
-      properties:
-        CancellationPolicies:
-          maxItems: 1300
-          type: array
-          items:
-            $ref: '#/components/schemas/CancellationPolicyByRate'
-          description: List of cancellation policies data grouped by rate.
-      additionalProperties: false
-      x-schema-id: CancellationPolicyByRateResult
-    CancellationPolicyFilterParameters:
-      title: CancellationPolicyFilterParameters
+    CancellationPolicyByRateParameters:
+      title: CancellationPolicyByRateParameters
       required:
       - AccessToken
       - Client
       - ClientToken
-      - Limitation
-      - ServiceIds
+      - RateIds
+      - ReservationEndUtc
+      - ReservationStartUtc
       type: object
       properties:
         ClientToken:
@@ -421,60 +364,26 @@ components:
           minLength: 1
           type: string
           description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-          nullable: true
-        ServiceIds:
+        RateIds:
           maxItems: 100
           minItems: 1
           type: array
           items:
             type: string
             format: uuid
-          description: Unique identifiers of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service).
-        CancellationPolicyIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the [Cancellation Policy](https://mews-systems.gitbook.io/connector-api/operations/#cancellationpolicy). Required if no other filter is provided.
-          nullable: true
-        RateGroupIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the [Rate group](https://mews-systems.gitbook.io/connector-api/operations/rates/#rategroup). Required if no other filter is provided.
-          nullable: true
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the Cancellation Policy was updated. Required if no other filter is provided.
-          nullable: true
-          x-max-interval-in-months: 3
-        ActivityStates:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted, or both types of record. If not specified, only active records will be returned.
-          nullable: true
+          description: Unique identifiers of the `Rate`.
+        ReservationStartUtc:
+          minLength: 1
+          type: string
+          description: Start of the reservation interval in UTC timezone in ISO 8601 format.
+          format: date-time
+        ReservationEndUtc:
+          minLength: 1
+          type: string
+          description: End of the reservation interval in UTC timezone in ISO 8601 format.
+          format: date-time
       additionalProperties: false
-      x-schema-id: CancellationPolicyFilterParameters
+      x-schema-id: CancellationPolicyByRateParameters
     CurrencyValue:
       title: Currency value (ver 2023-02-02)
       required:
@@ -494,81 +403,15 @@ components:
       additionalProperties: false
       description: Absolute value of the fee.
       x-schema-id: CurrencyValue
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type: string
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    CancellationPolicyData:
-      title: Cancellation policy data
-      required:
-      - AbsoluteFee
-      - Applicability
-      - ApplicabilityOffset
-      - FeeExtents
-      - RelativeFee
-      type: object
-      properties:
-        Applicability:
-          title: Cancellation Policy Applicability
-          allOf:
-          - $ref: '#/components/schemas/CancellationPolicyApplicabilityEnum'
-          description: 'Applicability mode of the cancellation policy.
-
-
-            Creation
-
-
-            Start
-
-
-            StartDate'
-          x-enumNames:
-          - Creation
-          - Start
-          - StartDate
-          x-enumDescriptions:
-          - ''
-          - ''
-          - ''
-        FeeExtents:
-          type: array
-          items:
-            $ref: '#/components/schemas/CancellationFeeExtentEnum'
-          description: Extent for the cancellation fee, i.e. what should be in scope for the automatic payment.
-        ApplicabilityOffset:
-          minLength: 1
-          type: string
-          description: Offset for order start (assuming Applicability is set to Start) from which the fee is applied in ISO 8601 duration format.
-        FeeMaximumTimeUnits:
-          type: integer
-          description: Maximum number of time units the cancellation fee is applicable to.
-          format: int32
-          nullable: true
-        AbsoluteFee:
-          title: Currency value (ver 2023-02-02)
-          allOf:
-          - $ref: '#/components/schemas/CurrencyValue'
-          description: Absolute value of the fee.
-        RelativeFee:
-          type: number
-          description: Relative value of the fee, as a percentage of the reservation price.
-          format: double
-      additionalProperties: false
-      x-schema-id: CancellationPolicyData
-    CancellationPolicyByReservationResult:
-      title: CancellationPolicyByReservationResult
+    CancellationFeeExtent:
+      title: Cancellation Fee Extent
+      enum:
+      - TimeUnits
+      - Products
+      type: string
+      description: Extent for the cancellation fee, i.e. what should be in scope for the automatic payment.
+    CancellationPolicyByRateResult:
+      title: CancellationPolicyByRateResult
       required:
       - CancellationPolicies
       type: object
@@ -577,75 +420,10 @@ components:
           maxItems: 1300
           type: array
           items:
-            $ref: '#/components/schemas/CancellationPolicyByReservation'
-          description: List of cancellation policies data grouped by reservation.
+            $ref: '#/components/schemas/CancellationPolicyByRate'
+          description: List of cancellation policies data grouped by rate.
       additionalProperties: false
-      x-schema-id: CancellationPolicyByReservationResult
-    CancellationFeeExtent:
-      title: Cancellation Fee Extent
-      enum:
-      - TimeUnits
-      - Products
-      type: string
-      description: Extent for the cancellation fee, i.e. what should be in scope for the automatic payment.
-    ActivityStates:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: Activity states used for filtering.
-    CancellationPolicyByReservation:
-      title: Cancellation policy data grouped by reservation
-      required:
-      - Policies
-      - ReservationId
-      type: object
-      properties:
-        ReservationId:
-          type: string
-          description: Unique identifier of the reservation.
-          format: uuid
-        Policies:
-          type: array
-          items:
-            $ref: '#/components/schemas/CancellationPolicyData'
-          description: Collection of cancellation policy data.
-      additionalProperties: false
-      x-schema-id: CancellationPolicyByReservation
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type: string
-          format: date-time
-          nullable: true
-        EndUtc:
-          type: string
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    CancellationPolicyByRate:
-      title: Cancellation policy data grouped by rate
-      required:
-      - Policies
-      - RateId
-      type: object
-      properties:
-        RateId:
-          type: string
-          description: Unique identifier of the `Rate`.
-          format: uuid
-        Policies:
-          type: array
-          items:
-            $ref: '#/components/schemas/CancellationPolicyData'
-          description: Collection of cancellation policy data.
-      additionalProperties: false
-      x-schema-id: CancellationPolicyByRate
+      x-schema-id: CancellationPolicyByRateResult
     CancellationPolicy:
       title: Cancellation Policy
       required:
@@ -691,10 +469,11 @@ components:
           type: string
           description: Offset for order start (assuming Applicability is set to Start) from which the fee is applied.
         FeeMaximumTimeUnits:
-          type: integer
+          type:
+          - integer
+          - 'null'
           description: Maximum number of time units the cancellation fee is applicable to.
           format: int32
-          nullable: true
         AbsoluteFee:
           title: Currency value (ver 2023-02-02)
           allOf:
@@ -709,76 +488,66 @@ components:
           description: Whether the cancellation policy is still active.
       additionalProperties: false
       x-schema-id: CancellationPolicy
-    CancellationPolicyByRateParameters:
-      title: CancellationPolicyByRateParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - RateIds
-      - ReservationEndUtc
-      - ReservationStartUtc
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        RateIds:
-          maxItems: 100
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the `Rate`.
-        ReservationStartUtc:
-          minLength: 1
-          type: string
-          description: Start of the reservation interval in UTC timezone in ISO 8601 format.
-          format: date-time
-        ReservationEndUtc:
-          minLength: 1
-          type: string
-          description: End of the reservation interval in UTC timezone in ISO 8601 format.
-          format: date-time
-      additionalProperties: false
-      x-schema-id: CancellationPolicyByRateParameters
-    CancellationPolicyResult:
-      title: CancellationPolicyResult
-      required:
-      - CancellationPolicies
-      type: object
-      properties:
-        CancellationPolicies:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/CancellationPolicy'
-          description: The filtered cancellation policies.
-        Cursor:
-          type: string
-          description: Unique identifier of the last and hence oldest cancellation policy returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older cancellation policies.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: CancellationPolicyResult
-    CancellationPolicyApplicability:
-      title: Cancellation Policy Applicability
+    ActivityStates:
+      title: Activity state
       enum:
-      - Creation
-      - Start
-      - StartDate
+      - Deleted
+      - Active
       type: string
-      description: Applicability mode of the cancellation policy.
+      description: Activity states used for filtering.
+    CancellationPolicyByReservation:
+      title: Cancellation policy data grouped by reservation
+      required:
+      - Policies
+      - ReservationId
+      type: object
+      properties:
+        ReservationId:
+          type: string
+          description: Unique identifier of the reservation.
+          format: uuid
+        Policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationPolicyData'
+          description: Collection of cancellation policy data.
+      additionalProperties: false
+      x-schema-id: CancellationPolicyByReservation
+    CancellationPolicyByRate:
+      title: Cancellation policy data grouped by rate
+      required:
+      - Policies
+      - RateId
+      type: object
+      properties:
+        RateId:
+          type: string
+          description: Unique identifier of the `Rate`.
+          format: uuid
+        Policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationPolicyData'
+          description: Collection of cancellation policy data.
+      additionalProperties: false
+      x-schema-id: CancellationPolicyByRate
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
     CancellationPolicyByReservationParameters:
       title: CancellationPolicyByReservationParameters
       required:
@@ -810,3 +579,255 @@ components:
           description: Unique identifiers of the `Reservation`.
       additionalProperties: false
       x-schema-id: CancellationPolicyByReservationParameters
+    CancellationPolicyByReservationResult:
+      title: CancellationPolicyByReservationResult
+      required:
+      - CancellationPolicies
+      type: object
+      properties:
+        CancellationPolicies:
+          maxItems: 1300
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationPolicyByReservation'
+          description: List of cancellation policies data grouped by reservation.
+      additionalProperties: false
+      x-schema-id: CancellationPolicyByReservationResult
+    CancellationPolicyFilterParameters:
+      title: CancellationPolicyFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ServiceIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        ServiceIds:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service).
+        CancellationPolicyIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Cancellation Policy](https://mews-systems.gitbook.io/connector-api/operations/#cancellationpolicy). Required if no other filter is provided.
+        RateGroupIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Rate group](https://mews-systems.gitbook.io/connector-api/operations/rates/#rategroup). Required if no other filter is provided.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the Cancellation Policy was updated. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted, or both types of record. If not specified, only active records will be returned.
+      additionalProperties: false
+      x-schema-id: CancellationPolicyFilterParameters
+    CancellationPolicyData:
+      title: Cancellation policy data
+      required:
+      - AbsoluteFee
+      - Applicability
+      - ApplicabilityOffset
+      - FeeExtents
+      - RelativeFee
+      type: object
+      properties:
+        Applicability:
+          title: Cancellation Policy Applicability
+          allOf:
+          - $ref: '#/components/schemas/CancellationPolicyApplicabilityEnum'
+          description: 'Applicability mode of the cancellation policy.
+
+
+            Creation
+
+
+            Start
+
+
+            StartDate'
+          x-enumNames:
+          - Creation
+          - Start
+          - StartDate
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+        FeeExtents:
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationFeeExtentEnum'
+          description: Extent for the cancellation fee, i.e. what should be in scope for the automatic payment.
+        ApplicabilityOffset:
+          minLength: 1
+          type: string
+          description: Offset for order start (assuming Applicability is set to Start) from which the fee is applied in ISO 8601 duration format.
+        FeeMaximumTimeUnits:
+          type:
+          - integer
+          - 'null'
+          description: Maximum number of time units the cancellation fee is applicable to.
+          format: int32
+        AbsoluteFee:
+          title: Currency value (ver 2023-02-02)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValue'
+          description: Absolute value of the fee.
+        RelativeFee:
+          type: number
+          description: Relative value of the fee, as a percentage of the reservation price.
+          format: double
+      additionalProperties: false
+      x-schema-id: CancellationPolicyData
+    CancellationFeeExtentEnum:
+      title: Cancellation Fee Extent
+      enum:
+      - Nothing
+      - TimeUnits
+      - Products
+      - Everything
+      type: string
+      description: 'Extent for the cancellation fee, i.e. what should be in scope for the automatic payment.
+
+
+        Nothing
+
+
+        TimeUnits
+
+
+        Products
+
+
+        Everything'
+      x-enumNames:
+      - Nothing
+      - TimeUnits
+      - Products
+      - Everything
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+    CancellationPolicyApplicabilityEnum:
+      title: Cancellation Policy Applicability
+      enum:
+      - Creation
+      - Start
+      - StartDate
+      type: string
+      description: 'Applicability mode of the cancellation policy.
+
+
+        Creation
+
+
+        Start
+
+
+        StartDate'
+      x-enumNames:
+      - Creation
+      - Start
+      - StartDate
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    CancellationPolicyApplicability:
+      title: Cancellation Policy Applicability
+      enum:
+      - Creation
+      - Start
+      - StartDate
+      type: string
+      description: Applicability mode of the cancellation policy.
+    CancellationPolicyResult:
+      title: CancellationPolicyResult
+      required:
+      - CancellationPolicies
+      type: object
+      properties:
+        CancellationPolicies:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationPolicy'
+          description: The filtered cancellation policies.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest cancellation policy returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older cancellation policies.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: CancellationPolicyResult

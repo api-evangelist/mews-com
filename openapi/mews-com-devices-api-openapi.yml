@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Devices API
+  title: Connector Devices API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -79,43 +84,21 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    DeviceTypeEnum:
-      title: Device type
-      enum:
-      - Printer
-      - PaymentTerminal
-      - KeyCutter
-      - FiscalMachine
-      - PassportScanner
-      type: string
-      description: 'Type of the device.
-
-
-        Printer ([Printer command data](https://mews-systems.gitbook.io/connector-api/operations/commands#printer-command-data))
-
-
-        PaymentTerminal ([Payment terminal command data](https://mews-systems.gitbook.io/connector-api/operations/commands#payment-terminal-command-data))
-
-
-        KeyCutter ([Key cutter command data](https://mews-systems.gitbook.io/connector-api/operations/commands#key-cutter-command-data))
-
-
-        FiscalMachine ([Fiscal machine command data](https://mews-systems.gitbook.io/connector-api/operations/commands#fiscal-machine-command-data))
-
-
-        PassportScanner ([Passport scanner command data](https://mews-systems.gitbook.io/connector-api/operations/commands#passport-scanner-command-data))'
-      x-enumNames:
-      - Printer
-      - PaymentTerminal
-      - KeyCutter
-      - FiscalMachine
-      - PassportScanner
-      x-enumDescriptions:
-      - '[Printer command data](https://mews-systems.gitbook.io/connector-api/operations/commands#printer-command-data)'
-      - '[Payment terminal command data](https://mews-systems.gitbook.io/connector-api/operations/commands#payment-terminal-command-data)'
-      - '[Key cutter command data](https://mews-systems.gitbook.io/connector-api/operations/commands#key-cutter-command-data)'
-      - '[Fiscal machine command data](https://mews-systems.gitbook.io/connector-api/operations/commands#fiscal-machine-command-data)'
-      - '[Passport scanner command data](https://mews-systems.gitbook.io/connector-api/operations/commands#passport-scanner-command-data)'
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     Parameters:
       title: Parameters
       required:
@@ -138,33 +121,6 @@ components:
           description: Name and version of the client application.
       additionalProperties: false
       x-schema-id: Parameters
-    DeviceResult:
-      title: DeviceResult
-      required:
-      - Devices
-      type: object
-      properties:
-        Devices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Device'
-          description: The devices.
-      additionalProperties: false
-      x-schema-id: DeviceResult
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     Device:
       title: Device
       required:
@@ -214,8 +170,59 @@ components:
           type: string
           description: Name of the device.
         Identifier:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Device identifier (for internal purposes).
-          nullable: true
       additionalProperties: false
       x-schema-id: Device
+    DeviceTypeEnum:
+      title: Device type
+      enum:
+      - Printer
+      - PaymentTerminal
+      - KeyCutter
+      - FiscalMachine
+      - PassportScanner
+      type: string
+      description: 'Type of the device.
+
+
+        Printer ([Printer command data](https://mews-systems.gitbook.io/connector-api/operations/commands#printer-command-data))
+
+
+        PaymentTerminal ([Payment terminal command data](https://mews-systems.gitbook.io/connector-api/operations/commands#payment-terminal-command-data))
+
+
+        KeyCutter ([Key cutter command data](https://mews-systems.gitbook.io/connector-api/operations/commands#key-cutter-command-data))
+
+
+        FiscalMachine ([Fiscal machine command data](https://mews-systems.gitbook.io/connector-api/operations/commands#fiscal-machine-command-data))
+
+
+        PassportScanner ([Passport scanner command data](https://mews-systems.gitbook.io/connector-api/operations/commands#passport-scanner-command-data))'
+      x-enumNames:
+      - Printer
+      - PaymentTerminal
+      - KeyCutter
+      - FiscalMachine
+      - PassportScanner
+      x-enumDescriptions:
+      - '[Printer command data](https://mews-systems.gitbook.io/connector-api/operations/commands#printer-command-data)'
+      - '[Payment terminal command data](https://mews-systems.gitbook.io/connector-api/operations/commands#payment-terminal-command-data)'
+      - '[Key cutter command data](https://mews-systems.gitbook.io/connector-api/operations/commands#key-cutter-command-data)'
+      - '[Fiscal machine command data](https://mews-systems.gitbook.io/connector-api/operations/commands#fiscal-machine-command-data)'
+      - '[Passport scanner command data](https://mews-systems.gitbook.io/connector-api/operations/commands#passport-scanner-command-data)'
+    DeviceResult:
+      title: DeviceResult
+      required:
+      - Devices
+      type: object
+      properties:
+        Devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Device'
+          description: The devices.
+      additionalProperties: false
+      x-schema-id: DeviceResult

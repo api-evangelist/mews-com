@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Vouchers API
+  title: Connector Vouchers API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -12,7 +17,7 @@ paths:
       tags:
       - Vouchers
       summary: Get all vouchers
-      description: Returns all rate vouchers filtered by [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service), voucher code or voucher identifier. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      description: Returns all rate vouchers filtered by Service, voucher code or voucher identifier. Note this operation uses Pagination and supports Portfolio Access Tokens.
       operationId: vouchers_getAll
       requestBody:
         content:
@@ -146,7 +151,7 @@ paths:
       tags:
       - Vouchers
       summary: Add vouchers
-      description: Adds the specified vouchers to the specified [Services](https://mews-systems.gitbook.io/connector-api/operations/services/#service). Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      description: Adds the specified vouchers to the specified Services. Note this operation supports Portfolio Access Tokens.
       operationId: vouchers_add
       requestBody:
         content:
@@ -259,7 +264,7 @@ paths:
       tags:
       - Vouchers
       summary: Update vouchers
-      description: Updates information about the specified vouchers. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      description: Updates information about the specified vouchers. Note this operation supports Portfolio Access Tokens.
       operationId: vouchers_update
       requestBody:
         content:
@@ -382,7 +387,7 @@ paths:
       tags:
       - Vouchers
       summary: Delete vouchers
-      description: Delete specified vouchers. Note this operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property).
+      description: Delete specified vouchers. Note this operation supports Portfolio Access Tokens.
       operationId: vouchers_delete
       requestBody:
         content:
@@ -449,23 +454,280 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    StringUpdateValue:
-      title: String update value
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    VoucherUpdateParameters:
+      title: Vouchers update parameters
+      required:
+      - VoucherId
+      type: object
+      properties:
+        VoucherId:
+          type: string
+          description: Unique identifier of the Voucher.
+          format: uuid
+        Name:
+          title: String update value
+          maxLength: 128
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Internal name of the voucher (or `null` if the name should not be updated).
+        Type:
+          title: Voucher Type update value
+          allOf:
+          - $ref: '#/components/schemas/VoucherTypeUpdateValue'
+          description: Type of the voucher e.g. 'Public', 'PartnerCompany' or 'TravelAgency' (or `null` if the type should not be updated).
+        CompanyId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidNullableUpdateValue'
+          description: Unique identifier of Company (Company or Travel Agency) the voucher is related to. This is required for Type of `PartnerCompany` or `TravelAgency`. Use `null` if Company should not be updated.
+        AssignedRateIds:
+          title: Assigned rate IDs
+          allOf:
+          - $ref: '#/components/schemas/AssignedRateIds'
+          description: Unique identifiers of Rates (or `null` should it not be updated).
+        OccupiableIntervalStartUtc:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Start of the interval in which the voucher can be applied (or `null` if the start time should not be updated).
+          format: date-time
+        OccupiableIntervalEndUtc:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: End of the interval in which the voucher can be applied (or `null` if the end time should not be updated).
+          format: date-time
+        ExternalIdentifier:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Identifier of the voucher from external system (or `null` if the identifier should not be updated).
+      additionalProperties: false
+      x-schema-id: VoucherUpdateParameters
+    Company:
+      title: Company
+      required:
+      - ChainId
+      - CreditRating
+      - Id
+      - IsActive
+      - Name
+      - Number
+      - Options
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the company.
+          format: uuid
+        ChainId:
+          type: string
+          description: Unique identifier of the chain.
+          format: uuid
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the company.
+        MotherCompanyId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of mother company.
+          format: uuid
+        InvoicingEmail:
+          type:
+          - string
+          - 'null'
+          description: Email for issuing invoices to the company.
+          format: email
+        WebsiteUrl:
+          type:
+          - string
+          - 'null'
+          description: The website url of the company.
+          format: uri
+        InvoiceDueInterval:
+          type:
+          - string
+          - 'null'
+          description: The maximum time, when the invoice has to be be paid in ISO 8601 duration format.
+        Options:
+          title: Company Options
+          allOf:
+          - $ref: '#/components/schemas/CompanyOptions'
+          description: Options of the company.
+        CreditRating:
+          title: Credit Rating
+          allOf:
+          - $ref: '#/components/schemas/CreditRating'
+          description: Credit rating to define creditworthiness of the company.
+        Department:
+          type:
+          - string
+          - 'null'
+          description: The internal segmentation of a company, e.g. sales department.
+        DunsNumber:
+          type:
+          - string
+          - 'null'
+          description: The Dun & Bradstreet unique 9-digit DUNS number.
+        ReferenceIdentifier:
+          type:
+          - string
+          - 'null'
+          description: External system identifier - custom identifier used by an external system such as an external database.
+        AccountingCode:
+          type:
+          - string
+          - 'null'
+          description: Accounting code of the company.
+        AdditionalTaxIdentifier:
+          type:
+          - string
+          - 'null'
+          description: Additional tax identifier of the company.
+        BillingCode:
+          type:
+          - string
+          - 'null'
+          description: Billing code of the company.
+        Contact:
+          type:
+          - string
+          - 'null'
+          description: Other contact details, such as telephone, email or similar.
+        ContactPerson:
+          type:
+          - string
+          - 'null'
+          description: Contact person of the company.
+        ElectronicInvoiceIdentifier:
+          type:
+          - string
+          - 'null'
+          description: Electronic invoice identifier of the company.
+          deprecated: true
+          x-deprecatedMessage: Use `AdditionalTaxIdentifier` instead.
+        Identifier:
+          type:
+          - string
+          - 'null'
+          description: Fiscal or legal identifier of the company.
+        Iata:
+          type:
+          - string
+          - 'null'
+          description: Iata of the company.
+        IsActive:
+          type: boolean
+          description: Whether the company is still active.
+        Notes:
+          type:
+          - string
+          - 'null'
+          description: Additional notes.
+        Number:
+          type: integer
+          description: Unique number of the company (max 19 digits).
+          format: int64
+        TaxIdentifier:
+          type:
+          - string
+          - 'null'
+          description: Tax identification number of the company.
+        Telephone:
+          type:
+          - string
+          - 'null'
+          description: Contact telephone number.
+          format: tel
+        CreatedUtc:
+          type:
+          - string
+          - 'null'
+          description: Date of [Company](https://mews-systems.gitbook.io/connector-api/operations/#company) creation date and time.
+          format: date-time
+        UpdatedUtc:
+          type:
+          - string
+          - 'null'
+          description: Date of [Company](https://mews-systems.gitbook.io/connector-api/operations/#company) last update date and time.
+          format: date-time
+        Address:
+          title: Address
+          allOf:
+          - $ref: '#/components/schemas/OldAddress'
+          description: ''
+          deprecated: true
+          x-deprecatedMessage: Use AddressId instead.
+        AddressId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the company [Address](https://mews-systems.gitbook.io/connector-api/operations/addresses/#account-address).
+          format: uuid
+        MergeTargetId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the account (Customer) to which this company is linked.
+          format: uuid
+        TaxIdentificationNumber:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+          x-deprecatedMessage: Use TaxIdentifier instead.
+        ExternalIdentifier:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: Identifier of company from external system.
+      additionalProperties: false
+      x-schema-id: Company
+    VoucherTypeUpdateValue:
+      title: Voucher Type update value
       type: object
       properties:
         Value:
-          type: string
+          title: Voucher Type
+          allOf:
+          - $ref: '#/components/schemas/VoucherTypeEnum'
           description: Value which is to be updated.
-          nullable: true
+          x-enumNames:
+          - Public
+          - PartnerCompany
+          - TravelAgency
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
       additionalProperties: false
-      x-schema-id: StringUpdateValue
-    MultipleVoucherUpdateParameters:
-      title: MultipleVoucherUpdateParameters
+      x-schema-id: VoucherTypeUpdateValue
+    MultipleVoucherAddParameters:
+      title: MultipleVoucherAddParameters
       required:
       - AccessToken
       - Client
       - ClientToken
-      - VoucherUpdates
+      - VoucherParameters
       type: object
       properties:
         ClientToken:
@@ -481,19 +743,20 @@ components:
           type: string
           description: Name and version of the client application.
         EnterpriseId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
           format: uuid
-          nullable: true
-        VoucherUpdates:
+        VoucherParameters:
           maxItems: 1000
           minItems: 1
           type: array
           items:
-            $ref: '#/components/schemas/VoucherUpdateParameters'
-          description: Details of voucher updates.
+            $ref: '#/components/schemas/VoucherAddParameters'
+          description: Vouchers to be added.
       additionalProperties: false
-      x-schema-id: MultipleVoucherUpdateParameters
+      x-schema-id: MultipleVoucherAddParameters
     RateForExtent:
       title: Rate for extent
       required:
@@ -522,18 +785,20 @@ components:
           description: Unique identifier of the `Service`.
           format: uuid
         BaseRateId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the base `Rate`.
           format: uuid
-          nullable: true
         IsBaseRate:
           type: boolean
           description: Whether the rate is a base rate.
         BusinessSegmentId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the `Business Segment`.
           format: uuid
-          nullable: true
         IsActive:
           type: boolean
           description: Whether the rate is still active.
@@ -566,9 +831,10 @@ components:
           - ''
           - ''
         Name:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Name of the rate (in the default language).
-          nullable: true
           deprecated: true
           x-deprecatedMessage: Use `Names` instead
         Names:
@@ -579,9 +845,10 @@ components:
           description: All translations of the name.
           x-schema-id: LocalizedStrings
         ShortName:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Short name of the rate (in the default language).
-          nullable: true
         UpdatedUtc:
           minLength: 1
           type: string
@@ -589,92 +856,31 @@ components:
           format: date-time
         ExternalNames:
           title: Localized text
-          type: object
+          type:
+          - object
+          - 'null'
           additionalProperties:
             type: string
           description: All translations of the external name of the rate.
-          nullable: true
           x-schema-id: LocalizedStrings
         Description:
           title: Localized text
-          type: object
+          type:
+          - object
+          - 'null'
           additionalProperties:
             type: string
           description: All translations of the description of the rate.
-          nullable: true
           x-schema-id: LocalizedStrings
         ExternalIdentifier:
           maxLength: 255
-          type: string
+          type:
+          - string
+          - 'null'
           description: Identifier of the rate from external system.
-          nullable: true
       additionalProperties: false
       description: '`Rate` entity, without some of the details, e.g. pricing.'
       x-schema-id: RateForExtent
-    MultipleVoucherAddParameters:
-      title: MultipleVoucherAddParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - VoucherParameters
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        VoucherParameters:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/VoucherAddParameters'
-          description: Vouchers to be added.
-      additionalProperties: false
-      x-schema-id: MultipleVoucherAddParameters
-    AssignedRateIds:
-      title: Assigned rate ids
-      type: object
-      properties:
-        Value:
-          maxItems: 10
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of Rates (or `null` should it not be updated).
-          nullable: true
-      additionalProperties: false
-      description: Has same structure as [Array of strings update value](https://mews-systems.gitbook.io/connector-api/operations/_objects#array-of-strings-update-value).
-      x-schema-id: AssignedRateIds
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type: string
-          nullable: true
-        RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     VoucherAssignment:
       title: Voucher assignment
       type: object
@@ -689,92 +895,6 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: VoucherAssignment
-    VoucherExtent:
-      title: Voucher Extent
-      type: object
-      properties:
-        Vouchers:
-          type: boolean
-          description: Whether the response should contain main information about vouchers.
-          nullable: true
-        VoucherCodes:
-          type: boolean
-          description: Whether the response should contain voucher codes used by customers.
-          nullable: true
-          deprecated: true
-          x-deprecatedMessage: Use `voucherCodes/getAll`
-        VoucherAssignments:
-          type: boolean
-          description: Whether the response should contain assignments between vouchers and Rates.
-          nullable: true
-        Companies:
-          type: boolean
-          description: Whether the response should contain detail of related companies.
-          nullable: true
-          deprecated: true
-          x-deprecatedMessage: Use `companies/getAll`
-        Rates:
-          type: boolean
-          description: Whether the response should contain detail of assigned rates.
-          nullable: true
-      additionalProperties: false
-      description: Extent of data to be returned. Whether only specific voucher info should be returned or related items as well.
-      x-schema-id: VoucherExtent
-    VoucherTypeUpdateValue:
-      title: Voucher Type update value
-      type: object
-      properties:
-        Value:
-          title: Voucher Type
-          allOf:
-          - $ref: '#/components/schemas/VoucherTypeEnum'
-          description: Value which is to be updated.
-          x-enumNames:
-          - Public
-          - PartnerCompany
-          - TravelAgency
-          x-enumDescriptions:
-          - ''
-          - ''
-          - ''
-      additionalProperties: false
-      x-schema-id: VoucherTypeUpdateValue
-    MultipleVoucherDeleteParameters:
-      title: MultipleVoucherDeleteParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - VoucherIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        VoucherIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the vouchers to be deleted.
-      additionalProperties: false
-      x-schema-id: MultipleVoucherDeleteParameters
     VoucherTypeEnum:
       title: Voucher Type
       enum:
@@ -800,95 +920,6 @@ components:
       - ''
       - ''
       - ''
-    OldAddress:
-      title: Address
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the address.
-          format: uuid
-        Line1:
-          type: string
-          description: First line of the address.
-          nullable: true
-        Line2:
-          type: string
-          description: Second line of the address.
-          nullable: true
-        City:
-          type: string
-          description: The city.
-          nullable: true
-        PostalCode:
-          type: string
-          description: Postal code.
-          nullable: true
-        CountryCode:
-          type: string
-          description: ISO 3166-1 code of the `Country`.
-          nullable: true
-        CountrySubdivisionCode:
-          type: string
-          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
-          nullable: true
-        Latitude:
-          type: number
-          description: The latitude.
-          format: double
-          nullable: true
-        Longitude:
-          type: number
-          description: The longitude.
-          format: double
-          nullable: true
-      additionalProperties: false
-      description: ''
-      x-schema-id: OldAddress
-    Unit:
-      type: object
-      additionalProperties: false
-    VoucherResult:
-      title: VoucherResult
-      type: object
-      properties:
-        Vouchers:
-          type: array
-          items:
-            $ref: '#/components/schemas/Voucher'
-          description: Details about vouchers added to the system.
-          nullable: true
-        VoucherCodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/VoucherCode'
-          description: Information about voucher codes used by customers.
-          nullable: true
-        VoucherAssignments:
-          type: array
-          items:
-            $ref: '#/components/schemas/VoucherAssignment'
-          description: The assignments between vouchers and [Rates](https://mews-systems.gitbook.io/connector-api/operations/rates/#rate).
-          nullable: true
-        Rates:
-          type: array
-          items:
-            $ref: '#/components/schemas/RateForExtent'
-          description: The assigned rates.
-          nullable: true
-        Companies:
-          type: array
-          items:
-            $ref: '#/components/schemas/Company'
-          description: The related companies and travel agencies.
-          nullable: true
-        Cursor:
-          type: string
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: VoucherResult
     VoucherAddParameters:
       title: Voucher Parameters
       required:
@@ -929,567 +960,77 @@ components:
           - ''
           - ''
         CompanyId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of Company.
           format: uuid
-          nullable: true
         AssignedRateIds:
           maxItems: 10
           uniqueItems: true
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of Rates.
-          nullable: true
         OccupiableIntervalStartUtc:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Start of the interval in which the voucher can be applied.
           format: date-time
-          nullable: true
         OccupiableIntervalEndUtc:
-          type: string
+          type:
+          - string
+          - 'null'
           description: End of the interval in which the voucher can be applied.
           format: date-time
-          nullable: true
         ExternalIdentifier:
           maxLength: 255
-          type: string
+          type:
+          - string
+          - 'null'
           description: Identifier of the voucher from external system.
-          nullable: true
       additionalProperties: false
       x-schema-id: VoucherAddParameters
-    ActivityStateEnum:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: '
-
-
-        Deleted
-
-
-        Active'
-      x-enumNames:
-      - Deleted
-      - Active
-      x-enumDescriptions:
-      - ''
-      - ''
-    VoucherCode:
-      title: Voucher code
-      required:
-      - ActivityState
-      - Id
-      - IsActive
-      - VoucherId
+    VoucherExtent:
+      title: Voucher Extent
       type: object
       properties:
-        Id:
-          type: string
-          description: Unique identifier of the voucher code.
-          format: uuid
-        VoucherId:
-          type: string
-          description: Unique identifier of `Voucher` the code belongs to.
-          format: uuid
-        Value:
-          type: string
-          description: Value of voucher code used by customers.
-          nullable: true
-        ValidityStartUtc:
-          type: string
-          description: If specified, marks the beginning of interval in which the code can be used.
-          nullable: true
-        ValidityEndUtc:
-          type: string
-          description: If specified, marks the end of interval in which the code can be used.
-          nullable: true
-        CreatedUtc:
-          type: string
-          description: Creation date and time of the voucher in UTC timezone in ISO 8601 format.
-          nullable: true
-        UpdatedUtc:
-          type: string
-          description: Last update date and time of the voucher in UTC timezone in ISO 8601 format.
-          nullable: true
-        ActivityState:
-          title: Activity state
-          allOf:
-          - $ref: '#/components/schemas/ActivityStateEnum'
-          description: 'Whether voucher code is active or deleted.
-
-
-            Deleted
-
-
-            Active'
+        Vouchers:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain main information about vouchers.
+        VoucherCodes:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain voucher codes used by customers.
           deprecated: true
-          x-enumNames:
-          - Deleted
-          - Active
-          x-enumDescriptions:
-          - ''
-          - ''
-          x-deprecatedMessage: Use `IsActive` instead.
-        IsActive:
-          type: boolean
-          description: Whether the voucher code is still active.
-      additionalProperties: false
-      x-schema-id: VoucherCode
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type: string
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    VoucherFilterParameters:
-      title: VoucherFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Extent
-      - Limitation
-      - ServiceIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-          nullable: true
-        Extent:
-          title: Voucher Extent
-          allOf:
-          - $ref: '#/components/schemas/VoucherExtent'
-          description: Extent of data to be returned. Whether only specific voucher info should be returned or related items as well.
-        ServiceIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Services](https://mews-systems.gitbook.io/connector-api/operations/services/#service) where the vouchers belong to.
-        VoucherIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of vouchers.
-          nullable: true
-        CompanyIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the companies.
-          nullable: true
-        VoucherCodeValues:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-          description: Value of voucher codes used by customers.
-          nullable: true
-        ActivityStates:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted, or both types of record. If not specified, both active and deleted records will be returned.
-          nullable: true
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the vouchers were updated.
-          nullable: true
-          x-max-interval-in-months: 3
-        ExternalIdentifiers:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-          description: Identifiers of [Voucher](https://mews-systems.gitbook.io/connector-api/operations/#voucher) from external systems.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: VoucherFilterParameters
-    RateTypeEnum:
-      title: Rate type
-      enum:
-      - Public
-      - Private
-      - AvailabilityBlock
-      type: string
-      description: '
-
-
-        Public
-
-
-        Private
-
-
-        AvailabilityBlock'
-      x-enumNames:
-      - Public
-      - Private
-      - AvailabilityBlock
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-    CompanyOptions:
-      title: Company Options
-      type: object
-      properties:
-        Invoiceable:
-          type: boolean
-          description: Whether the company is invoiceable or not.
-        AddFeesToInvoices:
-          type: boolean
-          description: Whether the company has an additional fee applied for invoicing or not.
-        AddTaxDeductedPaymentToInvoices:
-          type: boolean
-          description: Whether tax-deducted payments should be automatically added to invoices.
-      additionalProperties: false
-      description: Options of the company.
-      x-schema-id: CompanyOptions
-    ActivityStates:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: Activity states used for filtering.
-    CreditRatingBasicEnum:
-      title: Credit rating basic
-      enum:
-      - CreditOk
-      - PaymentRequiredUpfront
-      - LocalDecisionRequired
-      type: string
-      description: '
-
-
-        CreditOk (Company can book services.)
-
-
-        PaymentRequiredUpfront (Company must pay upfront.)
-
-
-        LocalDecisionRequired (Requires local approval.)'
-      x-enumNames:
-      - CreditOk
-      - PaymentRequiredUpfront
-      - LocalDecisionRequired
-      x-enumDescriptions:
-      - Company can book services.
-      - Company must pay upfront.
-      - Requires local approval.
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type: string
-          format: date-time
-          nullable: true
-        EndUtc:
-          type: string
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    Company:
-      title: Company
-      required:
-      - ChainId
-      - CreditRating
-      - Id
-      - IsActive
-      - Name
-      - Number
-      - Options
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the company.
-          format: uuid
-        ChainId:
-          type: string
-          description: Unique identifier of the chain.
-          format: uuid
-        Name:
-          minLength: 1
-          type: string
-          description: Name of the company.
-        MotherCompanyId:
-          type: string
-          description: Unique identifier of mother company.
-          format: uuid
-          nullable: true
-        InvoicingEmail:
-          type: string
-          description: Email for issuing invoices to the company.
-          format: email
-          nullable: true
-        WebsiteUrl:
-          type: string
-          description: The website url of the company.
-          format: uri
-          nullable: true
-        InvoiceDueInterval:
-          type: string
-          description: The maximum time, when the invoice has to be be paid in ISO 8601 duration format.
-          nullable: true
-        Options:
-          title: Company Options
-          allOf:
-          - $ref: '#/components/schemas/CompanyOptions'
-          description: Options of the company.
-        CreditRating:
-          title: Credit Rating
-          allOf:
-          - $ref: '#/components/schemas/CreditRating'
-          description: Credit rating to define creditworthiness of the company.
-        Department:
-          type: string
-          description: The internal segmentation of a company, e.g. sales department.
-          nullable: true
-        DunsNumber:
-          type: string
-          description: The Dun & Bradstreet unique 9-digit DUNS number.
-          nullable: true
-        ReferenceIdentifier:
-          type: string
-          description: External system identifier - custom identifier used by an external system such as an external database.
-          nullable: true
-        AccountingCode:
-          type: string
-          description: Accounting code of the company.
-          nullable: true
-        AdditionalTaxIdentifier:
-          type: string
-          description: Additional tax identifier of the company.
-          nullable: true
-        BillingCode:
-          type: string
-          description: Billing code of the company.
-          nullable: true
-        Contact:
-          type: string
-          description: Other contact details, such as telephone, email or similar.
-          nullable: true
-        ContactPerson:
-          type: string
-          description: Contact person of the company.
-          nullable: true
-        ElectronicInvoiceIdentifier:
-          type: string
-          description: Electronic invoice identifier of the company.
-          nullable: true
+          x-deprecatedMessage: Use `voucherCodes/getAll`
+        VoucherAssignments:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain assignments between vouchers and Rates.
+        Companies:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain detail of related companies.
           deprecated: true
-          x-deprecatedMessage: Use `AdditionalTaxIdentifier` instead.
-        Identifier:
-          type: string
-          description: Fiscal or legal identifier of the company.
-          nullable: true
-        Iata:
-          type: string
-          description: Iata of the company.
-          nullable: true
-        IsActive:
-          type: boolean
-          description: Whether the company is still active.
-        Notes:
-          type: string
-          description: Additional notes.
-          nullable: true
-        Number:
-          type: integer
-          description: Unique number of the company (max 19 digits).
-          format: int64
-        TaxIdentifier:
-          type: string
-          description: Tax identification number of the company.
-          nullable: true
-        Telephone:
-          type: string
-          description: Contact telephone number.
-          format: tel
-          nullable: true
-        CreatedUtc:
-          type: string
-          description: Date of [Company](https://mews-systems.gitbook.io/connector-api/operations/#company) creation date and time.
-          format: date-time
-          nullable: true
-        UpdatedUtc:
-          type: string
-          description: Date of [Company](https://mews-systems.gitbook.io/connector-api/operations/#company) last update date and time.
-          format: date-time
-          nullable: true
-        Address:
-          title: Address
-          allOf:
-          - $ref: '#/components/schemas/OldAddress'
-          description: ''
-          nullable: true
-          deprecated: true
-          x-deprecatedMessage: Use AddressId instead.
-        AddressId:
-          type: string
-          description: Unique identifier of the company [Address](https://mews-systems.gitbook.io/connector-api/operations/addresses/#account-address).
-          format: uuid
-          nullable: true
-        MergeTargetId:
-          type: string
-          description: Unique identifier of the account (Customer) to which this company is linked.
-          format: uuid
-          nullable: true
-        TaxIdentificationNumber:
-          type: string
-          nullable: true
-          deprecated: true
-          x-deprecatedMessage: Use TaxIdentifier instead.
-        ExternalIdentifier:
-          maxLength: 255
-          type: string
-          description: Identifier of company from external system.
-          nullable: true
+          x-deprecatedMessage: Use `companies/getAll`
+        Rates:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain detail of assigned rates.
       additionalProperties: false
-      x-schema-id: Company
-    CreditRating:
-      title: Credit Rating
-      type: object
-      properties:
-        Basic:
-          allOf:
-          - $ref: '#/components/schemas/CreditRatingBasicEnum'
-          description: 'Indicates the credit status of a company.
-
-
-            CreditOk (Company can book services.)
-
-
-            PaymentRequiredUpfront (Company must pay upfront.)
-
-
-            LocalDecisionRequired (Requires local approval.)'
-          nullable: true
-      additionalProperties: false
-      description: Credit rating to define creditworthiness of the company.
-      x-schema-id: CreditRating
-    VoucherUpdateParameters:
-      title: Vouchers update parameters
-      required:
-      - VoucherId
-      type: object
-      properties:
-        VoucherId:
-          type: string
-          description: Unique identifier of the Voucher.
-          format: uuid
-        Name:
-          title: String update value
-          maxLength: 128
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Internal name of the voucher (or `null` if the name should not be updated).
-          nullable: true
-        Type:
-          title: Voucher Type update value
-          allOf:
-          - $ref: '#/components/schemas/VoucherTypeUpdateValue'
-          description: Type of the voucher e.g. 'Public', 'PartnerCompany' or 'TravelAgency' (or `null` if the type should not be updated).
-          nullable: true
-        CompanyId:
-          title: Guid update value
-          allOf:
-          - $ref: '#/components/schemas/GuidNullableUpdateValue'
-          description: Unique identifier of Company (Company or Travel Agency) the voucher is related to. This is required for Type of `PartnerCompany` or `TravelAgency`. Use `null` if Company should not be updated.
-          nullable: true
-        AssignedRateIds:
-          title: Assigned rate IDs
-          allOf:
-          - $ref: '#/components/schemas/AssignedRateIds'
-          description: Unique identifiers of Rates (or `null` should it not be updated).
-          nullable: true
-        OccupiableIntervalStartUtc:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Start of the interval in which the voucher can be applied (or `null` if the start time should not be updated).
-          format: date-time
-          nullable: true
-        OccupiableIntervalEndUtc:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: End of the interval in which the voucher can be applied (or `null` if the end time should not be updated).
-          format: date-time
-          nullable: true
-        ExternalIdentifier:
-          title: String update value
-          maxLength: 255
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Identifier of the voucher from external system (or `null` if the identifier should not be updated).
-          nullable: true
-      additionalProperties: false
-      x-schema-id: VoucherUpdateParameters
-    GuidNullableUpdateValue:
-      title: Guid update value
-      type: object
-      properties:
-        Value:
-          type: string
-          description: Value which is to be updated.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: GuidNullableUpdateValue
+      description: Extent of data to be returned. Whether only specific voucher info should be returned or related items as well.
+      x-schema-id: VoucherExtent
     Voucher:
       title: Voucher
       required:
@@ -1573,30 +1114,35 @@ components:
           - ''
           x-deprecatedMessage: Use `IsActive` instead.
         CompanyId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of [Company](https://mews-systems.gitbook.io/connector-api/operations/companies/#company) the voucher is related to.
           format: uuid
-          nullable: true
         TravelAgencyId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of [Company](https://mews-systems.gitbook.io/connector-api/operations/companies/#company) with [Travel agency contract](https://mews-systems.gitbook.io/connector-api/operations/companycontracts/#travel-agency-contract) the voucher is related to.
           format: uuid
-          nullable: true
         OccupiableIntervalStartUtc:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Start of the time interval, expressed as the timestamp for the start of the first time unit, in UTC timezone ISO 8601 format.
           format: date-time
-          nullable: true
         OccupiableIntervalEndUtc:
-          type: string
+          type:
+          - string
+          - 'null'
           description: End of the time interval, expressed as the timestamp for the start of the last time unit, in UTC timezone ISO 8601 format.
           format: date-time
-          nullable: true
         ExternalIdentifier:
           maxLength: 255
-          type: string
+          type:
+          - string
+          - 'null'
           description: Identifier of the voucher from external system.
-          nullable: true
         IsActive:
           type: boolean
           description: Whether the voucher is still active.
@@ -1607,10 +1153,541 @@ components:
       type: object
       properties:
         Vouchers:
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             $ref: '#/components/schemas/Voucher'
           description: Details about vouchers added to the system.
-          nullable: true
       additionalProperties: false
       x-schema-id: VoucherWriteResult
+    VoucherCode:
+      title: Voucher code
+      required:
+      - ActivityState
+      - Id
+      - IsActive
+      - VoucherId
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the voucher code.
+          format: uuid
+        VoucherId:
+          type: string
+          description: Unique identifier of `Voucher` the code belongs to.
+          format: uuid
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value of voucher code used by customers.
+        ValidityStartUtc:
+          type:
+          - string
+          - 'null'
+          description: If specified, marks the beginning of interval in which the code can be used.
+        ValidityEndUtc:
+          type:
+          - string
+          - 'null'
+          description: If specified, marks the end of interval in which the code can be used.
+        CreatedUtc:
+          type:
+          - string
+          - 'null'
+          description: Creation date and time of the voucher in UTC timezone in ISO 8601 format.
+        UpdatedUtc:
+          type:
+          - string
+          - 'null'
+          description: Last update date and time of the voucher in UTC timezone in ISO 8601 format.
+        ActivityState:
+          title: Activity state
+          allOf:
+          - $ref: '#/components/schemas/ActivityStateEnum'
+          description: 'Whether voucher code is active or deleted.
+
+
+            Deleted
+
+
+            Active'
+          deprecated: true
+          x-enumNames:
+          - Deleted
+          - Active
+          x-enumDescriptions:
+          - ''
+          - ''
+          x-deprecatedMessage: Use `IsActive` instead.
+        IsActive:
+          type: boolean
+          description: Whether the voucher code is still active.
+      additionalProperties: false
+      x-schema-id: VoucherCode
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    MultipleVoucherDeleteParameters:
+      title: MultipleVoucherDeleteParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - VoucherIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        VoucherIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the vouchers to be deleted.
+      additionalProperties: false
+      x-schema-id: MultipleVoucherDeleteParameters
+    VoucherFilterParameters:
+      title: VoucherFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Extent
+      - Limitation
+      - ServiceIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        Extent:
+          title: Voucher Extent
+          allOf:
+          - $ref: '#/components/schemas/VoucherExtent'
+          description: Extent of data to be returned. Whether only specific voucher info should be returned or related items as well.
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Services](https://mews-systems.gitbook.io/connector-api/operations/services/#service) where the vouchers belong to.
+        VoucherIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of vouchers.
+        CompanyIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the companies.
+        VoucherCodeValues:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Value of voucher codes used by customers.
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted, or both types of record. If not specified, both active and deleted records will be returned.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the vouchers were updated.
+          x-max-interval-in-months: 3
+        ExternalIdentifiers:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Identifiers of [Voucher](https://mews-systems.gitbook.io/connector-api/operations/#voucher) from external systems.
+      additionalProperties: false
+      x-schema-id: VoucherFilterParameters
+    CreditRatingBasicEnum:
+      title: Credit rating basic
+      enum:
+      - CreditOk
+      - PaymentRequiredUpfront
+      - LocalDecisionRequired
+      type: string
+      description: '
+
+
+        CreditOk (Company can book services.)
+
+
+        PaymentRequiredUpfront (Company must pay upfront.)
+
+
+        LocalDecisionRequired (Requires local approval.)'
+      x-enumNames:
+      - CreditOk
+      - PaymentRequiredUpfront
+      - LocalDecisionRequired
+      x-enumDescriptions:
+      - Company can book services.
+      - Company must pay upfront.
+      - Requires local approval.
+    VoucherResult:
+      title: VoucherResult
+      type: object
+      properties:
+        Vouchers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Voucher'
+          description: Details about vouchers added to the system.
+        VoucherCodes:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/VoucherCode'
+          description: Information about voucher codes used by customers.
+        VoucherAssignments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/VoucherAssignment'
+          description: The assignments between vouchers and [Rates](https://mews-systems.gitbook.io/connector-api/operations/rates/#rate).
+        Rates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RateForExtent'
+          description: The assigned rates.
+        Companies:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Company'
+          description: The related companies and travel agencies.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: VoucherResult
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    AssignedRateIds:
+      title: Assigned rate ids
+      type: object
+      properties:
+        Value:
+          maxItems: 10
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of Rates (or `null` should it not be updated).
+      additionalProperties: false
+      description: Has same structure as [Array of strings update value](https://mews-systems.gitbook.io/connector-api/operations/_objects#array-of-strings-update-value).
+      x-schema-id: AssignedRateIds
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    CreditRating:
+      title: Credit Rating
+      type: object
+      properties:
+        Basic:
+          allOf:
+          - $ref: '#/components/schemas/CreditRatingBasicEnum'
+          description: 'Indicates the credit status of a company.
+
+
+            CreditOk (Company can book services.)
+
+
+            PaymentRequiredUpfront (Company must pay upfront.)
+
+
+            LocalDecisionRequired (Requires local approval.)'
+      additionalProperties: false
+      description: Credit rating to define creditworthiness of the company.
+      x-schema-id: CreditRating
+    Unit:
+      type: object
+      additionalProperties: false
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ActivityStateEnum:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: '
+
+
+        Deleted
+
+
+        Active'
+      x-enumNames:
+      - Deleted
+      - Active
+      x-enumDescriptions:
+      - ''
+      - ''
+    RateTypeEnum:
+      title: Rate type
+      enum:
+      - Public
+      - Private
+      - AvailabilityBlock
+      type: string
+      description: '
+
+
+        Public
+
+
+        Private
+
+
+        AvailabilityBlock'
+      x-enumNames:
+      - Public
+      - Private
+      - AvailabilityBlock
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+    OldAddress:
+      title: Address
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the address.
+          format: uuid
+        Line1:
+          type:
+          - string
+          - 'null'
+          description: First line of the address.
+        Line2:
+          type:
+          - string
+          - 'null'
+          description: Second line of the address.
+        City:
+          type:
+          - string
+          - 'null'
+          description: The city.
+        PostalCode:
+          type:
+          - string
+          - 'null'
+          description: Postal code.
+        CountryCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-1 code of the `Country`.
+        CountrySubdivisionCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
+        Latitude:
+          type:
+          - number
+          - 'null'
+          description: The latitude.
+          format: double
+        Longitude:
+          type:
+          - number
+          - 'null'
+          description: The longitude.
+          format: double
+      additionalProperties: false
+      description: ''
+      x-schema-id: OldAddress
+    GuidNullableUpdateValue:
+      title: Guid update value
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value which is to be updated.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: GuidNullableUpdateValue
+    CompanyOptions:
+      title: Company Options
+      type: object
+      properties:
+        Invoiceable:
+          type: boolean
+          description: Whether the company is invoiceable or not.
+        AddFeesToInvoices:
+          type: boolean
+          description: Whether the company has an additional fee applied for invoicing or not.
+        AddTaxDeductedPaymentToInvoices:
+          type: boolean
+          description: Whether tax-deducted payments should be automatically added to invoices.
+      additionalProperties: false
+      description: Options of the company.
+      x-schema-id: CompanyOptions
+    MultipleVoucherUpdateParameters:
+      title: MultipleVoucherUpdateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - VoucherUpdates
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        VoucherUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/VoucherUpdateParameters'
+          description: Details of voucher updates.
+      additionalProperties: false
+      x-schema-id: MultipleVoucherUpdateParameters

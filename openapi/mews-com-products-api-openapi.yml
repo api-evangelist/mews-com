@@ -1,6 +1,11 @@
-openapi: 3.0.4
+openapi: 3.2.0
 info:
-  title: BookingEngineApi Account notes Products API
+  title: Connector Products API
+  description: General-purpose API that enables partners of Mews to access data and services in Mews Operations
+  termsOfService: https://www.mews.com/en/terms-conditions/partners
+  contact:
+    name: Partner success
+    email: partnersuccess@mews.com
   version: v1
 servers:
 - url: https://api.mews.com
@@ -12,7 +17,7 @@ paths:
       tags:
       - Products
       summary: Get product pricing
-      description: 'Returns prices for a given product for a specified time interval. UTC timestamps must correspond to the start boundary of a time unit, e.g. 00:00 converted to UTC for a time unit of "Day". Other timestamps are not permitted. The __maximum size of time interval__ depends on the service''s time unit: 100 hours if hours, 100 days if days, or 24 months if months. For more information about time units, see [Time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units). This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).'
+      description: 'Returns prices for a given product for a specified time interval. UTC timestamps must correspond to the start boundary of a time unit, e.g. 00:00 converted to UTC for a time unit of "Day". Other timestamps are not permitted. The __maximum size of time interval__ depends on the service''s time unit: 100 hours if hours, 100 days if days, or 24 months if months. For more information about time units, see Time unit. This operation supports Portfolio Access Tokens.'
       operationId: products_getPricing
       requestBody:
         content:
@@ -138,7 +143,7 @@ paths:
       tags:
       - Products
       summary: Update product pricing
-      description: Updates the prices for a given product. You can make multiple price updates with one API call, and for each one specify the price amount per [Time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units) and the time interval for which it applies. The price will be updated for all service time units that the specified time interval intersects. It is not permitted to update historical prices older than specified by `EditableHistoryInterval`. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Updates the prices for a given product. You can make multiple price updates with one API call, and for each one specify the price amount per Time unit and the time interval for which it applies. The price will be updated for all service time units that the specified time interval intersects. It is not permitted to update historical prices older than specified by `EditableHistoryInterval`. This operation supports Portfolio Access Tokens.
       operationId: products_updatePrice
       requestBody:
         content:
@@ -212,7 +217,7 @@ paths:
       tags:
       - Products
       summary: Get all products
-      description: Returns all products offered together with the specified services. Note this operation uses [Pagination](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/) and supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Returns all products offered together with the specified services. Note this operation uses Pagination and supports Portfolio Access Tokens.
       operationId: products_getAll
       requestBody:
         content:
@@ -362,7 +367,7 @@ paths:
       tags:
       - Products
       summary: Delete products
-      description: Deletes specified products. This operation supports [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property/).
+      description: Deletes specified products. This operation supports Portfolio Access Tokens.
       operationId: products_delete
       requestBody:
         content:
@@ -427,74 +432,21 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ProductPricing:
-      title: Product pricing data discriminator
-      enum:
-      - Absolute
-      - Relative
-      type: string
-      description: ''
-    ProductChargingModeEnum:
-      title: Product charging mode
-      enum:
-      - Once
-      - PerTimeUnit
-      - PerPersonPerTimeUnit
-      - PerPerson
-      type: string
-      description: '
-
-
-        Once
-
-
-        PerTimeUnit
-
-
-        PerPersonPerTimeUnit
-
-
-        PerPerson'
-      x-enumNames:
-      - Once
-      - PerTimeUnit
-      - PerPersonPerTimeUnit
-      - PerPerson
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
       properties:
         Message:
-          type: string
-          nullable: true
+          type:
+          - string
+          - 'null'
         RequestId:
-          type: string
-          nullable: true
-        Details:
-          nullable: true
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
       x-schema-id: ConnectorApiExceptionResult
-    TaxValue:
-      title: Tax value
-      required:
-      - Value
-      type: object
-      properties:
-        Code:
-          type: string
-          description: Code corresponding to tax type.
-          nullable: true
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxValue
     ProductPricingFilterParameters:
       title: Product pricing filter parameters
       required:
@@ -535,298 +487,15 @@ components:
         EnterpriseIds:
           maxItems: 1000
           minItems: 1
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-          nullable: true
       additionalProperties: false
       x-schema-id: ProductPricingFilterParameters
-    ProductDeleteParameters:
-      title: Product delete parameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - ProductIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-          nullable: true
-        ProductIds:
-          maxItems: 1000
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the products to delete.
-      additionalProperties: false
-      x-schema-id: ProductDeleteParameters
-    ProductFilterParameters:
-      title: Product parameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      - ServiceIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-          nullable: true
-        ProductIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the product.
-          nullable: true
-        ServiceIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the [Services](https://mews-systems.gitbook.io/connector-api/operations/services/#service).
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the products were updated.
-          nullable: true
-          x-max-interval-in-months: 3
-        IncludeDefault:
-          type: boolean
-          description: Whether or not to include default products for the service, i.e. products which are standard includes and not true extras. For example, the night's stay would be the default product for a room reservation. These may be useful for accounting purposes but should not be displayed to customers for selection. If `ProductIds` are provided, `IncludeDefault` defaults to true, otherwise it defaults to false.
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ProductFilterParameters
-    ProductResult:
-      title: Product result
-      required:
-      - CustomerProducts
-      - Products
-      type: object
-      properties:
-        Products:
-          type: array
-          items:
-            $ref: '#/components/schemas/Product'
-          description: Products offered with the service.
-        CustomerProducts:
-          type: array
-          items:
-            $ref: '#/components/schemas/Product'
-          description: Products offered specifically to customers.
-        Cursor:
-          type: string
-          description: Unique identifier of the last and hence oldest product returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older products.
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ProductResult
-    Unit:
-      type: object
-      additionalProperties: false
-    ProductPricingResult:
-      title: Product pricing result
-      required:
-      - AgeCategoryPrices
-      - BaseAmountPrices
-      - ProductId
-      - TimeUnitStartsUtc
-      type: object
-      properties:
-        ProductId:
-          type: string
-          description: Unique identifier of the product.
-          format: uuid
-        TimeUnitStartsUtc:
-          type: array
-          items:
-            type: string
-          description: Set of all time units covered by the time interval; expressed in UTC timezone ISO 8601 format.
-          format: date-time
-        BaseAmountPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Amount'
-          description: Base prices of the product for each time unit covered by the time interval.
-        AgeCategoryPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProductAgeCategoryPrice'
-          description: Age category prices.
-      additionalProperties: false
-      x-schema-id: ProductPricingResult
-    ProductConsumptionMomentEnum:
-      title: Product consumption moment
-      enum:
-      - ServiceOrderEnd
-      - ServiceOrderStart
-      - PostingTimeUnit
-      - NextTimeUnit
-      type: string
-      description: '
-
-
-        ServiceOrderEnd
-
-
-        ServiceOrderStart
-
-
-        PostingTimeUnit
-
-
-        NextTimeUnit'
-      x-enumNames:
-      - ServiceOrderEnd
-      - ServiceOrderStart
-      - PostingTimeUnit
-      - NextTimeUnit
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-    ProductAgeCategoryPrice:
-      title: Age category price
-      required:
-      - AgeCategoryId
-      - Prices
-      type: object
-      properties:
-        AgeCategoryId:
-          type: string
-          description: Unique identifier of the age category.
-          format: uuid
-        Prices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Amount'
-          description: Prices of the product for the resource category in the covered dates.
-      additionalProperties: false
-      x-schema-id: ProductAgeCategoryPrice
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type: string
-          format: uuid
-          nullable: true
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    TaxExemptionReasonTypeEnum:
-      title: Tax exemption reason type
-      enum:
-      - Unknown
-      - IT_N1
-      - IT_N2_2
-      - IT_N3_5
-      - IT_N4
-      - IT_N5
-      - PL_ZW
-      - PL_NP
-      - DE_NATO
-      type: string
-      description: '
-
-
-        Unknown (Unknown tax exemption reason)
-
-
-        IT_N1 (N1 - Escluse ex art.15)
-
-
-        IT_N2_2 (N2.2 - Non soggette – altri casi)
-
-
-        IT_N3_5 (N3.5 - Non imponibili – a seguito di dichiarazioni d’intento)
-
-
-        IT_N4 (N4 - Esenti)
-
-
-        IT_N5 (N5 - Regime del margine / IVA non esposta in fattura)
-
-
-        PL_ZW (ZW - Zwolniony)
-
-
-        PL_NP (NP - Nie podlega)
-
-
-        DE_NATO (NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen)'
-      x-enumNames:
-      - Unknown
-      - IT_N1
-      - IT_N2_2
-      - IT_N3_5
-      - IT_N4
-      - IT_N5
-      - PL_ZW
-      - PL_NP
-      - DE_NATO
-      x-enumDescriptions:
-      - Unknown tax exemption reason
-      - N1 - Escluse ex art.15
-      - N2.2 - Non soggette – altri casi
-      - N3.5 - Non imponibili – a seguito di dichiarazioni d’intento
-      - N4 - Esenti
-      - N5 - Regime del margine / IVA non esposta in fattura
-      - ZW - Zwolniony
-      - NP - Nie podlega
-      - NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen
     ProductClassifications:
       title: Product classifications
       type: object
@@ -849,32 +518,13 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: ProductClassifications
-    ProductPriceUpdate:
-      title: Product price update
-      type: object
-      properties:
-        Value:
-          type: number
-          description: New value of the product on the interval. If not specified, removes all price adjustments within the interval.
-          format: double
-          nullable: true
-        FirstTimeUnitStartUtc:
-          type: string
-          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format.
-          format: date-time
-          nullable: true
-        LastTimeUnitStartUtc:
-          type: string
-          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s time unit: 367 hours if hours, 367 days if days, or 24 months if months.'
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      x-schema-id: ProductPriceUpdate
-    ProductPostingEnum:
-      title: Product posting
+    ProductChargingModeEnum:
+      title: Product charging mode
       enum:
       - Once
-      - Daily
+      - PerTimeUnit
+      - PerPersonPerTimeUnit
+      - PerPerson
       type: string
       description: '
 
@@ -882,11 +532,21 @@ components:
         Once
 
 
-        Daily'
+        PerTimeUnit
+
+
+        PerPersonPerTimeUnit
+
+
+        PerPerson'
       x-enumNames:
       - Once
-      - Daily
+      - PerTimeUnit
+      - PerPersonPerTimeUnit
+      - PerPerson
       x-enumDescriptions:
+      - ''
+      - ''
       - ''
       - ''
     ExtendedAmount:
@@ -923,99 +583,59 @@ components:
           - $ref: '#/components/schemas/TaxBreakdown'
           description: Information about individual tax amounts.
         Value:
-          type: number
+          type:
+          - number
+          - 'null'
           format: double
-          nullable: true
         Net:
-          type: number
+          type:
+          - number
+          - 'null'
           format: double
-          nullable: true
         Tax:
-          type: number
+          type:
+          - number
+          - 'null'
           format: double
-          nullable: true
         TaxRate:
-          type: number
+          type:
+          - number
+          - 'null'
           format: double
-          nullable: true
       additionalProperties: false
       description: ''
       x-schema-id: ExtendedAmount
-    ProductPostingModeEnum:
-      title: Product posting mode
-      enum:
-      - Once
-      - PerTimeUnit
-      type: string
-      description: '
-
-
-        Once
-
-
-        PerTimeUnit'
-      x-enumNames:
-      - Once
-      - PerTimeUnit
-      x-enumDescriptions:
-      - ''
-      - ''
-    TaxBreakdown:
-      title: Tax breakdown
+    ProductPricingResult:
+      title: Product pricing result
       required:
-      - Items
+      - AgeCategoryPrices
+      - BaseAmountPrices
+      - ProductId
+      - TimeUnitStartsUtc
       type: object
       properties:
-        Items:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxBreakdownItem'
-          description: Tax breakdown items per each tax rate applied.
-      additionalProperties: false
-      x-schema-id: TaxBreakdown
-    RelativeProductPrice:
-      title: Relative product price
-      type: object
-      properties:
-        Multiplier:
-          type: number
-          format: double
-          deprecated: true
-        Target:
+        ProductId:
           type: string
-          nullable: true
-          deprecated: true
-        TaxRateCodes:
+          description: Unique identifier of the product.
+          format: uuid
+        TimeUnitStartsUtc:
           type: array
           items:
             type: string
-          nullable: true
-          deprecated: true
-        ProductIds:
+          description: Set of all time units covered by the time interval; expressed in UTC timezone ISO 8601 format.
+          format: date-time
+        BaseAmountPrices:
           type: array
           items:
-            type: string
-            format: uuid
-          nullable: true
-          deprecated: true
+            $ref: '#/components/schemas/Amount'
+          description: Base prices of the product for each time unit covered by the time interval.
+        AgeCategoryPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductAgeCategoryPrice'
+          description: Age category prices.
       additionalProperties: false
-      description: ''
-      x-schema-id: RelativeProductPrice
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type: string
-          format: date-time
-          nullable: true
-        EndUtc:
-          type: string
-          format: date-time
-          nullable: true
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\r\n\r\n- **Start equals End (equality mode)**  \r\n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\r\n  \r\n  ```\r\n  CreatedUtc == StartUtc\r\n  ```\r\n  \r\n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\r\n\r\n- **Start differs from End (interval mode)**  \r\n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\r\n  \r\n  ```\r\n  StartUtc <= CreatedUtc < EndUtc\r\n  ```\r\n  \r\n  In other words, the start is inclusive and the end is exclusive.\r\n\r\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
+      x-schema-id: ProductPricingResult
     ProductOptions:
       title: Product options
       required:
@@ -1028,6 +648,194 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: ProductOptions
+    ProductPostingEnum:
+      title: Product posting
+      enum:
+      - Once
+      - Daily
+      type: string
+      description: '
+
+
+        Once
+
+
+        Daily'
+      x-enumNames:
+      - Once
+      - Daily
+      x-enumDescriptions:
+      - ''
+      - ''
+    ProductPriceUpdate:
+      title: Product price update
+      type: object
+      properties:
+        Value:
+          type:
+          - number
+          - 'null'
+          description: New value of the product on the interval. If not specified, removes all price adjustments within the interval.
+          format: double
+        FirstTimeUnitStartUtc:
+          type:
+          - string
+          - 'null'
+          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format.
+          format: date-time
+        LastTimeUnitStartUtc:
+          type:
+          - string
+          - 'null'
+          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s time unit: 367 hours if hours, 367 days if days, or 24 months if months.'
+          format: date-time
+      additionalProperties: false
+      x-schema-id: ProductPriceUpdate
+    ProductResult:
+      title: Product result
+      required:
+      - CustomerProducts
+      - Products
+      type: object
+      properties:
+        Products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+          description: Products offered with the service.
+        CustomerProducts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+          description: Products offered specifically to customers.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest product returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older products.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ProductResult
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ProductAgeCategoryPrice:
+      title: Age category price
+      required:
+      - AgeCategoryId
+      - Prices
+      type: object
+      properties:
+        AgeCategoryId:
+          type: string
+          description: Unique identifier of the age category.
+          format: uuid
+        Prices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Amount'
+          description: Prices of the product for the resource category in the covered dates.
+      additionalProperties: false
+      x-schema-id: ProductAgeCategoryPrice
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount
+    ProductPricing:
+      title: Product pricing data discriminator
+      enum:
+      - Absolute
+      - Relative
+      type: string
+      description: ''
+    ProductPriceUpdateParameters:
+      title: Product price update parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - PriceUpdates
+      - ProductId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        ProductId:
+          minLength: 1
+          type: string
+          description: Unique identifier of the `Product`.
+          x-schema-id: HybridIdentifier
+        PriceUpdates:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductPriceUpdate'
+          description: Price adjustments for specific time intervals.
+      additionalProperties: false
+      x-schema-id: ProductPriceUpdateParameters
     Product:
       title: Product
       required:
@@ -1059,15 +867,17 @@ components:
           description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service).
           format: uuid
         CategoryId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the Product category.
           format: uuid
-          nullable: true
         AccountingCategoryId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of [Accounting Category](https://mews-systems.gitbook.io/connector-api/operations/accountingcategories/#accounting-category).
           format: uuid
-          nullable: true
         IsActive:
           type: boolean
           description: Whether the product is still active.
@@ -1075,9 +885,10 @@ components:
           type: boolean
           deprecated: true
         Name:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Name of the product. **Deprecated!** Please use Names
-          nullable: true
           deprecated: true
           x-deprecatedMessage: Use `Names` instead.
         Names:
@@ -1088,9 +899,10 @@ components:
           description: All translations of the name.
           x-schema-id: LocalizedStrings
         ExternalName:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Name of the product meant to be displayed to customer. **Deprecated!** Please use ExternalNames
-          nullable: true
           deprecated: true
           x-deprecatedMessage: Use `ExternalNames` instead.
         ExternalNames:
@@ -1101,9 +913,10 @@ components:
           description: All translations of external name.
           x-schema-id: LocalizedStrings
         ShortName:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Short name of the product. **Deprecated!** Please use ShortNames
-          nullable: true
           deprecated: true
           x-deprecatedMessage: Use `ShortNames` instead.
         ShortNames:
@@ -1114,18 +927,20 @@ components:
           description: All translations of short name.
           x-schema-id: LocalizedStrings
         Description:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Description of the product. **Deprecated!** Please use Descriptions
-          nullable: true
           deprecated: true
           x-deprecatedMessage: Use `Descriptions` instead.
         Descriptions:
           title: Localized text
-          type: object
+          type:
+          - object
+          - 'null'
           additionalProperties:
             type: string
           description: All translations of descriptions.
-          nullable: true
           x-schema-id: LocalizedStrings
         Charging:
           title: Product charging mode
@@ -1251,21 +1066,23 @@ components:
           x-schema-id: ProductPricingCoproductOfProductPricing
           x-deprecatedMessage: Use `Price` instead.
         ImageIds:
-          type: array
+          type:
+          - array
+          - 'null'
           items:
             type: string
             format: uuid
           description: Unique identifier of the product image.
-          nullable: true
         Ordering:
           type: integer
           description: Order value for presentation purposes.
           format: int32
         ExternalIdentifier:
           maxLength: 255
-          type: string
+          type:
+          - string
+          - 'null'
           description: Identifier of the product from external system.
-          nullable: true
         TaxExemptionReason:
           allOf:
           - $ref: '#/components/schemas/TaxExemptionReasonTypeEnum'
@@ -1297,11 +1114,11 @@ components:
 
 
             DE_NATO (NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen)'
-          nullable: true
         TaxExemptionLegalReference:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Legal reference that states why this product is exempt from tax.
-          nullable: true
         CreatedUtc:
           minLength: 1
           type: string
@@ -1341,50 +1158,54 @@ components:
           - ''
       additionalProperties: false
       x-schema-id: Product
-    Amount:
-      title: Amount
+    TaxBreakdownItem:
+      title: Tax breakdown item
       required:
-      - Breakdown
-      - Currency
-      - GrossValue
       - NetValue
-      - TaxValues
+      - TaxValue
       type: object
       properties:
-        Currency:
-          minLength: 1
-          type: string
-          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
-          format: currency
+        TaxRateCode:
+          type:
+          - string
+          - 'null'
+          description: Tax rate code for the item. `null` for untaxed amounts.
         NetValue:
           type: number
-          description: Net value without taxes.
+          description: The net value that the tax is calculated from.
           format: double
-        GrossValue:
+        TaxValue:
           type: number
-          description: Gross value including all taxes.
+          description: The value of the tax.
           format: double
-        TaxValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxValue'
-          description: The tax values applied.
-        Breakdown:
-          title: Tax breakdown
-          allOf:
-          - $ref: '#/components/schemas/TaxBreakdown'
-          description: Information about individual tax amounts.
       additionalProperties: false
-      description: ''
-      x-schema-id: Amount
-    ProductPriceUpdateParameters:
-      title: Product price update parameters
+      x-schema-id: TaxBreakdownItem
+    ProductPostingModeEnum:
+      title: Product posting mode
+      enum:
+      - Once
+      - PerTimeUnit
+      type: string
+      description: '
+
+
+        Once
+
+
+        PerTimeUnit'
+      x-enumNames:
+      - Once
+      - PerTimeUnit
+      x-enumDescriptions:
+      - ''
+      - ''
+    ProductDeleteParameters:
+      title: Product delete parameters
       required:
       - AccessToken
       - Client
       - ClientToken
-      - PriceUpdates
-      - ProductId
+      - ProductIds
       type: object
       properties:
         ClientToken:
@@ -1400,24 +1221,229 @@ components:
           type: string
           description: Name and version of the client application.
         EnterpriseId:
-          type: string
+          type:
+          - string
+          - 'null'
           description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
           format: uuid
-          nullable: true
-        ProductId:
+        ProductIds:
+          maxItems: 1000
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the products to delete.
+      additionalProperties: false
+      x-schema-id: ProductDeleteParameters
+    ProductFilterParameters:
+      title: Product parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ServiceIds
+      type: object
+      properties:
+        ClientToken:
           minLength: 1
           type: string
-          description: Unique identifier of the `Product`.
-          x-schema-id: HybridIdentifier
-        PriceUpdates:
-          maxItems: 100
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        ProductIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the product.
+        ServiceIds:
+          maxItems: 1000
           minItems: 1
           type: array
           items:
-            $ref: '#/components/schemas/ProductPriceUpdate'
-          description: Price adjustments for specific time intervals.
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Services](https://mews-systems.gitbook.io/connector-api/operations/services/#service).
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the products were updated.
+          x-max-interval-in-months: 3
+        IncludeDefault:
+          type:
+          - boolean
+          - 'null'
+          description: Whether or not to include default products for the service, i.e. products which are standard includes and not true extras. For example, the night's stay would be the default product for a room reservation. These may be useful for accounting purposes but should not be displayed to customers for selection. If `ProductIds` are provided, `IncludeDefault` defaults to true, otherwise it defaults to false.
       additionalProperties: false
-      x-schema-id: ProductPriceUpdateParameters
+      x-schema-id: ProductFilterParameters
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
+    Unit:
+      type: object
+      additionalProperties: false
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    RelativeProductPrice:
+      title: Relative product price
+      type: object
+      properties:
+        Multiplier:
+          type: number
+          format: double
+          deprecated: true
+        Target:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+        TaxRateCodes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          deprecated: true
+        ProductIds:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          deprecated: true
+      additionalProperties: false
+      description: ''
+      x-schema-id: RelativeProductPrice
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    TaxExemptionReasonTypeEnum:
+      title: Tax exemption reason type
+      enum:
+      - Unknown
+      - IT_N1
+      - IT_N2_2
+      - IT_N3_5
+      - IT_N4
+      - IT_N5
+      - PL_ZW
+      - PL_NP
+      - DE_NATO
+      type: string
+      description: '
+
+
+        Unknown (Unknown tax exemption reason)
+
+
+        IT_N1 (N1 - Escluse ex art.15)
+
+
+        IT_N2_2 (N2.2 - Non soggette – altri casi)
+
+
+        IT_N3_5 (N3.5 - Non imponibili – a seguito di dichiarazioni d’intento)
+
+
+        IT_N4 (N4 - Esenti)
+
+
+        IT_N5 (N5 - Regime del margine / IVA non esposta in fattura)
+
+
+        PL_ZW (ZW - Zwolniony)
+
+
+        PL_NP (NP - Nie podlega)
+
+
+        DE_NATO (NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen)'
+      x-enumNames:
+      - Unknown
+      - IT_N1
+      - IT_N2_2
+      - IT_N3_5
+      - IT_N4
+      - IT_N5
+      - PL_ZW
+      - PL_NP
+      - DE_NATO
+      x-enumDescriptions:
+      - Unknown tax exemption reason
+      - N1 - Escluse ex art.15
+      - N2.2 - Non soggette – altri casi
+      - N3.5 - Non imponibili – a seguito di dichiarazioni d’intento
+      - N4 - Esenti
+      - N5 - Regime del margine / IVA non esposta in fattura
+      - ZW - Zwolniony
+      - NP - Nie podlega
+      - NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen
     Promotions:
       title: Promotions
       required:
@@ -1450,24 +1476,34 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: Promotions
-    TaxBreakdownItem:
-      title: Tax breakdown item
-      required:
-      - NetValue
-      - TaxValue
-      type: object
-      properties:
-        TaxRateCode:
-          type: string
-          description: Tax rate code for the item. `null` for untaxed amounts.
-          nullable: true
-        NetValue:
-          type: number
-          description: The net value that the tax is calculated from.
-          format: double
-        TaxValue:
-          type: number
-          description: The value of the tax.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxBreakdownItem
+    ProductConsumptionMomentEnum:
+      title: Product consumption moment
+      enum:
+      - ServiceOrderEnd
+      - ServiceOrderStart
+      - PostingTimeUnit
+      - NextTimeUnit
+      type: string
+      description: '
+
+
+        ServiceOrderEnd
+
+
+        ServiceOrderStart
+
+
+        PostingTimeUnit
+
+
+        NextTimeUnit'
+      x-enumNames:
+      - ServiceOrderEnd
+      - ServiceOrderStart
+      - PostingTimeUnit
+      - NextTimeUnit
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
