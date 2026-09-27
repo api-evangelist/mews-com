@@ -84,21 +84,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     Parameters:
       title: Parameters
       required:
@@ -176,6 +161,34 @@ components:
           description: Device identifier (for internal purposes).
       additionalProperties: false
       x-schema-id: Device
+    DeviceResult:
+      title: DeviceResult
+      required:
+      - Devices
+      type: object
+      properties:
+        Devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Device'
+          description: The devices.
+      additionalProperties: false
+      x-schema-id: DeviceResult
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     DeviceTypeEnum:
       title: Device type
       enum:
@@ -213,16 +226,3 @@ components:
       - '[Key cutter command data](https://mews-systems.gitbook.io/connector-api/operations/commands#key-cutter-command-data)'
       - '[Fiscal machine command data](https://mews-systems.gitbook.io/connector-api/operations/commands#fiscal-machine-command-data)'
       - '[Passport scanner command data](https://mews-systems.gitbook.io/connector-api/operations/commands#passport-scanner-command-data)'
-    DeviceResult:
-      title: DeviceResult
-      required:
-      - Devices
-      type: object
-      properties:
-        Devices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Device'
-          description: The devices.
-      additionalProperties: false
-      x-schema-id: DeviceResult

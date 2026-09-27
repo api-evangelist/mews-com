@@ -319,73 +319,48 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    Limitation:
-      title: Limitation
+    OrderNoteTypeEnum:
+      title: Service order note type
+      enum:
+      - General
+      - ChannelManager
+      - SpecialRequest
+      type: string
+      description: '
+
+
+        General
+
+
+        ChannelManager
+
+
+        SpecialRequest'
+      x-enumNames:
+      - General
+      - ChannelManager
+      - SpecialRequest
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+    ServiceOrderNoteUpdateParameters:
+      title: Service order note update parameters
       required:
-      - Count
+      - ServiceOrderNoteId
       type: object
       properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
+        ServiceOrderNoteId:
+          type: string
+          description: Unique identifier of the `Service order note`.
           format: uuid
+        Text:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Content of the service order note (or `null` if the content should not be updated).
       additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    ServiceOrderNoteResult:
-      title: ServiceOrderNoteResult
-      required:
-      - ServiceOrderNotes
-      type: object
-      properties:
-        ServiceOrderNotes:
-          type: array
-          items:
-            $ref: '#/components/schemas/OrderNote'
-          description: The collection of service order notes.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the last and hence oldest service order note returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older service order notes.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: ServiceOrderNoteResult
-    ServiceOrderNoteAdditionResult:
-      title: ServiceOrderNoteAdditionResult
-      required:
-      - ServiceOrderNotes
-      type: object
-      properties:
-        ServiceOrderNotes:
-          type: array
-          items:
-            $ref: '#/components/schemas/OrderNote'
-          description: Added service order notes.
-      additionalProperties: false
-      x-schema-id: ServiceOrderNoteAdditionResult
-    Unit:
-      type: object
-      additionalProperties: false
+      x-schema-id: ServiceOrderNoteUpdateParameters
     ServiceOrderNoteFilterParameters:
       title: ServiceOrderNoteFilterParameters
       required:
@@ -455,126 +430,6 @@ components:
           description: Type of the service order note. Defaults to `["General", "ChannelManager"]`.
       additionalProperties: false
       x-schema-id: ServiceOrderNoteFilterParameters
-    ServiceOrderNoteDeleteParameters:
-      title: ServiceOrderNoteDeleteParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - ServiceOrderNoteIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ServiceOrderNoteIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the service order notes to be deleted.
-      additionalProperties: false
-      x-schema-id: ServiceOrderNoteDeleteParameters
-    MultipleServiceOrderNoteAddParameters:
-      title: MultipleServiceOrderNoteAddParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - ServiceOrderNotes
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ServiceOrderNotes:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceOrderNoteAddParameters'
-          description: Notes to be added.
-      additionalProperties: false
-      x-schema-id: MultipleServiceOrderNoteAddParameters
-    ServiceOrderNoteAddParameters:
-      title: Service order note parameters
-      required:
-      - ServiceOrderId
-      - Text
-      type: object
-      properties:
-        ServiceOrderId:
-          type: string
-          description: Unique identifier of the `Service order` to which note will be added.
-          format: uuid
-        Text:
-          minLength: 1
-          type: string
-          description: Content of the service order note.
-      additionalProperties: false
-      x-schema-id: ServiceOrderNoteAddParameters
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    OrderNoteTypeEnum:
-      title: Service order note type
-      enum:
-      - General
-      - ChannelManager
-      - SpecialRequest
-      type: string
-      description: '
-
-
-        General
-
-
-        ChannelManager
-
-
-        SpecialRequest'
-      x-enumNames:
-      - General
-      - ChannelManager
-      - SpecialRequest
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
     OrderNote:
       title: Service order note
       type: object
@@ -639,23 +494,84 @@ components:
           description: Value which is to be updated.
       additionalProperties: false
       x-schema-id: StringUpdateValue
-    ServiceOrderNoteUpdateParameters:
-      title: Service order note update parameters
+    MultipleServiceOrderNoteAddParameters:
+      title: MultipleServiceOrderNoteAddParameters
       required:
-      - ServiceOrderNoteId
+      - AccessToken
+      - Client
+      - ClientToken
+      - ServiceOrderNotes
       type: object
       properties:
-        ServiceOrderNoteId:
+        ClientToken:
+          minLength: 1
           type: string
-          description: Unique identifier of the `Service order note`.
-          format: uuid
-        Text:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Content of the service order note (or `null` if the content should not be updated).
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ServiceOrderNotes:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceOrderNoteAddParameters'
+          description: Notes to be added.
       additionalProperties: false
-      x-schema-id: ServiceOrderNoteUpdateParameters
+      x-schema-id: MultipleServiceOrderNoteAddParameters
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ServiceOrderNoteDeleteParameters:
+      title: ServiceOrderNoteDeleteParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - ServiceOrderNoteIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ServiceOrderNoteIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the service order notes to be deleted.
+      additionalProperties: false
+      x-schema-id: ServiceOrderNoteDeleteParameters
     MultipleServiceOrderNoteUpdateParameters:
       title: MultipleServiceOrderNoteUpdateParameters
       required:
@@ -686,6 +602,90 @@ components:
           description: Notes to be updated.
       additionalProperties: false
       x-schema-id: MultipleServiceOrderNoteUpdateParameters
+    Unit:
+      type: object
+      additionalProperties: false
+    ServiceOrderNoteAddParameters:
+      title: Service order note parameters
+      required:
+      - ServiceOrderId
+      - Text
+      type: object
+      properties:
+        ServiceOrderId:
+          type: string
+          description: Unique identifier of the `Service order` to which note will be added.
+          format: uuid
+        Text:
+          minLength: 1
+          type: string
+          description: Content of the service order note.
+      additionalProperties: false
+      x-schema-id: ServiceOrderNoteAddParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ServiceOrderNoteAdditionResult:
+      title: ServiceOrderNoteAdditionResult
+      required:
+      - ServiceOrderNotes
+      type: object
+      properties:
+        ServiceOrderNotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderNote'
+          description: Added service order notes.
+      additionalProperties: false
+      x-schema-id: ServiceOrderNoteAdditionResult
+    ServiceOrderNoteResult:
+      title: ServiceOrderNoteResult
+      required:
+      - ServiceOrderNotes
+      type: object
+      properties:
+        ServiceOrderNotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderNote'
+          description: The collection of service order notes.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest service order note returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older service order notes.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ServiceOrderNoteResult
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
     ServiceOrderNoteUpdateResult:
       title: ServiceOrderNoteUpdateResult
       required:

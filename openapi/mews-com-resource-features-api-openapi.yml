@@ -193,38 +193,44 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    Limitation:
-      title: Limitation
+    ResourceFeatureAssignment:
+      title: Resource feature assignment
       required:
-      - Count
+      - CreatedUtc
+      - FeatureId
+      - Id
+      - IsActive
+      - ResourceId
+      - UpdatedUtc
       type: object
       properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
+        Id:
+          type: string
+          description: Unique identifier of the assignment.
           format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the assignment is still active.
+        ResourceId:
+          type: string
+          description: Unique identifier of the [Resource](https://mews-systems.gitbook.io/connector-api/operations/resources/#resource).
+          format: uuid
+        FeatureId:
+          type: string
+          description: Unique identifier of the [Resource feature](https://mews-systems.gitbook.io/connector-api/operations/#resource-feature) assigned to the Resource.
+          format: uuid
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the assignment in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the assignment in UTC timezone in ISO 8601 format.
+          format: date-time
       additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
+      x-schema-id: ResourceFeatureAssignment
     ResourceFeatureAssignmentFilterParameters:
       title: ResourceFeatureAssignmentFilterParameters
       required:
@@ -293,6 +299,143 @@ components:
           description: Whether to return only active, only deleted or both records.
       additionalProperties: false
       x-schema-id: ResourceFeatureAssignmentFilterParameters
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ResourceFeature:
+      title: Resource feature
+      required:
+      - Classification
+      - CreatedUtc
+      - Descriptions
+      - Id
+      - IsActive
+      - Names
+      - ServiceId
+      - ShortNames
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of `ResourceFeature`.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of `Service` the resource feature belongs to.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the `ResourceFeature` is active.
+        Classification:
+          $ref: '#/components/schemas/ResourceFeatureClassification'
+        Names:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the name.
+          x-schema-id: LocalizedStrings
+        ShortNames:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the short name.
+          x-schema-id: LocalizedStrings
+        Descriptions:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the description.
+          x-schema-id: LocalizedStrings
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the resource feature in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the resource feature in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: ResourceFeature
+    ResourceFeatureClassification:
+      title: Resource feature classification
+      enum:
+      - SeaView
+      - RiverView
+      - OceanView
+      - TwinBeds
+      - DoubleBed
+      - RollawayBed
+      - UpperBed
+      - LowerBed
+      - Balcony
+      - AccessibleBathroom
+      - AccessibleRoom
+      - ElevatorAccess
+      - HighFloor
+      - Kitchenette
+      - AirConditioning
+      - PrivateJacuzzi
+      - PrivateSauna
+      - EnsuiteRoom
+      - PrivateBathroom
+      - SharedBathroom
+      type: string
+      description: Classification of `ResourceFeature`.
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ResourceFeatureAssignmentResult:
+      title: ResourceFeatureAssignmentResult
+      required:
+      - ResourceFeatureAssignments
+      type: object
+      properties:
+        ResourceFeatureAssignments:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceFeatureAssignment'
+          description: Resource feature assignments.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest resource feature assignments returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older resource feature assignments.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ResourceFeatureAssignmentResult
     ResourceFeatureFilterParameters:
       title: ResourceFeatureFilterParameters
       required:
@@ -361,50 +504,6 @@ components:
           description: Whether to return only active, only deleted or both records.
       additionalProperties: false
       x-schema-id: ResourceFeatureFilterParameters
-    ActivityStates:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: Activity states used for filtering.
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    ResourceFeatureAssignmentResult:
-      title: ResourceFeatureAssignmentResult
-      required:
-      - ResourceFeatureAssignments
-      type: object
-      properties:
-        ResourceFeatureAssignments:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceFeatureAssignment'
-          description: Resource feature assignments.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the last and hence oldest resource feature assignments returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older resource feature assignments.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: ResourceFeatureAssignmentResult
     ResourceFeatureResult:
       title: ResourceFeatureResult
       required:
@@ -425,126 +524,27 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: ResourceFeatureResult
-    ResourceFeatureAssignment:
-      title: Resource feature assignment
+    Limitation:
+      title: Limitation
       required:
-      - CreatedUtc
-      - FeatureId
-      - Id
-      - IsActive
-      - ResourceId
-      - UpdatedUtc
+      - Count
       type: object
       properties:
-        Id:
-          type: string
-          description: Unique identifier of the assignment.
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
           format: uuid
-        IsActive:
-          type: boolean
-          description: Whether the assignment is still active.
-        ResourceId:
-          type: string
-          description: Unique identifier of the [Resource](https://mews-systems.gitbook.io/connector-api/operations/resources/#resource).
-          format: uuid
-        FeatureId:
-          type: string
-          description: Unique identifier of the [Resource feature](https://mews-systems.gitbook.io/connector-api/operations/#resource-feature) assigned to the Resource.
-          format: uuid
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the assignment in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the assignment in UTC timezone in ISO 8601 format.
-          format: date-time
       additionalProperties: false
-      x-schema-id: ResourceFeatureAssignment
-    ResourceFeatureClassification:
-      title: Resource feature classification
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ActivityStates:
+      title: Activity state
       enum:
-      - SeaView
-      - RiverView
-      - OceanView
-      - TwinBeds
-      - DoubleBed
-      - RollawayBed
-      - UpperBed
-      - LowerBed
-      - Balcony
-      - AccessibleBathroom
-      - AccessibleRoom
-      - ElevatorAccess
-      - HighFloor
-      - Kitchenette
-      - AirConditioning
-      - PrivateJacuzzi
-      - PrivateSauna
-      - EnsuiteRoom
-      - PrivateBathroom
-      - SharedBathroom
+      - Deleted
+      - Active
       type: string
-      description: Classification of `ResourceFeature`.
-    ResourceFeature:
-      title: Resource feature
-      required:
-      - Classification
-      - CreatedUtc
-      - Descriptions
-      - Id
-      - IsActive
-      - Names
-      - ServiceId
-      - ShortNames
-      - UpdatedUtc
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of `ResourceFeature`.
-          format: uuid
-        ServiceId:
-          type: string
-          description: Unique identifier of `Service` the resource feature belongs to.
-          format: uuid
-        IsActive:
-          type: boolean
-          description: Whether the `ResourceFeature` is active.
-        Classification:
-          $ref: '#/components/schemas/ResourceFeatureClassification'
-        Names:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of the name.
-          x-schema-id: LocalizedStrings
-        ShortNames:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of the short name.
-          x-schema-id: LocalizedStrings
-        Descriptions:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of the description.
-          x-schema-id: LocalizedStrings
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the resource feature in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the resource feature in UTC timezone in ISO 8601 format.
-          format: date-time
-      additionalProperties: false
-      x-schema-id: ResourceFeature
+      description: Activity states used for filtering.

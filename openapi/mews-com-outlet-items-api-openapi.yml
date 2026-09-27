@@ -217,21 +217,100 @@ components:
           format: currency
       additionalProperties: false
       x-schema-id: OutletItemsFilterParameters
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
       type: object
       properties:
-        Message:
+        Code:
           type:
           - string
           - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
       additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
+      x-schema-id: TaxValue
+    OutletItemResult:
+      title: OutletItemResult
+      required:
+      - OutletBills
+      - OutletItems
+      type: object
+      properties:
+        OutletItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutletItem'
+          description: The outlet items.
+        OutletBills:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutletBill'
+          description: The outlet bills of the items.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest outlet item returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older outlet items.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: OutletItemResult
+    TaxBreakdownItem:
+      title: Tax breakdown item
+      required:
+      - NetValue
+      - TaxValue
+      type: object
+      properties:
+        TaxRateCode:
+          type:
+          - string
+          - 'null'
+          description: Tax rate code for the item. `null` for untaxed amounts.
+        NetValue:
+          type: number
+          description: The net value that the tax is calculated from.
+          format: double
+        TaxValue:
+          type: number
+          description: The value of the tax.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxBreakdownItem
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
     Amount:
       title: Amount
       required:
@@ -268,114 +347,21 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: Amount
-    Limitation:
-      title: Limitation
-      required:
-      - Count
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
+        Message:
           type:
           - string
           - 'null'
-          format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    TaxBreakdown:
-      title: Tax breakdown
-      required:
-      - Items
-      type: object
-      properties:
-        Items:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxBreakdownItem'
-          description: Tax breakdown items per each tax rate applied.
-      additionalProperties: false
-      x-schema-id: TaxBreakdown
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
+        RequestId:
           type:
           - string
           - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
+        Details: {}
       additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    OutletItemType:
-      title: Outlet item type
-      enum:
-      - Revenue
-      - NonRevenue
-      - Payment
-      type: string
-      description: Type of the outlet item.
-    CurrencyValueOld:
-      title: Currency value (ver 2018-06-07)
-      required:
-      - Currency
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          format: currency
-        Value:
-          type:
-          - number
-          - 'null'
-          format: double
-        Net:
-          type:
-          - number
-          - 'null'
-          format: double
-          deprecated: true
-        Tax:
-          type:
-          - number
-          - 'null'
-          format: double
-          deprecated: true
-        TaxRate:
-          type:
-          - number
-          - 'null'
-          format: double
-          deprecated: true
-      additionalProperties: false
-      description: Total price of the reservation.
-      x-schema-id: CurrencyValueOld
-    TaxValue:
-      title: Tax value
-      required:
-      - Value
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Code corresponding to tax type.
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxValue
+      x-schema-id: ConnectorApiExceptionResult
     OutletBill:
       title: Outlet bill
       required:
@@ -420,31 +406,67 @@ components:
           description: Additional notes on the bill.
       additionalProperties: false
       x-schema-id: OutletBill
-    OutletItemResult:
-      title: OutletItemResult
+    CurrencyValueOld:
+      title: Currency value (ver 2018-06-07)
       required:
-      - OutletBills
-      - OutletItems
+      - Currency
       type: object
       properties:
-        OutletItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/OutletItem'
-          description: The outlet items.
-        OutletBills:
-          type: array
-          items:
-            $ref: '#/components/schemas/OutletBill'
-          description: The outlet bills of the items.
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        Value:
+          type:
+          - number
+          - 'null'
+          format: double
+        Net:
+          type:
+          - number
+          - 'null'
+          format: double
+          deprecated: true
+        Tax:
+          type:
+          - number
+          - 'null'
+          format: double
+          deprecated: true
+        TaxRate:
+          type:
+          - number
+          - 'null'
+          format: double
+          deprecated: true
+      additionalProperties: false
+      description: Total price of the reservation.
+      x-schema-id: CurrencyValueOld
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
         Cursor:
           type:
           - string
           - 'null'
-          description: Unique identifier of the last and hence oldest outlet item returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older outlet items.
           format: uuid
       additionalProperties: false
-      x-schema-id: OutletItemResult
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    OutletItemType:
+      title: Outlet item type
+      enum:
+      - Revenue
+      - NonRevenue
+      - Payment
+      type: string
+      description: Type of the outlet item.
     OutletItem:
       title: Outlet item
       required:
@@ -533,25 +555,3 @@ components:
           x-deprecatedMessage: Use `UnitAmount` instead.
       additionalProperties: false
       x-schema-id: OutletItem
-    TaxBreakdownItem:
-      title: Tax breakdown item
-      required:
-      - NetValue
-      - TaxValue
-      type: object
-      properties:
-        TaxRateCode:
-          type:
-          - string
-          - 'null'
-          description: Tax rate code for the item. `null` for untaxed amounts.
-        NetValue:
-          type: number
-          description: The net value that the tax is calculated from.
-          format: double
-        TaxValue:
-          type: number
-          description: The value of the tax.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxBreakdownItem

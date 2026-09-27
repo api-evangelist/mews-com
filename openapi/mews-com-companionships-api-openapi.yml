@@ -107,425 +107,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    CustomerClassificationEnum:
-      title: Customer classification
-      enum:
-      - PaymasterAccount
-      - Blacklist
-      - Media
-      - LoyaltyProgram
-      - PreviousComplaint
-      - Returning
-      - Staff
-      - FriendOrFamily
-      - TopManagement
-      - Important
-      - VeryImportant
-      - Problematic
-      - Cashlist
-      - DisabledPerson
-      - Military
-      - Airline
-      - HealthCompliant
-      - InRoom
-      - WaitingForRoom
-      - Student
-      - Blocklist
-      type: string
-      description: '
-
-
-        PaymasterAccount
-
-
-        Blacklist (Deprecated, use Blocklist instead.)
-
-
-        Media
-
-
-        LoyaltyProgram
-
-
-        PreviousComplaint
-
-
-        Returning
-
-
-        Staff
-
-
-        FriendOrFamily
-
-
-        TopManagement
-
-
-        Important
-
-
-        VeryImportant
-
-
-        Problematic
-
-
-        Cashlist
-
-
-        DisabledPerson
-
-
-        Military
-
-
-        Airline
-
-
-        HealthCompliant
-
-
-        InRoom
-
-
-        WaitingForRoom
-
-
-        Student
-
-
-        Blocklist'
-      x-enumNames:
-      - PaymasterAccount
-      - Blacklist
-      - Media
-      - LoyaltyProgram
-      - PreviousComplaint
-      - Returning
-      - Staff
-      - FriendOrFamily
-      - TopManagement
-      - Important
-      - VeryImportant
-      - Problematic
-      - Cashlist
-      - DisabledPerson
-      - Military
-      - Airline
-      - HealthCompliant
-      - InRoom
-      - WaitingForRoom
-      - Student
-      - Blocklist
-      x-enumDescriptions:
-      - ''
-      - Deprecated, use Blocklist instead.
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-    ServiceOrderStateOld:
-      title: Service order state (ver 2017-04-12)
-      enum:
-      - Enquired
-      - Confirmed
-      - Started
-      - Processed
-      - Canceled
-      - Optional
-      - Requested
-      type: string
-    CompanionshipExtent:
-      title: Companionship extent
-      type: object
-      properties:
-        Reservations:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain reservations.
-        ReservationGroups:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain reservation groups.
-        Customers:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain customers.
-      additionalProperties: false
-      description: ''
-      x-schema-id: CompanionshipExtent
-    IdentityDocument:
-      title: Identity document
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the document.
-          format: uuid
-        CustomerId:
-          type: string
-          description: Identifier of the `Customer`.
-          format: uuid
-        Type:
-          title: Document type
-          allOf:
-          - $ref: '#/components/schemas/IdentityDocumentTypeEnum'
-          description: 'Type of the document.
-
-
-            IdentityCard
-
-
-            Passport
-
-
-            Visa
-
-
-            DriversLicense'
-          x-enumNames:
-          - IdentityCard
-          - Passport
-          - Visa
-          - DriversLicense
-          x-enumDescriptions:
-          - ''
-          - ''
-          - ''
-          - ''
-        Number:
-          type:
-          - string
-          - 'null'
-          description: Number of the document (e.g. passport number).
-        Expiration:
-          type:
-          - string
-          - 'null'
-          description: Expiration date in ISO 8601 format.
-          format: date
-        Issuance:
-          type:
-          - string
-          - 'null'
-          description: Date of issuance in ISO 8601 format.
-          format: date
-        IssuingCountryCode:
-          type:
-          - string
-          - 'null'
-          description: ISO 3166-1 code of the `Country`.
-        IssuingCountrySubdivisionCode:
-          type:
-          - string
-          - 'null'
-          description: Identifier of the country subdivision where the document was issued (province, state or region).
-        IssuingCity:
-          type:
-          - string
-          - 'null'
-          description: City where the document was issued.
-        IdentityDocumentSupportNumber:
-          type:
-          - string
-          - 'null'
-          description: Identity document support number. Only required for Spanish identity cards in Spanish hotels.
-      additionalProperties: false
-      x-schema-id: IdentityDocument
-    ReservationPersonCount:
-      title: Age category parameters
-      required:
-      - AgeCategoryId
-      - Count
-      type: object
-      properties:
-        AgeCategoryId:
-          type: string
-          description: Unique identifier of the [Age category](https://mews-systems.gitbook.io/connector-api/operations/agecategories#age-category).
-          format: uuid
-        Count:
-          type: integer
-          description: Number of people of a given age category. Only positive value is accepted.
-          format: int32
-      additionalProperties: false
-      x-schema-id: ReservationPersonCount
-    Title:
-      title: Title
-      enum:
-      - Mister
-      - Miss
-      - Misses
-      type: string
-      description: 'Type of the title prefix of the customer.
-
-
-        Note that the value should not be used as-is, but localized. For example, the value `Misses` should be displayed as `Mrs.` in English and `Fr.` in German.
-
-
-        Mister (Mr.)
-
-
-        Miss (Ms.)
-
-
-        Misses (Mrs.)'
-      x-enumNames:
-      - Mister
-      - Miss
-      - Misses
-      x-enumDescriptions:
-      - Mr.
-      - Ms.
-      - Mrs.
-      x-schema-id: Title
-      x-showDescription: true
-    CustomerOptionsEnum:
-      title: Customer option
-      enum:
-      - None
-      - SendMarketingEmails
-      - Invoiceable
-      - BillAddressObjection
-      - SendMarketingPostalMail
-      - SendPartnerMarketingEmails
-      - SendPartnerMarketingPostalMail
-      - WithdrawCardConsent
-      - GuestPhotoConsent
-      - IdPhotosConsent
-      type: string
-      description: '
-
-
-        None
-
-
-        SendMarketingEmails
-
-
-        Invoiceable
-
-
-        BillAddressObjection
-
-
-        SendMarketingPostalMail
-
-
-        SendPartnerMarketingEmails
-
-
-        SendPartnerMarketingPostalMail
-
-
-        WithdrawCardConsent
-
-
-        GuestPhotoConsent
-
-
-        IdPhotosConsent'
-      x-enumNames:
-      - None
-      - SendMarketingEmails
-      - Invoiceable
-      - BillAddressObjection
-      - SendMarketingPostalMail
-      - SendPartnerMarketingEmails
-      - SendPartnerMarketingPostalMail
-      - WithdrawCardConsent
-      - GuestPhotoConsent
-      - IdPhotosConsent
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-    IdentityDocumentTypeEnum:
-      title: Document type
-      enum:
-      - IdentityCard
-      - Passport
-      - Visa
-      - DriversLicense
-      type: string
-      description: '
-
-
-        IdentityCard
-
-
-        Passport
-
-
-        Visa
-
-
-        DriversLicense'
-      x-enumNames:
-      - IdentityCard
-      - Passport
-      - Visa
-      - DriversLicense
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-    ReservationGroupOld:
-      title: Reservation groups (ver 2017-04-12)
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the reservation group.
-          format: uuid
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Name of the reservation group.
-      additionalProperties: false
-      x-schema-id: ReservationGroupOld
     ReservationOld:
       title: Reservation (ver 2017-04-12)
       required:
@@ -750,25 +331,23 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: ReservationOld
-    ReservationOptions:
-      title: Reservation options
+    ReservationPersonCount:
+      title: Age category parameters
       required:
-      - AllCompanionsCheckedIn
-      - AnyCompanionCheckedIn
-      - OwnerCheckedIn
+      - AgeCategoryId
+      - Count
       type: object
       properties:
-        OwnerCheckedIn:
-          type: boolean
-          description: Owner of the reservation checked in.
-        AllCompanionsCheckedIn:
-          type: boolean
-          description: All companions of the reservation checked in.
-        AnyCompanionCheckedIn:
-          type: boolean
-          description: Any companion of the reservation checked in.
+        AgeCategoryId:
+          type: string
+          description: Unique identifier of the [Age category](https://mews-systems.gitbook.io/connector-api/operations/agecategories#age-category).
+          format: uuid
+        Count:
+          type: integer
+          description: Number of people of a given age category. Only positive value is accepted.
+          format: int32
       additionalProperties: false
-      x-schema-id: ReservationOptions
+      x-schema-id: ReservationPersonCount
     CompanionshipResult:
       title: CompanionshipResult
       type: object
@@ -809,6 +388,141 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: CompanionshipResult
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    OldAddress:
+      title: Address
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the address.
+          format: uuid
+        Line1:
+          type:
+          - string
+          - 'null'
+          description: First line of the address.
+        Line2:
+          type:
+          - string
+          - 'null'
+          description: Second line of the address.
+        City:
+          type:
+          - string
+          - 'null'
+          description: The city.
+        PostalCode:
+          type:
+          - string
+          - 'null'
+          description: Postal code.
+        CountryCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-1 code of the `Country`.
+        CountrySubdivisionCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
+        Latitude:
+          type:
+          - number
+          - 'null'
+          description: The latitude.
+          format: double
+        Longitude:
+          type:
+          - number
+          - 'null'
+          description: The longitude.
+          format: double
+      additionalProperties: false
+      description: ''
+      x-schema-id: OldAddress
+    ServiceOrderStateOld:
+      title: Service order state (ver 2017-04-12)
+      enum:
+      - Enquired
+      - Confirmed
+      - Started
+      - Processed
+      - Canceled
+      - Optional
+      - Requested
+      type: string
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    CompanionshipExtent:
+      title: Companionship extent
+      type: object
+      properties:
+        Reservations:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain reservations.
+        ReservationGroups:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain reservation groups.
+        Customers:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain customers.
+      additionalProperties: false
+      description: ''
+      x-schema-id: CompanionshipExtent
     Customer:
       title: Customer
       required:
@@ -1075,109 +789,6 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: Customer
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
-          format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    Companionship:
-      title: Companionship
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of `Companionship`.
-          format: uuid
-        CustomerId:
-          type: string
-          description: Unique identifier of Customer.
-          format: uuid
-        ReservationGroupId:
-          type: string
-          description: Unique identifier of ReservationGroup.
-          format: uuid
-        ReservationId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of reservation.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: Companionship
-    SexEnum:
-      title: Sex
-      enum:
-      - Male
-      - Female
-      type: string
-      description: '
-
-
-        Male
-
-
-        Female'
-      x-enumNames:
-      - Male
-      - Female
-      x-enumDescriptions:
-      - ''
-      - ''
-    ResourceFeatureClassification:
-      title: Resource feature classification
-      enum:
-      - SeaView
-      - RiverView
-      - OceanView
-      - TwinBeds
-      - DoubleBed
-      - RollawayBed
-      - UpperBed
-      - LowerBed
-      - Balcony
-      - AccessibleBathroom
-      - AccessibleRoom
-      - ElevatorAccess
-      - HighFloor
-      - Kitchenette
-      - AirConditioning
-      - PrivateJacuzzi
-      - PrivateSauna
-      - EnsuiteRoom
-      - PrivateBathroom
-      - SharedBathroom
-      type: string
-      description: Classification of `ResourceFeature`.
-    CancellationReason:
-      enum:
-      - Other
-      - ConfirmationMissed
-      - BookedElsewhere
-      - ForceMajeure
-      - GuestComplaint
-      - NoShow
-      - PriceTooHigh
-      - ServiceNotAvailable
-      - InputError
-      - InvalidPayment
-      - TravelAgency
-      - RequestedByGuest
-      - Update
-      - BookingAbandoned
-      - RequestedByBooker
-      type: string
     CompanionshipFilterParameters:
       title: CompanionshipFilterParameters
       required:
@@ -1267,76 +878,6 @@ components:
           x-max-interval-in-months: 3
       additionalProperties: false
       x-schema-id: CompanionshipFilterParameters
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    OldAddress:
-      title: Address
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the address.
-          format: uuid
-        Line1:
-          type:
-          - string
-          - 'null'
-          description: First line of the address.
-        Line2:
-          type:
-          - string
-          - 'null'
-          description: Second line of the address.
-        City:
-          type:
-          - string
-          - 'null'
-          description: The city.
-        PostalCode:
-          type:
-          - string
-          - 'null'
-          description: Postal code.
-        CountryCode:
-          type:
-          - string
-          - 'null'
-          description: ISO 3166-1 code of the `Country`.
-        CountrySubdivisionCode:
-          type:
-          - string
-          - 'null'
-          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
-        Latitude:
-          type:
-          - number
-          - 'null'
-          description: The latitude.
-          format: double
-        Longitude:
-          type:
-          - number
-          - 'null'
-          description: The longitude.
-          format: double
-      additionalProperties: false
-      description: ''
-      x-schema-id: OldAddress
     ReservationPurpose:
       title: Reservation purpose
       enum:
@@ -1344,6 +885,44 @@ components:
       - Business
       - Student
       type: string
+    SexEnum:
+      title: Sex
+      enum:
+      - Male
+      - Female
+      type: string
+      description: '
+
+
+        Male
+
+
+        Female'
+      x-enumNames:
+      - Male
+      - Female
+      x-enumDescriptions:
+      - ''
+      - ''
+    ReservationOptions:
+      title: Reservation options
+      required:
+      - AllCompanionsCheckedIn
+      - AnyCompanionCheckedIn
+      - OwnerCheckedIn
+      type: object
+      properties:
+        OwnerCheckedIn:
+          type: boolean
+          description: Owner of the reservation checked in.
+        AllCompanionsCheckedIn:
+          type: boolean
+          description: All companions of the reservation checked in.
+        AnyCompanionCheckedIn:
+          type: boolean
+          description: Any companion of the reservation checked in.
+      additionalProperties: false
+      x-schema-id: ReservationOptions
     ReservationOldOrigin:
       title: Reservation origin (ver 2017-04-12)
       enum:
@@ -1375,3 +954,424 @@ components:
       - From Mews Operations, via message person.
       - From Mews Operations, via call center.
       - From Mews Operations, via rooming list.
+    ResourceFeatureClassification:
+      title: Resource feature classification
+      enum:
+      - SeaView
+      - RiverView
+      - OceanView
+      - TwinBeds
+      - DoubleBed
+      - RollawayBed
+      - UpperBed
+      - LowerBed
+      - Balcony
+      - AccessibleBathroom
+      - AccessibleRoom
+      - ElevatorAccess
+      - HighFloor
+      - Kitchenette
+      - AirConditioning
+      - PrivateJacuzzi
+      - PrivateSauna
+      - EnsuiteRoom
+      - PrivateBathroom
+      - SharedBathroom
+      type: string
+      description: Classification of `ResourceFeature`.
+    Title:
+      title: Title
+      enum:
+      - Mister
+      - Miss
+      - Misses
+      type: string
+      description: 'Type of the title prefix of the customer.
+
+
+        Note that the value should not be used as-is, but localized. For example, the value `Misses` should be displayed as `Mrs.` in English and `Fr.` in German.
+
+
+        Mister (Mr.)
+
+
+        Miss (Ms.)
+
+
+        Misses (Mrs.)'
+      x-enumNames:
+      - Mister
+      - Miss
+      - Misses
+      x-enumDescriptions:
+      - Mr.
+      - Ms.
+      - Mrs.
+      x-schema-id: Title
+      x-showDescription: true
+    CancellationReason:
+      enum:
+      - Other
+      - ConfirmationMissed
+      - BookedElsewhere
+      - ForceMajeure
+      - GuestComplaint
+      - NoShow
+      - PriceTooHigh
+      - ServiceNotAvailable
+      - InputError
+      - InvalidPayment
+      - TravelAgency
+      - RequestedByGuest
+      - Update
+      - BookingAbandoned
+      - RequestedByBooker
+      type: string
+    CustomerClassificationEnum:
+      title: Customer classification
+      enum:
+      - PaymasterAccount
+      - Blacklist
+      - Media
+      - LoyaltyProgram
+      - PreviousComplaint
+      - Returning
+      - Staff
+      - FriendOrFamily
+      - TopManagement
+      - Important
+      - VeryImportant
+      - Problematic
+      - Cashlist
+      - DisabledPerson
+      - Military
+      - Airline
+      - HealthCompliant
+      - InRoom
+      - WaitingForRoom
+      - Student
+      - Blocklist
+      type: string
+      description: '
+
+
+        PaymasterAccount
+
+
+        Blacklist (Deprecated, use Blocklist instead.)
+
+
+        Media
+
+
+        LoyaltyProgram
+
+
+        PreviousComplaint
+
+
+        Returning
+
+
+        Staff
+
+
+        FriendOrFamily
+
+
+        TopManagement
+
+
+        Important
+
+
+        VeryImportant
+
+
+        Problematic
+
+
+        Cashlist
+
+
+        DisabledPerson
+
+
+        Military
+
+
+        Airline
+
+
+        HealthCompliant
+
+
+        InRoom
+
+
+        WaitingForRoom
+
+
+        Student
+
+
+        Blocklist'
+      x-enumNames:
+      - PaymasterAccount
+      - Blacklist
+      - Media
+      - LoyaltyProgram
+      - PreviousComplaint
+      - Returning
+      - Staff
+      - FriendOrFamily
+      - TopManagement
+      - Important
+      - VeryImportant
+      - Problematic
+      - Cashlist
+      - DisabledPerson
+      - Military
+      - Airline
+      - HealthCompliant
+      - InRoom
+      - WaitingForRoom
+      - Student
+      - Blocklist
+      x-enumDescriptions:
+      - ''
+      - Deprecated, use Blocklist instead.
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    IdentityDocumentTypeEnum:
+      title: Document type
+      enum:
+      - IdentityCard
+      - Passport
+      - Visa
+      - DriversLicense
+      type: string
+      description: '
+
+
+        IdentityCard
+
+
+        Passport
+
+
+        Visa
+
+
+        DriversLicense'
+      x-enumNames:
+      - IdentityCard
+      - Passport
+      - Visa
+      - DriversLicense
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+    Companionship:
+      title: Companionship
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of `Companionship`.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Unique identifier of Customer.
+          format: uuid
+        ReservationGroupId:
+          type: string
+          description: Unique identifier of ReservationGroup.
+          format: uuid
+        ReservationId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of reservation.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: Companionship
+    ReservationGroupOld:
+      title: Reservation groups (ver 2017-04-12)
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the reservation group.
+          format: uuid
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name of the reservation group.
+      additionalProperties: false
+      x-schema-id: ReservationGroupOld
+    IdentityDocument:
+      title: Identity document
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the document.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Identifier of the `Customer`.
+          format: uuid
+        Type:
+          title: Document type
+          allOf:
+          - $ref: '#/components/schemas/IdentityDocumentTypeEnum'
+          description: 'Type of the document.
+
+
+            IdentityCard
+
+
+            Passport
+
+
+            Visa
+
+
+            DriversLicense'
+          x-enumNames:
+          - IdentityCard
+          - Passport
+          - Visa
+          - DriversLicense
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+        Number:
+          type:
+          - string
+          - 'null'
+          description: Number of the document (e.g. passport number).
+        Expiration:
+          type:
+          - string
+          - 'null'
+          description: Expiration date in ISO 8601 format.
+          format: date
+        Issuance:
+          type:
+          - string
+          - 'null'
+          description: Date of issuance in ISO 8601 format.
+          format: date
+        IssuingCountryCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-1 code of the `Country`.
+        IssuingCountrySubdivisionCode:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the country subdivision where the document was issued (province, state or region).
+        IssuingCity:
+          type:
+          - string
+          - 'null'
+          description: City where the document was issued.
+        IdentityDocumentSupportNumber:
+          type:
+          - string
+          - 'null'
+          description: Identity document support number. Only required for Spanish identity cards in Spanish hotels.
+      additionalProperties: false
+      x-schema-id: IdentityDocument
+    CustomerOptionsEnum:
+      title: Customer option
+      enum:
+      - None
+      - SendMarketingEmails
+      - Invoiceable
+      - BillAddressObjection
+      - SendMarketingPostalMail
+      - SendPartnerMarketingEmails
+      - SendPartnerMarketingPostalMail
+      - WithdrawCardConsent
+      - GuestPhotoConsent
+      - IdPhotosConsent
+      type: string
+      description: '
+
+
+        None
+
+
+        SendMarketingEmails
+
+
+        Invoiceable
+
+
+        BillAddressObjection
+
+
+        SendMarketingPostalMail
+
+
+        SendPartnerMarketingEmails
+
+
+        SendPartnerMarketingPostalMail
+
+
+        WithdrawCardConsent
+
+
+        GuestPhotoConsent
+
+
+        IdPhotosConsent'
+      x-enumNames:
+      - None
+      - SendMarketingEmails
+      - Invoiceable
+      - BillAddressObjection
+      - SendMarketingPostalMail
+      - SendPartnerMarketingEmails
+      - SendPartnerMarketingPostalMail
+      - WithdrawCardConsent
+      - GuestPhotoConsent
+      - IdPhotosConsent
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''

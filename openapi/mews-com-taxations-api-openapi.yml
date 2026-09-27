@@ -180,40 +180,6 @@ components:
           description: Codes of the taxations that are included in the base of calculation.
       additionalProperties: false
       x-schema-id: DependentTaxRateStrategy
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    TaxationResult:
-      title: TaxationResult
-      required:
-      - Taxations
-      - TaxRates
-      type: object
-      properties:
-        Taxations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Taxation'
-          description: The supported taxations.
-        TaxRates:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxRate'
-          description: The supported tax rates.
-      additionalProperties: false
-      x-schema-id: TaxationResult
     Parameters:
       title: Parameters
       required:
@@ -236,18 +202,23 @@ components:
           description: Name and version of the client application.
       additionalProperties: false
       x-schema-id: Parameters
-    RelativeTaxRateStrategy:
-      title: Relative tax rate strategy data
+    FlatTaxRateStrategy:
+      title: Flat tax rate strategy data
       required:
+      - CurrencyCode
       - Value
       type: object
       properties:
+        CurrencyCode:
+          minLength: 1
+          type: string
+          description: Code of `Currency`.
         Value:
           type: number
-          description: Tax rate, e.g. `0.21` in case of 21% tax rate.
+          description: Absolute value of tax.
           format: double
       additionalProperties: false
-      x-schema-id: RelativeTaxRateStrategy
+      x-schema-id: FlatTaxRateStrategy
     Taxation:
       title: Taxation
       required:
@@ -271,49 +242,6 @@ components:
       additionalProperties: false
       description: Taxation represents set of `TaxRate` within `TaxEnvironment`.
       x-schema-id: Taxation
-    FlatTaxRateStrategy:
-      title: Flat tax rate strategy data
-      required:
-      - CurrencyCode
-      - Value
-      type: object
-      properties:
-        CurrencyCode:
-          minLength: 1
-          type: string
-          description: Code of `Currency`.
-        Value:
-          type: number
-          description: Absolute value of tax.
-          format: double
-      additionalProperties: false
-      x-schema-id: FlatTaxRateStrategy
-    DateTimeIntervalUtc:
-      title: DateTimeIntervalUtc
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-        EndUtc:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-      x-schema-id: DateTimeIntervalUtc
-    TaxRateStrategyDiscriminator:
-      title: Tax rate strategy discriminator
-      enum:
-      - Relative
-      - Flat
-      - Dependent
-      type: string
-      description: ''
-      x-enumDescriptions:
-      - Used with Relative tax rate strategy (e.g. 21%). Relative tax is calculated only from net base value.
-      - Used with Flat tax rate strategy (e.g. 5.00 EUR).
-      - Used with Dependent tax rate strategy (e.g. 10%). Dependent tax is calculated from net base value and all taxes it depends on.
     TaxRate:
       title: Tax rate
       required:
@@ -358,3 +286,75 @@ components:
       additionalProperties: false
       description: Definition of single tax rate.
       x-schema-id: TaxRate
+    TaxRateStrategyDiscriminator:
+      title: Tax rate strategy discriminator
+      enum:
+      - Relative
+      - Flat
+      - Dependent
+      type: string
+      description: ''
+      x-enumDescriptions:
+      - Used with Relative tax rate strategy (e.g. 21%). Relative tax is calculated only from net base value.
+      - Used with Flat tax rate strategy (e.g. 5.00 EUR).
+      - Used with Dependent tax rate strategy (e.g. 10%). Dependent tax is calculated from net base value and all taxes it depends on.
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TaxationResult:
+      title: TaxationResult
+      required:
+      - Taxations
+      - TaxRates
+      type: object
+      properties:
+        Taxations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Taxation'
+          description: The supported taxations.
+        TaxRates:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxRate'
+          description: The supported tax rates.
+      additionalProperties: false
+      x-schema-id: TaxationResult
+    RelativeTaxRateStrategy:
+      title: Relative tax rate strategy data
+      required:
+      - Value
+      type: object
+      properties:
+        Value:
+          type: number
+          description: Tax rate, e.g. `0.21` in case of 21% tax rate.
+          format: double
+      additionalProperties: false
+      x-schema-id: RelativeTaxRateStrategy
+    DateTimeIntervalUtc:
+      title: DateTimeIntervalUtc
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+        EndUtc:
+          type:
+          - string
+          - 'null'
+      additionalProperties: false
+      x-schema-id: DateTimeIntervalUtc

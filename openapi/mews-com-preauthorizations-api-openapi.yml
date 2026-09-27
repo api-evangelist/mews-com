@@ -122,88 +122,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    Amount:
-      title: Amount
-      required:
-      - Breakdown
-      - Currency
-      - GrossValue
-      - NetValue
-      - TaxValues
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
-          format: currency
-        NetValue:
-          type: number
-          description: Net value without taxes.
-          format: double
-        GrossValue:
-          type: number
-          description: Gross value including all taxes.
-          format: double
-        TaxValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxValue'
-          description: The tax values applied.
-        Breakdown:
-          title: Tax breakdown
-          allOf:
-          - $ref: '#/components/schemas/TaxBreakdown'
-          description: Information about individual tax amounts.
-      additionalProperties: false
-      description: ''
-      x-schema-id: Amount
-    TaxBreakdown:
-      title: Tax breakdown
-      required:
-      - Items
-      type: object
-      properties:
-        Items:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxBreakdownItem'
-          description: Tax breakdown items per each tax rate applied.
-      additionalProperties: false
-      x-schema-id: TaxBreakdown
-    PreauthorizationState:
-      title: Preauthorization state
-      enum:
-      - Chargeable
-      - Expired
-      - Cancelled
-      - Charged
-      - Pending
-      - Failed
-      type: string
-      description: State of the preauthorization.
-      x-enumDescriptions:
-      - Created and prepared for the charging.
-      - A preauthorization that is not charged and expired.
-      - A preauthorization that was canceled before charging.
-      - Charged preauthorization.
-      - A preauthorization that is waiting for the charge to be processed.
-      - A preauthorization that failed to be charged.
     MultipleCustomerParameters:
       title: MultipleCustomerParameters
       required:
@@ -235,6 +153,63 @@ components:
           description: Unique identifiers of `Customer`.
       additionalProperties: false
       x-schema-id: MultipleCustomerParameters
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    PreauthorizationState:
+      title: Preauthorization state
+      enum:
+      - Chargeable
+      - Expired
+      - Cancelled
+      - Charged
+      - Pending
+      - Failed
+      type: string
+      description: State of the preauthorization.
+      x-enumDescriptions:
+      - Created and prepared for the charging.
+      - A preauthorization that is not charged and expired.
+      - A preauthorization that was canceled before charging.
+      - Charged preauthorization.
+      - A preauthorization that is waiting for the charge to be processed.
+      - A preauthorization that failed to be charged.
+    TaxBreakdownItem:
+      title: Tax breakdown item
+      required:
+      - NetValue
+      - TaxValue
+      type: object
+      properties:
+        TaxRateCode:
+          type:
+          - string
+          - 'null'
+          description: Tax rate code for the item. `null` for untaxed amounts.
+        NetValue:
+          type: number
+          description: The net value that the tax is calculated from.
+          format: double
+        TaxValue:
+          type: number
+          description: The value of the tax.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxBreakdownItem
     Preauthorization:
       title: Preauthorization
       required:
@@ -279,23 +254,6 @@ components:
           description: Whether the preauthorization is active.
       additionalProperties: false
       x-schema-id: Preauthorization
-    TaxValue:
-      title: Tax value
-      required:
-      - Value
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Code corresponding to tax type.
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxValue
     PreauthorizationResult:
       title: PreauthorizationResult
       required:
@@ -309,25 +267,67 @@ components:
           description: Preauthorizations of the specified `Customer`.
       additionalProperties: false
       x-schema-id: PreauthorizationResult
-    TaxBreakdownItem:
-      title: Tax breakdown item
+    TaxBreakdown:
+      title: Tax breakdown
       required:
-      - NetValue
-      - TaxValue
+      - Items
       type: object
       properties:
-        TaxRateCode:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
           type:
           - string
           - 'null'
-          description: Tax rate code for the item. `null` for untaxed amounts.
-        NetValue:
-          type: number
-          description: The net value that the tax is calculated from.
-          format: double
-        TaxValue:
-          type: number
-          description: The value of the tax.
-          format: double
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      x-schema-id: TaxBreakdownItem
+      x-schema-id: ConnectorApiExceptionResult

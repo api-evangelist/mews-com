@@ -107,21 +107,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     AddOutletBillsResult:
       title: AddOutletBillsResult
       required:
@@ -136,6 +121,64 @@ components:
           description: Array of unique identifiers of the added Outlet bills.
       additionalProperties: false
       x-schema-id: AddOutletBillsResult
+    AddOutletBillsParameters:
+      title: AddOutletBillsParameters
+      required:
+      - AccessToken
+      - Bills
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Bills:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/OutletBillParameters'
+          description: The new outlet bills.
+      additionalProperties: false
+      x-schema-id: AddOutletBillsParameters
+    AmountParameters:
+      title: Amount parameters
+      required:
+      - Currency
+      - TaxCodes
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        TaxCodes:
+          type: array
+          items:
+            type: string
+        NetValue:
+          type:
+          - number
+          - 'null'
+          format: double
+        GrossValue:
+          type:
+          - number
+          - 'null'
+          format: double
+      additionalProperties: false
+      description: Price of the product that overrides the price defined in Mews.
+      x-schema-id: AmountParameters
     OutletBillParameters:
       title: Outlet bill parameters
       required:
@@ -175,36 +218,21 @@ components:
           description: Additional notes on the bill.
       additionalProperties: false
       x-schema-id: OutletBillParameters
-    AddOutletBillsParameters:
-      title: AddOutletBillsParameters
-      required:
-      - AccessToken
-      - Bills
-      - Client
-      - ClientToken
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Bills:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/OutletBillParameters'
-          description: The new outlet bills.
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      x-schema-id: AddOutletBillsParameters
+      x-schema-id: ConnectorApiExceptionResult
     OutletItemType:
       title: Outlet item type
       enum:
@@ -262,31 +290,3 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: OutletItemParameters
-    AmountParameters:
-      title: Amount parameters
-      required:
-      - Currency
-      - TaxCodes
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          format: currency
-        TaxCodes:
-          type: array
-          items:
-            type: string
-        NetValue:
-          type:
-          - number
-          - 'null'
-          format: double
-        GrossValue:
-          type:
-          - number
-          - 'null'
-          format: double
-      additionalProperties: false
-      description: Price of the product that overrides the price defined in Mews.
-      x-schema-id: AmountParameters

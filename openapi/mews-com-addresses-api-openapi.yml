@@ -366,357 +366,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    AddressResult:
-      title: AddressResult
-      required:
-      - Addresses
-      type: object
-      properties:
-        Addresses:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountAddress'
-          description: The collection of added or modified Account addresses, containing address and account information.
-      additionalProperties: false
-      x-schema-id: AddressResult
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    AddressFilterParameters:
-      title: AddressFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        ChainIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
-        AccountIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Companies](https://mews-systems.gitbook.io/connector-api/operations/companies/#company) or [Customers](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) within the enterprise. Required if no other filter is provided.
-        AddressIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Addresses](https://mews-systems.gitbook.io/connector-api/operations/#account-address) within the enterprise. Use this property if you want to fetch specific addresses. Required if no other filter is provided.
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval of Address last update date and time. Required if no other filter is provided.
-          x-max-interval-in-months: 3
-        ActivityStates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted or both records.
-      additionalProperties: false
-      x-schema-id: AddressFilterParameters
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
-          format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    AddressAddParameters:
-      title: Account address parameters
-      required:
-      - AccountId
-      type: object
-      properties:
-        AccountId:
-          type: string
-          description: Unique identifier of a Company or a Customer within the enterprise.
-          format: uuid
-        Line1:
-          maxLength: 255
-          type:
-          - string
-          - 'null'
-          description: First line of the address.
-        Line2:
-          maxLength: 255
-          type:
-          - string
-          - 'null'
-          description: Second line of the address.
-        City:
-          maxLength: 255
-          type:
-          - string
-          - 'null'
-          description: The city.
-        PostalCode:
-          maxLength: 255
-          type:
-          - string
-          - 'null'
-          description: Postal code.
-          format: postal-code
-        CountryCode:
-          type:
-          - string
-          - 'null'
-          description: ISO 3166-1 alpha-2 code of the Country.
-        CountrySubdivisionCode:
-          type:
-          - string
-          - 'null'
-          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
-        Latitude:
-          maximum: 90
-          minimum: -90
-          type:
-          - number
-          - 'null'
-          description: The latitude in range of -90 to 90.
-          format: double
-        Longitude:
-          maximum: 180
-          minimum: -180
-          type:
-          - number
-          - 'null'
-          description: The longitude in range of -180 to 180.
-          format: double
-      additionalProperties: false
-      x-schema-id: AddressAddParameters
-    Unit:
-      type: object
-      additionalProperties: false
-    ActivityStates:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: Activity states used for filtering.
-    MultipleAddressAddParameters:
-      title: MultipleAddressAddParameters
-      required:
-      - AccessToken
-      - Addresses
-      - Client
-      - ClientToken
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ChainId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        Addresses:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/AddressAddParameters'
-          description: Collection of addresses to be created.
-      additionalProperties: false
-      x-schema-id: MultipleAddressAddParameters
-    AccountType:
-      title: Account type
-      enum:
-      - Company
-      - Customer
-      type: string
-      description: A discriminator specifying the account type, e.g. `Customer` or `Company`
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    MultipleAddressUpdateParameters:
-      title: MultipleAddressUpdateParameters
-      required:
-      - AccessToken
-      - AddressUpdates
-      - Client
-      - ClientToken
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ChainId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        AddressUpdates:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/AddressUpdateParameters'
-          description: Collection of addresses to be updated.
-      additionalProperties: false
-      x-schema-id: MultipleAddressUpdateParameters
-    AddressResultPage:
-      title: AddressResultPage
-      required:
-      - Addresses
-      type: object
-      properties:
-        Addresses:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountAddress'
-          description: The collection of Account addresses, containing address and account information.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the last and hence oldest address item returned. This can be used in Limitation in a subsequent request to fetch the next batch of older Account address.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: AddressResultPage
-    StringUpdateValue:
-      title: String update value
-      type: object
-      properties:
-        Value:
-          type:
-          - string
-          - 'null'
-          description: Value which is to be updated.
-      additionalProperties: false
-      x-schema-id: StringUpdateValue
-    AddressDeleteParameters:
-      title: AddressDeleteParameters
-      required:
-      - AccessToken
-      - AddressIds
-      - Client
-      - ClientToken
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ChainId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        AddressIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Addresses](https://mews-systems.gitbook.io/connector-api/operations/#account-address) within the enterprise to be deleted.
-      additionalProperties: false
-      x-schema-id: AddressDeleteParameters
     AddressUpdateParameters:
       title: Account address update parameters
       required:
@@ -764,6 +413,13 @@ components:
           description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
       additionalProperties: false
       x-schema-id: AddressUpdateParameters
+    AccountType:
+      title: Account type
+      enum:
+      - Company
+      - Customer
+      type: string
+      description: A discriminator specifying the account type, e.g. `Customer` or `Company`
     AccountAddress:
       title: Account address
       required:
@@ -843,3 +499,347 @@ components:
           description: Whether the address is still active.
       additionalProperties: false
       x-schema-id: AccountAddress
+    AddressDeleteParameters:
+      title: AddressDeleteParameters
+      required:
+      - AccessToken
+      - AddressIds
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        AddressIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Addresses](https://mews-systems.gitbook.io/connector-api/operations/#account-address) within the enterprise to be deleted.
+      additionalProperties: false
+      x-schema-id: AddressDeleteParameters
+    AddressFilterParameters:
+      title: AddressFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        ChainIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
+        AccountIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Companies](https://mews-systems.gitbook.io/connector-api/operations/companies/#company) or [Customers](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) within the enterprise. Required if no other filter is provided.
+        AddressIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Addresses](https://mews-systems.gitbook.io/connector-api/operations/#account-address) within the enterprise. Use this property if you want to fetch specific addresses. Required if no other filter is provided.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval of Address last update date and time. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+      additionalProperties: false
+      x-schema-id: AddressFilterParameters
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    MultipleAddressAddParameters:
+      title: MultipleAddressAddParameters
+      required:
+      - AccessToken
+      - Addresses
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        Addresses:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressAddParameters'
+          description: Collection of addresses to be created.
+      additionalProperties: false
+      x-schema-id: MultipleAddressAddParameters
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    AddressResult:
+      title: AddressResult
+      required:
+      - Addresses
+      type: object
+      properties:
+        Addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountAddress'
+          description: The collection of added or modified Account addresses, containing address and account information.
+      additionalProperties: false
+      x-schema-id: AddressResult
+    AddressAddParameters:
+      title: Account address parameters
+      required:
+      - AccountId
+      type: object
+      properties:
+        AccountId:
+          type: string
+          description: Unique identifier of a Company or a Customer within the enterprise.
+          format: uuid
+        Line1:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: First line of the address.
+        Line2:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: Second line of the address.
+        City:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: The city.
+        PostalCode:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: Postal code.
+          format: postal-code
+        CountryCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-1 alpha-2 code of the Country.
+        CountrySubdivisionCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
+        Latitude:
+          maximum: 90
+          minimum: -90
+          type:
+          - number
+          - 'null'
+          description: The latitude in range of -90 to 90.
+          format: double
+        Longitude:
+          maximum: 180
+          minimum: -180
+          type:
+          - number
+          - 'null'
+          description: The longitude in range of -180 to 180.
+          format: double
+      additionalProperties: false
+      x-schema-id: AddressAddParameters
+    Unit:
+      type: object
+      additionalProperties: false
+    MultipleAddressUpdateParameters:
+      title: MultipleAddressUpdateParameters
+      required:
+      - AccessToken
+      - AddressUpdates
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        AddressUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressUpdateParameters'
+          description: Collection of addresses to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleAddressUpdateParameters
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    AddressResultPage:
+      title: AddressResultPage
+      required:
+      - Addresses
+      type: object
+      properties:
+        Addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountAddress'
+          description: The collection of Account addresses, containing address and account information.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest address item returned. This can be used in Limitation in a subsequent request to fetch the next batch of older Account address.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: AddressResultPage
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.

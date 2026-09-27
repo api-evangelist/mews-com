@@ -87,19 +87,40 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ExchangeRateResult:
-      title: ExchangeRateResult
+    ExchangeRate:
+      title: Exchange rate
       required:
-      - ExchangeRates
+      - EnterpriseId
+      - Id
+      - SourceCurrency
+      - TargetCurrency
+      - Value
       type: object
       properties:
-        ExchangeRates:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExchangeRate'
-          description: The available exchange rates.
+        Id:
+          type: string
+          description: Unique identifier of the Exchange Rate.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/configuration/#enterprise) to which the Exchange Rate belongs.
+          format: uuid
+        SourceCurrency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the source [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        TargetCurrency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the target [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        Value:
+          type: number
+          description: The exchange rate from the source currency to the target currency.
+          format: double
       additionalProperties: false
-      x-schema-id: ExchangeRateResult
+      x-schema-id: ExchangeRate
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
@@ -153,37 +174,16 @@ components:
           description: Unique identifiers of the [Enterprises](https://mews-systems.gitbook.io/connector-api/operations/configuration/#enterprise). If not specified, the operation returns the exchange rates for all enterprises within scope of the Access Token.
       additionalProperties: false
       x-schema-id: CurrencyAcceptanceFilterParameters
-    ExchangeRate:
-      title: Exchange rate
+    ExchangeRateResult:
+      title: ExchangeRateResult
       required:
-      - EnterpriseId
-      - Id
-      - SourceCurrency
-      - TargetCurrency
-      - Value
+      - ExchangeRates
       type: object
       properties:
-        Id:
-          type: string
-          description: Unique identifier of the Exchange Rate.
-          format: uuid
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/configuration/#enterprise) to which the Exchange Rate belongs.
-          format: uuid
-        SourceCurrency:
-          minLength: 1
-          type: string
-          description: ISO-4217 code of the source [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
-          format: currency
-        TargetCurrency:
-          minLength: 1
-          type: string
-          description: ISO-4217 code of the target [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
-          format: currency
-        Value:
-          type: number
-          description: The exchange rate from the source currency to the target currency.
-          format: double
+        ExchangeRates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExchangeRate'
+          description: The available exchange rates.
       additionalProperties: false
-      x-schema-id: ExchangeRate
+      x-schema-id: ExchangeRateResult

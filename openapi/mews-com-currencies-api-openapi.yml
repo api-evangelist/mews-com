@@ -85,21 +85,23 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
+    Currency:
+      title: Currency
+      required:
+      - Code
+      - Precision
       type: object
       properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
+        Code:
+          minLength: 1
+          type: string
+          description: ISO-4217 three-letter code, e.g. USD or GBP.
+        Precision:
+          type: integer
+          description: Precision of the currency (count of decimal places).
+          format: int32
       additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
+      x-schema-id: Currency
     Parameters:
       title: Parameters
       required:
@@ -135,20 +137,18 @@ components:
           description: The supported currencies.
       additionalProperties: false
       x-schema-id: CurrencyResult
-    Currency:
-      title: Currency
-      required:
-      - Code
-      - Precision
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        Code:
-          minLength: 1
-          type: string
-          description: ISO-4217 three-letter code, e.g. USD or GBP.
-        Precision:
-          type: integer
-          description: Precision of the currency (count of decimal places).
-          format: int32
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      x-schema-id: Currency
+      x-schema-id: ConnectorApiExceptionResult

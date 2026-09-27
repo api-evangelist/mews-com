@@ -140,37 +140,122 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ResourceCategoryType:
-      title: Resource category type
-      enum:
-      - Room
-      - Bed
-      - Dorm
-      - Apartment
-      - Suite
-      - Villa
-      - Site
-      - Office
-      - MeetingRoom
-      - ParkingSpot
-      - Desk
-      - TeamArea
-      - Membership
-      - Tent
-      - CaravanOrRV
-      - UnequippedCampsite
-      - Bike
-      - ExtraBed
-      - Cot
-      - Crib
-      - ConferenceRoom
-      - Rooftop
-      - Garden
-      - Restaurant
-      - Amphitheater
-      - PrivateSpaces
-      type: string
-      description: Type of the category.
+    BusinessSegment:
+      title: Business segment
+      required:
+      - CreatedUtc
+      - Id
+      - IsActive
+      - Name
+      - ServiceId
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the business segment.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the `Service`.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the business segment is still active.
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the business segment.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the business segment in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the business segment in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: BusinessSegment
+    RuleAction:
+      title: Rule action
+      required:
+      - Id
+      - RuleId
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the rule action.
+          format: uuid
+        RuleId:
+          type: string
+          description: Unique identifier of the rule.
+          format: uuid
+        Data:
+          title: Rule action data
+          type:
+          - object
+          - 'null'
+          properties:
+            Discriminator:
+              $ref: '#/components/schemas/RuleActionDiscriminator'
+            Value:
+              oneOf:
+              - $ref: '#/components/schemas/RuleActionProductData'
+          description: Additional information about action.
+          x-coproduct: true
+          x-schema-id: RuleActionDataCoproductOfRuleActionDiscriminator
+      additionalProperties: false
+      x-schema-id: RuleAction
+    RuleCondition:
+      title: Rule condition
+      required:
+      - ConditionType
+      - Value
+      type: object
+      properties:
+        Value:
+          minLength: 1
+          type: string
+          description: Value of the condition depending on the property. E.g. `ReservationOrigin` in case of origin condition or unique identifier of a rate in case of rate condition.
+        ConditionType:
+          $ref: '#/components/schemas/RuleConditionType'
+      additionalProperties: false
+      x-schema-id: RuleCondition
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    RuleActionProductData:
+      title: Rule action product data
+      required:
+      - ActionType
+      - ProductId
+      type: object
+      properties:
+        ActionType:
+          $ref: '#/components/schemas/RuleActionType'
+        ProductId:
+          type: string
+          description: Unique identifier of product.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: RuleActionProductData
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
@@ -186,60 +271,23 @@ components:
         Details: {}
       additionalProperties: false
       x-schema-id: ConnectorApiExceptionResult
-    RuleResult:
-      title: RuleResult
+    Limitation:
+      title: Limitation
       required:
-      - Rules
+      - Count
       type: object
       properties:
-        Rules:
-          type: array
-          items:
-            $ref: '#/components/schemas/Rule'
-          description: Rules used with reservation creations and modifications.
-        RuleActions:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/RuleAction'
-          description: Rule actions applied in rules.
-        Rates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/RateForExtent'
-          description: Rates used in conditions.
-        RateGroups:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/RateGroupOld'
-          description: Rate groups used in conditions.
-        ResourceCategories:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ResourceCategory'
-          description: Resource categories used in conditions.
-        BusinessSegments:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/BusinessSegment'
-          description: Business segments used in conditions.
+        Count:
+          type: integer
+          format: int32
         Cursor:
           type:
           - string
           - 'null'
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
           format: uuid
       additionalProperties: false
-      x-schema-id: RuleResult
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
     RateForExtent:
       title: Rate for extent
       required:
@@ -364,142 +412,221 @@ components:
       additionalProperties: false
       description: '`Rate` entity, without some of the details, e.g. pricing.'
       x-schema-id: RateForExtent
-    BusinessSegment:
-      title: Business segment
-      required:
-      - CreatedUtc
-      - Id
-      - IsActive
-      - Name
-      - ServiceId
-      - UpdatedUtc
+    RateGroupOld:
+      title: Rate group (ver 2017-04-12)
       type: object
       properties:
         Id:
           type: string
-          description: Unique identifier of the business segment.
+          description: Unique identifier of the rate group.
           format: uuid
         ServiceId:
           type: string
-          description: Unique identifier of the `Service`.
+          description: Unique identifier of the Service that the rate group belongs to.
           format: uuid
         IsActive:
           type: boolean
-          description: Whether the business segment is still active.
+          description: Whether the rate group is still active.
         Name:
-          minLength: 1
-          type: string
-          description: Name of the business segment.
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the business segment in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the business segment in UTC timezone in ISO 8601 format.
-          format: date-time
+          type:
+          - string
+          - 'null'
+          description: Name of the rate group.
+        ExternalIdentifier:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: External identifier of the rate group.
       additionalProperties: false
-      x-schema-id: BusinessSegment
-    RuleFilterParameters:
-      title: RuleFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Extent
-      - Limitation
-      - ServiceIds
+      x-schema-id: RateGroupOld
+    RuleConditionType:
+      title: Condition type
+      enum:
+      - Equals
+      - NotEquals
+      type: string
+      description: Type of condition.
+    RuleExtent:
+      title: Rule extent
       type: object
       properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
+        RuleActions:
           type:
-          - array
+          - boolean
           - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        Ids:
-          maxItems: 1000
-          minItems: 1
+          description: Whether the response should contain rule actions.
+        Rates:
           type:
-          - array
+          - boolean
           - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the `Rule`.
-        ServiceIds:
-          maxItems: 1000
-          minItems: 1
+          description: Whether the response should contain rates.
+        RateGroups:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain rate groups.
+        ResourceCategories:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain rate resource categories.
+        BusinessSegments:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain business segments.
+      additionalProperties: false
+      description: ''
+      x-schema-id: RuleExtent
+    RuleResult:
+      title: RuleResult
+      required:
+      - Rules
+      type: object
+      properties:
+        Rules:
           type: array
           items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the `Service`.
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which `Rule` was updated.
-          x-max-interval-in-months: 3
-        Extent:
-          title: Rule extent
-          allOf:
-          - $ref: '#/components/schemas/RuleExtent'
-          description: Extent of data to be returned.
-      additionalProperties: false
-      x-schema-id: RuleFilterParameters
-    RuleCondition:
-      title: Rule condition
-      required:
-      - ConditionType
-      - Value
-      type: object
-      properties:
-        Value:
-          minLength: 1
-          type: string
-          description: Value of the condition depending on the property. E.g. `ReservationOrigin` in case of origin condition or unique identifier of a rate in case of rate condition.
-        ConditionType:
-          $ref: '#/components/schemas/RuleConditionType'
-      additionalProperties: false
-      x-schema-id: RuleCondition
-    RuleActionProductData:
-      title: Rule action product data
-      required:
-      - ActionType
-      - ProductId
-      type: object
-      properties:
-        ActionType:
-          $ref: '#/components/schemas/RuleActionType'
-        ProductId:
-          type: string
-          description: Unique identifier of product.
+            $ref: '#/components/schemas/Rule'
+          description: Rules used with reservation creations and modifications.
+        RuleActions:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RuleAction'
+          description: Rule actions applied in rules.
+        Rates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RateForExtent'
+          description: Rates used in conditions.
+        RateGroups:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RateGroupOld'
+          description: Rate groups used in conditions.
+        ResourceCategories:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ResourceCategory'
+          description: Resource categories used in conditions.
+        BusinessSegments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/BusinessSegment'
+          description: Business segments used in conditions.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
           format: uuid
       additionalProperties: false
-      x-schema-id: RuleActionProductData
+      x-schema-id: RuleResult
+    RateTypeEnum:
+      title: Rate type
+      enum:
+      - Public
+      - Private
+      - AvailabilityBlock
+      type: string
+      description: '
+
+
+        Public
+
+
+        Private
+
+
+        AvailabilityBlock'
+      x-enumNames:
+      - Public
+      - Private
+      - AvailabilityBlock
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+    ResourceClassification:
+      title: Resource classification
+      enum:
+      - StandardSingle
+      - StandardDouble
+      - SuperiorTwin
+      - SuperiorDouble
+      - JuniorSuite
+      - SharedOrDorm
+      - Other
+      - SuperiorSingle
+      - Triple
+      - Family
+      - StandardTwin
+      - Studio
+      - SuperiorTripleRoom
+      - OneBedroomApartment
+      - ThreeBedroomsApartment
+      - TwoBedroomsApartment
+      type: string
+      description: Classification of the resource category.
+    ResourceCategoryType:
+      title: Resource category type
+      enum:
+      - Room
+      - Bed
+      - Dorm
+      - Apartment
+      - Suite
+      - Villa
+      - Site
+      - Office
+      - MeetingRoom
+      - ParkingSpot
+      - Desk
+      - TeamArea
+      - Membership
+      - Tent
+      - CaravanOrRV
+      - UnequippedCampsite
+      - Bike
+      - ExtraBed
+      - Cot
+      - Crib
+      - ConferenceRoom
+      - Rooftop
+      - Garden
+      - Restaurant
+      - Amphitheater
+      - PrivateSpaces
+      type: string
+      description: Type of the category.
+    RuleActionDiscriminator:
+      title: Rule action discriminator
+      enum:
+      - Product
+      type: string
+      x-enumDescriptions:
+      - Data specific to a product.
+    RuleActionType:
+      title: Product action type
+      enum:
+      - Add
+      - Delete
+      type: string
+      description: Action of rule.
+      x-enumDescriptions:
+      - Adds specified item.
+      - Deletes specified item.
     Rule:
       title: Rule
       required:
@@ -535,111 +662,6 @@ components:
           format: date-time
       additionalProperties: false
       x-schema-id: Rule
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
-          format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    RuleConditionType:
-      title: Condition type
-      enum:
-      - Equals
-      - NotEquals
-      type: string
-      description: Type of condition.
-    RateGroupOld:
-      title: Rate group (ver 2017-04-12)
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the rate group.
-          format: uuid
-        ServiceId:
-          type: string
-          description: Unique identifier of the Service that the rate group belongs to.
-          format: uuid
-        IsActive:
-          type: boolean
-          description: Whether the rate group is still active.
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Name of the rate group.
-        ExternalIdentifier:
-          maxLength: 255
-          type:
-          - string
-          - 'null'
-          description: External identifier of the rate group.
-      additionalProperties: false
-      x-schema-id: RateGroupOld
-    RuleExtent:
-      title: Rule extent
-      type: object
-      properties:
-        RuleActions:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain rule actions.
-        Rates:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain rates.
-        RateGroups:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain rate groups.
-        ResourceCategories:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain rate resource categories.
-        BusinessSegments:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain business segments.
-      additionalProperties: false
-      description: ''
-      x-schema-id: RuleExtent
-    ResourceClassification:
-      title: Resource classification
-      enum:
-      - StandardSingle
-      - StandardDouble
-      - SuperiorTwin
-      - SuperiorDouble
-      - JuniorSuite
-      - SharedOrDorm
-      - Other
-      - SuperiorSingle
-      - Triple
-      - Family
-      - StandardTwin
-      - Studio
-      - SuperiorTripleRoom
-      - OneBedroomApartment
-      - ThreeBedroomsApartment
-      - TwoBedroomsApartment
-      type: string
-      description: Classification of the resource category.
     RuleConditions:
       title: Rule conditions
       type: object
@@ -694,96 +716,6 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: RuleConditions
-    RuleAction:
-      title: Rule action
-      required:
-      - Id
-      - RuleId
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the rule action.
-          format: uuid
-        RuleId:
-          type: string
-          description: Unique identifier of the rule.
-          format: uuid
-        Data:
-          title: Rule action data
-          type:
-          - object
-          - 'null'
-          properties:
-            Discriminator:
-              $ref: '#/components/schemas/RuleActionDiscriminator'
-            Value:
-              oneOf:
-              - $ref: '#/components/schemas/RuleActionProductData'
-          description: Additional information about action.
-          x-coproduct: true
-          x-schema-id: RuleActionDataCoproductOfRuleActionDiscriminator
-      additionalProperties: false
-      x-schema-id: RuleAction
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    RateTypeEnum:
-      title: Rate type
-      enum:
-      - Public
-      - Private
-      - AvailabilityBlock
-      type: string
-      description: '
-
-
-        Public
-
-
-        Private
-
-
-        AvailabilityBlock'
-      x-enumNames:
-      - Public
-      - Private
-      - AvailabilityBlock
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-    RuleActionDiscriminator:
-      title: Rule action discriminator
-      enum:
-      - Product
-      type: string
-      x-enumDescriptions:
-      - Data specific to a product.
-    RuleActionType:
-      title: Product action type
-      enum:
-      - Add
-      - Delete
-      type: string
-      description: Action of rule.
-      x-enumDescriptions:
-      - Adds specified item.
-      - Deletes specified item.
     ResourceCategory:
       title: Resource category
       required:
@@ -867,3 +799,71 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: ResourceCategory
+    RuleFilterParameters:
+      title: RuleFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Extent
+      - Limitation
+      - ServiceIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        Ids:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Rule`.
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Service`.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which `Rule` was updated.
+          x-max-interval-in-months: 3
+        Extent:
+          title: Rule extent
+          allOf:
+          - $ref: '#/components/schemas/RuleExtent'
+          description: Extent of data to be returned.
+      additionalProperties: false
+      x-schema-id: RuleFilterParameters

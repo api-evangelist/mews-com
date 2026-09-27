@@ -112,95 +112,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    OrderItemAdditionData:
-      title: Item parameters
-      required:
-      - Name
-      - UnitAmount
-      - UnitCount
-      type: object
-      properties:
-        Name:
-          minLength: 1
-          type: string
-          description: Name of the item.
-        UnitCount:
-          type: integer
-          description: Count of units to be ordered, e.g. 10 in case of 10 beers.
-          format: int32
-        UnitAmount:
-          title: Amount parameters
-          allOf:
-          - $ref: '#/components/schemas/AmountParameters'
-          description: Unit amount, e.g. amount for one beer (note that total amount of the item is therefore `UnitAmount` times `UnitCount`).
-        AccountingCategoryId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of an `AccountingCategory` to be assigned to the item.
-          format: uuid
-        ExternalIdentifier:
-          type:
-          - string
-          - 'null'
-          description: External identifier of the order item.
-      additionalProperties: false
-      x-schema-id: OrderItemAdditionData
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    ProductOrderAdditionData:
-      title: Product order parameters
-      required:
-      - ProductId
-      type: object
-      properties:
-        ProductId:
-          type: string
-          description: Unique identifier of the `Product` to be ordered.
-          format: uuid
-        Count:
-          type:
-          - integer
-          - 'null'
-          description: Count of products to be ordered, e.g. 10 in case of 10 beers.
-          format: int32
-        UnitAmount:
-          title: Amount parameters
-          allOf:
-          - $ref: '#/components/schemas/AmountParameters'
-          description: Unit amount of the product that overrides the amount defined in Mews.
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          description: Product start in UTC timezone in ISO 8601 format. For products with charging `Once` and `PerPerson` must be set to same value as `EndUtc`. Use only with operation [Add reservations](https://mews-systems.gitbook.io/connector-api/operations/reservations#add-reservations) or [Add reservation product](https://mews-systems.gitbook.io/connector-api/operations/reservations#add-reservation-product), can be omitted for [Add order](https://mews-systems.gitbook.io/connector-api/operations/orders#add-order) operation.
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          description: Product end in UTC timezone in ISO 8601 format. For products with charging `Once` and `PerPerson` must be set to same value as `StartUtc`. Use only with operation [Add reservations](https://mews-systems.gitbook.io/connector-api/operations/reservations#add-reservations) or [Add reservation product](https://mews-systems.gitbook.io/connector-api/operations/reservations#add-reservation-product), can be omitted for [Add order](https://mews-systems.gitbook.io/connector-api/operations/orders#add-order) operation.
-          format: date-time
-        ExternalIdentifier:
-          type:
-          - string
-          - 'null'
-          description: External identifier of the product order.
-      additionalProperties: false
-      x-schema-id: ProductOrderAdditionData
     OrderAdditionParameters:
       title: OrderAdditionParameters
       required:
@@ -295,17 +206,40 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: OrderAdditionParameters
-    OrderAdditionOptions:
-      title: Order addition options
+    OrderItemAdditionData:
+      title: Item parameters
+      required:
+      - Name
+      - UnitAmount
+      - UnitCount
       type: object
       properties:
-        DisableItemGrouping:
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the item.
+        UnitCount:
+          type: integer
+          description: Count of units to be ordered, e.g. 10 in case of 10 beers.
+          format: int32
+        UnitAmount:
+          title: Amount parameters
+          allOf:
+          - $ref: '#/components/schemas/AmountParameters'
+          description: Unit amount, e.g. amount for one beer (note that total amount of the item is therefore `UnitAmount` times `UnitCount`).
+        AccountingCategoryId:
           type:
-          - boolean
+          - string
           - 'null'
-          description: Whether to disable item grouping. Defaults to `false` (item grouping is enabled by default).
+          description: Unique identifier of an `AccountingCategory` to be assigned to the item.
+          format: uuid
+        ExternalIdentifier:
+          type:
+          - string
+          - 'null'
+          description: External identifier of the order item.
       additionalProperties: false
-      x-schema-id: OrderAdditionOptions
+      x-schema-id: OrderItemAdditionData
     AmountParameters:
       title: Amount parameters
       required:
@@ -334,6 +268,61 @@ components:
       additionalProperties: false
       description: Price of the product that overrides the price defined in Mews.
       x-schema-id: AmountParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ProductOrderAdditionData:
+      title: Product order parameters
+      required:
+      - ProductId
+      type: object
+      properties:
+        ProductId:
+          type: string
+          description: Unique identifier of the `Product` to be ordered.
+          format: uuid
+        Count:
+          type:
+          - integer
+          - 'null'
+          description: Count of products to be ordered, e.g. 10 in case of 10 beers.
+          format: int32
+        UnitAmount:
+          title: Amount parameters
+          allOf:
+          - $ref: '#/components/schemas/AmountParameters'
+          description: Unit amount of the product that overrides the amount defined in Mews.
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          description: Product start in UTC timezone in ISO 8601 format. For products with charging `Once` and `PerPerson` must be set to same value as `EndUtc`. Use only with operation [Add reservations](https://mews-systems.gitbook.io/connector-api/operations/reservations#add-reservations) or [Add reservation product](https://mews-systems.gitbook.io/connector-api/operations/reservations#add-reservation-product), can be omitted for [Add order](https://mews-systems.gitbook.io/connector-api/operations/orders#add-order) operation.
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          description: Product end in UTC timezone in ISO 8601 format. For products with charging `Once` and `PerPerson` must be set to same value as `StartUtc`. Use only with operation [Add reservations](https://mews-systems.gitbook.io/connector-api/operations/reservations#add-reservations) or [Add reservation product](https://mews-systems.gitbook.io/connector-api/operations/reservations#add-reservation-product), can be omitted for [Add order](https://mews-systems.gitbook.io/connector-api/operations/orders#add-order) operation.
+          format: date-time
+        ExternalIdentifier:
+          type:
+          - string
+          - 'null'
+          description: External identifier of the product order.
+      additionalProperties: false
+      x-schema-id: ProductOrderAdditionData
     OrderAdditionResult:
       title: OrderAdditionResult
       type: object
@@ -344,3 +333,14 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: OrderAdditionResult
+    OrderAdditionOptions:
+      title: Order addition options
+      type: object
+      properties:
+        DisableItemGrouping:
+          type:
+          - boolean
+          - 'null'
+          description: Whether to disable item grouping. Defaults to `false` (item grouping is enabled by default).
+      additionalProperties: false
+      x-schema-id: OrderAdditionOptions

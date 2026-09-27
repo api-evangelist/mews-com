@@ -112,6 +112,93 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    RateGroup:
+      title: Rate Group
+      required:
+      - CreatedUtc
+      - Id
+      - IsActive
+      - Names
+      - Ordering
+      - ServiceId
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the rate group.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service) the rate group belongs to.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the rate group is still active.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the rate group in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the rate group in UTC timezone in ISO 8601 format.
+          format: date-time
+        Ordering:
+          type: integer
+          description: Ordering of the rate group.
+          format: int32
+        Names:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the name.
+          x-schema-id: LocalizedStrings
+        ShortNames:
+          title: Localized text
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: All translations of the short name.
+          x-schema-id: LocalizedStrings
+        Descriptions:
+          title: Localized text
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: All translations of the description.
+          x-schema-id: LocalizedStrings
+        ExternalIdentifier:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: Identifier of the rate group from external system.
+      additionalProperties: false
+      x-schema-id: RateGroup
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
     RateGroupFilterParameters:
       title: RateGroupFilterParameters
       required:
@@ -191,6 +278,26 @@ components:
           description: Whether to return only active, only deleted or both records.
       additionalProperties: false
       x-schema-id: RateGroupFilterParameters
+    RateGroupResult:
+      title: RateGroupResult
+      required:
+      - RateGroups
+      type: object
+      properties:
+        RateGroups:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/RateGroup'
+          description: The filtered rate groups.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest rate group returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older rate groups.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: RateGroupResult
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
@@ -206,76 +313,6 @@ components:
         Details: {}
       additionalProperties: false
       x-schema-id: ConnectorApiExceptionResult
-    RateGroup:
-      title: Rate Group
-      required:
-      - CreatedUtc
-      - Id
-      - IsActive
-      - Names
-      - Ordering
-      - ServiceId
-      - UpdatedUtc
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the rate group.
-          format: uuid
-        ServiceId:
-          type: string
-          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service) the rate group belongs to.
-          format: uuid
-        IsActive:
-          type: boolean
-          description: Whether the rate group is still active.
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the rate group in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the rate group in UTC timezone in ISO 8601 format.
-          format: date-time
-        Ordering:
-          type: integer
-          description: Ordering of the rate group.
-          format: int32
-        Names:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of the name.
-          x-schema-id: LocalizedStrings
-        ShortNames:
-          title: Localized text
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: string
-          description: All translations of the short name.
-          x-schema-id: LocalizedStrings
-        Descriptions:
-          title: Localized text
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: string
-          description: All translations of the description.
-          x-schema-id: LocalizedStrings
-        ExternalIdentifier:
-          maxLength: 255
-          type:
-          - string
-          - 'null'
-          description: Identifier of the rate group from external system.
-      additionalProperties: false
-      x-schema-id: RateGroup
     Limitation:
       title: Limitation
       required:
@@ -300,40 +337,3 @@ components:
       - Active
       type: string
       description: Activity states used for filtering.
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    RateGroupResult:
-      title: RateGroupResult
-      required:
-      - RateGroups
-      type: object
-      properties:
-        RateGroups:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/RateGroup'
-          description: The filtered rate groups.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the last and hence oldest rate group returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older rate groups.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: RateGroupResult

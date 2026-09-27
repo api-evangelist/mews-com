@@ -175,87 +175,42 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    Limitation:
-      title: Limitation
+    TaxValue:
+      title: Tax value
       required:
-      - Count
+      - Value
       type: object
       properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
+        Code:
           type:
           - string
           - 'null'
-          format: uuid
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
       additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    Amount:
-      title: Amount
+      x-schema-id: TaxValue
+    DateFilterInterval:
+      title: Date filter interval
       required:
-      - Breakdown
-      - Currency
-      - GrossValue
-      - NetValue
-      - TaxValues
+      - End
+      - Start
       type: object
       properties:
-        Currency:
+        Start:
           minLength: 1
           type: string
-          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
-          format: currency
-        NetValue:
-          type: number
-          description: Net value without taxes.
-          format: double
-        GrossValue:
-          type: number
-          description: Gross value including all taxes.
-          format: double
-        TaxValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxValue'
-          description: The tax values applied.
-        Breakdown:
-          title: Tax breakdown
-          allOf:
-          - $ref: '#/components/schemas/TaxBreakdown'
-          description: Information about individual tax amounts.
+          description: Starting date of the interval in ISO 8601 format.
+          format: date
+        End:
+          minLength: 1
+          type: string
+          description: Ending date of the interval in ISO 8601 format.
+          format: date
       additionalProperties: false
-      description: ''
-      x-schema-id: Amount
-    TaxBreakdown:
-      title: Tax breakdown
-      required:
-      - Items
-      type: object
-      properties:
-        Items:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxBreakdownItem'
-          description: Tax breakdown items per each tax rate applied.
-      additionalProperties: false
-      x-schema-id: TaxBreakdown
+      x-schema-id: DateFilterInterval
     LedgerBalanceResult:
       title: LedgerBalanceResult
       required:
@@ -277,6 +232,28 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: LedgerBalanceResult
+    TaxBreakdownItem:
+      title: Tax breakdown item
+      required:
+      - NetValue
+      - TaxValue
+      type: object
+      properties:
+        TaxRateCode:
+          type:
+          - string
+          - 'null'
+          description: Tax rate code for the item. `null` for untaxed amounts.
+        NetValue:
+          type: number
+          description: The net value that the tax is calculated from.
+          format: double
+        TaxValue:
+          type: number
+          description: The value of the tax.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxBreakdownItem
     LedgerBalanceParameters:
       title: LedgerBalanceParameters
       required:
@@ -329,42 +306,87 @@ components:
           description: Accounting ledger types to which ledger balances belong.
       additionalProperties: false
       x-schema-id: LedgerBalanceParameters
-    DateFilterInterval:
-      title: Date filter interval
+    TaxBreakdown:
+      title: Tax breakdown
       required:
-      - End
-      - Start
+      - Items
       type: object
       properties:
-        Start:
-          minLength: 1
-          type: string
-          description: Starting date of the interval in ISO 8601 format.
-          format: date
-        End:
-          minLength: 1
-          type: string
-          description: Ending date of the interval in ISO 8601 format.
-          format: date
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
       additionalProperties: false
-      x-schema-id: DateFilterInterval
-    TaxValue:
-      title: Tax value
+      x-schema-id: TaxBreakdown
+    Amount:
+      title: Amount
       required:
-      - Value
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
       type: object
       properties:
-        Code:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
           type:
           - string
           - 'null'
-          description: Code corresponding to tax type.
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      x-schema-id: TaxValue
+      x-schema-id: ConnectorApiExceptionResult
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
     LedgerBalance:
       title: Ledger balance
       required:
@@ -488,25 +510,3 @@ components:
       - ''
       - ''
       - ''
-    TaxBreakdownItem:
-      title: Tax breakdown item
-      required:
-      - NetValue
-      - TaxValue
-      type: object
-      properties:
-        TaxRateCode:
-          type:
-          - string
-          - 'null'
-          description: Tax rate code for the item. `null` for untaxed amounts.
-        NetValue:
-          type: number
-          description: The net value that the tax is calculated from.
-          format: double
-        TaxValue:
-          type: number
-          description: The value of the tax.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxBreakdownItem

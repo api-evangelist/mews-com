@@ -324,40 +324,136 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
+    PaymentRequestType:
+      title: Payment request type
+      enum:
+      - Payment
+      - Preauthorization
+      type: string
+      description: A payment request type.
+      x-enumDescriptions:
+      - Indicates that a payment is requested.
+      - Indicates that a `Preauthorization` is requested.
+    TaxBreakdownItem:
+      title: Tax breakdown item
+      required:
+      - NetValue
+      - TaxValue
       type: object
       properties:
-        Message:
+        TaxRateCode:
           type:
           - string
           - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
+          description: Tax rate code for the item. `null` for untaxed amounts.
+        NetValue:
+          type: number
+          description: The net value that the tax is calculated from.
+          format: double
+        TaxValue:
+          type: number
+          description: The value of the tax.
+          format: double
       additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    CurrencyValue:
-      title: Currency value (ver 2023-02-02)
+      x-schema-id: TaxBreakdownItem
+    PaymentRequestCancellationResult:
+      title: PaymentRequestCancellationResult
       required:
+      - PaymentRequests
+      type: object
+      properties:
+        PaymentRequests:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentRequest'
+          description: The cancelled payment requests.
+      additionalProperties: false
+      x-schema-id: PaymentRequestCancellationResult
+    MultiplePaymentRequestCancelParameters:
+      title: MultiplePaymentRequestCancelParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - PaymentRequestIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        PaymentRequestIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Identifiers of payment requests to be canceled.
+      additionalProperties: false
+      x-schema-id: MultiplePaymentRequestCancelParameters
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
       - Currency
-      - Value
+      - GrossValue
+      - NetValue
+      - TaxValues
       type: object
       properties:
         Currency:
           minLength: 1
           type: string
-          description: ISO-4217 code of the `Currency`.
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
           format: currency
-        Value:
+        NetValue:
           type: number
-          description: Amount in the currency.
+          description: Net value without taxes.
           format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
       additionalProperties: false
-      description: Absolute value of the fee.
-      x-schema-id: CurrencyValue
+      description: ''
+      x-schema-id: Amount
     PaymentRequest:
       title: Payment request
       required:
@@ -486,100 +582,21 @@ components:
           description: Specifies whether a payment request email is sent to the customer. Defaults to `true`.
       additionalProperties: false
       x-schema-id: MultiplePaymentRequestAddParameters
-    PaymentRequestState:
-      title: Payment request state
-      enum:
-      - Pending
-      - Completed
-      - Canceled
-      - Expired
-      type: string
-      description: A payment request state.
-      x-enumDescriptions:
-      - Payment request is active and waiting for completion.
-      - Payment request was fulfilled.
-      - Payment request was canceled.
-      - Payment request is past its expiration date and no longer active.
-    PaymentRequestReason:
-      title: Payment request reason
-      enum:
-      - Other
-      - PaymentCardMissing
-      - PaymentCardDeclined
-      - Deposit
-      - Prepayment
-      - Fee
-      - RecurringPayment
-      type: string
-      description: A payment request reason.
-    PaymentRequestAddParameters:
-      title: Payment request parameters
-      required:
-      - AccountId
-      - Amount
-      - Description
-      - ExpirationUtc
-      - Reason
-      - Type
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        AccountId:
-          type: string
-          description: Unique identifier of the `Customer` account to which the payment request is issued.
-          format: uuid
-        Amount:
-          title: Currency value (ver 2023-02-02)
-          allOf:
-          - $ref: '#/components/schemas/CurrencyValue'
-          description: Amount of the payment request.
-        Type:
-          $ref: '#/components/schemas/PaymentRequestType'
-        Reason:
-          $ref: '#/components/schemas/PaymentRequestReason'
-        ExpirationUtc:
-          minLength: 1
-          type: string
-          description: Date and time of the payment request's expiration in ISO 8601 format.
-          format: date-time
-        Description:
-          maxLength: 1000
-          minLength: 1
-          type: string
-          description: Description of the payment request.
-        Notes:
-          maxLength: 1000
+        Message:
           type:
           - string
           - 'null'
-          description: Payment request's notes.
-        ReservationId:
+        RequestId:
           type:
           - string
           - 'null'
-          description: Unique identifier of the `Reservation` the payment request belongs to.
-          format: uuid
-        BillId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the `Bill` the payment request is linked to.
-          format: uuid
+        Details: {}
       additionalProperties: false
-      x-schema-id: PaymentRequestAddParameters
-    PaymentRequestCancellationResult:
-      title: PaymentRequestCancellationResult
-      required:
-      - PaymentRequests
-      type: object
-      properties:
-        PaymentRequests:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentRequest'
-          description: The cancelled payment requests.
-      additionalProperties: false
-      x-schema-id: PaymentRequestCancellationResult
+      x-schema-id: ConnectorApiExceptionResult
     Limitation:
       title: Limitation
       required:
@@ -597,52 +614,88 @@ components:
       additionalProperties: false
       description: Limitation on the quantity of data returned.
       x-schema-id: Limitation
-    PaymentRequestType:
-      title: Payment request type
-      enum:
-      - Payment
-      - Preauthorization
-      type: string
-      description: A payment request type.
-      x-enumDescriptions:
-      - Indicates that a payment is requested.
-      - Indicates that a `Preauthorization` is requested.
-    Amount:
-      title: Amount
+    PaymentRequestAdditionResult:
+      title: PaymentRequestAdditionResult
       required:
-      - Breakdown
+      - PaymentRequests
+      type: object
+      properties:
+        PaymentRequests:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentRequest'
+          description: The added payment requests.
+      additionalProperties: false
+      x-schema-id: PaymentRequestAdditionResult
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    PaymentRequestReason:
+      title: Payment request reason
+      enum:
+      - Other
+      - PaymentCardMissing
+      - PaymentCardDeclined
+      - Deposit
+      - Prepayment
+      - Fee
+      - RecurringPayment
+      type: string
+      description: A payment request reason.
+    PaymentRequestResult:
+      title: PaymentRequestResult
+      required:
+      - PaymentRequests
+      type: object
+      properties:
+        PaymentRequests:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentRequest'
+          description: The filtered payment requests.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest payment request returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older payment requests.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: PaymentRequestResult
+    CurrencyValue:
+      title: Currency value (ver 2023-02-02)
+      required:
       - Currency
-      - GrossValue
-      - NetValue
-      - TaxValues
+      - Value
       type: object
       properties:
         Currency:
           minLength: 1
           type: string
-          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          description: ISO-4217 code of the `Currency`.
           format: currency
-        NetValue:
+        Value:
           type: number
-          description: Net value without taxes.
+          description: Amount in the currency.
           format: double
-        GrossValue:
-          type: number
-          description: Gross value including all taxes.
-          format: double
-        TaxValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxValue'
-          description: The tax values applied.
-        Breakdown:
-          title: Tax breakdown
-          allOf:
-          - $ref: '#/components/schemas/TaxBreakdown'
-          description: Information about individual tax amounts.
       additionalProperties: false
-      description: ''
-      x-schema-id: Amount
+      description: Absolute value of the fee.
+      x-schema-id: CurrencyValue
     PaymentRequestFilterParameters:
       title: PaymentRequestFilterParameters
       required:
@@ -723,48 +776,6 @@ components:
           description: A list of payment request states to filter by.
       additionalProperties: false
       x-schema-id: PaymentRequestFilterParameters
-    PaymentRequestResult:
-      title: PaymentRequestResult
-      required:
-      - PaymentRequests
-      type: object
-      properties:
-        PaymentRequests:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentRequest'
-          description: The filtered payment requests.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the last and hence oldest payment request returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older payment requests.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: PaymentRequestResult
-    TaxBreakdownItem:
-      title: Tax breakdown item
-      required:
-      - NetValue
-      - TaxValue
-      type: object
-      properties:
-        TaxRateCode:
-          type:
-          - string
-          - 'null'
-          description: Tax rate code for the item. `null` for untaxed amounts.
-        NetValue:
-          type: number
-          description: The net value that the tax is calculated from.
-          format: double
-        TaxValue:
-          type: number
-          description: The value of the tax.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxBreakdownItem
     TaxBreakdown:
       title: Tax breakdown
       required:
@@ -778,82 +789,71 @@ components:
           description: Tax breakdown items per each tax rate applied.
       additionalProperties: false
       x-schema-id: TaxBreakdown
-    TimeFilterInterval:
-      title: Time interval
+    PaymentRequestState:
+      title: Payment request state
+      enum:
+      - Pending
+      - Completed
+      - Canceled
+      - Expired
+      type: string
+      description: A payment request state.
+      x-enumDescriptions:
+      - Payment request is active and waiting for completion.
+      - Payment request was fulfilled.
+      - Payment request was canceled.
+      - Payment request is past its expiration date and no longer active.
+    PaymentRequestAddParameters:
+      title: Payment request parameters
+      required:
+      - AccountId
+      - Amount
+      - Description
+      - ExpirationUtc
+      - Reason
+      - Type
       type: object
       properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
+        AccountId:
+          type: string
+          description: Unique identifier of the `Customer` account to which the payment request is issued.
+          format: uuid
+        Amount:
+          title: Currency value (ver 2023-02-02)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValue'
+          description: Amount of the payment request.
+        Type:
+          $ref: '#/components/schemas/PaymentRequestType'
+        Reason:
+          $ref: '#/components/schemas/PaymentRequestReason'
+        ExpirationUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the payment request's expiration in ISO 8601 format.
           format: date-time
-        EndUtc:
+        Description:
+          maxLength: 1000
+          minLength: 1
+          type: string
+          description: Description of the payment request.
+        Notes:
+          maxLength: 1000
           type:
           - string
           - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    MultiplePaymentRequestCancelParameters:
-      title: MultiplePaymentRequestCancelParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - PaymentRequestIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        PaymentRequestIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Identifiers of payment requests to be canceled.
-      additionalProperties: false
-      x-schema-id: MultiplePaymentRequestCancelParameters
-    PaymentRequestAdditionResult:
-      title: PaymentRequestAdditionResult
-      required:
-      - PaymentRequests
-      type: object
-      properties:
-        PaymentRequests:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentRequest'
-          description: The added payment requests.
-      additionalProperties: false
-      x-schema-id: PaymentRequestAdditionResult
-    TaxValue:
-      title: Tax value
-      required:
-      - Value
-      type: object
-      properties:
-        Code:
+          description: Payment request's notes.
+        ReservationId:
           type:
           - string
           - 'null'
-          description: Code corresponding to tax type.
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
+          description: Unique identifier of the `Reservation` the payment request belongs to.
+          format: uuid
+        BillId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `Bill` the payment request is linked to.
+          format: uuid
       additionalProperties: false
-      x-schema-id: TaxValue
+      x-schema-id: PaymentRequestAddParameters

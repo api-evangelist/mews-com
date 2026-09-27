@@ -138,38 +138,95 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    Limitation:
-      title: Limitation
-      required:
-      - Count
+    PricingModeEnum:
+      title: Pricing
+      enum:
+      - Gross
+      - Net
+      type: string
+      description: '
+
+
+        Gross (The enterprise shows amount with gross prices.)
+
+
+        Net (The enterprise shows amount with net prices.)'
+      x-enumNames:
+      - Gross
+      - Net
+      x-enumDescriptions:
+      - The enterprise shows amount with gross prices.
+      - The enterprise shows amount with net prices.
+    TimeFilterInterval:
+      title: Time interval
       type: object
       properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
+        StartUtc:
           type:
           - string
           - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    OldAddress:
+      title: Address
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the address.
           format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
+        Line1:
           type:
           - string
           - 'null'
-        RequestId:
+          description: First line of the address.
+        Line2:
           type:
           - string
           - 'null'
-        Details: {}
+          description: Second line of the address.
+        City:
+          type:
+          - string
+          - 'null'
+          description: The city.
+        PostalCode:
+          type:
+          - string
+          - 'null'
+          description: Postal code.
+        CountryCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-1 code of the `Country`.
+        CountrySubdivisionCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
+        Latitude:
+          type:
+          - number
+          - 'null'
+          description: The latitude.
+          format: double
+        Longitude:
+          type:
+          - number
+          - 'null'
+          description: The longitude.
+          format: double
       additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
+      description: ''
+      x-schema-id: OldAddress
     EnterpriseFilterParameters:
       title: EnterpriseFilterParameters
       required:
@@ -228,107 +285,40 @@ components:
           description: Limitation on the quantity of data returned.
       additionalProperties: false
       x-schema-id: EnterpriseFilterParameters
-    PricingModeEnum:
-      title: Pricing
-      enum:
-      - Gross
-      - Net
-      type: string
-      description: '
-
-
-        Gross (The enterprise shows amount with gross prices.)
-
-
-        Net (The enterprise shows amount with net prices.)'
-      x-enumNames:
-      - Gross
-      - Net
-      x-enumDescriptions:
-      - The enterprise shows amount with gross prices.
-      - The enterprise shows amount with net prices.
-    TimeFilterInterval:
-      title: Time interval
+    EnterpriseResult:
+      title: EnterpriseResult
+      required:
+      - Enterprises
       type: object
       properties:
-        StartUtc:
+        Enterprises:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnterprisePortfolio'
+          description: The filtered enterprises.
+        Cursor:
           type:
           - string
           - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    EnterpriseSubscription:
-      title: Enterprise subscription
-      type: object
-      properties:
-        TaxIdentifier:
-          type:
-          - string
-          - 'null'
-          description: Tax identifier of the `Enterprise`.
-      additionalProperties: false
-      description: ''
-      x-schema-id: EnterpriseSubscription
-    OldAddress:
-      title: Address
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the address.
+          description: Unique identifier of the last and hence oldest enterprise returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older enterprises.
           format: uuid
-        Line1:
-          type:
-          - string
-          - 'null'
-          description: First line of the address.
-        Line2:
-          type:
-          - string
-          - 'null'
-          description: Second line of the address.
-        City:
-          type:
-          - string
-          - 'null'
-          description: The city.
-        PostalCode:
-          type:
-          - string
-          - 'null'
-          description: Postal code.
-        CountryCode:
-          type:
-          - string
-          - 'null'
-          description: ISO 3166-1 code of the `Country`.
-        CountrySubdivisionCode:
-          type:
-          - string
-          - 'null'
-          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
-        Latitude:
-          type:
-          - number
-          - 'null'
-          description: The latitude.
-          format: double
-        Longitude:
-          type:
-          - number
-          - 'null'
-          description: The longitude.
-          format: double
       additionalProperties: false
-      description: ''
-      x-schema-id: OldAddress
+      x-schema-id: EnterpriseResult
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     EnterprisePortfolio:
       title: Enterprise
       required:
@@ -521,22 +511,32 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: EnterprisePortfolio
-    EnterpriseResult:
-      title: EnterpriseResult
+    Limitation:
+      title: Limitation
       required:
-      - Enterprises
+      - Count
       type: object
       properties:
-        Enterprises:
-          type: array
-          items:
-            $ref: '#/components/schemas/EnterprisePortfolio'
-          description: The filtered enterprises.
+        Count:
+          type: integer
+          format: int32
         Cursor:
           type:
           - string
           - 'null'
-          description: Unique identifier of the last and hence oldest enterprise returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older enterprises.
           format: uuid
       additionalProperties: false
-      x-schema-id: EnterpriseResult
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    EnterpriseSubscription:
+      title: Enterprise subscription
+      type: object
+      properties:
+        TaxIdentifier:
+          type:
+          - string
+          - 'null'
+          description: Tax identifier of the `Enterprise`.
+      additionalProperties: false
+      description: ''
+      x-schema-id: EnterpriseSubscription

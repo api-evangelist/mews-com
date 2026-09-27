@@ -95,51 +95,18 @@ paths:
       x-restricted: true
 components:
   schemas:
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    PaymentMethodRequestAdditionResult:
-      title: Payment method request addition result
-      required:
-      - PaymentMethodRequestId
-      type: object
-      properties:
-        PaymentMethodRequestId:
-          type: string
-          description: Unique identifier of the created payment method request.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: PaymentMethodRequestAdditionResult
-    PaymentMethodRequestPaymentMethodsEnum:
-      title: Acceptable payment methods
+    PaymentMethodRequestEmailTypesEnum:
+      title: Supported email types
       enum:
-      - PaymentCard
-      - SepaDirectDebit
+      - PaymentMethodRequestAdded
       type: string
       description: '
 
 
-        PaymentCard
-
-
-        SepaDirectDebit'
+        PaymentMethodRequestAdded'
       x-enumNames:
-      - PaymentCard
-      - SepaDirectDebit
+      - PaymentMethodRequestAdded
       x-enumDescriptions:
-      - ''
       - ''
     PaymentMethodRequestAddParameters:
       title: Payment method request parameters
@@ -215,16 +182,49 @@ components:
           description: Email notifications to send. If not specified, all emails will be sent. To disable all emails send an empty list. Additional email types may be added in the future.
       additionalProperties: false
       x-schema-id: PaymentMethodRequestAddParameters
-    PaymentMethodRequestEmailTypesEnum:
-      title: Supported email types
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    PaymentMethodRequestPaymentMethodsEnum:
+      title: Acceptable payment methods
       enum:
-      - PaymentMethodRequestAdded
+      - PaymentCard
+      - SepaDirectDebit
       type: string
       description: '
 
 
-        PaymentMethodRequestAdded'
+        PaymentCard
+
+
+        SepaDirectDebit'
       x-enumNames:
-      - PaymentMethodRequestAdded
+      - PaymentCard
+      - SepaDirectDebit
       x-enumDescriptions:
       - ''
+      - ''
+    PaymentMethodRequestAdditionResult:
+      title: Payment method request addition result
+      required:
+      - PaymentMethodRequestId
+      type: object
+      properties:
+        PaymentMethodRequestId:
+          type: string
+          description: Unique identifier of the created payment method request.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: PaymentMethodRequestAdditionResult

@@ -112,21 +112,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     TaxEnvironment:
       title: Tax environment
       required:
@@ -161,6 +146,34 @@ components:
       additionalProperties: false
       description: Tax environment represents set of `Taxation` together with optional validity interval.
       x-schema-id: TaxEnvironment
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TaxEnvironmentResult:
+      title: TaxEnvironmentResult
+      required:
+      - TaxEnvironments
+      type: object
+      properties:
+        TaxEnvironments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxEnvironment'
+          description: The supported tax environments.
+      additionalProperties: false
+      x-schema-id: TaxEnvironmentResult
     Parameters:
       title: Parameters
       required:
@@ -183,16 +196,3 @@ components:
           description: Name and version of the client application.
       additionalProperties: false
       x-schema-id: Parameters
-    TaxEnvironmentResult:
-      title: TaxEnvironmentResult
-      required:
-      - TaxEnvironments
-      type: object
-      properties:
-        TaxEnvironments:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxEnvironment'
-          description: The supported tax environments.
-      additionalProperties: false
-      x-schema-id: TaxEnvironmentResult

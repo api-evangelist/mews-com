@@ -322,84 +322,72 @@ paths:
       x-restricted: true
 components:
   schemas:
-    Limitation:
-      title: Limitation
+    CreditCardFormat:
+      title: Credit card format
+      enum:
+      - Physical
+      - Virtual
+      type: string
+      description: Format of the credit card.
+    CreditCardResult:
+      title: CreditCardResult
       required:
-      - Count
+      - CreditCards
       type: object
       properties:
-        Count:
-          type: integer
-          format: int32
+        CreditCards:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditCard'
+          description: The credit cards.
         Cursor:
           type:
           - string
           - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
           format: uuid
       additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    CreditCard:
-      title: Credit card
+      x-schema-id: CreditCardResult
+    DisableCreditCardParameters:
+      title: DisableCreditCardParameters
       required:
-      - CreatedUtc
-      - CustomerId
-      - EnterpriseId
-      - Format
-      - Id
-      - IsActive
-      - Kind
-      - State
-      - UpdatedUtc
+      - AccessToken
+      - Client
+      - ClientToken
+      - CreditCardId
       type: object
       properties:
-        Id:
+        ClientToken:
+          minLength: 1
           type: string
-          description: Unique identifier of the credit card.
-          format: uuid
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
         EnterpriseId:
-          type: string
-          description: Unique identifier of the `Enterprise`.
-          format: uuid
-        CustomerId:
-          type: string
-          description: Unique identifier of the credit card owner (`Customer`).
-          format: uuid
-        IsActive:
-          type: boolean
-          description: Whether the credit card is still active.
-        State:
-          $ref: '#/components/schemas/CreditCardState'
-        Kind:
-          $ref: '#/components/schemas/CreditCardKind'
-        Format:
-          $ref: '#/components/schemas/CreditCardFormat'
-        Type:
-          anyOf:
-          - $ref: '#/components/schemas/CreditCardType'
-          description: Type of the credit card.
-        ObfuscatedNumber:
           type:
           - string
           - 'null'
-          description: Obfuscated credit card number. At most first six digits and last four digits can be specified, otherwise the digits are replaced with `*`.
-        Expiration:
-          type:
-          - string
-          - 'null'
-          description: Expiration of the credit card in format `MM/YYYY`.
-        CreatedUtc:
-          minLength: 1
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        CreditCardId:
           type: string
-          description: Creation date and time of the credit card in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the credit card in UTC timezone in ISO 8601 format.
-          format: date-time
+          description: Unique identifier of the `CreditCard` to disable.
+          format: uuid
       additionalProperties: false
-      x-schema-id: CreditCard
+      x-schema-id: DisableCreditCardParameters
+    CreditCardState:
+      title: Credit card state
+      enum:
+      - Enabled
+      - Disabled
+      type: string
+      description: State of the credit card.
     ChargeCreditCardParameters:
       title: CreditCard payment data
       required:
@@ -455,99 +443,6 @@ components:
           description: Additional payment notes.
       additionalProperties: false
       x-schema-id: ChargeCreditCardParameters
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    CreditCardResult:
-      title: CreditCardResult
-      required:
-      - CreditCards
-      type: object
-      properties:
-        CreditCards:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreditCard'
-          description: The credit cards.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: CreditCardResult
-    AddCreditCardResult:
-      title: AddCreditCardResult
-      type: object
-      properties:
-        CreditCardId:
-          type: string
-          description: Unique identifier of the `CreditCard`.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: AddCreditCardResult
-    Unit:
-      type: object
-      additionalProperties: false
-    TokenizedCreditCardAddParameters:
-      title: TokenizedCreditCardAddParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - CreditCardData
-      - CustomerId
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        CustomerId:
-          type: string
-          description: Unique identifier of the `Customer`.
-          format: uuid
-        CreditCardData:
-          title: Credit card data
-          allOf:
-          - $ref: '#/components/schemas/CreditCardData'
-          description: Credit card details provided by PCI provider.
-      additionalProperties: false
-      x-schema-id: TokenizedCreditCardAddParameters
-    CreditCardKind:
-      title: Credit card kind
-      enum:
-      - Terminal
-      - Gateway
-      type: string
-      description: Kind of the credit card.
     TimeFilterInterval:
       title: Time interval
       type: object
@@ -565,34 +460,6 @@ components:
       additionalProperties: false
       description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
       x-schema-id: TimeFilterInterval
-    ChargeCreditCardResult:
-      title: ChargeCreditCardResult
-      type: object
-      properties:
-        PaymentId:
-          type: string
-          description: Unique identifier of the `Payment` item.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: ChargeCreditCardResult
-    CreditCardData:
-      title: Credit card data
-      required:
-      - Expiration
-      - StorageData
-      type: object
-      properties:
-        StorageData:
-          minLength: 1
-          type: string
-          description: Identifier of credit card data in PCI storage (`transactionId`).
-        Expiration:
-          minLength: 1
-          type: string
-          description: Expiration of the credit card in format `yyyy-MM`.
-      additionalProperties: false
-      description: ''
-      x-schema-id: CreditCardData
     CreditCardFilterParameters:
       title: CreditCardFilterParameters
       required:
@@ -656,76 +523,6 @@ components:
           x-max-interval-in-months: 3
       additionalProperties: false
       x-schema-id: CreditCardFilterParameters
-    CreditCardFormat:
-      title: Credit card format
-      enum:
-      - Physical
-      - Virtual
-      type: string
-      description: Format of the credit card.
-    DisableCreditCardParameters:
-      title: DisableCreditCardParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - CreditCardId
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        CreditCardId:
-          type: string
-          description: Unique identifier of the `CreditCard` to disable.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: DisableCreditCardParameters
-    CreditCardType:
-      title: Credit card type
-      enum:
-      - MasterCard
-      - Visa
-      - Amex
-      - Discover
-      - DinersClub
-      - Jcb
-      - Maestro
-      - UnionPay
-      - VPay
-      - RuPay
-      - Dankort
-      - Mir
-      - Verve
-      - Troy
-      - PostFinance
-      - Giro
-      - Bancomat
-      - Bc
-      - CarteBleue
-      - Eftpos
-      - Eps
-      - Interac
-      - Isracard
-      - Meps
-      - Nets
-      - Bancontact
-      type: string
     ExtendedAmountParameters:
       title: Amount parameters
       required:
@@ -759,10 +556,213 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: ExtendedAmountParameters
-    CreditCardState:
-      title: Credit card state
+    CreditCardType:
+      title: Credit card type
       enum:
-      - Enabled
-      - Disabled
+      - MasterCard
+      - Visa
+      - Amex
+      - Discover
+      - DinersClub
+      - Jcb
+      - Maestro
+      - UnionPay
+      - VPay
+      - RuPay
+      - Dankort
+      - Mir
+      - Verve
+      - Troy
+      - PostFinance
+      - Giro
+      - Bancomat
+      - Bc
+      - CarteBleue
+      - Eftpos
+      - Eps
+      - Interac
+      - Isracard
+      - Meps
+      - Nets
+      - Bancontact
       type: string
-      description: State of the credit card.
+    Unit:
+      type: object
+      additionalProperties: false
+    TokenizedCreditCardAddParameters:
+      title: TokenizedCreditCardAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CreditCardData
+      - CustomerId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Unique identifier of the `Customer`.
+          format: uuid
+        CreditCardData:
+          title: Credit card data
+          allOf:
+          - $ref: '#/components/schemas/CreditCardData'
+          description: Credit card details provided by PCI provider.
+      additionalProperties: false
+      x-schema-id: TokenizedCreditCardAddParameters
+    CreditCard:
+      title: Credit card
+      required:
+      - CreatedUtc
+      - CustomerId
+      - EnterpriseId
+      - Format
+      - Id
+      - IsActive
+      - Kind
+      - State
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the credit card.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the `Enterprise`.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Unique identifier of the credit card owner (`Customer`).
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the credit card is still active.
+        State:
+          $ref: '#/components/schemas/CreditCardState'
+        Kind:
+          $ref: '#/components/schemas/CreditCardKind'
+        Format:
+          $ref: '#/components/schemas/CreditCardFormat'
+        Type:
+          anyOf:
+          - $ref: '#/components/schemas/CreditCardType'
+          description: Type of the credit card.
+        ObfuscatedNumber:
+          type:
+          - string
+          - 'null'
+          description: Obfuscated credit card number. At most first six digits and last four digits can be specified, otherwise the digits are replaced with `*`.
+        Expiration:
+          type:
+          - string
+          - 'null'
+          description: Expiration of the credit card in format `MM/YYYY`.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the credit card in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the credit card in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: CreditCard
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    CreditCardData:
+      title: Credit card data
+      required:
+      - Expiration
+      - StorageData
+      type: object
+      properties:
+        StorageData:
+          minLength: 1
+          type: string
+          description: Identifier of credit card data in PCI storage (`transactionId`).
+        Expiration:
+          minLength: 1
+          type: string
+          description: Expiration of the credit card in format `yyyy-MM`.
+      additionalProperties: false
+      description: ''
+      x-schema-id: CreditCardData
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    CreditCardKind:
+      title: Credit card kind
+      enum:
+      - Terminal
+      - Gateway
+      type: string
+      description: Kind of the credit card.
+    ChargeCreditCardResult:
+      title: ChargeCreditCardResult
+      type: object
+      properties:
+        PaymentId:
+          type: string
+          description: Unique identifier of the `Payment` item.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ChargeCreditCardResult
+    AddCreditCardResult:
+      title: AddCreditCardResult
+      type: object
+      properties:
+        CreditCardId:
+          type: string
+          description: Unique identifier of the `CreditCard`.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: AddCreditCardResult

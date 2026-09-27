@@ -168,21 +168,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     Parameters:
       title: Parameters
       required:
@@ -205,26 +190,6 @@ components:
           description: Name and version of the client application.
       additionalProperties: false
       x-schema-id: Parameters
-    LanguageTexts:
-      title: Language texts
-      required:
-      - LanguageCode
-      - Texts
-      type: object
-      properties:
-        LanguageCode:
-          minLength: 1
-          type: string
-          description: Language-culture code of the `Language`.
-        Texts:
-          title: Dictionary
-          type: object
-          additionalProperties:
-            type: string
-          description: Texts in the specified language by their keys.
-          x-schema-id: Dictionary
-      additionalProperties: false
-      x-schema-id: LanguageTexts
     Language:
       title: Language
       required:
@@ -265,19 +230,6 @@ components:
           description: Texts in the specified languages.
       additionalProperties: false
       x-schema-id: LanguageTextResult
-    LanguageResult:
-      title: LanguageResult
-      required:
-      - Languages
-      type: object
-      properties:
-        Languages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Language'
-          description: The supported languages.
-      additionalProperties: false
-      x-schema-id: LanguageResult
     LanguageTextParameters:
       title: LanguageTextParameters
       required:
@@ -311,3 +263,51 @@ components:
           description: Scope of texts to return.
       additionalProperties: false
       x-schema-id: LanguageTextParameters
+    LanguageResult:
+      title: LanguageResult
+      required:
+      - Languages
+      type: object
+      properties:
+        Languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Language'
+          description: The supported languages.
+      additionalProperties: false
+      x-schema-id: LanguageResult
+    LanguageTexts:
+      title: Language texts
+      required:
+      - LanguageCode
+      - Texts
+      type: object
+      properties:
+        LanguageCode:
+          minLength: 1
+          type: string
+          description: Language-culture code of the `Language`.
+        Texts:
+          title: Dictionary
+          type: object
+          additionalProperties:
+            type: string
+          description: Texts in the specified language by their keys.
+          x-schema-id: Dictionary
+      additionalProperties: false
+      x-schema-id: LanguageTexts
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult

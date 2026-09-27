@@ -97,21 +97,18 @@ paths:
       x-restricted: true
 components:
   schemas:
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
+    PaymentPlanAddResult:
+      title: PaymentPlanAddResult
+      required:
+      - PaymentRequestUrl
       type: object
       properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
+        PaymentRequestUrl:
+          minLength: 1
+          type: string
+          description: Payment request URL associated with the created payment plan.
       additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
+      x-schema-id: PaymentPlanAddResult
     PaymentMethodsEnum:
       title: Available payment plan payment methods
       enum:
@@ -155,6 +152,21 @@ components:
       - Google Pay
       - SEPA Direct Debit
       - ''
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     BillingAutomationPaymentPlanPaymentRequest:
       title: Billing automation payment plan payment request
       required:
@@ -192,18 +204,6 @@ components:
           description: Specifies whether a payment request email is sent to the customer.
       additionalProperties: false
       x-schema-id: BillingAutomationPaymentPlanPaymentRequest
-    PaymentPlanAddResult:
-      title: PaymentPlanAddResult
-      required:
-      - PaymentRequestUrl
-      type: object
-      properties:
-        PaymentRequestUrl:
-          minLength: 1
-          type: string
-          description: Payment request URL associated with the created payment plan.
-      additionalProperties: false
-      x-schema-id: PaymentPlanAddResult
     BillingAutomationPaymentPlanAddParameters:
       title: BillingAutomationPaymentPlanAddParameters
       required:

@@ -369,6 +369,211 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    RestrictionSetData:
+      title: Restriction set data
+      required:
+      - Days
+      - Type
+      type: object
+      properties:
+        Type:
+          title: Restriction type
+          allOf:
+          - $ref: '#/components/schemas/RestrictionTypeEnum'
+          description: 'Restriction type.
+
+
+            Stay (Guests can''t stay within specified dates.)
+
+
+            Start (Guests can''t check in within specified dates.)
+
+
+            End (Guests can''t check out within specified dates.)'
+          x-enumNames:
+          - Stay
+          - Start
+          - End
+          x-enumDescriptions:
+          - Guests can't stay within specified dates.
+          - Guests can't check in within specified dates.
+          - Guests can't check out within specified dates.
+        ExactRateId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the exact `Rate` to which the restriction applies.
+          x-schema-id: HybridIdentifier
+        BaseRateId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the base `Rate` to which the restriction applies.
+          x-schema-id: HybridIdentifier
+        RateGroupId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `Rate group` to which the restriction applies.
+          x-schema-id: HybridIdentifier
+        ResourceCategoryId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `Resource category` to which the restriction applies.
+          x-schema-id: HybridIdentifier
+        ResourceCategoryType:
+          allOf:
+          - $ref: '#/components/schemas/ResourceCategoryTypeEnum'
+          description: 'Name of the `Resource category type` to which the restriction applies.
+
+
+            Room
+
+
+            Bed
+
+
+            Dorm
+
+
+            Apartment
+
+
+            Suite
+
+
+            Villa
+
+
+            Site
+
+
+            Office
+
+
+            MeetingRoom
+
+
+            ParkingSpot
+
+
+            Desk
+
+
+            TeamArea
+
+
+            Membership
+
+
+            Tent
+
+
+            CaravanOrRV
+
+
+            UnequippedCampsite
+
+
+            Bike
+
+
+            ExtraBed
+
+
+            Cot
+
+
+            Crib
+
+
+            ConferenceRoom
+
+
+            Rooftop
+
+
+            Garden
+
+
+            Restaurant
+
+
+            Amphitheater
+
+
+            PrivateSpaces'
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          description: Start date of the time interval for which the restriction conditions should be applied. This must be in UTC timezone in ISO 8601 format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes).
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          description: End date of the time interval for which the restriction conditions should be applied. This must be in UTC timezone in ISO 8601 format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes).
+          format: date-time
+        Days:
+          title: Days parameters
+          allOf:
+          - $ref: '#/components/schemas/DaysParameters'
+          description: The restricted days of week.
+        MinAdvance:
+          type:
+          - string
+          - 'null'
+          description: The minimum time before the reservation starts, you can reserve in ISO 8601 duration format.
+          format: date-time
+        MaxAdvance:
+          type:
+          - string
+          - 'null'
+          description: The maximum time before the reservation starts, you can reserve in ISO 8601 duration format.
+          format: date-time
+        MinLength:
+          type:
+          - string
+          - 'null'
+          description: Minimal reservation length in ISO 8601 duration format.
+          format: date-time
+        MaxLength:
+          type:
+          - string
+          - 'null'
+          description: Maximal reservation length in ISO 8601 duration format.
+          format: date-time
+        MinPrice:
+          title: Currency value (ver 2023-02-02)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValue'
+          description: Value of the minimum price per time unit.
+        MaxPrice:
+          title: Currency value (ver 2023-02-02)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValue'
+          description: Value of the maximum price per time unit.
+      additionalProperties: false
+      x-schema-id: RestrictionSetData
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
@@ -384,6 +589,284 @@ components:
         Details: {}
       additionalProperties: false
       x-schema-id: ConnectorApiExceptionResult
+    CurrencyValueOld:
+      title: Currency value (ver 2018-06-07)
+      required:
+      - Currency
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        Value:
+          type:
+          - number
+          - 'null'
+          format: double
+        Net:
+          type:
+          - number
+          - 'null'
+          format: double
+          deprecated: true
+        Tax:
+          type:
+          - number
+          - 'null'
+          format: double
+          deprecated: true
+        TaxRate:
+          type:
+          - number
+          - 'null'
+          format: double
+          deprecated: true
+      additionalProperties: false
+      description: Total price of the reservation.
+      x-schema-id: CurrencyValueOld
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    SetRestrictionParameters:
+      title: SetRestrictionParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Data
+      - ServiceId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ServiceId:
+          minLength: 1
+          type: string
+          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services#service) restrictions will be set in.
+          x-schema-id: HybridIdentifier
+        Data:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/RestrictionSetData'
+          description: Parameters of restrictions.
+      additionalProperties: false
+      x-schema-id: SetRestrictionParameters
+    RestrictionClearData:
+      title: Restriction clear data
+      required:
+      - Days
+      - Type
+      type: object
+      properties:
+        Type:
+          title: Restriction type
+          allOf:
+          - $ref: '#/components/schemas/RestrictionTypeEnum'
+          description: 'Restriction type.
+
+
+            Stay (Guests can''t stay within specified dates.)
+
+
+            Start (Guests can''t check in within specified dates.)
+
+
+            End (Guests can''t check out within specified dates.)'
+          x-enumNames:
+          - Stay
+          - Start
+          - End
+          x-enumDescriptions:
+          - Guests can't stay within specified dates.
+          - Guests can't check in within specified dates.
+          - Guests can't check out within specified dates.
+        ExactRateId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the exact `Rate` to which the restriction applies.
+          x-schema-id: HybridIdentifier
+        BaseRateId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the base `Rate` to which the restriction applies.
+          x-schema-id: HybridIdentifier
+        RateGroupId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `Rate group` to which the restriction applies.
+          x-schema-id: HybridIdentifier
+        ResourceCategoryId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `Resource category` to which the restriction applies.
+          x-schema-id: HybridIdentifier
+        ResourceCategoryType:
+          allOf:
+          - $ref: '#/components/schemas/ResourceCategoryTypeEnum'
+          description: 'Name of the `Resource category type` to which the restriction applies.
+
+
+            Room
+
+
+            Bed
+
+
+            Dorm
+
+
+            Apartment
+
+
+            Suite
+
+
+            Villa
+
+
+            Site
+
+
+            Office
+
+
+            MeetingRoom
+
+
+            ParkingSpot
+
+
+            Desk
+
+
+            TeamArea
+
+
+            Membership
+
+
+            Tent
+
+
+            CaravanOrRV
+
+
+            UnequippedCampsite
+
+
+            Bike
+
+
+            ExtraBed
+
+
+            Cot
+
+
+            Crib
+
+
+            ConferenceRoom
+
+
+            Rooftop
+
+
+            Garden
+
+
+            Restaurant
+
+
+            Amphitheater
+
+
+            PrivateSpaces'
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          description: Start date of the time interval for which the restriction conditions should be applied. This must be in UTC timezone in ISO 8601 format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes).
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          description: End date of the time interval for which the restriction conditions should be applied. This must be in UTC timezone in ISO 8601 format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes).
+          format: date-time
+        Days:
+          title: Days parameters
+          allOf:
+          - $ref: '#/components/schemas/DaysParameters'
+          description: The days of week to which the restriction applies.
+      additionalProperties: false
+      x-schema-id: RestrictionClearData
+    DaysParameters:
+      title: Days parameters
+      required:
+      - Friday
+      - Monday
+      - Saturday
+      - Sunday
+      - Thursday
+      - Tuesday
+      - Wednesday
+      type: object
+      properties:
+        Monday:
+          type: boolean
+          description: Monday enabled
+        Tuesday:
+          type: boolean
+          description: Tuesday enabled
+        Wednesday:
+          type: boolean
+          description: Wednesday enabled
+        Thursday:
+          type: boolean
+          description: Thursday enabled
+        Friday:
+          type: boolean
+          description: Friday enabled
+        Saturday:
+          type: boolean
+          description: Saturday enabled
+        Sunday:
+          type: boolean
+          description: Sunday enabled
+      additionalProperties: false
+      x-schema-id: DaysParameters
     CurrencyValue:
       title: Currency value (ver 2023-02-02)
       required:
@@ -585,534 +1068,9 @@ components:
       x-enumDescriptions:
       - Restriction was created by a user in Mews.
       - Restriction was created by a 3rd-party integration.
-    ClearRestrictionParameters:
-      title: ClearRestrictionParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Data
-      - ServiceId
+    Unit:
       type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ServiceId:
-          minLength: 1
-          type: string
-          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services#service) to which the restrictions apply.
-          x-schema-id: HybridIdentifier
-        Data:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/RestrictionClearData'
-          description: Details of the matching conditions and time intervals for clearing restrictions.
       additionalProperties: false
-      x-schema-id: ClearRestrictionParameters
-    DaysParameters:
-      title: Days parameters
-      required:
-      - Friday
-      - Monday
-      - Saturday
-      - Sunday
-      - Thursday
-      - Tuesday
-      - Wednesday
-      type: object
-      properties:
-        Monday:
-          type: boolean
-          description: Monday enabled
-        Tuesday:
-          type: boolean
-          description: Tuesday enabled
-        Wednesday:
-          type: boolean
-          description: Wednesday enabled
-        Thursday:
-          type: boolean
-          description: Thursday enabled
-        Friday:
-          type: boolean
-          description: Friday enabled
-        Saturday:
-          type: boolean
-          description: Saturday enabled
-        Sunday:
-          type: boolean
-          description: Sunday enabled
-      additionalProperties: false
-      x-schema-id: DaysParameters
-    Hours:
-      title: Hours
-      required:
-      - Eight
-      - Eighteen
-      - Eleven
-      - Fifteen
-      - Five
-      - Four
-      - Fourteen
-      - Nine
-      - Nineteen
-      - One
-      - Seven
-      - Seventeen
-      - Six
-      - Sixteen
-      - Ten
-      - Thirteen
-      - Three
-      - Twelve
-      - Twenty
-      - TwentyOne
-      - TwentyThree
-      - TwentyTwo
-      - Two
-      - Zero
-      type: object
-      properties:
-        Zero:
-          type: boolean
-          description: Hour 0 enabled
-        One:
-          type: boolean
-          description: Hour 1 enabled
-        Two:
-          type: boolean
-          description: Hour 2 enabled
-        Three:
-          type: boolean
-          description: Hour 3 enabled
-        Four:
-          type: boolean
-          description: Hour 4 enabled
-        Five:
-          type: boolean
-          description: Hour 5 enabled
-        Six:
-          type: boolean
-          description: Hour 6 enabled
-        Seven:
-          type: boolean
-          description: Hour 7 enabled
-        Eight:
-          type: boolean
-          description: Hour 8 enabled
-        Nine:
-          type: boolean
-          description: Hour 9 enabled
-        Ten:
-          type: boolean
-          description: Hour 10 enabled
-        Eleven:
-          type: boolean
-          description: Hour 11 enabled
-        Twelve:
-          type: boolean
-          description: Hour 12 enabled
-        Thirteen:
-          type: boolean
-          description: Hour 13 enabled
-        Fourteen:
-          type: boolean
-          description: Hour 14 enabled
-        Fifteen:
-          type: boolean
-          description: Hour 15 enabled
-        Sixteen:
-          type: boolean
-          description: Hour 16 enabled
-        Seventeen:
-          type: boolean
-          description: Hour 17 enabled
-        Eighteen:
-          type: boolean
-          description: Hour 18 enabled
-        Nineteen:
-          type: boolean
-          description: Hour 19 enabled
-        Twenty:
-          type: boolean
-          description: Hour 20 enabled
-        TwentyOne:
-          type: boolean
-          description: Hour 21 enabled
-        TwentyTwo:
-          type: boolean
-          description: Hour 22 enabled
-        TwentyThree:
-          type: boolean
-          description: Hour 23 enabled
-      additionalProperties: false
-      x-schema-id: Hours
-    RestrictionSetData:
-      title: Restriction set data
-      required:
-      - Days
-      - Type
-      type: object
-      properties:
-        Type:
-          title: Restriction type
-          allOf:
-          - $ref: '#/components/schemas/RestrictionTypeEnum'
-          description: 'Restriction type.
-
-
-            Stay (Guests can''t stay within specified dates.)
-
-
-            Start (Guests can''t check in within specified dates.)
-
-
-            End (Guests can''t check out within specified dates.)'
-          x-enumNames:
-          - Stay
-          - Start
-          - End
-          x-enumDescriptions:
-          - Guests can't stay within specified dates.
-          - Guests can't check in within specified dates.
-          - Guests can't check out within specified dates.
-        ExactRateId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the exact `Rate` to which the restriction applies.
-          x-schema-id: HybridIdentifier
-        BaseRateId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the base `Rate` to which the restriction applies.
-          x-schema-id: HybridIdentifier
-        RateGroupId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the `Rate group` to which the restriction applies.
-          x-schema-id: HybridIdentifier
-        ResourceCategoryId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the `Resource category` to which the restriction applies.
-          x-schema-id: HybridIdentifier
-        ResourceCategoryType:
-          allOf:
-          - $ref: '#/components/schemas/ResourceCategoryTypeEnum'
-          description: 'Name of the `Resource category type` to which the restriction applies.
-
-
-            Room
-
-
-            Bed
-
-
-            Dorm
-
-
-            Apartment
-
-
-            Suite
-
-
-            Villa
-
-
-            Site
-
-
-            Office
-
-
-            MeetingRoom
-
-
-            ParkingSpot
-
-
-            Desk
-
-
-            TeamArea
-
-
-            Membership
-
-
-            Tent
-
-
-            CaravanOrRV
-
-
-            UnequippedCampsite
-
-
-            Bike
-
-
-            ExtraBed
-
-
-            Cot
-
-
-            Crib
-
-
-            ConferenceRoom
-
-
-            Rooftop
-
-
-            Garden
-
-
-            Restaurant
-
-
-            Amphitheater
-
-
-            PrivateSpaces'
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          description: Start date of the time interval for which the restriction conditions should be applied. This must be in UTC timezone in ISO 8601 format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes).
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          description: End date of the time interval for which the restriction conditions should be applied. This must be in UTC timezone in ISO 8601 format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes).
-          format: date-time
-        Days:
-          title: Days parameters
-          allOf:
-          - $ref: '#/components/schemas/DaysParameters'
-          description: The restricted days of week.
-        MinAdvance:
-          type:
-          - string
-          - 'null'
-          description: The minimum time before the reservation starts, you can reserve in ISO 8601 duration format.
-          format: date-time
-        MaxAdvance:
-          type:
-          - string
-          - 'null'
-          description: The maximum time before the reservation starts, you can reserve in ISO 8601 duration format.
-          format: date-time
-        MinLength:
-          type:
-          - string
-          - 'null'
-          description: Minimal reservation length in ISO 8601 duration format.
-          format: date-time
-        MaxLength:
-          type:
-          - string
-          - 'null'
-          description: Maximal reservation length in ISO 8601 duration format.
-          format: date-time
-        MinPrice:
-          title: Currency value (ver 2023-02-02)
-          allOf:
-          - $ref: '#/components/schemas/CurrencyValue'
-          description: Value of the minimum price per time unit.
-        MaxPrice:
-          title: Currency value (ver 2023-02-02)
-          allOf:
-          - $ref: '#/components/schemas/CurrencyValue'
-          description: Value of the maximum price per time unit.
-      additionalProperties: false
-      x-schema-id: RestrictionSetData
-    RestrictionTypeEnum:
-      title: Restriction type
-      enum:
-      - Stay
-      - Start
-      - End
-      type: string
-      description: '
-
-
-        Stay (Guests can''t stay within specified dates.)
-
-
-        Start (Guests can''t check in within specified dates.)
-
-
-        End (Guests can''t check out within specified dates.)'
-      x-enumNames:
-      - Stay
-      - Start
-      - End
-      x-enumDescriptions:
-      - Guests can't stay within specified dates.
-      - Guests can't check in within specified dates.
-      - Guests can't check out within specified dates.
-    CurrencyValueOld:
-      title: Currency value (ver 2018-06-07)
-      required:
-      - Currency
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          format: currency
-        Value:
-          type:
-          - number
-          - 'null'
-          format: double
-        Net:
-          type:
-          - number
-          - 'null'
-          format: double
-          deprecated: true
-        Tax:
-          type:
-          - number
-          - 'null'
-          format: double
-          deprecated: true
-        TaxRate:
-          type:
-          - number
-          - 'null'
-          format: double
-          deprecated: true
-      additionalProperties: false
-      description: Total price of the reservation.
-      x-schema-id: CurrencyValueOld
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
-          format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    SetRestrictionParameters:
-      title: SetRestrictionParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Data
-      - ServiceId
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ServiceId:
-          minLength: 1
-          type: string
-          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services#service) restrictions will be set in.
-          x-schema-id: HybridIdentifier
-        Data:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/RestrictionSetData'
-          description: Parameters of restrictions.
-      additionalProperties: false
-      x-schema-id: SetRestrictionParameters
-    Restriction:
-      title: Restriction
-      required:
-      - Conditions
-      - Id
-      - Origin
-      - ServiceId
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the restriction.
-          format: uuid
-        ServiceId:
-          type: string
-          description: Unique identifier of the `Service`.
-          format: uuid
-        ExternalIdentifier:
-          type:
-          - string
-          - 'null'
-          description: External identifier of the restriction.
-        Origin:
-          title: Restriction origin
-          allOf:
-          - $ref: '#/components/schemas/RestrictionOriginEnum'
-          description: 'Restriction origin
-
-
-            User (Restriction was created by a user in Mews.)
-
-
-            Integration (Restriction was created by a 3rd-party integration.)'
-          x-enumNames:
-          - User
-          - Integration
-          x-enumDescriptions:
-          - Restriction was created by a user in Mews.
-          - Restriction was created by a 3rd-party integration.
-        Conditions:
-          title: Restriction condition
-          allOf:
-          - $ref: '#/components/schemas/RestrictionConditions'
-          description: The conditions or rules that must be met by a reservation for the restriction to apply.
-        Exceptions:
-          title: Restriction exception
-          allOf:
-          - $ref: '#/components/schemas/RestrictionExceptions'
-          description: The rules that prevent the restriction from applying to a reservation, even when all conditions have been met.
-      additionalProperties: false
-      description: The added restriction.
-      x-schema-id: Restriction
     RestrictionConditions:
       title: Restriction condition
       required:
@@ -1272,35 +1230,6 @@ components:
       additionalProperties: false
       description: The conditions or rules that must be met by a reservation for the restriction to apply.
       x-schema-id: RestrictionConditions
-    RestrictionOrigin:
-      title: Restriction origin
-      enum:
-      - User
-      - Integration
-      type: string
-      x-enumDescriptions:
-      - Restriction was created by a user in Mews.
-      - Restriction was created by a 3rd-party integration.
-    Unit:
-      type: object
-      additionalProperties: false
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
     RestrictionFilterParameters:
       title: RestrictionFilterParameters
       required:
@@ -1426,6 +1355,231 @@ components:
           description: Unique identifiers of the `Service` from which the restrictions are requested.
       additionalProperties: false
       x-schema-id: RestrictionFilterParameters
+    Hours:
+      title: Hours
+      required:
+      - Eight
+      - Eighteen
+      - Eleven
+      - Fifteen
+      - Five
+      - Four
+      - Fourteen
+      - Nine
+      - Nineteen
+      - One
+      - Seven
+      - Seventeen
+      - Six
+      - Sixteen
+      - Ten
+      - Thirteen
+      - Three
+      - Twelve
+      - Twenty
+      - TwentyOne
+      - TwentyThree
+      - TwentyTwo
+      - Two
+      - Zero
+      type: object
+      properties:
+        Zero:
+          type: boolean
+          description: Hour 0 enabled
+        One:
+          type: boolean
+          description: Hour 1 enabled
+        Two:
+          type: boolean
+          description: Hour 2 enabled
+        Three:
+          type: boolean
+          description: Hour 3 enabled
+        Four:
+          type: boolean
+          description: Hour 4 enabled
+        Five:
+          type: boolean
+          description: Hour 5 enabled
+        Six:
+          type: boolean
+          description: Hour 6 enabled
+        Seven:
+          type: boolean
+          description: Hour 7 enabled
+        Eight:
+          type: boolean
+          description: Hour 8 enabled
+        Nine:
+          type: boolean
+          description: Hour 9 enabled
+        Ten:
+          type: boolean
+          description: Hour 10 enabled
+        Eleven:
+          type: boolean
+          description: Hour 11 enabled
+        Twelve:
+          type: boolean
+          description: Hour 12 enabled
+        Thirteen:
+          type: boolean
+          description: Hour 13 enabled
+        Fourteen:
+          type: boolean
+          description: Hour 14 enabled
+        Fifteen:
+          type: boolean
+          description: Hour 15 enabled
+        Sixteen:
+          type: boolean
+          description: Hour 16 enabled
+        Seventeen:
+          type: boolean
+          description: Hour 17 enabled
+        Eighteen:
+          type: boolean
+          description: Hour 18 enabled
+        Nineteen:
+          type: boolean
+          description: Hour 19 enabled
+        Twenty:
+          type: boolean
+          description: Hour 20 enabled
+        TwentyOne:
+          type: boolean
+          description: Hour 21 enabled
+        TwentyTwo:
+          type: boolean
+          description: Hour 22 enabled
+        TwentyThree:
+          type: boolean
+          description: Hour 23 enabled
+      additionalProperties: false
+      x-schema-id: Hours
+    ClearRestrictionParameters:
+      title: ClearRestrictionParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Data
+      - ServiceId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ServiceId:
+          minLength: 1
+          type: string
+          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services#service) to which the restrictions apply.
+          x-schema-id: HybridIdentifier
+        Data:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/RestrictionClearData'
+          description: Details of the matching conditions and time intervals for clearing restrictions.
+      additionalProperties: false
+      x-schema-id: ClearRestrictionParameters
+    Restriction:
+      title: Restriction
+      required:
+      - Conditions
+      - Id
+      - Origin
+      - ServiceId
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the restriction.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the `Service`.
+          format: uuid
+        ExternalIdentifier:
+          type:
+          - string
+          - 'null'
+          description: External identifier of the restriction.
+        Origin:
+          title: Restriction origin
+          allOf:
+          - $ref: '#/components/schemas/RestrictionOriginEnum'
+          description: 'Restriction origin
+
+
+            User (Restriction was created by a user in Mews.)
+
+
+            Integration (Restriction was created by a 3rd-party integration.)'
+          x-enumNames:
+          - User
+          - Integration
+          x-enumDescriptions:
+          - Restriction was created by a user in Mews.
+          - Restriction was created by a 3rd-party integration.
+        Conditions:
+          title: Restriction condition
+          allOf:
+          - $ref: '#/components/schemas/RestrictionConditions'
+          description: The conditions or rules that must be met by a reservation for the restriction to apply.
+        Exceptions:
+          title: Restriction exception
+          allOf:
+          - $ref: '#/components/schemas/RestrictionExceptions'
+          description: The rules that prevent the restriction from applying to a reservation, even when all conditions have been met.
+      additionalProperties: false
+      description: The added restriction.
+      x-schema-id: Restriction
+    RestrictionOrigin:
+      title: Restriction origin
+      enum:
+      - User
+      - Integration
+      type: string
+      x-enumDescriptions:
+      - Restriction was created by a user in Mews.
+      - Restriction was created by a 3rd-party integration.
+    RestrictionTypeEnum:
+      title: Restriction type
+      enum:
+      - Stay
+      - Start
+      - End
+      type: string
+      description: '
+
+
+        Stay (Guests can''t stay within specified dates.)
+
+
+        Start (Guests can''t check in within specified dates.)
+
+
+        End (Guests can''t check out within specified dates.)'
+      x-enumNames:
+      - Stay
+      - Start
+      - End
+      x-enumDescriptions:
+      - Guests can't stay within specified dates.
+      - Guests can't check in within specified dates.
+      - Guests can't check out within specified dates.
     RestrictionResult:
       title: RestrictionResult
       required:
@@ -1445,160 +1599,6 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: RestrictionResult
-    RestrictionClearData:
-      title: Restriction clear data
-      required:
-      - Days
-      - Type
-      type: object
-      properties:
-        Type:
-          title: Restriction type
-          allOf:
-          - $ref: '#/components/schemas/RestrictionTypeEnum'
-          description: 'Restriction type.
-
-
-            Stay (Guests can''t stay within specified dates.)
-
-
-            Start (Guests can''t check in within specified dates.)
-
-
-            End (Guests can''t check out within specified dates.)'
-          x-enumNames:
-          - Stay
-          - Start
-          - End
-          x-enumDescriptions:
-          - Guests can't stay within specified dates.
-          - Guests can't check in within specified dates.
-          - Guests can't check out within specified dates.
-        ExactRateId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the exact `Rate` to which the restriction applies.
-          x-schema-id: HybridIdentifier
-        BaseRateId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the base `Rate` to which the restriction applies.
-          x-schema-id: HybridIdentifier
-        RateGroupId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the `Rate group` to which the restriction applies.
-          x-schema-id: HybridIdentifier
-        ResourceCategoryId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the `Resource category` to which the restriction applies.
-          x-schema-id: HybridIdentifier
-        ResourceCategoryType:
-          allOf:
-          - $ref: '#/components/schemas/ResourceCategoryTypeEnum'
-          description: 'Name of the `Resource category type` to which the restriction applies.
-
-
-            Room
-
-
-            Bed
-
-
-            Dorm
-
-
-            Apartment
-
-
-            Suite
-
-
-            Villa
-
-
-            Site
-
-
-            Office
-
-
-            MeetingRoom
-
-
-            ParkingSpot
-
-
-            Desk
-
-
-            TeamArea
-
-
-            Membership
-
-
-            Tent
-
-
-            CaravanOrRV
-
-
-            UnequippedCampsite
-
-
-            Bike
-
-
-            ExtraBed
-
-
-            Cot
-
-
-            Crib
-
-
-            ConferenceRoom
-
-
-            Rooftop
-
-
-            Garden
-
-
-            Restaurant
-
-
-            Amphitheater
-
-
-            PrivateSpaces'
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          description: Start date of the time interval for which the restriction conditions should be applied. This must be in UTC timezone in ISO 8601 format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes).
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          description: End date of the time interval for which the restriction conditions should be applied. This must be in UTC timezone in ISO 8601 format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes).
-          format: date-time
-        Days:
-          title: Days parameters
-          allOf:
-          - $ref: '#/components/schemas/DaysParameters'
-          description: The days of week to which the restriction applies.
-      additionalProperties: false
-      x-schema-id: RestrictionClearData
     RestrictionExceptions:
       title: Restriction exception
       type: object
