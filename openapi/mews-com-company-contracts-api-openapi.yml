@@ -409,38 +409,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     TravelAgencyContractUpdateParameters:
       title: Travel agency contract update parameters
       required:
@@ -514,6 +482,59 @@ components:
           description: Additional notes of the travel agency contract.
       additionalProperties: false
       x-schema-id: TravelAgencyContractUpdateParameters
+    ContractUpdateResult:
+      title: ContractUpdateResult
+      required:
+      - TravelAgencyContracts
+      type: object
+      properties:
+        TravelAgencyContracts:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelAgencyContract'
+          description: The updated travel agency contracts.
+      additionalProperties: false
+      x-schema-id: ContractUpdateResult
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    TravelAgencyContractOptions:
+      title: Travel agency contract options
+      required:
+      - IncludeCancellationFeeInCommissionEstimate
+      - SkipAutomaticSettlement
+      type: object
+      properties:
+        IncludeCancellationFeeInCommissionEstimate:
+          type: boolean
+          description: Cancellation fee will be considered when calculating the travel agency commission estimate.
+        SkipAutomaticSettlement:
+          type: boolean
+          description: Reservations from travel agencies will not be automatically charged.
+      additionalProperties: false
+      description: ''
+      x-schema-id: TravelAgencyContractOptions
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
     Limitation:
       title: Limitation
       required:
@@ -531,143 +552,6 @@ components:
       additionalProperties: false
       description: Limitation on the quantity of data returned.
       x-schema-id: Limitation
-    ActivityStates:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: Activity states used for filtering.
-    ContractAdditionResult:
-      title: ContractAdditionResult
-      required:
-      - TravelAgencyContracts
-      type: object
-      properties:
-        TravelAgencyContracts:
-          type: array
-          items:
-            $ref: '#/components/schemas/TravelAgencyContract'
-          description: The added travel agency contracts.
-      additionalProperties: false
-      x-schema-id: ContractAdditionResult
-    DecimalNullableUpdateValue:
-      title: Decimal update value
-      type: object
-      properties:
-        Value:
-          type:
-          - number
-          - 'null'
-          description: Value which is to be updated.
-          format: double
-      additionalProperties: false
-      x-schema-id: DecimalNullableUpdateValue
-    TravelAgencyContractOptions:
-      title: Travel agency contract options
-      required:
-      - IncludeCancellationFeeInCommissionEstimate
-      - SkipAutomaticSettlement
-      type: object
-      properties:
-        IncludeCancellationFeeInCommissionEstimate:
-          type: boolean
-          description: Cancellation fee will be considered when calculating the travel agency commission estimate.
-        SkipAutomaticSettlement:
-          type: boolean
-          description: Reservations from travel agencies will not be automatically charged.
-      additionalProperties: false
-      description: ''
-      x-schema-id: TravelAgencyContractOptions
-    MultipleCompanyContractDeleteParameters:
-      title: MultipleCompanyContractDeleteParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - ServiceIds
-      - TravelAgencyContractIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        TravelAgencyContractIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Travel agency contract to delete.
-        ServiceIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the `Service` the travel agency contract belongs to.
-      additionalProperties: false
-      x-schema-id: MultipleCompanyContractDeleteParameters
-    MultipleCompanyContractAddParameters:
-      title: MultipleCompanyContractAddParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - TravelAgencyContracts
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        TravelAgencyContracts:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/TravelAgencyContractAddParameters'
-          description: Information about travel agency contracts to be created.
-      additionalProperties: false
-      x-schema-id: MultipleCompanyContractAddParameters
-    ContractUpdateResult:
-      title: ContractUpdateResult
-      required:
-      - TravelAgencyContracts
-      type: object
-      properties:
-        TravelAgencyContracts:
-          type: array
-          items:
-            $ref: '#/components/schemas/TravelAgencyContract'
-          description: The updated travel agency contracts.
-      additionalProperties: false
-      x-schema-id: ContractUpdateResult
     TravelAgencyContract:
       title: Travel agency contract
       required:
@@ -772,6 +656,170 @@ components:
           format: date-time
       additionalProperties: false
       x-schema-id: TravelAgencyContract
+    ContractResult:
+      title: ContractResult
+      required:
+      - TravelAgencyContracts
+      type: object
+      properties:
+        TravelAgencyContracts:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelAgencyContract'
+          description: The travel agency contracts.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest contract returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older messages.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ContractResult
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    Unit:
+      type: object
+      additionalProperties: false
+    GuidNullableUpdateValue:
+      title: Guid update value
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value which is to be updated.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: GuidNullableUpdateValue
+    MultipleCompanyContractUpdateParameters:
+      title: MultipleCompanyContractUpdateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - TravelAgencyContractUpdates
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        TravelAgencyContractUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelAgencyContractUpdateParameters'
+          description: Information about travel agency contracts to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleCompanyContractUpdateParameters
+    CompanyContractFilterParameters:
+      title: CompanyContractFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        CompanyContractIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifier of the Travel agency contracts to fetch.
+        CompanyIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Company` assigned with Travel agency contracts.
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Service` where the Travel agency contracts belong to.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the Travel agency contracts were updated.
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+      additionalProperties: false
+      x-schema-id: CompanyContractFilterParameters
+    BooleanUpdateValue:
+      title: Boolean update value
+      type: object
+      properties:
+        Value:
+          type: boolean
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: BooleanUpdateValue
     TravelAgencyContractAddParameters:
       title: Travel agency contract parameters
       required:
@@ -855,25 +903,37 @@ components:
           description: Additional notes of the travel agency contract.
       additionalProperties: false
       x-schema-id: TravelAgencyContractAddParameters
-    GuidNullableUpdateValue:
-      title: Guid update value
+    DecimalNullableUpdateValue:
+      title: Decimal update value
       type: object
       properties:
         Value:
           type:
-          - string
+          - number
           - 'null'
           description: Value which is to be updated.
-          format: uuid
+          format: double
       additionalProperties: false
-      x-schema-id: GuidNullableUpdateValue
-    CompanyContractFilterParameters:
-      title: CompanyContractFilterParameters
+      x-schema-id: DecimalNullableUpdateValue
+    BooleanNullableUpdateValue:
+      title: Boolean update value
+      type: object
+      properties:
+        Value:
+          type:
+          - boolean
+          - 'null'
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: BooleanNullableUpdateValue
+    MultipleCompanyContractDeleteParameters:
+      title: MultipleCompanyContractDeleteParameters
       required:
       - AccessToken
       - Client
       - ClientToken
-      - Limitation
+      - ServiceIds
+      - TravelAgencyContractIds
       type: object
       properties:
         ClientToken:
@@ -888,79 +948,88 @@ components:
           minLength: 1
           type: string
           description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        TravelAgencyContractIds:
           maxItems: 1000
           minItems: 1
-          type:
-          - array
-          - 'null'
+          type: array
           items:
             type: string
             format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        CompanyContractIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifier of the Travel agency contracts to fetch.
-        CompanyIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Company` assigned with Travel agency contracts.
+          description: Unique identifiers of the Travel agency contract to delete.
         ServiceIds:
           maxItems: 1000
           minItems: 1
-          type:
-          - array
-          - 'null'
+          type: array
           items:
             type: string
             format: uuid
-          description: Unique identifiers of `Service` where the Travel agency contracts belong to.
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the Travel agency contracts were updated.
-          x-max-interval-in-months: 3
-        ActivityStates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted or both records.
+          description: Unique identifiers of the `Service` the travel agency contract belongs to.
       additionalProperties: false
-      x-schema-id: CompanyContractFilterParameters
-    Unit:
-      type: object
-      additionalProperties: false
-    BooleanNullableUpdateValue:
-      title: Boolean update value
+      x-schema-id: MultipleCompanyContractDeleteParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        Value:
+        Message:
           type:
-          - boolean
+          - string
           - 'null'
-          description: Value which is to be updated.
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      x-schema-id: BooleanNullableUpdateValue
+      x-schema-id: ConnectorApiExceptionResult
+    ContractAdditionResult:
+      title: ContractAdditionResult
+      required:
+      - TravelAgencyContracts
+      type: object
+      properties:
+        TravelAgencyContracts:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelAgencyContract'
+          description: The added travel agency contracts.
+      additionalProperties: false
+      x-schema-id: ContractAdditionResult
+    MultipleCompanyContractAddParameters:
+      title: MultipleCompanyContractAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - TravelAgencyContracts
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        TravelAgencyContracts:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelAgencyContractAddParameters'
+          description: Information about travel agency contracts to be created.
+      additionalProperties: false
+      x-schema-id: MultipleCompanyContractAddParameters
     TravelAgencyContractOptionsParameters:
       title: Travel agency contract update options
       required:
@@ -980,72 +1049,3 @@ components:
           description: Reservations from travel agencies will not be automatically charged.
       additionalProperties: false
       x-schema-id: TravelAgencyContractOptionsParameters
-    MultipleCompanyContractUpdateParameters:
-      title: MultipleCompanyContractUpdateParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - TravelAgencyContractUpdates
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        TravelAgencyContractUpdates:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/TravelAgencyContractUpdateParameters'
-          description: Information about travel agency contracts to be updated.
-      additionalProperties: false
-      x-schema-id: MultipleCompanyContractUpdateParameters
-    ContractResult:
-      title: ContractResult
-      required:
-      - TravelAgencyContracts
-      type: object
-      properties:
-        TravelAgencyContracts:
-          type: array
-          items:
-            $ref: '#/components/schemas/TravelAgencyContract'
-          description: The travel agency contracts.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the last and hence oldest contract returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older messages.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: ContractResult
-    BooleanUpdateValue:
-      title: Boolean update value
-      type: object
-      properties:
-        Value:
-          type: boolean
-          description: Value which is to be updated.
-      additionalProperties: false
-      x-schema-id: BooleanUpdateValue
-    StringUpdateValue:
-      title: String update value
-      type: object
-      properties:
-        Value:
-          type:
-          - string
-          - 'null'
-          description: Value which is to be updated.
-      additionalProperties: false
-      x-schema-id: StringUpdateValue

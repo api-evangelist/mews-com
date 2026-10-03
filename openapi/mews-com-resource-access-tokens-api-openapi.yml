@@ -419,6 +419,290 @@ components:
       additionalProperties: false
       description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
       x-schema-id: TimeFilterInterval
+    ResourceAccessTokenFilterParameters:
+      title: ResourceAccessTokenFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        ResourceAccessTokenIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of resource access token. Required if no other filter is provided.
+        ServiceOrderIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of reservations. Required if no other filter is provided.
+        CollidingUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource access token is valid. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which resource access token was updated. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Whether to return only active, only deleted or both records.
+      additionalProperties: false
+      x-schema-id: ResourceAccessTokenFilterParameters
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ResourceAccessTokenDeleteParameters:
+      title: ResourceAccessTokenDeleteParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Ids
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the resource access token to delete.
+      additionalProperties: false
+      x-schema-id: ResourceAccessTokenDeleteParameters
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    Unit:
+      type: object
+      additionalProperties: false
+    ResourceAccessTokenPermissionsParameters:
+      title: Resource access token permission parameter
+      type: object
+      properties:
+        Bed:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Specify whether the resource access token grants permission to access bed (or null if not being updated).
+        Room:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Specify whether the resource access token grants permission to access room (or null if not being updated).
+        Floor:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Specify whether the resource access token grants permission to access floor (or null if not being updated).
+        Building:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Specify whether the resource access token grants permission to access building (or null if not being updated).
+      additionalProperties: false
+      x-schema-id: ResourceAccessTokenPermissionsParameters
+    BooleanUpdateValue:
+      title: Boolean update value
+      type: object
+      properties:
+        Value:
+          type: boolean
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: BooleanUpdateValue
+    ResourceAccessTokenPermissions:
+      title: Resource access token permissions
+      type: object
+      properties:
+        Bed:
+          type: boolean
+          description: Specify whether the resource access token grants permission to access bed.
+        Room:
+          type: boolean
+          description: Specify whether the resource access token grants permission to access room.
+        Floor:
+          type: boolean
+          description: Specify whether the resource access token grants permission to access floor.
+        Building:
+          type: boolean
+          description: Specify whether the resource access token grants permission to access building.
+      additionalProperties: false
+      description: ''
+      x-schema-id: ResourceAccessTokenPermissions
+    ResourceAccessTokenUpdateResult:
+      title: ResourceAccessTokenUpdateResult
+      required:
+      - ResourceAccessTokens
+      type: object
+      properties:
+        ResourceAccessTokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceAccessToken'
+          description: Updated resource access tokens.
+      additionalProperties: false
+      x-schema-id: ResourceAccessTokenUpdateResult
+    ResourceAccessToken:
+      title: Resource access token
+      required:
+      - CreatedUtc
+      - EnterpriseId
+      - Id
+      - IsActive
+      - Permissions
+      - ServiceOrderId
+      - Type
+      - UpdatedUtc
+      - ValidityEndUtc
+      - ValidityStartUtc
+      - Value
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the resource access token.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the `Enterprise`.
+          format: uuid
+        ServiceOrderId:
+          type: string
+          description: Unique identifier of `Reservation`.
+          format: uuid
+        CompanionshipId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of `Companionship`.
+          format: uuid
+        ResourceId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of `Resource`.
+          format: uuid
+        Type:
+          $ref: '#/components/schemas/ResourceAccessTokenType'
+        Value:
+          minLength: 1
+          type: string
+          description: Value of the resource access token.
+        SerialNumber:
+          type:
+          - string
+          - 'null'
+          description: Serial number of the resource access token.
+        ValidityStartUtc:
+          minLength: 1
+          type: string
+          description: Marks the start of interval in which the resource access token can be used.
+          format: date-time
+        ValidityEndUtc:
+          minLength: 1
+          type: string
+          description: Marks the end of interval in which the resource access token can be used.
+          format: date-time
+        Permissions:
+          title: Resource access token permissions
+          allOf:
+          - $ref: '#/components/schemas/ResourceAccessTokenPermissions'
+          description: Permissions of the resource access token.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the resource access token in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the resource access token in UTC timezone in ISO 8601 format.
+          format: date-time
+        IsActive:
+          type: boolean
+          description: Whether the resource access token is still active.
+      additionalProperties: false
+      x-schema-id: ResourceAccessToken
     MultipleResourceAccessTokenParameters:
       title: MultipleResourceAccessTokenParameters
       required:
@@ -449,32 +733,25 @@ components:
           description: Parameters of resource access token.
       additionalProperties: false
       x-schema-id: MultipleResourceAccessTokenParameters
-    ResourceAccessTokenPermissionsParameters:
-      title: Resource access token permission parameter
+    ResourceAccessTokenResult:
+      title: ResourceAccessTokenResult
+      required:
+      - ResourceAccessTokens
       type: object
       properties:
-        Bed:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: Specify whether the resource access token grants permission to access bed (or null if not being updated).
-        Room:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: Specify whether the resource access token grants permission to access room (or null if not being updated).
-        Floor:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: Specify whether the resource access token grants permission to access floor (or null if not being updated).
-        Building:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: Specify whether the resource access token grants permission to access building (or null if not being updated).
+        ResourceAccessTokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceAccessToken'
+          description: Resource access tokens.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest item returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older tokens. If `Limitation` is specified in the request message, then `Cursor` will always be included in the response message.
+          format: uuid
       additionalProperties: false
-      x-schema-id: ResourceAccessTokenPermissionsParameters
+      x-schema-id: ResourceAccessTokenResult
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
@@ -490,23 +767,6 @@ components:
         Details: {}
       additionalProperties: false
       x-schema-id: ConnectorApiExceptionResult
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
-          format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
     ResourceAccessTokenParameters:
       title: Resource access token parameter
       required:
@@ -596,253 +856,6 @@ components:
           description: Parameters of resource access token to update.
       additionalProperties: false
       x-schema-id: MultipleResourceAccessTokenUpdateParameters
-    ResourceAccessTokenUpdateResult:
-      title: ResourceAccessTokenUpdateResult
-      required:
-      - ResourceAccessTokens
-      type: object
-      properties:
-        ResourceAccessTokens:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceAccessToken'
-          description: Updated resource access tokens.
-      additionalProperties: false
-      x-schema-id: ResourceAccessTokenUpdateResult
-    ResourceAccessTokenType:
-      title: Resource access token type
-      enum:
-      - PinCode
-      - RfidTag
-      type: string
-      description: Type of stored value.
-    ResourceAccessTokenFilterParameters:
-      title: ResourceAccessTokenFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        ResourceAccessTokenIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of resource access token. Required if no other filter is provided.
-        ServiceOrderIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of reservations. Required if no other filter is provided.
-        CollidingUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the resource access token is valid. Required if no other filter is provided.
-          x-max-interval-in-months: 3
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which resource access token was updated. Required if no other filter is provided.
-          x-max-interval-in-months: 3
-        ActivityStates:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Whether to return only active, only deleted or both records.
-      additionalProperties: false
-      x-schema-id: ResourceAccessTokenFilterParameters
-    ResourceAccessTokenDeleteParameters:
-      title: ResourceAccessTokenDeleteParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Ids
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Ids:
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the resource access token to delete.
-      additionalProperties: false
-      x-schema-id: ResourceAccessTokenDeleteParameters
-    Unit:
-      type: object
-      additionalProperties: false
-    ResourceAccessTokenResult:
-      title: ResourceAccessTokenResult
-      required:
-      - ResourceAccessTokens
-      type: object
-      properties:
-        ResourceAccessTokens:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceAccessToken'
-          description: Resource access tokens.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the last and hence oldest item returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older tokens. If `Limitation` is specified in the request message, then `Cursor` will always be included in the response message.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: ResourceAccessTokenResult
-    ResourceAccessTokenPermissions:
-      title: Resource access token permissions
-      type: object
-      properties:
-        Bed:
-          type: boolean
-          description: Specify whether the resource access token grants permission to access bed.
-        Room:
-          type: boolean
-          description: Specify whether the resource access token grants permission to access room.
-        Floor:
-          type: boolean
-          description: Specify whether the resource access token grants permission to access floor.
-        Building:
-          type: boolean
-          description: Specify whether the resource access token grants permission to access building.
-      additionalProperties: false
-      description: ''
-      x-schema-id: ResourceAccessTokenPermissions
-    ResourceAccessToken:
-      title: Resource access token
-      required:
-      - CreatedUtc
-      - EnterpriseId
-      - Id
-      - IsActive
-      - Permissions
-      - ServiceOrderId
-      - Type
-      - UpdatedUtc
-      - ValidityEndUtc
-      - ValidityStartUtc
-      - Value
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the resource access token.
-          format: uuid
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the `Enterprise`.
-          format: uuid
-        ServiceOrderId:
-          type: string
-          description: Unique identifier of `Reservation`.
-          format: uuid
-        CompanionshipId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of `Companionship`.
-          format: uuid
-        ResourceId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of `Resource`.
-          format: uuid
-        Type:
-          $ref: '#/components/schemas/ResourceAccessTokenType'
-        Value:
-          minLength: 1
-          type: string
-          description: Value of the resource access token.
-        SerialNumber:
-          type:
-          - string
-          - 'null'
-          description: Serial number of the resource access token.
-        ValidityStartUtc:
-          minLength: 1
-          type: string
-          description: Marks the start of interval in which the resource access token can be used.
-          format: date-time
-        ValidityEndUtc:
-          minLength: 1
-          type: string
-          description: Marks the end of interval in which the resource access token can be used.
-          format: date-time
-        Permissions:
-          title: Resource access token permissions
-          allOf:
-          - $ref: '#/components/schemas/ResourceAccessTokenPermissions'
-          description: Permissions of the resource access token.
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the resource access token in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the resource access token in UTC timezone in ISO 8601 format.
-          format: date-time
-        IsActive:
-          type: boolean
-          description: Whether the resource access token is still active.
-      additionalProperties: false
-      x-schema-id: ResourceAccessToken
     ResourceAccessTokenUpdateParameters:
       title: Resource access token update
       required:
@@ -876,23 +889,10 @@ components:
           description: Specify permissions of the resource access token (or null if not being updated).
       additionalProperties: false
       x-schema-id: ResourceAccessTokenUpdateParameters
-    BooleanUpdateValue:
-      title: Boolean update value
-      type: object
-      properties:
-        Value:
-          type: boolean
-          description: Value which is to be updated.
-      additionalProperties: false
-      x-schema-id: BooleanUpdateValue
-    StringUpdateValue:
-      title: String update value
-      type: object
-      properties:
-        Value:
-          type:
-          - string
-          - 'null'
-          description: Value which is to be updated.
-      additionalProperties: false
-      x-schema-id: StringUpdateValue
+    ResourceAccessTokenType:
+      title: Resource access token type
+      enum:
+      - PinCode
+      - RfidTag
+      type: string
+      description: Type of stored value.

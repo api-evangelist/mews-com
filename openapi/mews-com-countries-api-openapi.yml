@@ -100,28 +100,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    CountrySubdivision:
-      title: Country subdivision
-      required:
-      - Code
-      - CountryCode
-      - EnglishName
-      type: object
-      properties:
-        Code:
-          minLength: 1
-          type: string
-          description: ISO 3166-2 code of the administrative division, e.g AU-QLD.
-        CountryCode:
-          minLength: 1
-          type: string
-          description: ISO 3166-1 code of the [Country](https://mews-systems.gitbook.io/connector-api/operations/countries#country).
-        EnglishName:
-          minLength: 1
-          type: string
-          description: English name of the country subdivision.
-      additionalProperties: false
-      x-schema-id: CountrySubdivision
     Parameters:
       title: Parameters
       required:
@@ -144,27 +122,43 @@ components:
           description: Name and version of the client application.
       additionalProperties: false
       x-schema-id: Parameters
-    CountryRule:
-      title: Country rules
+    Country:
+      title: Country
       required:
-      - CountryCode
-      - DriverLicenceExpirationDateNotRequired
-      - IdentityCardExpirationDateNotRequired
+      - Code
+      - EnglishName
+      - SovereignCountryCode
       type: object
       properties:
-        CountryCode:
+        Code:
           minLength: 1
           type: string
-          description: ISO 3166-1 alpha-2 code, e.g. US or GB.
-        IdentityCardExpirationDateNotRequired:
-          type: boolean
-          description: Whether the country requires expiration date for identity card.
-        DriverLicenceExpirationDateNotRequired:
-          type: boolean
-          description: Whether the country requires expiration date for driver's license.
+          description: ISO 3166-1 alpha-2 code, e.g. `CZ` or `SK`.
+        SovereignCountryCode:
+          minLength: 1
+          type: string
+          description: ISO 3166-1 alpha-2 code of the sovereign country. May differ from `Code` for dependent territories.
+        EnglishName:
+          minLength: 1
+          type: string
+          description: English name of the country.
       additionalProperties: false
-      description: Country-specific rules
-      x-schema-id: CountryRule
+      x-schema-id: Country
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     CountryGroup:
       title: Country group
       required:
@@ -188,43 +182,6 @@ components:
           description: Codes of countries included in the group, in ISO 3166-1 alpha-2 format.
       additionalProperties: false
       x-schema-id: CountryGroup
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    Country:
-      title: Country
-      required:
-      - Code
-      - EnglishName
-      - SovereignCountryCode
-      type: object
-      properties:
-        Code:
-          minLength: 1
-          type: string
-          description: ISO 3166-1 alpha-2 code, e.g. `CZ` or `SK`.
-        SovereignCountryCode:
-          minLength: 1
-          type: string
-          description: ISO 3166-1 alpha-2 code of the sovereign country. May differ from `Code` for dependent territories.
-        EnglishName:
-          minLength: 1
-          type: string
-          description: English name of the country.
-      additionalProperties: false
-      x-schema-id: Country
     CountryResult:
       title: CountryResult
       required:
@@ -257,3 +214,46 @@ components:
           description: The supported country groups.
       additionalProperties: false
       x-schema-id: CountryResult
+    CountrySubdivision:
+      title: Country subdivision
+      required:
+      - Code
+      - CountryCode
+      - EnglishName
+      type: object
+      properties:
+        Code:
+          minLength: 1
+          type: string
+          description: ISO 3166-2 code of the administrative division, e.g AU-QLD.
+        CountryCode:
+          minLength: 1
+          type: string
+          description: ISO 3166-1 code of the [Country](https://mews-systems.gitbook.io/connector-api/operations/countries#country).
+        EnglishName:
+          minLength: 1
+          type: string
+          description: English name of the country subdivision.
+      additionalProperties: false
+      x-schema-id: CountrySubdivision
+    CountryRule:
+      title: Country rules
+      required:
+      - CountryCode
+      - DriverLicenceExpirationDateNotRequired
+      - IdentityCardExpirationDateNotRequired
+      type: object
+      properties:
+        CountryCode:
+          minLength: 1
+          type: string
+          description: ISO 3166-1 alpha-2 code, e.g. US or GB.
+        IdentityCardExpirationDateNotRequired:
+          type: boolean
+          description: Whether the country requires expiration date for identity card.
+        DriverLicenceExpirationDateNotRequired:
+          type: boolean
+          description: Whether the country requires expiration date for driver's license.
+      additionalProperties: false
+      description: Country-specific rules
+      x-schema-id: CountryRule

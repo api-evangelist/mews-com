@@ -563,6 +563,18 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    CreditRatingUpdateParameters:
+      title: Credit rating update parameters
+      type: object
+      properties:
+        Basic:
+          title: Credit rating basic update value
+          allOf:
+          - $ref: '#/components/schemas/CreditRatingBasicUpdateValue'
+          description: Credit status of a company (or `null` if the credit status should not be updated).
+      additionalProperties: false
+      description: Credit rating to define creditworthiness of the company.
+      x-schema-id: CreditRatingUpdateParameters
     CreditRatingParameters:
       title: Credit rating parameters
       type: object
@@ -583,6 +595,81 @@ components:
       additionalProperties: false
       description: Credit rating to define creditworthiness of the company.
       x-schema-id: CreditRatingParameters
+    MultipleCompanyDeleteParameters:
+      title: MultipleCompanyDeleteParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CompanyIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        CompanyIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the companies to be deleted.
+      additionalProperties: false
+      x-schema-id: MultipleCompanyDeleteParameters
+    AddressParameters:
+      title: Address parameters
+      type: object
+      properties:
+        Line1:
+          type:
+          - string
+          - 'null'
+          description: First line of the address.
+        Line2:
+          type:
+          - string
+          - 'null'
+          description: Second line of the address.
+        City:
+          type:
+          - string
+          - 'null'
+          description: The city.
+        PostalCode:
+          type:
+          - string
+          - 'null'
+          description: Postal code.
+          format: postal-code
+        CountryCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-1 code of the Country.
+        CountrySubdivisionCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-2 code of the administrative division, e.g. DE-BW
+      additionalProperties: false
+      description: New address details.
+      x-schema-id: AddressParameters
     OldAddress:
       title: Address
       type: object
@@ -653,404 +740,6 @@ components:
       additionalProperties: false
       description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
       x-schema-id: TimeFilterInterval
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
-          format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    ActivityStates:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: Activity states used for filtering.
-    CompanyOptionUpdateParameters:
-      title: Company update options
-      type: object
-      properties:
-        Invoiceable:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: Whether the company is invoiceable or not (or `null` if the `Invoiceable` field should not be updated).
-        AddFeesToInvoices:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: Whether the company has an additional fee applied for invoicing or not (or `null` if the `AddFeesToInvoices` field should not be updated).
-        AddTaxDeductedPaymentToInvoices:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: Whether tax-deducted payments should be automatically added to invoices (or `null` if the `AddTaxDeductedPaymentToInvoices` field should not be updated).
-      additionalProperties: false
-      description: Options of the company.
-      x-schema-id: CompanyOptionUpdateParameters
-    MultipleCompanyDeleteParameters:
-      title: MultipleCompanyDeleteParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - CompanyIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ChainId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        CompanyIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the companies to be deleted.
-      additionalProperties: false
-      x-schema-id: MultipleCompanyDeleteParameters
-    CompanyFilterParameters:
-      title: CompanyFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        ChainIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
-        MotherCompanyIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of mother `Company`.
-        CreatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the companies were created.
-          x-max-interval-in-months: 3
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the companies were updated.
-          x-max-interval-in-months: 3
-        TimeFilter:
-          anyOf:
-          - $ref: '#/components/schemas/CompanyTimeFilter'
-          deprecated: true
-          x-deprecatedMessage: Use CreatedUtc or UpdatedUtc instead.
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          deprecated: true
-          x-deprecatedMessage: Use CreatedUtc or UpdatedUtc instead.
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          deprecated: true
-          x-deprecatedMessage: Use CreatedUtc or UpdatedUtc instead.
-        Ids:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Companies](https://mews-systems.gitbook.io/connector-api/operations/#company).
-        ExternalIdentifiers:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Identifiers of [Company](https://mews-systems.gitbook.io/connector-api/operations/#company) from external system.
-        Names:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Names of [Companies](https://mews-systems.gitbook.io/connector-api/operations/#company).
-        ActivityStates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted, or both types of record. If not specified, both active and deleted records will be returned.
-      additionalProperties: false
-      x-schema-id: CompanyFilterParameters
-    CreditRatingBasicUpdateValue:
-      title: Credit rating basic update value
-      type: object
-      properties:
-        Value:
-          title: Credit rating basic
-          allOf:
-          - $ref: '#/components/schemas/CreditRatingBasicEnum'
-          description: Value which is to be updated.
-          x-enumNames:
-          - CreditOk
-          - PaymentRequiredUpfront
-          - LocalDecisionRequired
-          x-enumDescriptions:
-          - Company can book services.
-          - Company must pay upfront.
-          - Requires local approval.
-      additionalProperties: false
-      x-schema-id: CreditRatingBasicUpdateValue
-    CreditRatingUpdateParameters:
-      title: Credit rating update parameters
-      type: object
-      properties:
-        Basic:
-          title: Credit rating basic update value
-          allOf:
-          - $ref: '#/components/schemas/CreditRatingBasicUpdateValue'
-          description: Credit status of a company (or `null` if the credit status should not be updated).
-      additionalProperties: false
-      description: Credit rating to define creditworthiness of the company.
-      x-schema-id: CreditRatingUpdateParameters
-    GuidNullableUpdateValue:
-      title: Guid update value
-      type: object
-      properties:
-        Value:
-          type:
-          - string
-          - 'null'
-          description: Value which is to be updated.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: GuidNullableUpdateValue
-    Unit:
-      type: object
-      additionalProperties: false
-    CreditRating:
-      title: Credit Rating
-      type: object
-      properties:
-        Basic:
-          allOf:
-          - $ref: '#/components/schemas/CreditRatingBasicEnum'
-          description: 'Indicates the credit status of a company.
-
-
-            CreditOk (Company can book services.)
-
-
-            PaymentRequiredUpfront (Company must pay upfront.)
-
-
-            LocalDecisionRequired (Requires local approval.)'
-      additionalProperties: false
-      description: Credit rating to define creditworthiness of the company.
-      x-schema-id: CreditRating
-    CompanyTimeFilter:
-      title: Company Time Filter
-      enum:
-      - Created
-      - Updated
-      type: string
-    CompanyOptions:
-      title: Company Options
-      type: object
-      properties:
-        Invoiceable:
-          type: boolean
-          description: Whether the company is invoiceable or not.
-        AddFeesToInvoices:
-          type: boolean
-          description: Whether the company has an additional fee applied for invoicing or not.
-        AddTaxDeductedPaymentToInvoices:
-          type: boolean
-          description: Whether tax-deducted payments should be automatically added to invoices.
-      additionalProperties: false
-      description: Options of the company.
-      x-schema-id: CompanyOptions
-    AddressParameters:
-      title: Address parameters
-      type: object
-      properties:
-        Line1:
-          type:
-          - string
-          - 'null'
-          description: First line of the address.
-        Line2:
-          type:
-          - string
-          - 'null'
-          description: Second line of the address.
-        City:
-          type:
-          - string
-          - 'null'
-          description: The city.
-        PostalCode:
-          type:
-          - string
-          - 'null'
-          description: Postal code.
-          format: postal-code
-        CountryCode:
-          type:
-          - string
-          - 'null'
-          description: ISO 3166-1 code of the Country.
-        CountrySubdivisionCode:
-          type:
-          - string
-          - 'null'
-          description: ISO 3166-2 code of the administrative division, e.g. DE-BW
-      additionalProperties: false
-      description: New address details.
-      x-schema-id: AddressParameters
-    CompanyOptionsParameters:
-      title: Company Options Parameters
-      type: object
-      properties:
-        Invoiceable:
-          type: boolean
-          description: Whether the company is invoiceable or not.
-        AddFeesToInvoices:
-          type: boolean
-          description: Whether the company has an additional fee applied for invoicing or not.
-        AddTaxDeductedPaymentToInvoices:
-          type: boolean
-          description: Whether tax-deducted payments should be automatically added to invoices.
-      additionalProperties: false
-      description: Options of the company.
-      x-schema-id: CompanyOptionsParameters
-    BooleanUpdateValue:
-      title: Boolean update value
-      type: object
-      properties:
-        Value:
-          type: boolean
-          description: Value which is to be updated.
-      additionalProperties: false
-      x-schema-id: BooleanUpdateValue
-    StringUpdateValue:
-      title: String update value
-      type: object
-      properties:
-        Value:
-          type:
-          - string
-          - 'null'
-          description: Value which is to be updated.
-      additionalProperties: false
-      x-schema-id: StringUpdateValue
-    CreditRatingBasicEnum:
-      title: Credit rating basic
-      enum:
-      - CreditOk
-      - PaymentRequiredUpfront
-      - LocalDecisionRequired
-      type: string
-      description: '
-
-
-        CreditOk (Company can book services.)
-
-
-        PaymentRequiredUpfront (Company must pay upfront.)
-
-
-        LocalDecisionRequired (Requires local approval.)'
-      x-enumNames:
-      - CreditOk
-      - PaymentRequiredUpfront
-      - LocalDecisionRequired
-      x-enumDescriptions:
-      - Company can book services.
-      - Company must pay upfront.
-      - Requires local approval.
     CompanyAddParameters:
       title: CompanyAddParameters
       required:
@@ -1195,13 +884,20 @@ components:
           description: Identifier of the company from external system.
       additionalProperties: false
       x-schema-id: CompanyAddParameters
-    CompanyUpdateParameters:
-      title: CompanyUpdateParameters
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    CompanyFilterParameters:
+      title: CompanyFilterParameters
       required:
       - AccessToken
       - Client
       - ClientToken
-      - CompanyId
+      - Limitation
       type: object
       properties:
         ClientToken:
@@ -1216,127 +912,140 @@ components:
           minLength: 1
           type: string
           description: Name and version of the client application.
-        ChainId:
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        ChainIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
+        MotherCompanyIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of mother `Company`.
+        CreatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the companies were created.
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the companies were updated.
+          x-max-interval-in-months: 3
+        TimeFilter:
+          anyOf:
+          - $ref: '#/components/schemas/CompanyTimeFilter'
+          deprecated: true
+          x-deprecatedMessage: Use CreatedUtc or UpdatedUtc instead.
+        StartUtc:
           type:
           - string
           - 'null'
-          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        CompanyId:
-          type: string
-          description: Unique identifier of the [Company](https://mews-systems.gitbook.io/connector-api/operations/#company).
-          format: uuid
-        Name:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Name of the company (or `null` if the name should not be updated).
-        MotherCompanyId:
-          title: Guid update value
-          allOf:
-          - $ref: '#/components/schemas/GuidNullableUpdateValue'
-          description: Unique identifier of the mother company (or `null` if the mother company should not be updated).
-        InvoicingEmail:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Email for issuing invoices to the company  (or `null` if the email for issuing invoices should not be updated).
-          format: email
-        WebsiteUrl:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: The website url of the company (or `null` if the website url should not be updated).
-          format: uri
-        InvoiceDueInterval:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: The maximum time, when the invoice has to be be paid in ISO 8601 duration format (or `null` if the interval should not be updated).
-        Options:
-          title: Company update options
-          allOf:
-          - $ref: '#/components/schemas/CompanyOptionUpdateParameters'
-          description: Options of the company (or `null` if the company options should not be updated).
-        CreditRating:
-          title: Credit rating update parameters
-          allOf:
-          - $ref: '#/components/schemas/CreditRatingUpdateParameters'
-          description: Credit rating to define creditworthiness of the company (or `null` if the credit rating should not be updated).
-        Department:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: The internal segmentation of a company, e.g. sales department (or `null` if the department should not be updated).
-        DunsNumber:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: The Dun & Bradstreet unique 9-digit DUNS number (or `null` if the Duns number should not be updated).
-        ReferenceIdentifier:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: External system identifier - custom identifier used by an external system such as an external database (or `null` if the identifier should not be updated).
-        AccountingCode:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Accounting code of the company (or `null` if the accounting code should not be updated).
-        AdditionalTaxIdentifier:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Additional tax identifier of the company (or `null` if the additional tax identifier should not be updated).
-        BillingCode:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Billing code of the company (or `null` if the billing code should not be updated).
-        Contact:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Other contact details, such as telephone, email or similar (or `null` if the contact should not be updated).
-        ContactPerson:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Contact person of the company (or `null` if the contact person should not be updated).
-        Identifier:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Fiscal or legal identifier of the company (or `null` if the identifier should not be updated).
-        Iata:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Iata of the company (or `null` if the Iata should not be updated).
-        Notes:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Notes of the company (or `null` if the notes should not be updated).
-        TaxIdentifier:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Tax identification number of the company (or `null` if the tax identifier should not be updated).
-        Telephone:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Contact telephone number (or `null` if the telephone number should not be updated).
-          format: tel
-        ExternalIdentifier:
-          title: String update value
-          maxLength: 255
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Identifier of the company from external system (or `null` if the External Identifier should not be updated).
+          format: date-time
+          deprecated: true
+          x-deprecatedMessage: Use CreatedUtc or UpdatedUtc instead.
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          deprecated: true
+          x-deprecatedMessage: Use CreatedUtc or UpdatedUtc instead.
+        Ids:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Companies](https://mews-systems.gitbook.io/connector-api/operations/#company).
+        ExternalIdentifiers:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Identifiers of [Company](https://mews-systems.gitbook.io/connector-api/operations/#company) from external system.
+        Names:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Names of [Companies](https://mews-systems.gitbook.io/connector-api/operations/#company).
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted, or both types of record. If not specified, both active and deleted records will be returned.
       additionalProperties: false
-      x-schema-id: CompanyUpdateParameters
+      x-schema-id: CompanyFilterParameters
+    CompanyTimeFilter:
+      title: Company Time Filter
+      enum:
+      - Created
+      - Updated
+      type: string
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    CreditRatingBasicUpdateValue:
+      title: Credit rating basic update value
+      type: object
+      properties:
+        Value:
+          title: Credit rating basic
+          allOf:
+          - $ref: '#/components/schemas/CreditRatingBasicEnum'
+          description: Value which is to be updated.
+          x-enumNames:
+          - CreditOk
+          - PaymentRequiredUpfront
+          - LocalDecisionRequired
+          x-enumDescriptions:
+          - Company can book services.
+          - Company must pay upfront.
+          - Requires local approval.
+      additionalProperties: false
+      x-schema-id: CreditRatingBasicUpdateValue
     CompanyResult:
       title: CompanyResult
       required:
@@ -1356,6 +1065,17 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: CompanyResult
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
     Company:
       title: Company
       required:
@@ -1538,3 +1258,283 @@ components:
           description: Identifier of company from external system.
       additionalProperties: false
       x-schema-id: Company
+    GuidNullableUpdateValue:
+      title: Guid update value
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value which is to be updated.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: GuidNullableUpdateValue
+    Unit:
+      type: object
+      additionalProperties: false
+    CompanyOptionsParameters:
+      title: Company Options Parameters
+      type: object
+      properties:
+        Invoiceable:
+          type: boolean
+          description: Whether the company is invoiceable or not.
+        AddFeesToInvoices:
+          type: boolean
+          description: Whether the company has an additional fee applied for invoicing or not.
+        AddTaxDeductedPaymentToInvoices:
+          type: boolean
+          description: Whether tax-deducted payments should be automatically added to invoices.
+      additionalProperties: false
+      description: Options of the company.
+      x-schema-id: CompanyOptionsParameters
+    CreditRatingBasicEnum:
+      title: Credit rating basic
+      enum:
+      - CreditOk
+      - PaymentRequiredUpfront
+      - LocalDecisionRequired
+      type: string
+      description: '
+
+
+        CreditOk (Company can book services.)
+
+
+        PaymentRequiredUpfront (Company must pay upfront.)
+
+
+        LocalDecisionRequired (Requires local approval.)'
+      x-enumNames:
+      - CreditOk
+      - PaymentRequiredUpfront
+      - LocalDecisionRequired
+      x-enumDescriptions:
+      - Company can book services.
+      - Company must pay upfront.
+      - Requires local approval.
+    BooleanUpdateValue:
+      title: Boolean update value
+      type: object
+      properties:
+        Value:
+          type: boolean
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: BooleanUpdateValue
+    CompanyUpdateParameters:
+      title: CompanyUpdateParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - CompanyId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        CompanyId:
+          type: string
+          description: Unique identifier of the [Company](https://mews-systems.gitbook.io/connector-api/operations/#company).
+          format: uuid
+        Name:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Name of the company (or `null` if the name should not be updated).
+        MotherCompanyId:
+          title: Guid update value
+          allOf:
+          - $ref: '#/components/schemas/GuidNullableUpdateValue'
+          description: Unique identifier of the mother company (or `null` if the mother company should not be updated).
+        InvoicingEmail:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Email for issuing invoices to the company  (or `null` if the email for issuing invoices should not be updated).
+          format: email
+        WebsiteUrl:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The website url of the company (or `null` if the website url should not be updated).
+          format: uri
+        InvoiceDueInterval:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The maximum time, when the invoice has to be be paid in ISO 8601 duration format (or `null` if the interval should not be updated).
+        Options:
+          title: Company update options
+          allOf:
+          - $ref: '#/components/schemas/CompanyOptionUpdateParameters'
+          description: Options of the company (or `null` if the company options should not be updated).
+        CreditRating:
+          title: Credit rating update parameters
+          allOf:
+          - $ref: '#/components/schemas/CreditRatingUpdateParameters'
+          description: Credit rating to define creditworthiness of the company (or `null` if the credit rating should not be updated).
+        Department:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The internal segmentation of a company, e.g. sales department (or `null` if the department should not be updated).
+        DunsNumber:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: The Dun & Bradstreet unique 9-digit DUNS number (or `null` if the Duns number should not be updated).
+        ReferenceIdentifier:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: External system identifier - custom identifier used by an external system such as an external database (or `null` if the identifier should not be updated).
+        AccountingCode:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Accounting code of the company (or `null` if the accounting code should not be updated).
+        AdditionalTaxIdentifier:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Additional tax identifier of the company (or `null` if the additional tax identifier should not be updated).
+        BillingCode:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Billing code of the company (or `null` if the billing code should not be updated).
+        Contact:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Other contact details, such as telephone, email or similar (or `null` if the contact should not be updated).
+        ContactPerson:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Contact person of the company (or `null` if the contact person should not be updated).
+        Identifier:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Fiscal or legal identifier of the company (or `null` if the identifier should not be updated).
+        Iata:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Iata of the company (or `null` if the Iata should not be updated).
+        Notes:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Notes of the company (or `null` if the notes should not be updated).
+        TaxIdentifier:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Tax identification number of the company (or `null` if the tax identifier should not be updated).
+        Telephone:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Contact telephone number (or `null` if the telephone number should not be updated).
+          format: tel
+        ExternalIdentifier:
+          title: String update value
+          maxLength: 255
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Identifier of the company from external system (or `null` if the External Identifier should not be updated).
+      additionalProperties: false
+      x-schema-id: CompanyUpdateParameters
+    CompanyOptionUpdateParameters:
+      title: Company update options
+      type: object
+      properties:
+        Invoiceable:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Whether the company is invoiceable or not (or `null` if the `Invoiceable` field should not be updated).
+        AddFeesToInvoices:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Whether the company has an additional fee applied for invoicing or not (or `null` if the `AddFeesToInvoices` field should not be updated).
+        AddTaxDeductedPaymentToInvoices:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: Whether tax-deducted payments should be automatically added to invoices (or `null` if the `AddTaxDeductedPaymentToInvoices` field should not be updated).
+      additionalProperties: false
+      description: Options of the company.
+      x-schema-id: CompanyOptionUpdateParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    CompanyOptions:
+      title: Company Options
+      type: object
+      properties:
+        Invoiceable:
+          type: boolean
+          description: Whether the company is invoiceable or not.
+        AddFeesToInvoices:
+          type: boolean
+          description: Whether the company has an additional fee applied for invoicing or not.
+        AddTaxDeductedPaymentToInvoices:
+          type: boolean
+          description: Whether tax-deducted payments should be automatically added to invoices.
+      additionalProperties: false
+      description: Options of the company.
+      x-schema-id: CompanyOptions
+    CreditRating:
+      title: Credit Rating
+      type: object
+      properties:
+        Basic:
+          allOf:
+          - $ref: '#/components/schemas/CreditRatingBasicEnum'
+          description: 'Indicates the credit status of a company.
+
+
+            CreditOk (Company can book services.)
+
+
+            PaymentRequiredUpfront (Company must pay upfront.)
+
+
+            LocalDecisionRequired (Requires local approval.)'
+      additionalProperties: false
+      description: Credit rating to define creditworthiness of the company.
+      x-schema-id: CreditRating

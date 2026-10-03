@@ -107,230 +107,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ReservationOld:
-      title: Reservation (ver 2017-04-12)
-      required:
-      - AssignedResourceLocked
-      - CompanionIds
-      - CreatedUtc
-      - CustomerId
-      - EndUtc
-      - GroupId
-      - Id
-      - Number
-      - Options
-      - Origin
-      - OwnerId
-      - PersonCounts
-      - RateId
-      - RequestedCategoryId
-      - ServiceId
-      - StartUtc
-      - State
-      - UpdatedUtc
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the reservation.
-          format: uuid
-        ServiceId:
-          type: string
-          description: Unique identifier of the Service that is reserved.
-          format: uuid
-        GroupId:
-          type: string
-          description: Unique identifier of the Reservation group.
-          format: uuid
-        Number:
-          minLength: 1
-          type: string
-          description: Confirmation number of the reservation in Mews.
-        ChannelNumber:
-          type:
-          - string
-          - 'null'
-          description: Number of the reservation within the Channel (i.e. OTA, GDS, CRS, etc) in case the reservation group originates there (e.g. Booking.com confirmation number).
-        ChannelManagerNumber:
-          type:
-          - string
-          - 'null'
-          description: Unique number of the reservation within the reservation group.
-        ChannelManagerGroupNumber:
-          type:
-          - string
-          - 'null'
-          description: Number of the reservation group within a Channel manager that transferred the reservation from Channel to Mews.
-        ChannelManager:
-          type:
-          - string
-          - 'null'
-          description: Name of the Channel manager (e.g. AvailPro, SiteMinder, TravelClick, etc).
-        State:
-          $ref: '#/components/schemas/ServiceOrderStateOld'
-        Origin:
-          $ref: '#/components/schemas/ReservationOldOrigin'
-        OriginDetails:
-          type:
-          - string
-          - 'null'
-          description: Details about the reservation origin.
-        Purpose:
-          anyOf:
-          - $ref: '#/components/schemas/ReservationPurpose'
-          description: Purpose of the reservation.
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the reservation in UTC timezone in ISO 8601 format.
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the reservation in UTC timezone in ISO 8601 format.
-        CancelledUtc:
-          type:
-          - string
-          - 'null'
-          description: Cancellation date and time in UTC timezone in ISO 8601 format.
-        StartUtc:
-          minLength: 1
-          type: string
-          description: Start of the reservation in UTC timezone in ISO 8601 format. This is either the scheduled reservation start time, or the actual customer check-in time if this is earlier than the scheduled start time.
-        EndUtc:
-          minLength: 1
-          type: string
-          description: End of the reservation (departure) in UTC timezone in ISO 8601 format.
-        ReleasedUtc:
-          type:
-          - string
-          - 'null'
-          description: Date when the optional reservation is released in UTC timezone in ISO 8601 format.
-        RequestedCategoryId:
-          type: string
-          description: Identifier of the requested Resource category.
-          format: uuid
-        AssignedSpaceId:
-          type:
-          - string
-          - 'null'
-          description: Identifier of the assigned Space.
-          format: uuid
-          deprecated: true
-          x-deprecatedMessage: Use `AssignedResourceId` instead.
-        AssignedSpaceLocked:
-          type: boolean
-          description: Whether the reservation is locked to the assigned Space and cannot be moved.
-          deprecated: true
-          x-deprecatedMessage: Use `AssignedResourceLocked` instead.
-        AssignedResourceId:
-          type:
-          - string
-          - 'null'
-          description: Identifier of the assigned Resource.
-          format: uuid
-        AssignedResourceLocked:
-          type: boolean
-          description: Whether the reservation is locked to the assigned Resource and cannot be moved.
-        BusinessSegmentId:
-          type:
-          - string
-          - 'null'
-          description: Identifier of the reservation Business segment.
-          format: uuid
-        CompanyId:
-          type:
-          - string
-          - 'null'
-          description: Identifier of the Company on behalf of which the reservation was made.
-          format: uuid
-        TravelAgencyId:
-          type:
-          - string
-          - 'null'
-          description: Identifier of the Company that mediated the reservation.
-          format: uuid
-        AvailabilityBlockId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the Availability block the reservation is assigned to.
-          format: uuid
-        RateId:
-          type: string
-          description: Identifier of the reservation Rate.
-          format: uuid
-        VoucherId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the Voucher that has been used to create reservation.
-          format: uuid
-        CreditCardId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the Credit card.
-          format: uuid
-        CancellationReason:
-          anyOf:
-          - $ref: '#/components/schemas/CancellationReason'
-          description: Cancellation reason of the reservation.
-        AdultCount:
-          type: integer
-          description: Count of adults the reservation was booked for.
-          format: int32
-          deprecated: true
-          x-deprecatedMessage: Use `PersonCounts` instead.
-        ChildCount:
-          type: integer
-          description: Count of children the reservation was booked for.
-          format: int32
-          deprecated: true
-          x-deprecatedMessage: Use `PersonCounts` instead.
-        PersonCounts:
-          type: array
-          items:
-            $ref: '#/components/schemas/ReservationPersonCount'
-          description: Number of people per age category the reservation was booked for.
-        OwnerId:
-          type: string
-          description: Unique identifier of the Customer or Company who owns the reservation.
-          format: uuid
-        CustomerId:
-          type: string
-          description: Unique identifier of the Customer who owns the reservation.
-          format: uuid
-          deprecated: true
-          x-deprecatedMessage: Use `OwnerId` instead.
-        BookerId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the Customer on whose behalf the reservation was made.
-          format: uuid
-        CompanionIds:
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the `Customer`s that will use the resource.
-          deprecated: true
-          x-deprecatedMessage: Use `companionships/getAll` instead.
-        ChannelManagerId:
-          type:
-          - string
-          - 'null'
-          description: Channel Manager number.
-          deprecated: true
-          x-deprecatedMessage: Use `ChannelManagerNumber` instead.
-        Options:
-          title: Reservation options
-          allOf:
-          - $ref: '#/components/schemas/ReservationOptions'
-          description: Options of the reservation.
-      additionalProperties: false
-      description: ''
-      x-schema-id: ReservationOld
     ReservationPersonCount:
       title: Age category parameters
       required:
@@ -348,63 +124,6 @@ components:
           format: int32
       additionalProperties: false
       x-schema-id: ReservationPersonCount
-    CompanionshipResult:
-      title: CompanionshipResult
-      type: object
-      properties:
-        Companionships:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Companionship'
-          description: Companionships.
-        Reservations:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ReservationOld'
-          description: The accompanied reservations.
-        ReservationGroups:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ReservationGroupOld'
-          description: The accompanied reservation groups.
-        Customers:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Customer'
-          description: Customers that belong to the companionships.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: CompanionshipResult
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
     OldAddress:
       title: Address
       type: object
@@ -458,49 +177,6 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: OldAddress
-    ServiceOrderStateOld:
-      title: Service order state (ver 2017-04-12)
-      enum:
-      - Enquired
-      - Confirmed
-      - Started
-      - Processed
-      - Canceled
-      - Optional
-      - Requested
-      type: string
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
-          format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
     CompanionshipExtent:
       title: Companionship extent
       type: object
@@ -523,6 +199,424 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: CompanionshipExtent
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    CompanionshipResult:
+      title: CompanionshipResult
+      type: object
+      properties:
+        Companionships:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Companionship'
+          description: Companionships.
+        Reservations:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ReservationOld'
+          description: The accompanied reservations.
+        ReservationGroups:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ReservationGroupOld'
+          description: The accompanied reservation groups.
+        Customers:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Customer'
+          description: Customers that belong to the companionships.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: CompanionshipResult
+    Companionship:
+      title: Companionship
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of `Companionship`.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Unique identifier of Customer.
+          format: uuid
+        ReservationGroupId:
+          type: string
+          description: Unique identifier of ReservationGroup.
+          format: uuid
+        ReservationId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of reservation.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: Companionship
+    ReservationOldOrigin:
+      title: Reservation origin (ver 2017-04-12)
+      enum:
+      - Distributor
+      - ChannelManager
+      - Import
+      - Connector
+      - Navigator
+      - CommanderInPerson
+      - CommanderChannel
+      - CommanderPhone
+      - CommanderEmail
+      - CommanderWebsite
+      - CommanderMessage
+      - CommanderCallCenter
+      - CommanderRoomingList
+      type: string
+      x-enumDescriptions:
+      - From the Mews Booking Engine or Booking Engine API.
+      - From a channel manager.
+      - From an import process.
+      - From the Mews Connector API.
+      - From Mews Guest Services.
+      - From Mews Operations, in person.
+      - From Mews Operations, via channel.
+      - From Mews Operations, via telephone.
+      - From Mews Operations, via email.
+      - From Mews Operations, via website.
+      - From Mews Operations, via message person.
+      - From Mews Operations, via call center.
+      - From Mews Operations, via rooming list.
+    CancellationReason:
+      enum:
+      - Other
+      - ConfirmationMissed
+      - BookedElsewhere
+      - ForceMajeure
+      - GuestComplaint
+      - NoShow
+      - PriceTooHigh
+      - ServiceNotAvailable
+      - InputError
+      - InvalidPayment
+      - TravelAgency
+      - RequestedByGuest
+      - Update
+      - BookingAbandoned
+      - RequestedByBooker
+      type: string
+    SexEnum:
+      title: Sex
+      enum:
+      - Male
+      - Female
+      type: string
+      description: '
+
+
+        Male
+
+
+        Female'
+      x-enumNames:
+      - Male
+      - Female
+      x-enumDescriptions:
+      - ''
+      - ''
+    ReservationGroupOld:
+      title: Reservation groups (ver 2017-04-12)
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the reservation group.
+          format: uuid
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name of the reservation group.
+      additionalProperties: false
+      x-schema-id: ReservationGroupOld
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    Title:
+      title: Title
+      enum:
+      - Mister
+      - Miss
+      - Misses
+      type: string
+      description: 'Type of the title prefix of the customer.
+
+
+        Note that the value should not be used as-is, but localized. For example, the value `Misses` should be displayed as `Mrs.` in English and `Fr.` in German.
+
+
+        Mister (Mr.)
+
+
+        Miss (Ms.)
+
+
+        Misses (Mrs.)'
+      x-enumNames:
+      - Mister
+      - Miss
+      - Misses
+      x-enumDescriptions:
+      - Mr.
+      - Ms.
+      - Mrs.
+      x-schema-id: Title
+      x-showDescription: true
+    IdentityDocument:
+      title: Identity document
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the document.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Identifier of the `Customer`.
+          format: uuid
+        Type:
+          title: Document type
+          allOf:
+          - $ref: '#/components/schemas/IdentityDocumentTypeEnum'
+          description: 'Type of the document.
+
+
+            IdentityCard
+
+
+            Passport
+
+
+            Visa
+
+
+            DriversLicense'
+          x-enumNames:
+          - IdentityCard
+          - Passport
+          - Visa
+          - DriversLicense
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+        Number:
+          type:
+          - string
+          - 'null'
+          description: Number of the document (e.g. passport number).
+        Expiration:
+          type:
+          - string
+          - 'null'
+          description: Expiration date in ISO 8601 format.
+          format: date
+        Issuance:
+          type:
+          - string
+          - 'null'
+          description: Date of issuance in ISO 8601 format.
+          format: date
+        IssuingCountryCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-1 code of the `Country`.
+        IssuingCountrySubdivisionCode:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the country subdivision where the document was issued (province, state or region).
+        IssuingCity:
+          type:
+          - string
+          - 'null'
+          description: City where the document was issued.
+        IdentityDocumentSupportNumber:
+          type:
+          - string
+          - 'null'
+          description: Identity document support number. Only required for Spanish identity cards in Spanish hotels.
+      additionalProperties: false
+      x-schema-id: IdentityDocument
+    CustomerOptionsEnum:
+      title: Customer option
+      enum:
+      - None
+      - SendMarketingEmails
+      - Invoiceable
+      - BillAddressObjection
+      - SendMarketingPostalMail
+      - SendPartnerMarketingEmails
+      - SendPartnerMarketingPostalMail
+      - WithdrawCardConsent
+      - GuestPhotoConsent
+      - IdPhotosConsent
+      type: string
+      description: '
+
+
+        None
+
+
+        SendMarketingEmails
+
+
+        Invoiceable
+
+
+        BillAddressObjection
+
+
+        SendMarketingPostalMail
+
+
+        SendPartnerMarketingEmails
+
+
+        SendPartnerMarketingPostalMail
+
+
+        WithdrawCardConsent
+
+
+        GuestPhotoConsent
+
+
+        IdPhotosConsent'
+      x-enumNames:
+      - None
+      - SendMarketingEmails
+      - Invoiceable
+      - BillAddressObjection
+      - SendMarketingPostalMail
+      - SendPartnerMarketingEmails
+      - SendPartnerMarketingPostalMail
+      - WithdrawCardConsent
+      - GuestPhotoConsent
+      - IdPhotosConsent
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    ReservationOptions:
+      title: Reservation options
+      required:
+      - AllCompanionsCheckedIn
+      - AnyCompanionCheckedIn
+      - OwnerCheckedIn
+      type: object
+      properties:
+        OwnerCheckedIn:
+          type: boolean
+          description: Owner of the reservation checked in.
+        AllCompanionsCheckedIn:
+          type: boolean
+          description: All companions of the reservation checked in.
+        AnyCompanionCheckedIn:
+          type: boolean
+          description: Any companion of the reservation checked in.
+      additionalProperties: false
+      x-schema-id: ReservationOptions
+    ReservationPurpose:
+      title: Reservation purpose
+      enum:
+      - Leisure
+      - Business
+      - Student
+      type: string
+    ServiceOrderStateOld:
+      title: Service order state (ver 2017-04-12)
+      enum:
+      - Enquired
+      - Confirmed
+      - Started
+      - Processed
+      - Canceled
+      - Optional
+      - Requested
+      type: string
+    ResourceFeatureClassification:
+      title: Resource feature classification
+      enum:
+      - SeaView
+      - RiverView
+      - OceanView
+      - TwinBeds
+      - DoubleBed
+      - RollawayBed
+      - UpperBed
+      - LowerBed
+      - Balcony
+      - AccessibleBathroom
+      - AccessibleRoom
+      - ElevatorAccess
+      - HighFloor
+      - Kitchenette
+      - AirConditioning
+      - PrivateJacuzzi
+      - PrivateSauna
+      - EnsuiteRoom
+      - PrivateBathroom
+      - SharedBathroom
+      type: string
+      description: Classification of `ResourceFeature`.
     Customer:
       title: Customer
       required:
@@ -789,244 +883,52 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: Customer
-    CompanionshipFilterParameters:
-      title: CompanionshipFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Extent
-      - Limitation
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
+        Message:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        CompanionshipIds:
-          maxItems: 1000
-          minItems: 1
+        RequestId:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Companionship`. Required if no other filter is provided.
-        Extent:
-          title: Companionship extent
-          allOf:
-          - $ref: '#/components/schemas/CompanionshipExtent'
-          description: Extent of data to be returned. E.g. it is possible to specify that together with the companionships, customers, reservations, and reservation groups should be also returned.
-        ReservationIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Reservation`. Required if no other filter is provided.
-        CustomerIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Customer`. Required if no other filter is provided.
-        ReservationGroupIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `ReservationGroup`. Required if no other filter is provided.
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the `Companionship` was updated. Must be used together with at least one another filter.
-          x-max-interval-in-months: 3
+        Details: {}
       additionalProperties: false
-      x-schema-id: CompanionshipFilterParameters
-    ReservationPurpose:
-      title: Reservation purpose
+      x-schema-id: ConnectorApiExceptionResult
+    IdentityDocumentTypeEnum:
+      title: Document type
       enum:
-      - Leisure
-      - Business
-      - Student
-      type: string
-    SexEnum:
-      title: Sex
-      enum:
-      - Male
-      - Female
+      - IdentityCard
+      - Passport
+      - Visa
+      - DriversLicense
       type: string
       description: '
 
 
-        Male
+        IdentityCard
 
 
-        Female'
+        Passport
+
+
+        Visa
+
+
+        DriversLicense'
       x-enumNames:
-      - Male
-      - Female
+      - IdentityCard
+      - Passport
+      - Visa
+      - DriversLicense
       x-enumDescriptions:
       - ''
       - ''
-    ReservationOptions:
-      title: Reservation options
-      required:
-      - AllCompanionsCheckedIn
-      - AnyCompanionCheckedIn
-      - OwnerCheckedIn
-      type: object
-      properties:
-        OwnerCheckedIn:
-          type: boolean
-          description: Owner of the reservation checked in.
-        AllCompanionsCheckedIn:
-          type: boolean
-          description: All companions of the reservation checked in.
-        AnyCompanionCheckedIn:
-          type: boolean
-          description: Any companion of the reservation checked in.
-      additionalProperties: false
-      x-schema-id: ReservationOptions
-    ReservationOldOrigin:
-      title: Reservation origin (ver 2017-04-12)
-      enum:
-      - Distributor
-      - ChannelManager
-      - Import
-      - Connector
-      - Navigator
-      - CommanderInPerson
-      - CommanderChannel
-      - CommanderPhone
-      - CommanderEmail
-      - CommanderWebsite
-      - CommanderMessage
-      - CommanderCallCenter
-      - CommanderRoomingList
-      type: string
-      x-enumDescriptions:
-      - From the Mews Booking Engine or Booking Engine API.
-      - From a channel manager.
-      - From an import process.
-      - From the Mews Connector API.
-      - From Mews Guest Services.
-      - From Mews Operations, in person.
-      - From Mews Operations, via channel.
-      - From Mews Operations, via telephone.
-      - From Mews Operations, via email.
-      - From Mews Operations, via website.
-      - From Mews Operations, via message person.
-      - From Mews Operations, via call center.
-      - From Mews Operations, via rooming list.
-    ResourceFeatureClassification:
-      title: Resource feature classification
-      enum:
-      - SeaView
-      - RiverView
-      - OceanView
-      - TwinBeds
-      - DoubleBed
-      - RollawayBed
-      - UpperBed
-      - LowerBed
-      - Balcony
-      - AccessibleBathroom
-      - AccessibleRoom
-      - ElevatorAccess
-      - HighFloor
-      - Kitchenette
-      - AirConditioning
-      - PrivateJacuzzi
-      - PrivateSauna
-      - EnsuiteRoom
-      - PrivateBathroom
-      - SharedBathroom
-      type: string
-      description: Classification of `ResourceFeature`.
-    Title:
-      title: Title
-      enum:
-      - Mister
-      - Miss
-      - Misses
-      type: string
-      description: 'Type of the title prefix of the customer.
-
-
-        Note that the value should not be used as-is, but localized. For example, the value `Misses` should be displayed as `Mrs.` in English and `Fr.` in German.
-
-
-        Mister (Mr.)
-
-
-        Miss (Ms.)
-
-
-        Misses (Mrs.)'
-      x-enumNames:
-      - Mister
-      - Miss
-      - Misses
-      x-enumDescriptions:
-      - Mr.
-      - Ms.
-      - Mrs.
-      x-schema-id: Title
-      x-showDescription: true
-    CancellationReason:
-      enum:
-      - Other
-      - ConfirmationMissed
-      - BookedElsewhere
-      - ForceMajeure
-      - GuestComplaint
-      - NoShow
-      - PriceTooHigh
-      - ServiceNotAvailable
-      - InputError
-      - InvalidPayment
-      - TravelAgency
-      - RequestedByGuest
-      - Update
-      - BookingAbandoned
-      - RequestedByBooker
-      type: string
+      - ''
+      - ''
     CustomerClassificationEnum:
       title: Customer classification
       enum:
@@ -1160,218 +1062,316 @@ components:
       - ''
       - ''
       - ''
-    IdentityDocumentTypeEnum:
-      title: Document type
-      enum:
-      - IdentityCard
-      - Passport
-      - Visa
-      - DriversLicense
-      type: string
-      description: '
-
-
-        IdentityCard
-
-
-        Passport
-
-
-        Visa
-
-
-        DriversLicense'
-      x-enumNames:
-      - IdentityCard
-      - Passport
-      - Visa
-      - DriversLicense
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-    Companionship:
-      title: Companionship
+    ReservationOld:
+      title: Reservation (ver 2017-04-12)
+      required:
+      - AssignedResourceLocked
+      - CompanionIds
+      - CreatedUtc
+      - CustomerId
+      - EndUtc
+      - GroupId
+      - Id
+      - Number
+      - Options
+      - Origin
+      - OwnerId
+      - PersonCounts
+      - RateId
+      - RequestedCategoryId
+      - ServiceId
+      - StartUtc
+      - State
+      - UpdatedUtc
       type: object
       properties:
         Id:
           type: string
-          description: Unique identifier of `Companionship`.
+          description: Unique identifier of the reservation.
           format: uuid
-        CustomerId:
+        ServiceId:
           type: string
-          description: Unique identifier of Customer.
+          description: Unique identifier of the Service that is reserved.
           format: uuid
-        ReservationGroupId:
+        GroupId:
           type: string
-          description: Unique identifier of ReservationGroup.
+          description: Unique identifier of the Reservation group.
           format: uuid
-        ReservationId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of reservation.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: Companionship
-    ReservationGroupOld:
-      title: Reservation groups (ver 2017-04-12)
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the reservation group.
-          format: uuid
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Name of the reservation group.
-      additionalProperties: false
-      x-schema-id: ReservationGroupOld
-    IdentityDocument:
-      title: Identity document
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the document.
-          format: uuid
-        CustomerId:
-          type: string
-          description: Identifier of the `Customer`.
-          format: uuid
-        Type:
-          title: Document type
-          allOf:
-          - $ref: '#/components/schemas/IdentityDocumentTypeEnum'
-          description: 'Type of the document.
-
-
-            IdentityCard
-
-
-            Passport
-
-
-            Visa
-
-
-            DriversLicense'
-          x-enumNames:
-          - IdentityCard
-          - Passport
-          - Visa
-          - DriversLicense
-          x-enumDescriptions:
-          - ''
-          - ''
-          - ''
-          - ''
         Number:
+          minLength: 1
+          type: string
+          description: Confirmation number of the reservation in Mews.
+        ChannelNumber:
           type:
           - string
           - 'null'
-          description: Number of the document (e.g. passport number).
-        Expiration:
+          description: Number of the reservation within the Channel (i.e. OTA, GDS, CRS, etc) in case the reservation group originates there (e.g. Booking.com confirmation number).
+        ChannelManagerNumber:
           type:
           - string
           - 'null'
-          description: Expiration date in ISO 8601 format.
-          format: date
-        Issuance:
+          description: Unique number of the reservation within the reservation group.
+        ChannelManagerGroupNumber:
           type:
           - string
           - 'null'
-          description: Date of issuance in ISO 8601 format.
-          format: date
-        IssuingCountryCode:
+          description: Number of the reservation group within a Channel manager that transferred the reservation from Channel to Mews.
+        ChannelManager:
           type:
           - string
           - 'null'
-          description: ISO 3166-1 code of the `Country`.
-        IssuingCountrySubdivisionCode:
+          description: Name of the Channel manager (e.g. AvailPro, SiteMinder, TravelClick, etc).
+        State:
+          $ref: '#/components/schemas/ServiceOrderStateOld'
+        Origin:
+          $ref: '#/components/schemas/ReservationOldOrigin'
+        OriginDetails:
           type:
           - string
           - 'null'
-          description: Identifier of the country subdivision where the document was issued (province, state or region).
-        IssuingCity:
+          description: Details about the reservation origin.
+        Purpose:
+          anyOf:
+          - $ref: '#/components/schemas/ReservationPurpose'
+          description: Purpose of the reservation.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the reservation in UTC timezone in ISO 8601 format.
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the reservation in UTC timezone in ISO 8601 format.
+        CancelledUtc:
           type:
           - string
           - 'null'
-          description: City where the document was issued.
-        IdentityDocumentSupportNumber:
+          description: Cancellation date and time in UTC timezone in ISO 8601 format.
+        StartUtc:
+          minLength: 1
+          type: string
+          description: Start of the reservation in UTC timezone in ISO 8601 format. This is either the scheduled reservation start time, or the actual customer check-in time if this is earlier than the scheduled start time.
+        EndUtc:
+          minLength: 1
+          type: string
+          description: End of the reservation (departure) in UTC timezone in ISO 8601 format.
+        ReleasedUtc:
           type:
           - string
           - 'null'
-          description: Identity document support number. Only required for Spanish identity cards in Spanish hotels.
+          description: Date when the optional reservation is released in UTC timezone in ISO 8601 format.
+        RequestedCategoryId:
+          type: string
+          description: Identifier of the requested Resource category.
+          format: uuid
+        AssignedSpaceId:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the assigned Space.
+          format: uuid
+          deprecated: true
+          x-deprecatedMessage: Use `AssignedResourceId` instead.
+        AssignedSpaceLocked:
+          type: boolean
+          description: Whether the reservation is locked to the assigned Space and cannot be moved.
+          deprecated: true
+          x-deprecatedMessage: Use `AssignedResourceLocked` instead.
+        AssignedResourceId:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the assigned Resource.
+          format: uuid
+        AssignedResourceLocked:
+          type: boolean
+          description: Whether the reservation is locked to the assigned Resource and cannot be moved.
+        BusinessSegmentId:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the reservation Business segment.
+          format: uuid
+        CompanyId:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the Company on behalf of which the reservation was made.
+          format: uuid
+        TravelAgencyId:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the Company that mediated the reservation.
+          format: uuid
+        AvailabilityBlockId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the Availability block the reservation is assigned to.
+          format: uuid
+        RateId:
+          type: string
+          description: Identifier of the reservation Rate.
+          format: uuid
+        VoucherId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the Voucher that has been used to create reservation.
+          format: uuid
+        CreditCardId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the Credit card.
+          format: uuid
+        CancellationReason:
+          anyOf:
+          - $ref: '#/components/schemas/CancellationReason'
+          description: Cancellation reason of the reservation.
+        AdultCount:
+          type: integer
+          description: Count of adults the reservation was booked for.
+          format: int32
+          deprecated: true
+          x-deprecatedMessage: Use `PersonCounts` instead.
+        ChildCount:
+          type: integer
+          description: Count of children the reservation was booked for.
+          format: int32
+          deprecated: true
+          x-deprecatedMessage: Use `PersonCounts` instead.
+        PersonCounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReservationPersonCount'
+          description: Number of people per age category the reservation was booked for.
+        OwnerId:
+          type: string
+          description: Unique identifier of the Customer or Company who owns the reservation.
+          format: uuid
+        CustomerId:
+          type: string
+          description: Unique identifier of the Customer who owns the reservation.
+          format: uuid
+          deprecated: true
+          x-deprecatedMessage: Use `OwnerId` instead.
+        BookerId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the Customer on whose behalf the reservation was made.
+          format: uuid
+        CompanionIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Customer`s that will use the resource.
+          deprecated: true
+          x-deprecatedMessage: Use `companionships/getAll` instead.
+        ChannelManagerId:
+          type:
+          - string
+          - 'null'
+          description: Channel Manager number.
+          deprecated: true
+          x-deprecatedMessage: Use `ChannelManagerNumber` instead.
+        Options:
+          title: Reservation options
+          allOf:
+          - $ref: '#/components/schemas/ReservationOptions'
+          description: Options of the reservation.
       additionalProperties: false
-      x-schema-id: IdentityDocument
-    CustomerOptionsEnum:
-      title: Customer option
-      enum:
-      - None
-      - SendMarketingEmails
-      - Invoiceable
-      - BillAddressObjection
-      - SendMarketingPostalMail
-      - SendPartnerMarketingEmails
-      - SendPartnerMarketingPostalMail
-      - WithdrawCardConsent
-      - GuestPhotoConsent
-      - IdPhotosConsent
-      type: string
-      description: '
-
-
-        None
-
-
-        SendMarketingEmails
-
-
-        Invoiceable
-
-
-        BillAddressObjection
-
-
-        SendMarketingPostalMail
-
-
-        SendPartnerMarketingEmails
-
-
-        SendPartnerMarketingPostalMail
-
-
-        WithdrawCardConsent
-
-
-        GuestPhotoConsent
-
-
-        IdPhotosConsent'
-      x-enumNames:
-      - None
-      - SendMarketingEmails
-      - Invoiceable
-      - BillAddressObjection
-      - SendMarketingPostalMail
-      - SendPartnerMarketingEmails
-      - SendPartnerMarketingPostalMail
-      - WithdrawCardConsent
-      - GuestPhotoConsent
-      - IdPhotosConsent
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
+      description: ''
+      x-schema-id: ReservationOld
+    CompanionshipFilterParameters:
+      title: CompanionshipFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Extent
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        CompanionshipIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Companionship`. Required if no other filter is provided.
+        Extent:
+          title: Companionship extent
+          allOf:
+          - $ref: '#/components/schemas/CompanionshipExtent'
+          description: Extent of data to be returned. E.g. it is possible to specify that together with the companionships, customers, reservations, and reservation groups should be also returned.
+        ReservationIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Reservation`. Required if no other filter is provided.
+        CustomerIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Customer`. Required if no other filter is provided.
+        ReservationGroupIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `ReservationGroup`. Required if no other filter is provided.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the `Companionship` was updated. Must be used together with at least one another filter.
+          x-max-interval-in-months: 3
+      additionalProperties: false
+      x-schema-id: CompanionshipFilterParameters

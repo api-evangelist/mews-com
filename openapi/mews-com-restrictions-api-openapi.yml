@@ -369,6 +369,213 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    RestrictionResult:
+      title: RestrictionResult
+      required:
+      - Restrictions
+      type: object
+      properties:
+        Restrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Restriction'
+          description: Restrictions of the default service.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: RestrictionResult
+    RestrictionFilterParameters:
+      title: RestrictionFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ServiceIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        TimeFilter:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+        CollidingUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the `Restriction` is active.
+        CreatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the `Restriction` was created.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the `Restriction` was updated.
+        RestrictionIds:
+          maxItems: 1000
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Restriction`.
+        ResourceCategoryIds:
+          maxItems: 1000
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Resource category`.
+        RateIds:
+          maxItems: 1000
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Rate`. Returns all restrictions that affect the given rates, i.e. ones without any `Restriction Conditions`, ones assigned directly to specified rates, ones assigned to `Rate group` of specified rates, or ones inherited from base rates.`.
+        ExactRateIds:
+          maxItems: 1000
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Rate`. Returns only those restrictions which have matching `ExactRateId` set in `Restriction Condition`.
+        BaseRateIds:
+          maxItems: 1000
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Rate`. Returns only those restrictions which have matching `BaseRateId` set in `Restriction Condition`.
+        Origin:
+          anyOf:
+          - $ref: '#/components/schemas/RestrictionOrigin'
+          description: Restriction origin. Returns only those restrictions which have matching Origin or all if not specified.
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Service` from which the restrictions are requested.
+      additionalProperties: false
+      x-schema-id: RestrictionFilterParameters
+    RestrictionOriginEnum:
+      title: Restriction origin
+      enum:
+      - User
+      - Integration
+      type: string
+      description: '
+
+
+        User (Restriction was created by a user in Mews.)
+
+
+        Integration (Restriction was created by a 3rd-party integration.)'
+      x-enumNames:
+      - User
+      - Integration
+      x-enumDescriptions:
+      - Restriction was created by a user in Mews.
+      - Restriction was created by a 3rd-party integration.
+    RestrictionOrigin:
+      title: Restriction origin
+      enum:
+      - User
+      - Integration
+      type: string
+      x-enumDescriptions:
+      - Restriction was created by a user in Mews.
+      - Restriction was created by a 3rd-party integration.
+    DaysParameters:
+      title: Days parameters
+      required:
+      - Friday
+      - Monday
+      - Saturday
+      - Sunday
+      - Thursday
+      - Tuesday
+      - Wednesday
+      type: object
+      properties:
+        Monday:
+          type: boolean
+          description: Monday enabled
+        Tuesday:
+          type: boolean
+          description: Tuesday enabled
+        Wednesday:
+          type: boolean
+          description: Wednesday enabled
+        Thursday:
+          type: boolean
+          description: Thursday enabled
+        Friday:
+          type: boolean
+          description: Friday enabled
+        Saturday:
+          type: boolean
+          description: Saturday enabled
+        Sunday:
+          type: boolean
+          description: Sunday enabled
+      additionalProperties: false
+      x-schema-id: DaysParameters
     TimeFilterInterval:
       title: Time interval
       type: object
@@ -386,6 +593,42 @@ components:
       additionalProperties: false
       description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
       x-schema-id: TimeFilterInterval
+    SetRestrictionParameters:
+      title: SetRestrictionParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Data
+      - ServiceId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ServiceId:
+          minLength: 1
+          type: string
+          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services#service) restrictions will be set in.
+          x-schema-id: HybridIdentifier
+        Data:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/RestrictionSetData'
+          description: Parameters of restrictions.
+      additionalProperties: false
+      x-schema-id: SetRestrictionParameters
     RestrictionSetData:
       title: Restriction set data
       required:
@@ -574,21 +817,6 @@ components:
           description: Value of the maximum price per time unit.
       additionalProperties: false
       x-schema-id: RestrictionSetData
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     CurrencyValueOld:
       title: Currency value (ver 2018-06-07)
       required:
@@ -625,6 +853,43 @@ components:
       additionalProperties: false
       description: Total price of the reservation.
       x-schema-id: CurrencyValueOld
+    RestrictionExceptions:
+      title: Restriction exception
+      type: object
+      properties:
+        MinAdvance:
+          type:
+          - string
+          - 'null'
+          description: The minimum time before the reservation starts, you can reserve in ISO 8601 duration format.
+        MaxAdvance:
+          type:
+          - string
+          - 'null'
+          description: The maximum time before the reservation starts, you can reserve in ISO 8601 duration format.
+        MinLength:
+          type:
+          - string
+          - 'null'
+          description: Minimal reservation length in ISO 8601 duration format.
+        MaxLength:
+          type:
+          - string
+          - 'null'
+          description: Maximal reservation length in ISO 8601 duration format.
+        MinPrice:
+          title: Currency value (ver 2018-06-07)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValueOld'
+          description: Value of the minimum price per time unit.
+        MaxPrice:
+          title: Currency value (ver 2018-06-07)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValueOld'
+          description: Value of the maximum price per time unit.
+      additionalProperties: false
+      description: The rules that prevent the restriction from applying to a reservation, even when all conditions have been met.
+      x-schema-id: RestrictionExceptions
     Limitation:
       title: Limitation
       required:
@@ -642,46 +907,64 @@ components:
       additionalProperties: false
       description: Limitation on the quantity of data returned.
       x-schema-id: Limitation
-    SetRestrictionParameters:
-      title: SetRestrictionParameters
+    Restriction:
+      title: Restriction
       required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Data
+      - Conditions
+      - Id
+      - Origin
       - ServiceId
       type: object
       properties:
-        ClientToken:
-          minLength: 1
+        Id:
           type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
+          description: Unique identifier of the restriction.
+          format: uuid
         ServiceId:
-          minLength: 1
           type: string
-          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services#service) restrictions will be set in.
-          x-schema-id: HybridIdentifier
-        Data:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/RestrictionSetData'
-          description: Parameters of restrictions.
+          description: Unique identifier of the `Service`.
+          format: uuid
+        ExternalIdentifier:
+          type:
+          - string
+          - 'null'
+          description: External identifier of the restriction.
+        Origin:
+          title: Restriction origin
+          allOf:
+          - $ref: '#/components/schemas/RestrictionOriginEnum'
+          description: 'Restriction origin
+
+
+            User (Restriction was created by a user in Mews.)
+
+
+            Integration (Restriction was created by a 3rd-party integration.)'
+          x-enumNames:
+          - User
+          - Integration
+          x-enumDescriptions:
+          - Restriction was created by a user in Mews.
+          - Restriction was created by a 3rd-party integration.
+        Conditions:
+          title: Restriction condition
+          allOf:
+          - $ref: '#/components/schemas/RestrictionConditions'
+          description: The conditions or rules that must be met by a reservation for the restriction to apply.
+        Exceptions:
+          title: Restriction exception
+          allOf:
+          - $ref: '#/components/schemas/RestrictionExceptions'
+          description: The rules that prevent the restriction from applying to a reservation, even when all conditions have been met.
       additionalProperties: false
-      x-schema-id: SetRestrictionParameters
-    RestrictionClearData:
-      title: Restriction clear data
+      description: The added restriction.
+      x-schema-id: Restriction
+    Unit:
+      type: object
+      additionalProperties: false
+    RestrictionConditions:
+      title: Restriction condition
       required:
-      - Days
       - Type
       type: object
       properties:
@@ -711,30 +994,30 @@ components:
           type:
           - string
           - 'null'
-          description: Unique identifier of the exact `Rate` to which the restriction applies.
-          x-schema-id: HybridIdentifier
+          description: Unique identifier of the restricted exact `Rate`.
+          format: uuid
         BaseRateId:
           type:
           - string
           - 'null'
-          description: Unique identifier of the base `Rate` to which the restriction applies.
-          x-schema-id: HybridIdentifier
+          description: Unique identifier of the restricted base `Rate`.
+          format: uuid
         RateGroupId:
           type:
           - string
           - 'null'
-          description: Unique identifier of the `Rate group` to which the restriction applies.
-          x-schema-id: HybridIdentifier
+          description: Unique identifier of the restricted `Rate group`.
+          format: uuid
         ResourceCategoryId:
           type:
           - string
           - 'null'
-          description: Unique identifier of the `Resource category` to which the restriction applies.
-          x-schema-id: HybridIdentifier
+          description: Unique identifier of the restricted `Resource category`.
+          format: uuid
         ResourceCategoryType:
           allOf:
           - $ref: '#/components/schemas/ResourceCategoryTypeEnum'
-          description: 'Name of the `Resource category type` to which the restriction applies.
+          description: 'Name of the restricted `Resource category type`.
 
 
             Room
@@ -817,75 +1100,27 @@ components:
           type:
           - string
           - 'null'
-          description: Start date of the time interval for which the restriction conditions should be applied. This must be in UTC timezone in ISO 8601 format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes).
-          format: date-time
+          description: Start date of the restriction time interval, specified in ISO 8601 format and adjusted to UTC - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes) for important information on format and implementation.
         EndUtc:
           type:
           - string
           - 'null'
-          description: End date of the time interval for which the restriction conditions should be applied. This must be in UTC timezone in ISO 8601 format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes).
-          format: date-time
+          description: End date of the restriction time interval, specified in ISO 8601 format and adjusted to UTC - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes) for important information on format and implementation.
         Days:
-          title: Days parameters
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The restricted days of week. Defaults to all days when not provided. Ignored when the service uses a time unit longer than a day.
+        Hours:
+          title: Hours
           allOf:
-          - $ref: '#/components/schemas/DaysParameters'
-          description: The days of week to which the restriction applies.
+          - $ref: '#/components/schemas/Hours'
+          description: The restricted hours. Defaults to all hours when not provided.
       additionalProperties: false
-      x-schema-id: RestrictionClearData
-    DaysParameters:
-      title: Days parameters
-      required:
-      - Friday
-      - Monday
-      - Saturday
-      - Sunday
-      - Thursday
-      - Tuesday
-      - Wednesday
-      type: object
-      properties:
-        Monday:
-          type: boolean
-          description: Monday enabled
-        Tuesday:
-          type: boolean
-          description: Tuesday enabled
-        Wednesday:
-          type: boolean
-          description: Wednesday enabled
-        Thursday:
-          type: boolean
-          description: Thursday enabled
-        Friday:
-          type: boolean
-          description: Friday enabled
-        Saturday:
-          type: boolean
-          description: Saturday enabled
-        Sunday:
-          type: boolean
-          description: Sunday enabled
-      additionalProperties: false
-      x-schema-id: DaysParameters
-    CurrencyValue:
-      title: Currency value (ver 2023-02-02)
-      required:
-      - Currency
-      - Value
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          description: ISO-4217 code of the `Currency`.
-          format: currency
-        Value:
-          type: number
-          description: Amount in the currency.
-          format: double
-      additionalProperties: false
-      description: Absolute value of the fee.
-      x-schema-id: CurrencyValue
+      description: The conditions or rules that must be met by a reservation for the restriction to apply.
+      x-schema-id: RestrictionConditions
     ResourceCategoryTypeEnum:
       title: Resource category type
       enum:
@@ -1049,31 +1284,25 @@ components:
       - ''
       - ''
       - ''
-    RestrictionOriginEnum:
-      title: Restriction origin
-      enum:
-      - User
-      - Integration
-      type: string
-      description: '
-
-
-        User (Restriction was created by a user in Mews.)
-
-
-        Integration (Restriction was created by a 3rd-party integration.)'
-      x-enumNames:
-      - User
-      - Integration
-      x-enumDescriptions:
-      - Restriction was created by a user in Mews.
-      - Restriction was created by a 3rd-party integration.
-    Unit:
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-    RestrictionConditions:
-      title: Restriction condition
+      x-schema-id: ConnectorApiExceptionResult
+    RestrictionClearData:
+      title: Restriction clear data
       required:
+      - Days
       - Type
       type: object
       properties:
@@ -1103,30 +1332,30 @@ components:
           type:
           - string
           - 'null'
-          description: Unique identifier of the restricted exact `Rate`.
-          format: uuid
+          description: Unique identifier of the exact `Rate` to which the restriction applies.
+          x-schema-id: HybridIdentifier
         BaseRateId:
           type:
           - string
           - 'null'
-          description: Unique identifier of the restricted base `Rate`.
-          format: uuid
+          description: Unique identifier of the base `Rate` to which the restriction applies.
+          x-schema-id: HybridIdentifier
         RateGroupId:
           type:
           - string
           - 'null'
-          description: Unique identifier of the restricted `Rate group`.
-          format: uuid
+          description: Unique identifier of the `Rate group` to which the restriction applies.
+          x-schema-id: HybridIdentifier
         ResourceCategoryId:
           type:
           - string
           - 'null'
-          description: Unique identifier of the restricted `Resource category`.
-          format: uuid
+          description: Unique identifier of the `Resource category` to which the restriction applies.
+          x-schema-id: HybridIdentifier
         ResourceCategoryType:
           allOf:
           - $ref: '#/components/schemas/ResourceCategoryTypeEnum'
-          description: 'Name of the restricted `Resource category type`.
+          description: 'Name of the `Resource category type` to which the restriction applies.
 
 
             Room
@@ -1209,152 +1438,21 @@ components:
           type:
           - string
           - 'null'
-          description: Start date of the restriction time interval, specified in ISO 8601 format and adjusted to UTC - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes) for important information on format and implementation.
+          description: Start date of the time interval for which the restriction conditions should be applied. This must be in UTC timezone in ISO 8601 format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes).
+          format: date-time
         EndUtc:
           type:
           - string
           - 'null'
-          description: End date of the restriction time interval, specified in ISO 8601 format and adjusted to UTC - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes) for important information on format and implementation.
+          description: End date of the time interval for which the restriction conditions should be applied. This must be in UTC timezone in ISO 8601 format - see [Datetimes](https://mews-systems.gitbook.io/connector-api/guidelines/serialization#datetimes).
+          format: date-time
         Days:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: The restricted days of week. Defaults to all days when not provided. Ignored when the service uses a time unit longer than a day.
-        Hours:
-          title: Hours
+          title: Days parameters
           allOf:
-          - $ref: '#/components/schemas/Hours'
-          description: The restricted hours. Defaults to all hours when not provided.
+          - $ref: '#/components/schemas/DaysParameters'
+          description: The days of week to which the restriction applies.
       additionalProperties: false
-      description: The conditions or rules that must be met by a reservation for the restriction to apply.
-      x-schema-id: RestrictionConditions
-    RestrictionFilterParameters:
-      title: RestrictionFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      - ServiceIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        TimeFilter:
-          type:
-          - string
-          - 'null'
-          deprecated: true
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          deprecated: true
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          deprecated: true
-        CollidingUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the `Restriction` is active.
-        CreatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the `Restriction` was created.
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the `Restriction` was updated.
-        RestrictionIds:
-          maxItems: 1000
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the `Restriction`.
-        ResourceCategoryIds:
-          maxItems: 1000
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Resource category`.
-        RateIds:
-          maxItems: 1000
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Rate`. Returns all restrictions that affect the given rates, i.e. ones without any `Restriction Conditions`, ones assigned directly to specified rates, ones assigned to `Rate group` of specified rates, or ones inherited from base rates.`.
-        ExactRateIds:
-          maxItems: 1000
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Rate`. Returns only those restrictions which have matching `ExactRateId` set in `Restriction Condition`.
-        BaseRateIds:
-          maxItems: 1000
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Rate`. Returns only those restrictions which have matching `BaseRateId` set in `Restriction Condition`.
-        Origin:
-          anyOf:
-          - $ref: '#/components/schemas/RestrictionOrigin'
-          description: Restriction origin. Returns only those restrictions which have matching Origin or all if not specified.
-        ServiceIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the `Service` from which the restrictions are requested.
-      additionalProperties: false
-      x-schema-id: RestrictionFilterParameters
+      x-schema-id: RestrictionClearData
     Hours:
       title: Hours
       required:
@@ -1494,67 +1592,25 @@ components:
           description: Details of the matching conditions and time intervals for clearing restrictions.
       additionalProperties: false
       x-schema-id: ClearRestrictionParameters
-    Restriction:
-      title: Restriction
+    CurrencyValue:
+      title: Currency value (ver 2023-02-02)
       required:
-      - Conditions
-      - Id
-      - Origin
-      - ServiceId
+      - Currency
+      - Value
       type: object
       properties:
-        Id:
+        Currency:
+          minLength: 1
           type: string
-          description: Unique identifier of the restriction.
-          format: uuid
-        ServiceId:
-          type: string
-          description: Unique identifier of the `Service`.
-          format: uuid
-        ExternalIdentifier:
-          type:
-          - string
-          - 'null'
-          description: External identifier of the restriction.
-        Origin:
-          title: Restriction origin
-          allOf:
-          - $ref: '#/components/schemas/RestrictionOriginEnum'
-          description: 'Restriction origin
-
-
-            User (Restriction was created by a user in Mews.)
-
-
-            Integration (Restriction was created by a 3rd-party integration.)'
-          x-enumNames:
-          - User
-          - Integration
-          x-enumDescriptions:
-          - Restriction was created by a user in Mews.
-          - Restriction was created by a 3rd-party integration.
-        Conditions:
-          title: Restriction condition
-          allOf:
-          - $ref: '#/components/schemas/RestrictionConditions'
-          description: The conditions or rules that must be met by a reservation for the restriction to apply.
-        Exceptions:
-          title: Restriction exception
-          allOf:
-          - $ref: '#/components/schemas/RestrictionExceptions'
-          description: The rules that prevent the restriction from applying to a reservation, even when all conditions have been met.
+          description: ISO-4217 code of the `Currency`.
+          format: currency
+        Value:
+          type: number
+          description: Amount in the currency.
+          format: double
       additionalProperties: false
-      description: The added restriction.
-      x-schema-id: Restriction
-    RestrictionOrigin:
-      title: Restriction origin
-      enum:
-      - User
-      - Integration
-      type: string
-      x-enumDescriptions:
-      - Restriction was created by a user in Mews.
-      - Restriction was created by a 3rd-party integration.
+      description: Absolute value of the fee.
+      x-schema-id: CurrencyValue
     RestrictionTypeEnum:
       title: Restriction type
       enum:
@@ -1580,59 +1636,3 @@ components:
       - Guests can't stay within specified dates.
       - Guests can't check in within specified dates.
       - Guests can't check out within specified dates.
-    RestrictionResult:
-      title: RestrictionResult
-      required:
-      - Restrictions
-      type: object
-      properties:
-        Restrictions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Restriction'
-          description: Restrictions of the default service.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: RestrictionResult
-    RestrictionExceptions:
-      title: Restriction exception
-      type: object
-      properties:
-        MinAdvance:
-          type:
-          - string
-          - 'null'
-          description: The minimum time before the reservation starts, you can reserve in ISO 8601 duration format.
-        MaxAdvance:
-          type:
-          - string
-          - 'null'
-          description: The maximum time before the reservation starts, you can reserve in ISO 8601 duration format.
-        MinLength:
-          type:
-          - string
-          - 'null'
-          description: Minimal reservation length in ISO 8601 duration format.
-        MaxLength:
-          type:
-          - string
-          - 'null'
-          description: Maximal reservation length in ISO 8601 duration format.
-        MinPrice:
-          title: Currency value (ver 2018-06-07)
-          allOf:
-          - $ref: '#/components/schemas/CurrencyValueOld'
-          description: Value of the minimum price per time unit.
-        MaxPrice:
-          title: Currency value (ver 2018-06-07)
-          allOf:
-          - $ref: '#/components/schemas/CurrencyValueOld'
-          description: Value of the maximum price per time unit.
-      additionalProperties: false
-      description: The rules that prevent the restriction from applying to a reservation, even when all conditions have been met.
-      x-schema-id: RestrictionExceptions

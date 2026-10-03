@@ -85,23 +85,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    Currency:
-      title: Currency
-      required:
-      - Code
-      - Precision
-      type: object
-      properties:
-        Code:
-          minLength: 1
-          type: string
-          description: ISO-4217 three-letter code, e.g. USD or GBP.
-        Precision:
-          type: integer
-          description: Precision of the currency (count of decimal places).
-          format: int32
-      additionalProperties: false
-      x-schema-id: Currency
     Parameters:
       title: Parameters
       required:
@@ -124,19 +107,23 @@ components:
           description: Name and version of the client application.
       additionalProperties: false
       x-schema-id: Parameters
-    CurrencyResult:
-      title: CurrencyResult
+    Currency:
+      title: Currency
       required:
-      - Currencies
+      - Code
+      - Precision
       type: object
       properties:
-        Currencies:
-          type: array
-          items:
-            $ref: '#/components/schemas/Currency'
-          description: The supported currencies.
+        Code:
+          minLength: 1
+          type: string
+          description: ISO-4217 three-letter code, e.g. USD or GBP.
+        Precision:
+          type: integer
+          description: Precision of the currency (count of decimal places).
+          format: int32
       additionalProperties: false
-      x-schema-id: CurrencyResult
+      x-schema-id: Currency
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
@@ -152,3 +139,16 @@ components:
         Details: {}
       additionalProperties: false
       x-schema-id: ConnectorApiExceptionResult
+    CurrencyResult:
+      title: CurrencyResult
+      required:
+      - Currencies
+      type: object
+      properties:
+        Currencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Currency'
+          description: The supported currencies.
+      additionalProperties: false
+      x-schema-id: CurrencyResult

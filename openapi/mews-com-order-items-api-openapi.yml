@@ -288,34 +288,133 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    OrderItemProductData:
-      title: Product data
-      required:
-      - ProductId
-      type: object
-      properties:
-        ProductId:
-          type: string
-          description: Unique identifier of the [Product](https://mews-systems.gitbook.io/connector-api/operations/products/#product).
-          format: uuid
-        AgeCategoryId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the [Age Category](https://mews-systems.gitbook.io/connector-api/operations/agecategories/#age-category).
-          format: uuid
-        ProductType:
-          allOf:
-          - $ref: '#/components/schemas/ProductTypeEnum'
-          description: 'Type of Product, e.g. whether allowance or product.
+    OrderItemTypeEnum:
+      title: Order item type
+      enum:
+      - CancellationFee
+      - NightRebate
+      - ProductOrderRebate
+      - AdditionalExpenseRebate
+      - Deposit
+      - ExchangeRateDifference
+      - CustomItem
+      - ServiceCharge
+      - CityTax
+      - CityTaxDiscount
+      - SpaceOrder
+      - ProductOrder
+      - Surcharge
+      - TaxCorrection
+      - ResourceUpgradeFee
+      - InvoiceFee
+      - MulticurrencyFee
+      - AllowanceDiscount
+      - AllowanceBreakage
+      - AllowanceContraBreakage
+      type: string
+      description: '
 
 
-            Product
+        CancellationFee
 
 
-            Allowance'
-      additionalProperties: false
-      x-schema-id: OrderItemProductData
+        NightRebate
+
+
+        ProductOrderRebate
+
+
+        AdditionalExpenseRebate
+
+
+        Deposit
+
+
+        ExchangeRateDifference
+
+
+        CustomItem
+
+
+        ServiceCharge
+
+
+        CityTax
+
+
+        CityTaxDiscount
+
+
+        SpaceOrder
+
+
+        ProductOrder
+
+
+        Surcharge
+
+
+        TaxCorrection
+
+
+        ResourceUpgradeFee
+
+
+        InvoiceFee
+
+
+        MulticurrencyFee
+
+
+        AllowanceDiscount
+
+
+        AllowanceBreakage
+
+
+        AllowanceContraBreakage'
+      x-enumNames:
+      - CancellationFee
+      - NightRebate
+      - ProductOrderRebate
+      - AdditionalExpenseRebate
+      - Deposit
+      - ExchangeRateDifference
+      - CustomItem
+      - ServiceCharge
+      - CityTax
+      - CityTaxDiscount
+      - SpaceOrder
+      - ProductOrder
+      - Surcharge
+      - TaxCorrection
+      - ResourceUpgradeFee
+      - InvoiceFee
+      - MulticurrencyFee
+      - AllowanceDiscount
+      - AllowanceBreakage
+      - AllowanceContraBreakage
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
     TaxBreakdownItem:
       title: Tax breakdown item
       required:
@@ -338,37 +437,84 @@ components:
           format: double
       additionalProperties: false
       x-schema-id: TaxBreakdownItem
-    OrderItemDataDiscriminatorEnum:
-      title: Order item data discriminator
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    TaxExemptionReasonTypeEnum:
+      title: Tax exemption reason type
       enum:
-      - Rebate
-      - Product
-      - AllowanceDiscount
-      - AllowanceProfits
+      - Unknown
+      - IT_N1
+      - IT_N2_2
+      - IT_N3_5
+      - IT_N4
+      - IT_N5
+      - PL_ZW
+      - PL_NP
+      - DE_NATO
       type: string
       description: '
 
 
-        Rebate (Rebate.)
+        Unknown (Unknown tax exemption reason)
 
 
-        Product (Product.)
+        IT_N1 (N1 - Escluse ex art.15)
 
 
-        AllowanceDiscount (Allowance discount.)
+        IT_N2_2 (N2.2 - Non soggette – altri casi)
 
 
-        AllowanceProfits (Allowance profits.)'
+        IT_N3_5 (N3.5 - Non imponibili – a seguito di dichiarazioni d’intento)
+
+
+        IT_N4 (N4 - Esenti)
+
+
+        IT_N5 (N5 - Regime del margine / IVA non esposta in fattura)
+
+
+        PL_ZW (ZW - Zwolniony)
+
+
+        PL_NP (NP - Nie podlega)
+
+
+        DE_NATO (NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen)'
       x-enumNames:
-      - Rebate
-      - Product
-      - AllowanceDiscount
-      - AllowanceProfits
+      - Unknown
+      - IT_N1
+      - IT_N2_2
+      - IT_N3_5
+      - IT_N4
+      - IT_N5
+      - PL_ZW
+      - PL_NP
+      - DE_NATO
       x-enumDescriptions:
-      - Rebate.
-      - Product.
-      - Allowance discount.
-      - Allowance profits.
+      - Unknown tax exemption reason
+      - N1 - Escluse ex art.15
+      - N2.2 - Non soggette – altri casi
+      - N3.5 - Non imponibili – a seguito di dichiarazioni d’intento
+      - N4 - Esenti
+      - N5 - Regime del margine / IVA non esposta in fattura
+      - ZW - Zwolniony
+      - NP - Nie podlega
+      - NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen
     TimeFilterInterval:
       title: Time interval
       type: object
@@ -386,21 +532,6 @@ components:
       additionalProperties: false
       description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
       x-schema-id: TimeFilterInterval
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     Amount:
       title: Amount
       required:
@@ -437,6 +568,499 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: Amount
+    OrderItemProductData:
+      title: Product data
+      required:
+      - ProductId
+      type: object
+      properties:
+        ProductId:
+          type: string
+          description: Unique identifier of the [Product](https://mews-systems.gitbook.io/connector-api/operations/products/#product).
+          format: uuid
+        AgeCategoryId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the [Age Category](https://mews-systems.gitbook.io/connector-api/operations/agecategories/#age-category).
+          format: uuid
+        ProductType:
+          allOf:
+          - $ref: '#/components/schemas/ProductTypeEnum'
+          description: 'Type of Product, e.g. whether allowance or product.
+
+
+            Product
+
+
+            Allowance'
+      additionalProperties: false
+      x-schema-id: OrderItemProductData
+    OrderItemRebateData:
+      title: Rebate data
+      required:
+      - ProductId
+      - RebatedItemId
+      type: object
+      properties:
+        ProductId:
+          type: string
+          description: Unique identifier of the [Product](https://mews-systems.gitbook.io/connector-api/operations/products/#product) of the original rebated [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item).
+          format: uuid
+          x-mews-legacy-nullable: true
+        RebatedItemId:
+          type: string
+          description: Unique identifier of [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) which has been rebated by current item.
+          format: uuid
+          x-mews-legacy-nullable: true
+      additionalProperties: false
+      x-schema-id: OrderItemRebateData
+    OrderItemData:
+      title: Order item data
+      type: object
+      properties:
+        Discriminator:
+          title: Order item data discriminator
+          allOf:
+          - $ref: '#/components/schemas/OrderItemDataDiscriminatorEnum'
+          description: 'Discriminator pointing to the fields within this object that contains additional data.
+
+
+            Rebate (Rebate.)
+
+
+            Product (Product.)
+
+
+            AllowanceDiscount (Allowance discount.)
+
+
+            AllowanceProfits (Allowance profits.)'
+          x-enumNames:
+          - Rebate
+          - Product
+          - AllowanceDiscount
+          - AllowanceProfits
+          x-enumDescriptions:
+          - Rebate.
+          - Product.
+          - Allowance discount.
+          - Allowance profits.
+        Rebate:
+          title: Rebate data
+          allOf:
+          - $ref: '#/components/schemas/OrderItemRebateData'
+          description: Contains additional data in the case of rebate item.
+        Product:
+          title: Product data
+          allOf:
+          - $ref: '#/components/schemas/OrderItemProductData'
+          description: Contains additional data in the case of product item.
+        AllowanceDiscount:
+          title: Allowance discount data
+          allOf:
+          - $ref: '#/components/schemas/OrderItemAllowanceDiscountData'
+          description: Contains additional data in the case of allowance discount item.
+        AllowanceProfits:
+          title: Allowance profits data
+          allOf:
+          - $ref: '#/components/schemas/OrderItemAllowanceProfitsData'
+          description: Contains additional data in the case of allowance profits item.
+      additionalProperties: false
+      description: Additional order item data.
+      x-schema-id: OrderItemData
+    ProductTypeEnum:
+      title: Product type
+      enum:
+      - Product
+      - Allowance
+      type: string
+      description: '
+
+
+        Product
+
+
+        Allowance'
+      x-enumNames:
+      - Product
+      - Allowance
+      x-enumDescriptions:
+      - ''
+      - ''
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    OrderItemAllowanceProfitsData:
+      title: Allowance profits data
+      required:
+      - AllowanceProductOrderItemId
+      - AllowanceProfitType
+      type: object
+      properties:
+        AllowanceProductOrderItemId:
+          type: string
+          description: Unique identifier of the allowance product [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) which credit has been consumed by current item.
+          format: uuid
+        AllowanceProfitType:
+          allOf:
+          - $ref: '#/components/schemas/AllowanceProfitTypeEnum'
+          description: 'Type of allowance profit.
+
+
+            AllowanceBreakage (Profit of the allowance product.)
+
+
+            AllowanceContraBreakage (Accounting balance for profit of the allowance product.)
+
+
+            AllowanceLoss (Loss of the allowance product.)
+
+
+            AllowanceContraLoss (Accounting balance for loss of the allowance product.)'
+      additionalProperties: false
+      x-schema-id: OrderItemAllowanceProfitsData
+    Unit:
+      type: object
+      additionalProperties: false
+    OrderItemFilterParameters:
+      title: OrderItemFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        OrderItemIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Order items](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item). Required if no other filter is provided.
+        AccountIds:
+          maxItems: 100
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of specific `Accounts` to which the order items belong to. Required if no other filter is provided.
+        ServiceOrderIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the service orders ([product service orders](https://mews-systems.gitbook.io/connector-api/operations/productserviceorders/#product-service-order) or [reservations](https://mews-systems.gitbook.io/connector-api/operations/reservations/#reservation-ver-2023-06-06)). Required if no other filter is provided.
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Services](https://mews-systems.gitbook.io/connector-api/operations/services/#service). Required if no other filter is provided.
+        BillIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Bills](https://mews-systems.gitbook.io/connector-api/operations/bills/#bill) to which order item is assigned. Required if no other filter is provided.
+        CreatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) was created. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) was updated. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        ConsumedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) was consumed. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        CanceledUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) was canceled. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        ClosedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) was closed. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        Currency:
+          type:
+          - string
+          - 'null'
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency) the item costs should be converted to.
+          format: currency
+        AccountingStates:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AccountingStateEnum'
+          description: Accounting state of the item.
+        Types:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/OrderItemTypeEnum'
+          description: Order item type, e.g. whether product order or space order.
+      additionalProperties: false
+      x-schema-id: OrderItemFilterParameters
+    AccountTypeEnum:
+      title: Account type
+      enum:
+      - Company
+      - Customer
+      type: string
+      description: 'A discriminator specifying the account type, e.g. `Customer` or `Company`
+
+
+        Company
+
+
+        Customer'
+      x-enumNames:
+      - Company
+      - Customer
+      x-enumDescriptions:
+      - ''
+      - ''
+    OrderItemResult:
+      title: OrderItemResult
+      required:
+      - OrderItems
+      type: object
+      properties:
+        OrderItems:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          description: Set of requested order items.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest order item returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older order items.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: OrderItemResult
+    AccountingStateEnum:
+      title: Order item accounting state
+      enum:
+      - Open
+      - Closed
+      - Inactive
+      - Canceled
+      type: string
+      description: '
+
+
+        Open (Order items which carry a non-zero value, are open, and have not been closed on a bill or invoice.)
+
+
+        Closed (Order items which carry a non-zero value and have been closed on a bill or invoice.)
+
+
+        Inactive (Order items which are either of zero value and have not been canceled, if the state of the payment item is Pending or Failed, or items of optional reservations. Until the reservation is confirmed, all its accounting items are Inactive.)
+
+
+        Canceled (Order items which have been canceled, regardless of whether the item is of zero value.)'
+      x-enumNames:
+      - Open
+      - Closed
+      - Inactive
+      - Canceled
+      x-enumDescriptions:
+      - Order items which carry a non-zero value, are open, and have not been closed on a bill or invoice.
+      - Order items which carry a non-zero value and have been closed on a bill or invoice.
+      - Order items which are either of zero value and have not been canceled, if the state of the payment item is Pending or Failed, or items of optional reservations. Until the reservation is confirmed, all its accounting items are Inactive.
+      - Order items which have been canceled, regardless of whether the item is of zero value.
+    OrderItemAllowanceDiscountData:
+      title: Allowance discount data
+      required:
+      - AllowanceProductOrderItemId
+      - DiscountedOrderItemId
+      type: object
+      properties:
+        DiscountedOrderItemId:
+          type: string
+          description: Unique identifier of [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) which has been discounted by current item.
+          format: uuid
+        AllowanceProductOrderItemId:
+          type: string
+          description: Unique identifier of the allowance product [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) which credit has been consumed by current item.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: OrderItemAllowanceDiscountData
+    RevenueTypeEnum:
+      title: Revenue type
+      enum:
+      - Service
+      - Product
+      - Additional
+      type: string
+      description: 'Revenue type.
+
+
+        Service
+
+
+        Product
+
+
+        Additional'
+      x-enumNames:
+      - Service
+      - Product
+      - Additional
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
+    AllowanceProfitTypeEnum:
+      title: Allowance profit type
+      enum:
+      - AllowanceBreakage
+      - AllowanceContraBreakage
+      - AllowanceLoss
+      - AllowanceContraLoss
+      type: string
+      description: '
+
+
+        AllowanceBreakage (Profit of the allowance product.)
+
+
+        AllowanceContraBreakage (Accounting balance for profit of the allowance product.)
+
+
+        AllowanceLoss (Loss of the allowance product.)
+
+
+        AllowanceContraLoss (Accounting balance for loss of the allowance product.)'
+      x-enumNames:
+      - AllowanceBreakage
+      - AllowanceContraBreakage
+      - AllowanceLoss
+      - AllowanceContraLoss
+      x-enumDescriptions:
+      - Profit of the allowance product.
+      - Accounting balance for profit of the allowance product.
+      - Loss of the allowance product.
+      - Accounting balance for loss of the allowance product.
+    OrderItemOptions:
+      title: Order item options
+      required:
+      - CanceledWithReservation
+      type: object
+      properties:
+        CanceledWithReservation:
+          type: boolean
+          description: Order item was canceled with reservation cancellation.
+      additionalProperties: false
+      description: Options of the order item.
+      x-schema-id: OrderItemOptions
     CancelOrderItemParameters:
       title: CancelOrderItemParameters
       required:
@@ -474,23 +1098,6 @@ components:
           description: Unique identifiers of the `OrderItems` to cancel.
       additionalProperties: false
       x-schema-id: CancelOrderItemParameters
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
-          format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
     OrderItem:
       title: Order item
       required:
@@ -842,641 +1449,34 @@ components:
           description: Legal reference that states why this order item is exempt from tax.
       additionalProperties: false
       x-schema-id: OrderItem
-    AccountingStateEnum:
-      title: Order item accounting state
+    OrderItemDataDiscriminatorEnum:
+      title: Order item data discriminator
       enum:
-      - Open
-      - Closed
-      - Inactive
-      - Canceled
-      type: string
-      description: '
-
-
-        Open (Order items which carry a non-zero value, are open, and have not been closed on a bill or invoice.)
-
-
-        Closed (Order items which carry a non-zero value and have been closed on a bill or invoice.)
-
-
-        Inactive (Order items which are either of zero value and have not been canceled, if the state of the payment item is Pending or Failed, or items of optional reservations. Until the reservation is confirmed, all its accounting items are Inactive.)
-
-
-        Canceled (Order items which have been canceled, regardless of whether the item is of zero value.)'
-      x-enumNames:
-      - Open
-      - Closed
-      - Inactive
-      - Canceled
-      x-enumDescriptions:
-      - Order items which carry a non-zero value, are open, and have not been closed on a bill or invoice.
-      - Order items which carry a non-zero value and have been closed on a bill or invoice.
-      - Order items which are either of zero value and have not been canceled, if the state of the payment item is Pending or Failed, or items of optional reservations. Until the reservation is confirmed, all its accounting items are Inactive.
-      - Order items which have been canceled, regardless of whether the item is of zero value.
-    TaxValue:
-      title: Tax value
-      required:
-      - Value
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Code corresponding to tax type.
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxValue
-    OrderItemAllowanceProfitsData:
-      title: Allowance profits data
-      required:
-      - AllowanceProductOrderItemId
-      - AllowanceProfitType
-      type: object
-      properties:
-        AllowanceProductOrderItemId:
-          type: string
-          description: Unique identifier of the allowance product [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) which credit has been consumed by current item.
-          format: uuid
-        AllowanceProfitType:
-          allOf:
-          - $ref: '#/components/schemas/AllowanceProfitTypeEnum'
-          description: 'Type of allowance profit.
-
-
-            AllowanceBreakage (Profit of the allowance product.)
-
-
-            AllowanceContraBreakage (Accounting balance for profit of the allowance product.)
-
-
-            AllowanceLoss (Loss of the allowance product.)
-
-
-            AllowanceContraLoss (Accounting balance for loss of the allowance product.)'
-      additionalProperties: false
-      x-schema-id: OrderItemAllowanceProfitsData
-    AllowanceProfitTypeEnum:
-      title: Allowance profit type
-      enum:
-      - AllowanceBreakage
-      - AllowanceContraBreakage
-      - AllowanceLoss
-      - AllowanceContraLoss
-      type: string
-      description: '
-
-
-        AllowanceBreakage (Profit of the allowance product.)
-
-
-        AllowanceContraBreakage (Accounting balance for profit of the allowance product.)
-
-
-        AllowanceLoss (Loss of the allowance product.)
-
-
-        AllowanceContraLoss (Accounting balance for loss of the allowance product.)'
-      x-enumNames:
-      - AllowanceBreakage
-      - AllowanceContraBreakage
-      - AllowanceLoss
-      - AllowanceContraLoss
-      x-enumDescriptions:
-      - Profit of the allowance product.
-      - Accounting balance for profit of the allowance product.
-      - Loss of the allowance product.
-      - Accounting balance for loss of the allowance product.
-    RevenueTypeEnum:
-      title: Revenue type
-      enum:
-      - Service
+      - Rebate
       - Product
-      - Additional
-      type: string
-      description: 'Revenue type.
-
-
-        Service
-
-
-        Product
-
-
-        Additional'
-      x-enumNames:
-      - Service
-      - Product
-      - Additional
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-    AccountTypeEnum:
-      title: Account type
-      enum:
-      - Company
-      - Customer
-      type: string
-      description: 'A discriminator specifying the account type, e.g. `Customer` or `Company`
-
-
-        Company
-
-
-        Customer'
-      x-enumNames:
-      - Company
-      - Customer
-      x-enumDescriptions:
-      - ''
-      - ''
-    OrderItemRebateData:
-      title: Rebate data
-      required:
-      - ProductId
-      - RebatedItemId
-      type: object
-      properties:
-        ProductId:
-          type: string
-          description: Unique identifier of the [Product](https://mews-systems.gitbook.io/connector-api/operations/products/#product) of the original rebated [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item).
-          format: uuid
-          x-mews-legacy-nullable: true
-        RebatedItemId:
-          type: string
-          description: Unique identifier of [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) which has been rebated by current item.
-          format: uuid
-          x-mews-legacy-nullable: true
-      additionalProperties: false
-      x-schema-id: OrderItemRebateData
-    OrderItemData:
-      title: Order item data
-      type: object
-      properties:
-        Discriminator:
-          title: Order item data discriminator
-          allOf:
-          - $ref: '#/components/schemas/OrderItemDataDiscriminatorEnum'
-          description: 'Discriminator pointing to the fields within this object that contains additional data.
-
-
-            Rebate (Rebate.)
-
-
-            Product (Product.)
-
-
-            AllowanceDiscount (Allowance discount.)
-
-
-            AllowanceProfits (Allowance profits.)'
-          x-enumNames:
-          - Rebate
-          - Product
-          - AllowanceDiscount
-          - AllowanceProfits
-          x-enumDescriptions:
-          - Rebate.
-          - Product.
-          - Allowance discount.
-          - Allowance profits.
-        Rebate:
-          title: Rebate data
-          allOf:
-          - $ref: '#/components/schemas/OrderItemRebateData'
-          description: Contains additional data in the case of rebate item.
-        Product:
-          title: Product data
-          allOf:
-          - $ref: '#/components/schemas/OrderItemProductData'
-          description: Contains additional data in the case of product item.
-        AllowanceDiscount:
-          title: Allowance discount data
-          allOf:
-          - $ref: '#/components/schemas/OrderItemAllowanceDiscountData'
-          description: Contains additional data in the case of allowance discount item.
-        AllowanceProfits:
-          title: Allowance profits data
-          allOf:
-          - $ref: '#/components/schemas/OrderItemAllowanceProfitsData'
-          description: Contains additional data in the case of allowance profits item.
-      additionalProperties: false
-      description: Additional order item data.
-      x-schema-id: OrderItemData
-    OrderItemAllowanceDiscountData:
-      title: Allowance discount data
-      required:
-      - AllowanceProductOrderItemId
-      - DiscountedOrderItemId
-      type: object
-      properties:
-        DiscountedOrderItemId:
-          type: string
-          description: Unique identifier of [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) which has been discounted by current item.
-          format: uuid
-        AllowanceProductOrderItemId:
-          type: string
-          description: Unique identifier of the allowance product [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) which credit has been consumed by current item.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: OrderItemAllowanceDiscountData
-    OrderItemOptions:
-      title: Order item options
-      required:
-      - CanceledWithReservation
-      type: object
-      properties:
-        CanceledWithReservation:
-          type: boolean
-          description: Order item was canceled with reservation cancellation.
-      additionalProperties: false
-      description: Options of the order item.
-      x-schema-id: OrderItemOptions
-    OrderItemFilterParameters:
-      title: OrderItemFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        OrderItemIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the [Order items](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item). Required if no other filter is provided.
-        AccountIds:
-          maxItems: 100
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of specific `Accounts` to which the order items belong to. Required if no other filter is provided.
-        ServiceOrderIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the service orders ([product service orders](https://mews-systems.gitbook.io/connector-api/operations/productserviceorders/#product-service-order) or [reservations](https://mews-systems.gitbook.io/connector-api/operations/reservations/#reservation-ver-2023-06-06)). Required if no other filter is provided.
-        ServiceIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the [Services](https://mews-systems.gitbook.io/connector-api/operations/services/#service). Required if no other filter is provided.
-        BillIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the [Bills](https://mews-systems.gitbook.io/connector-api/operations/bills/#bill) to which order item is assigned. Required if no other filter is provided.
-        CreatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) was created. Required if no other filter is provided.
-          x-max-interval-in-months: 3
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) was updated. Required if no other filter is provided.
-          x-max-interval-in-months: 3
-        ConsumedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) was consumed. Required if no other filter is provided.
-          x-max-interval-in-months: 3
-        CanceledUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) was canceled. Required if no other filter is provided.
-          x-max-interval-in-months: 3
-        ClosedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the [Order item](https://mews-systems.gitbook.io/connector-api/operations/orderitems/#order-item) was closed. Required if no other filter is provided.
-          x-max-interval-in-months: 3
-        Currency:
-          type:
-          - string
-          - 'null'
-          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency) the item costs should be converted to.
-          format: currency
-        AccountingStates:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/AccountingStateEnum'
-          description: Accounting state of the item.
-        Types:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/OrderItemTypeEnum'
-          description: Order item type, e.g. whether product order or space order.
-      additionalProperties: false
-      x-schema-id: OrderItemFilterParameters
-    OrderItemTypeEnum:
-      title: Order item type
-      enum:
-      - CancellationFee
-      - NightRebate
-      - ProductOrderRebate
-      - AdditionalExpenseRebate
-      - Deposit
-      - ExchangeRateDifference
-      - CustomItem
-      - ServiceCharge
-      - CityTax
-      - CityTaxDiscount
-      - SpaceOrder
-      - ProductOrder
-      - Surcharge
-      - TaxCorrection
-      - ResourceUpgradeFee
-      - InvoiceFee
-      - MulticurrencyFee
       - AllowanceDiscount
-      - AllowanceBreakage
-      - AllowanceContraBreakage
+      - AllowanceProfits
       type: string
       description: '
 
 
-        CancellationFee
+        Rebate (Rebate.)
 
 
-        NightRebate
+        Product (Product.)
 
 
-        ProductOrderRebate
+        AllowanceDiscount (Allowance discount.)
 
 
-        AdditionalExpenseRebate
-
-
-        Deposit
-
-
-        ExchangeRateDifference
-
-
-        CustomItem
-
-
-        ServiceCharge
-
-
-        CityTax
-
-
-        CityTaxDiscount
-
-
-        SpaceOrder
-
-
-        ProductOrder
-
-
-        Surcharge
-
-
-        TaxCorrection
-
-
-        ResourceUpgradeFee
-
-
-        InvoiceFee
-
-
-        MulticurrencyFee
-
-
-        AllowanceDiscount
-
-
-        AllowanceBreakage
-
-
-        AllowanceContraBreakage'
+        AllowanceProfits (Allowance profits.)'
       x-enumNames:
-      - CancellationFee
-      - NightRebate
-      - ProductOrderRebate
-      - AdditionalExpenseRebate
-      - Deposit
-      - ExchangeRateDifference
-      - CustomItem
-      - ServiceCharge
-      - CityTax
-      - CityTaxDiscount
-      - SpaceOrder
-      - ProductOrder
-      - Surcharge
-      - TaxCorrection
-      - ResourceUpgradeFee
-      - InvoiceFee
-      - MulticurrencyFee
+      - Rebate
+      - Product
       - AllowanceDiscount
-      - AllowanceBreakage
-      - AllowanceContraBreakage
+      - AllowanceProfits
       x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-    OrderItemResult:
-      title: OrderItemResult
-      required:
-      - OrderItems
-      type: object
-      properties:
-        OrderItems:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/OrderItem'
-          description: Set of requested order items.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the last and hence oldest order item returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older order items.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: OrderItemResult
-    TaxBreakdown:
-      title: Tax breakdown
-      required:
-      - Items
-      type: object
-      properties:
-        Items:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxBreakdownItem'
-          description: Tax breakdown items per each tax rate applied.
-      additionalProperties: false
-      x-schema-id: TaxBreakdown
-    Unit:
-      type: object
-      additionalProperties: false
-    ProductTypeEnum:
-      title: Product type
-      enum:
-      - Product
-      - Allowance
-      type: string
-      description: '
-
-
-        Product
-
-
-        Allowance'
-      x-enumNames:
-      - Product
-      - Allowance
-      x-enumDescriptions:
-      - ''
-      - ''
-    TaxExemptionReasonTypeEnum:
-      title: Tax exemption reason type
-      enum:
-      - Unknown
-      - IT_N1
-      - IT_N2_2
-      - IT_N3_5
-      - IT_N4
-      - IT_N5
-      - PL_ZW
-      - PL_NP
-      - DE_NATO
-      type: string
-      description: '
-
-
-        Unknown (Unknown tax exemption reason)
-
-
-        IT_N1 (N1 - Escluse ex art.15)
-
-
-        IT_N2_2 (N2.2 - Non soggette – altri casi)
-
-
-        IT_N3_5 (N3.5 - Non imponibili – a seguito di dichiarazioni d’intento)
-
-
-        IT_N4 (N4 - Esenti)
-
-
-        IT_N5 (N5 - Regime del margine / IVA non esposta in fattura)
-
-
-        PL_ZW (ZW - Zwolniony)
-
-
-        PL_NP (NP - Nie podlega)
-
-
-        DE_NATO (NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen)'
-      x-enumNames:
-      - Unknown
-      - IT_N1
-      - IT_N2_2
-      - IT_N3_5
-      - IT_N4
-      - IT_N5
-      - PL_ZW
-      - PL_NP
-      - DE_NATO
-      x-enumDescriptions:
-      - Unknown tax exemption reason
-      - N1 - Escluse ex art.15
-      - N2.2 - Non soggette – altri casi
-      - N3.5 - Non imponibili – a seguito di dichiarazioni d’intento
-      - N4 - Esenti
-      - N5 - Regime del margine / IVA non esposta in fattura
-      - ZW - Zwolniony
-      - NP - Nie podlega
-      - NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen
+      - Rebate.
+      - Product.
+      - Allowance discount.
+      - Allowance profits.

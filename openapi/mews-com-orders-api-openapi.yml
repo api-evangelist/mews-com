@@ -112,6 +112,83 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    OrderItemAdditionData:
+      title: Item parameters
+      required:
+      - Name
+      - UnitAmount
+      - UnitCount
+      type: object
+      properties:
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the item.
+        UnitCount:
+          type: integer
+          description: Count of units to be ordered, e.g. 10 in case of 10 beers.
+          format: int32
+        UnitAmount:
+          title: Amount parameters
+          allOf:
+          - $ref: '#/components/schemas/AmountParameters'
+          description: Unit amount, e.g. amount for one beer (note that total amount of the item is therefore `UnitAmount` times `UnitCount`).
+        AccountingCategoryId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of an `AccountingCategory` to be assigned to the item.
+          format: uuid
+        ExternalIdentifier:
+          type:
+          - string
+          - 'null'
+          description: External identifier of the order item.
+      additionalProperties: false
+      x-schema-id: OrderItemAdditionData
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    AmountParameters:
+      title: Amount parameters
+      required:
+      - Currency
+      - TaxCodes
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        TaxCodes:
+          type: array
+          items:
+            type: string
+        NetValue:
+          type:
+          - number
+          - 'null'
+          format: double
+        GrossValue:
+          type:
+          - number
+          - 'null'
+          format: double
+      additionalProperties: false
+      description: Price of the product that overrides the price defined in Mews.
+      x-schema-id: AmountParameters
     OrderAdditionParameters:
       title: OrderAdditionParameters
       required:
@@ -206,83 +283,27 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: OrderAdditionParameters
-    OrderItemAdditionData:
-      title: Item parameters
-      required:
-      - Name
-      - UnitAmount
-      - UnitCount
+    OrderAdditionResult:
+      title: OrderAdditionResult
       type: object
       properties:
-        Name:
-          minLength: 1
+        OrderId:
           type: string
-          description: Name of the item.
-        UnitCount:
-          type: integer
-          description: Count of units to be ordered, e.g. 10 in case of 10 beers.
-          format: int32
-        UnitAmount:
-          title: Amount parameters
-          allOf:
-          - $ref: '#/components/schemas/AmountParameters'
-          description: Unit amount, e.g. amount for one beer (note that total amount of the item is therefore `UnitAmount` times `UnitCount`).
-        AccountingCategoryId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of an `AccountingCategory` to be assigned to the item.
+          description: Unique identifier of the created order.
           format: uuid
-        ExternalIdentifier:
-          type:
-          - string
-          - 'null'
-          description: External identifier of the order item.
       additionalProperties: false
-      x-schema-id: OrderItemAdditionData
-    AmountParameters:
-      title: Amount parameters
-      required:
-      - Currency
-      - TaxCodes
+      x-schema-id: OrderAdditionResult
+    OrderAdditionOptions:
+      title: Order addition options
       type: object
       properties:
-        Currency:
-          minLength: 1
-          type: string
-          format: currency
-        TaxCodes:
-          type: array
-          items:
-            type: string
-        NetValue:
+        DisableItemGrouping:
           type:
-          - number
+          - boolean
           - 'null'
-          format: double
-        GrossValue:
-          type:
-          - number
-          - 'null'
-          format: double
+          description: Whether to disable item grouping. Defaults to `false` (item grouping is enabled by default).
       additionalProperties: false
-      description: Price of the product that overrides the price defined in Mews.
-      x-schema-id: AmountParameters
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
+      x-schema-id: OrderAdditionOptions
     ProductOrderAdditionData:
       title: Product order parameters
       required:
@@ -323,24 +344,3 @@ components:
           description: External identifier of the product order.
       additionalProperties: false
       x-schema-id: ProductOrderAdditionData
-    OrderAdditionResult:
-      title: OrderAdditionResult
-      type: object
-      properties:
-        OrderId:
-          type: string
-          description: Unique identifier of the created order.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: OrderAdditionResult
-    OrderAdditionOptions:
-      title: Order addition options
-      type: object
-      properties:
-        DisableItemGrouping:
-          type:
-          - boolean
-          - 'null'
-          description: Whether to disable item grouping. Defaults to `false` (item grouping is enabled by default).
-      additionalProperties: false
-      x-schema-id: OrderAdditionOptions

@@ -175,63 +175,70 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    TaxValue:
-      title: Tax value
-      required:
-      - Value
+    AccountingLedgerTypeEnum:
+      title: Accounting ledger type
+      enum:
+      - Revenue
+      - Tax
+      - Payment
+      - Deposit
+      - Guest
+      - City
+      - NonRevenue
+      type: string
+      description: '
+
+
+        Revenue
+
+
+        Tax
+
+
+        Payment
+
+
+        Deposit
+
+
+        Guest
+
+
+        City
+
+
+        NonRevenue'
+      x-enumNames:
+      - Revenue
+      - Tax
+      - Payment
+      - Deposit
+      - Guest
+      - City
+      - NonRevenue
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        Code:
+        Message:
           type:
           - string
           - 'null'
-          description: Code corresponding to tax type.
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxValue
-    DateFilterInterval:
-      title: Date filter interval
-      required:
-      - End
-      - Start
-      type: object
-      properties:
-        Start:
-          minLength: 1
-          type: string
-          description: Starting date of the interval in ISO 8601 format.
-          format: date
-        End:
-          minLength: 1
-          type: string
-          description: Ending date of the interval in ISO 8601 format.
-          format: date
-      additionalProperties: false
-      x-schema-id: DateFilterInterval
-    LedgerBalanceResult:
-      title: LedgerBalanceResult
-      required:
-      - LedgerBalances
-      type: object
-      properties:
-        LedgerBalances:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/LedgerBalance'
-          description: The list of filtered ledger balances.
-        Cursor:
+        RequestId:
           type:
           - string
           - 'null'
-          description: Unique identifier of the last and hence oldest ledger balance returned. This can be used in Limitation in a subsequent request to fetch the next batch of ledger balances.
-          format: uuid
+        Details: {}
       additionalProperties: false
-      x-schema-id: LedgerBalanceResult
+      x-schema-id: ConnectorApiExceptionResult
     TaxBreakdownItem:
       title: Tax breakdown item
       required:
@@ -254,58 +261,23 @@ components:
           format: double
       additionalProperties: false
       x-schema-id: TaxBreakdownItem
-    LedgerBalanceParameters:
-      title: LedgerBalanceParameters
+    TaxValue:
+      title: Tax value
       required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Date
-      - LedgerTypes
-      - Limitation
+      - Value
       type: object
       properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
+        Code:
           type:
-          - array
+          - string
           - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        Date:
-          title: Date filter interval
-          allOf:
-          - $ref: '#/components/schemas/DateFilterInterval'
-          description: Date interval over which the ledger balances are created.
-          x-max-interval-in-months: 1
-        LedgerTypes:
-          minItems: 1
-          uniqueItems: true
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountingLedgerTypeEnum'
-          description: Accounting ledger types to which ledger balances belong.
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
       additionalProperties: false
-      x-schema-id: LedgerBalanceParameters
+      x-schema-id: TaxValue
     TaxBreakdown:
       title: Tax breakdown
       required:
@@ -319,74 +291,27 @@ components:
           description: Tax breakdown items per each tax rate applied.
       additionalProperties: false
       x-schema-id: TaxBreakdown
-    Amount:
-      title: Amount
+    LedgerBalanceResult:
+      title: LedgerBalanceResult
       required:
-      - Breakdown
-      - Currency
-      - GrossValue
-      - NetValue
-      - TaxValues
+      - LedgerBalances
       type: object
       properties:
-        Currency:
-          minLength: 1
-          type: string
-          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
-          format: currency
-        NetValue:
-          type: number
-          description: Net value without taxes.
-          format: double
-        GrossValue:
-          type: number
-          description: Gross value including all taxes.
-          format: double
-        TaxValues:
-          type: array
+        LedgerBalances:
+          type:
+          - array
+          - 'null'
           items:
-            $ref: '#/components/schemas/TaxValue'
-          description: The tax values applied.
-        Breakdown:
-          title: Tax breakdown
-          allOf:
-          - $ref: '#/components/schemas/TaxBreakdown'
-          description: Information about individual tax amounts.
-      additionalProperties: false
-      description: ''
-      x-schema-id: Amount
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
+            $ref: '#/components/schemas/LedgerBalance'
+          description: The list of filtered ledger balances.
         Cursor:
           type:
           - string
           - 'null'
+          description: Unique identifier of the last and hence oldest ledger balance returned. This can be used in Limitation in a subsequent request to fetch the next batch of ledger balances.
           format: uuid
       additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
+      x-schema-id: LedgerBalanceResult
     LedgerBalance:
       title: Ledger balance
       required:
@@ -461,52 +386,127 @@ components:
       additionalProperties: false
       description: Ledger balance
       x-schema-id: LedgerBalance
-    AccountingLedgerTypeEnum:
-      title: Accounting ledger type
-      enum:
-      - Revenue
-      - Tax
-      - Payment
-      - Deposit
-      - Guest
-      - City
-      - NonRevenue
-      type: string
-      description: '
-
-
-        Revenue
-
-
-        Tax
-
-
-        Payment
-
-
-        Deposit
-
-
-        Guest
-
-
-        City
-
-
-        NonRevenue'
-      x-enumNames:
-      - Revenue
-      - Tax
-      - Payment
-      - Deposit
-      - Guest
-      - City
-      - NonRevenue
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
+    LedgerBalanceParameters:
+      title: LedgerBalanceParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Date
+      - LedgerTypes
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        Date:
+          title: Date filter interval
+          allOf:
+          - $ref: '#/components/schemas/DateFilterInterval'
+          description: Date interval over which the ledger balances are created.
+          x-max-interval-in-months: 1
+        LedgerTypes:
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingLedgerTypeEnum'
+          description: Accounting ledger types to which ledger balances belong.
+      additionalProperties: false
+      x-schema-id: LedgerBalanceParameters
+    DateFilterInterval:
+      title: Date filter interval
+      required:
+      - End
+      - Start
+      type: object
+      properties:
+        Start:
+          minLength: 1
+          type: string
+          description: Starting date of the interval in ISO 8601 format.
+          format: date
+        End:
+          minLength: 1
+          type: string
+          description: Ending date of the interval in ISO 8601 format.
+          format: date
+      additionalProperties: false
+      x-schema-id: DateFilterInterval
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount

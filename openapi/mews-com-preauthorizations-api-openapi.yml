@@ -153,41 +153,21 @@ components:
           description: Unique identifiers of `Customer`.
       additionalProperties: false
       x-schema-id: MultipleCustomerParameters
-    TaxValue:
-      title: Tax value
-      required:
-      - Value
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        Code:
+        Message:
           type:
           - string
           - 'null'
-          description: Code corresponding to tax type.
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      x-schema-id: TaxValue
-    PreauthorizationState:
-      title: Preauthorization state
-      enum:
-      - Chargeable
-      - Expired
-      - Cancelled
-      - Charged
-      - Pending
-      - Failed
-      type: string
-      description: State of the preauthorization.
-      x-enumDescriptions:
-      - Created and prepared for the charging.
-      - A preauthorization that is not charged and expired.
-      - A preauthorization that was canceled before charging.
-      - Charged preauthorization.
-      - A preauthorization that is waiting for the charge to be processed.
-      - A preauthorization that failed to be charged.
+      x-schema-id: ConnectorApiExceptionResult
     TaxBreakdownItem:
       title: Tax breakdown item
       required:
@@ -210,6 +190,36 @@ components:
           format: double
       additionalProperties: false
       x-schema-id: TaxBreakdownItem
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
     Preauthorization:
       title: Preauthorization
       required:
@@ -254,6 +264,24 @@ components:
           description: Whether the preauthorization is active.
       additionalProperties: false
       x-schema-id: Preauthorization
+    PreauthorizationState:
+      title: Preauthorization state
+      enum:
+      - Chargeable
+      - Expired
+      - Cancelled
+      - Charged
+      - Pending
+      - Failed
+      type: string
+      description: State of the preauthorization.
+      x-enumDescriptions:
+      - Created and prepared for the charging.
+      - A preauthorization that is not charged and expired.
+      - A preauthorization that was canceled before charging.
+      - Charged preauthorization.
+      - A preauthorization that is waiting for the charge to be processed.
+      - A preauthorization that failed to be charged.
     PreauthorizationResult:
       title: PreauthorizationResult
       required:
@@ -267,19 +295,6 @@ components:
           description: Preauthorizations of the specified `Customer`.
       additionalProperties: false
       x-schema-id: PreauthorizationResult
-    TaxBreakdown:
-      title: Tax breakdown
-      required:
-      - Items
-      type: object
-      properties:
-        Items:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxBreakdownItem'
-          description: Tax breakdown items per each tax rate applied.
-      additionalProperties: false
-      x-schema-id: TaxBreakdown
     Amount:
       title: Amount
       required:
@@ -316,18 +331,3 @@ components:
       additionalProperties: false
       description: ''
       x-schema-id: Amount
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult

@@ -162,24 +162,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    DependentTaxRateStrategy:
-      title: Dependent tax rate strategy data
-      required:
-      - BaseTaxationCodes
-      - Value
-      type: object
-      properties:
-        Value:
-          type: number
-          description: Tax rate, e.g. `0.1` in case of 10% tax rate.
-          format: double
-        BaseTaxationCodes:
-          type: array
-          items:
-            type: string
-          description: Codes of the taxations that are included in the base of calculation.
-      additionalProperties: false
-      x-schema-id: DependentTaxRateStrategy
     Parameters:
       title: Parameters
       required:
@@ -202,46 +184,21 @@ components:
           description: Name and version of the client application.
       additionalProperties: false
       x-schema-id: Parameters
-    FlatTaxRateStrategy:
-      title: Flat tax rate strategy data
-      required:
-      - CurrencyCode
-      - Value
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        CurrencyCode:
-          minLength: 1
-          type: string
-          description: Code of `Currency`.
-        Value:
-          type: number
-          description: Absolute value of tax.
-          format: double
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      x-schema-id: FlatTaxRateStrategy
-    Taxation:
-      title: Taxation
-      required:
-      - Code
-      - LocalName
-      - Name
-      type: object
-      properties:
-        Code:
-          minLength: 1
-          type: string
-          description: Code of the taxation.
-        Name:
-          minLength: 1
-          type: string
-          description: Name of the taxation.
-        LocalName:
-          minLength: 1
-          type: string
-          description: Local name of the taxation.
-      additionalProperties: false
-      description: Taxation represents set of `TaxRate` within `TaxEnvironment`.
-      x-schema-id: Taxation
+      x-schema-id: ConnectorApiExceptionResult
     TaxRate:
       title: Tax rate
       required:
@@ -286,6 +243,47 @@ components:
       additionalProperties: false
       description: Definition of single tax rate.
       x-schema-id: TaxRate
+    Taxation:
+      title: Taxation
+      required:
+      - Code
+      - LocalName
+      - Name
+      type: object
+      properties:
+        Code:
+          minLength: 1
+          type: string
+          description: Code of the taxation.
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the taxation.
+        LocalName:
+          minLength: 1
+          type: string
+          description: Local name of the taxation.
+      additionalProperties: false
+      description: Taxation represents set of `TaxRate` within `TaxEnvironment`.
+      x-schema-id: Taxation
+    DependentTaxRateStrategy:
+      title: Dependent tax rate strategy data
+      required:
+      - BaseTaxationCodes
+      - Value
+      type: object
+      properties:
+        Value:
+          type: number
+          description: Tax rate, e.g. `0.1` in case of 10% tax rate.
+          format: double
+        BaseTaxationCodes:
+          type: array
+          items:
+            type: string
+          description: Codes of the taxations that are included in the base of calculation.
+      additionalProperties: false
+      x-schema-id: DependentTaxRateStrategy
     TaxRateStrategyDiscriminator:
       title: Tax rate strategy discriminator
       enum:
@@ -298,21 +296,32 @@ components:
       - Used with Relative tax rate strategy (e.g. 21%). Relative tax is calculated only from net base value.
       - Used with Flat tax rate strategy (e.g. 5.00 EUR).
       - Used with Dependent tax rate strategy (e.g. 10%). Dependent tax is calculated from net base value and all taxes it depends on.
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
+    DateTimeIntervalUtc:
+      title: DateTimeIntervalUtc
       type: object
       properties:
-        Message:
+        StartUtc:
           type:
           - string
           - 'null'
-        RequestId:
+        EndUtc:
           type:
           - string
           - 'null'
-        Details: {}
       additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
+      x-schema-id: DateTimeIntervalUtc
+    RelativeTaxRateStrategy:
+      title: Relative tax rate strategy data
+      required:
+      - Value
+      type: object
+      properties:
+        Value:
+          type: number
+          description: Tax rate, e.g. `0.21` in case of 21% tax rate.
+          format: double
+      additionalProperties: false
+      x-schema-id: RelativeTaxRateStrategy
     TaxationResult:
       title: TaxationResult
       required:
@@ -332,29 +341,20 @@ components:
           description: The supported tax rates.
       additionalProperties: false
       x-schema-id: TaxationResult
-    RelativeTaxRateStrategy:
-      title: Relative tax rate strategy data
+    FlatTaxRateStrategy:
+      title: Flat tax rate strategy data
       required:
+      - CurrencyCode
       - Value
       type: object
       properties:
+        CurrencyCode:
+          minLength: 1
+          type: string
+          description: Code of `Currency`.
         Value:
           type: number
-          description: Tax rate, e.g. `0.21` in case of 21% tax rate.
+          description: Absolute value of tax.
           format: double
       additionalProperties: false
-      x-schema-id: RelativeTaxRateStrategy
-    DateTimeIntervalUtc:
-      title: DateTimeIntervalUtc
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-        EndUtc:
-          type:
-          - string
-          - 'null'
-      additionalProperties: false
-      x-schema-id: DateTimeIntervalUtc
+      x-schema-id: FlatTaxRateStrategy

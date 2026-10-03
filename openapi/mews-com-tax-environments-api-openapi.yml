@@ -112,6 +112,28 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    Parameters:
+      title: Parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+      additionalProperties: false
+      x-schema-id: Parameters
     TaxEnvironment:
       title: Tax environment
       required:
@@ -174,25 +196,3 @@ components:
           description: The supported tax environments.
       additionalProperties: false
       x-schema-id: TaxEnvironmentResult
-    Parameters:
-      title: Parameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-      additionalProperties: false
-      x-schema-id: Parameters

@@ -587,60 +587,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    PaymentDataDiscriminatorEnum:
-      title: Payment data discriminator
-      enum:
-      - CreditCard
-      - Invoice
-      - External
-      - Ghost
-      - Alternative
-      type: string
-      description: '
-
-
-        CreditCard
-
-
-        Invoice
-
-
-        External
-
-
-        Ghost
-
-
-        Alternative'
-      x-enumNames:
-      - CreditCard
-      - Invoice
-      - External
-      - Ghost
-      - Alternative
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-    AddExternalPaymentResult:
-      title: AddExternalPaymentResult
-      type: object
-      properties:
-        ExternalPaymentId:
-          type: string
-          description: Unique identifier of the [Payment item](https://mews-systems.gitbook.io/connector-api/operations/accountingitems/#payment-item).
-          format: uuid
-      additionalProperties: false
-      x-schema-id: AddExternalPaymentResult
-    AccountType:
-      title: Account type
-      enum:
-      - Company
-      - Customer
-      type: string
-      description: A discriminator specifying the account type, e.g. `Customer` or `Company`
     TaxBreakdownItem:
       title: Tax breakdown item
       required:
@@ -663,6 +609,402 @@ components:
           format: double
       additionalProperties: false
       x-schema-id: TaxBreakdownItem
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    AlternativePaymentMethodTypeEnum:
+      title: Alternative payment method type
+      enum:
+      - Ideal
+      - ApplePay
+      - GooglePay
+      - SepaDirectDebit
+      - PayPal
+      - WireTransfer
+      type: string
+      description: '
+
+
+        Ideal (iDEAL)
+
+
+        ApplePay (Apple Pay)
+
+
+        GooglePay (Google Pay)
+
+
+        SepaDirectDebit (SEPA Direct Debit)
+
+
+        PayPal (PayPal)
+
+
+        WireTransfer (Wire transfer)'
+      x-enumNames:
+      - Ideal
+      - ApplePay
+      - GooglePay
+      - SepaDirectDebit
+      - PayPal
+      - WireTransfer
+      x-enumDescriptions:
+      - iDEAL
+      - Apple Pay
+      - Google Pay
+      - SEPA Direct Debit
+      - PayPal
+      - Wire transfer
+    AmountParameters:
+      title: Amount parameters
+      required:
+      - Currency
+      - TaxCodes
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        TaxCodes:
+          type: array
+          items:
+            type: string
+        NetValue:
+          type:
+          - number
+          - 'null'
+          format: double
+        GrossValue:
+          type:
+          - number
+          - 'null'
+          format: double
+      additionalProperties: false
+      description: Price of the product that overrides the price defined in Mews.
+      x-schema-id: AmountParameters
+    AlternativePaymentsData:
+      title: Alternative payment method data
+      required:
+      - Discriminator
+      type: object
+      properties:
+        Discriminator:
+          title: Alternative payment method data discriminator
+          allOf:
+          - $ref: '#/components/schemas/AlternativePaymentMethodEnum'
+          description: 'Type of alternative payment method (e.g. `Ideal`).
+
+
+            Ideal (iDEAL data.)
+
+
+            ApplePay (No additional data.)
+
+
+            GooglePay (No additional data.)
+
+
+            SepaDirectDebit (SEPA Direct Debit data.)'
+          x-enumNames:
+          - Ideal
+          - ApplePay
+          - GooglePay
+          - SepaDirectDebit
+          x-enumDescriptions:
+          - iDEAL data.
+          - No additional data.
+          - No additional data.
+          - SEPA Direct Debit data.
+          x-extensible: true
+        SepaDirectDebit:
+          title: SEPA Direct Debit data
+          allOf:
+          - $ref: '#/components/schemas/SepaDirectDebitData'
+          description: SEPA Direct Debit payment method data. Required when `Discriminator` is `SepaDirectDebit`.
+        Ideal:
+          title: iDEAL data
+          allOf:
+          - $ref: '#/components/schemas/IdealData'
+          description: iDEAL payment method data. Required when `Discriminator` is `Ideal`.
+      additionalProperties: false
+      x-schema-id: AlternativePaymentsData
+    PaymentRefundParameters:
+      title: PaymentRefundParameters
+      required:
+      - AccessToken
+      - AccountId
+      - Client
+      - ClientToken
+      - PaymentId
+      - Reason
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        PaymentId:
+          type: string
+          description: Unique identifier of specific [Payment](https://mews-systems.gitbook.io/connector-api/operations/payments/#payment).
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of the account (for example [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer)) the payment belongs to.
+          format: uuid
+        Reason:
+          minLength: 1
+          type: string
+          description: Refund reason.
+        ValueToRefund:
+          type:
+          - number
+          - 'null'
+          description: Refund amount. If not provided, the whole payment will be refunded.
+          format: double
+      additionalProperties: false
+      x-schema-id: PaymentRefundParameters
+    PaymentStateEnum:
+      title: Payment state
+      enum:
+      - Charged
+      - Canceled
+      - Pending
+      - Failed
+      - Verifying
+      type: string
+      description: '
+
+
+        Charged
+
+
+        Canceled
+
+
+        Pending
+
+
+        Failed
+
+
+        Verifying'
+      x-enumNames:
+      - Charged
+      - Canceled
+      - Pending
+      - Failed
+      - Verifying
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    AlternativePaymentResult:
+      title: AlternativePaymentResult
+      required:
+      - PaymentId
+      type: object
+      properties:
+        PaymentId:
+          type: string
+          description: Unique identifier of the created payment.
+          format: uuid
+        NextAction:
+          title: Alternative payment next action
+          allOf:
+          - $ref: '#/components/schemas/NextAction'
+          description: Next action to take in order to complete the payment.
+      additionalProperties: false
+      x-schema-id: AlternativePaymentResult
+    CurrencyValue:
+      title: Currency value (ver 2023-02-02)
+      required:
+      - Currency
+      - Value
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the `Currency`.
+          format: currency
+        Value:
+          type: number
+          description: Amount in the currency.
+          format: double
+      additionalProperties: false
+      description: Absolute value of the fee.
+      x-schema-id: CurrencyValue
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount
+    PaymentResult:
+      title: PaymentResult
+      required:
+      - Payments
+      type: object
+      properties:
+        Payments:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+          description: The list of filtered payments.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest payment returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of payments.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: PaymentResult
+    CreditCardPaymentParameters:
+      title: CreditCardPaymentParameters
+      required:
+      - AccessToken
+      - Amount
+      - Client
+      - ClientToken
+      - CreditCard
+      - CustomerId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        BillId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of an open bill of the customer where to assign the payment.
+          format: uuid
+        AccountingCategoryId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of an [Accounting category](https://mews-systems.gitbook.io/connector-api/operations/accountingcategories/#accounting-category) to be assigned to the credit card payment.
+          format: uuid
+        ReservationId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the reservation the payment belongs to.
+          format: uuid
+        Amount:
+          title: Amount parameters
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmountParameters'
+          description: Amount of the credit card payment.
+        Notes:
+          type:
+          - string
+          - 'null'
+          description: Additional payment notes.
+        CustomerId:
+          type: string
+          description: Unique identifier of the [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer).
+          format: uuid
+        CreditCard:
+          title: Credit card parameters
+          allOf:
+          - $ref: '#/components/schemas/CreditCardParameters'
+          description: ''
+        ReceiptIdentifier:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the payment receipt.
+      additionalProperties: false
+      x-schema-id: CreditCardPaymentParameters
     PaymentInvoiceData:
       title: Invoice payment data
       required:
@@ -709,92 +1051,300 @@ components:
           - ''
       additionalProperties: false
       x-schema-id: PaymentInvoiceData
-    ExtendedAmount:
-      title: Extended amount
+    SepaDirectDebitData:
+      title: SEPA Direct Debit data
       required:
-      - Breakdown
-      - Currency
-      - GrossValue
-      - NetValue
-      - TaxValues
+      - Email
+      - Iban
+      - Name
+      - RemoteIpAddress
+      - UserAgent
       type: object
       properties:
-        Currency:
+        Iban:
           minLength: 1
           type: string
-          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
-          format: currency
-        NetValue:
-          type: number
-          description: Net value without taxes.
-          format: double
-        GrossValue:
-          type: number
-          description: Gross value including all taxes.
-          format: double
-        TaxValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxValue'
-          description: The tax values applied.
-        Breakdown:
-          title: Tax breakdown
+          description: The customer's bank account number in IBAN format.
+        Name:
+          minLength: 1
+          type: string
+          description: Full name of the customer.
+        Email:
+          minLength: 1
+          type: string
+          description: Email address of the customer.
+          format: email
+        UserAgent:
+          minLength: 1
+          type: string
+          description: The user agent of the browser from which the Mandate was accepted by the customer.
+        RemoteIpAddress:
+          minLength: 1
+          type: string
+          description: The IP address from which the Mandate was accepted by the customer.
+      additionalProperties: false
+      x-schema-id: SepaDirectDebitData
+    NextAction:
+      title: Alternative payment next action
+      required:
+      - Discriminator
+      - Value
+      type: object
+      properties:
+        Discriminator:
+          title: Payment next action discriminator
           allOf:
-          - $ref: '#/components/schemas/TaxBreakdown'
-          description: Information about individual tax amounts.
+          - $ref: '#/components/schemas/NextActionTypeEnum'
+          description: 'Determines type of value.
+
+
+            RedirectToUrl (Redirect customer to a URL where they can complete their payment.)'
+          x-enumNames:
+          - RedirectToUrl
+          x-enumDescriptions:
+          - Redirect customer to a URL where they can complete their payment.
         Value:
-          type:
-          - number
-          - 'null'
-          format: double
-        Net:
-          type:
-          - number
-          - 'null'
-          format: double
-        Tax:
-          type:
-          - number
-          - 'null'
-          format: double
-        TaxRate:
-          type:
-          - number
-          - 'null'
-          format: double
-      additionalProperties: false
-      description: ''
-      x-schema-id: ExtendedAmount
-    IdealData:
-      title: iDEAL data
-      required:
-      - RedirectUrl
-      type: object
-      properties:
-        RedirectUrl:
           minLength: 1
           type: string
-          description: URL where the customer will be redirected after completing their iDEAL payment.
-          format: uri
+          description: String value depending on `Type`.
       additionalProperties: false
-      x-schema-id: IdealData
-    TimeFilterInterval:
-      title: Time interval
+      x-schema-id: NextAction
+    PaymentState:
+      title: Payment state
+      enum:
+      - Charged
+      - Canceled
+      - Pending
+      - Failed
+      - Verifying
+      type: string
+    RefundTypeEnum:
+      title: Refund type
+      enum:
+      - CreditCardPayment
+      - AlternativePayment
+      type: string
+      description: '
+
+
+        CreditCardPayment
+
+
+        AlternativePayment'
+      x-enumNames:
+      - CreditCardPayment
+      - AlternativePayment
+      x-enumDescriptions:
+      - ''
+      - ''
+    ExternalPaymentParameters:
+      title: ExternalPaymentParameters
+      required:
+      - AccessToken
+      - AccountId
+      - Amount
+      - Client
+      - ClientToken
       type: object
       properties:
-        StartUtc:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
           type:
           - string
           - 'null'
-          format: date-time
-        EndUtc:
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of the [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) or [Company](https://mews-systems.gitbook.io/connector-api/operations/companies/#company). Company billing may not be enabled for your integration.
+          format: uuid
+        CustomerId:
           type:
           - string
           - 'null'
-          format: date-time
+          description: Unique identifier of the [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer). **Deprecated!**
+          format: uuid
+          deprecated: true
+          x-deprecatedMessage: Use `AccountId`.
+        BillId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of an open bill of the customer where to assign the payment.
+          format: uuid
+        AccountingCategoryId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of an [Accounting category](https://mews-systems.gitbook.io/connector-api/operations/accountingcategories/#accounting-category) to be assigned to the external payment.
+          format: uuid
+        ReservationId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the reservation the payment belongs to.
+          format: uuid
+        Amount:
+          title: Amount parameters
+          allOf:
+          - $ref: '#/components/schemas/ExtendedAmountParameters'
+          description: Amount of the external card payment.
+        Type:
+          allOf:
+          - $ref: '#/components/schemas/ExternalPaymentTypeEnum'
+          description: 'Type of the external payment. (Required for the enterprises based in the French Legal Environment where `Unspecified` is considered as fraud.)
+
+
+            Unspecified (Unspecified (unavailable in French Legal Environment))
+
+
+            BadDebts (Bad debts)
+
+
+            Bacs (Bacs payment)
+
+
+            WireTransfer (Wire transfer)
+
+
+            Invoice (Invoice)
+
+
+            ExchangeRateDifference (Exchange rate difference)
+
+
+            Complimentary (Complimentary)
+
+
+            Reseller (Reseller)
+
+
+            ExchangeRoundingDifference (Exchange rounding difference)
+
+
+            Barter (Barter)
+
+
+            Commission (Commission)
+
+
+            BankCharges (Bank charges)
+
+
+            CrossSettlement (Cross settlement)
+
+
+            Cash (Cash)
+
+
+            CreditCard (Credit card – deprecated, only for existing partners)
+
+
+            Prepayment (Prepayment)
+
+
+            Cheque (Cheque)
+
+
+            Bancontact (Bancontact)
+
+
+            IDeal (iDeal – deprecated, only for existing partners)
+
+
+            PayPal (PayPal – deprecated, only for existing partners)
+
+
+            GiftCard (Gift card)
+
+
+            LoyaltyPoints (Loyalty points)
+
+
+            ChequeVacances (Chèque-Vacances)
+
+
+            OnlinePayment (Online payment – deprecated, only for existing partners)
+
+
+            CardCheck (Card check)
+
+
+            PaymentHubRedirection (Payment hub redirection)
+
+
+            Voucher (Voucher)
+
+
+            MasterCard (MasterCard – deprecated, only for existing partners)
+
+
+            Visa (Visa – deprecated, only for existing partners)
+
+
+            Amex (American Express – deprecated, only for existing partners)
+
+
+            Discover (Discover – deprecated, only for existing partners)
+
+
+            DinersClub (Diners Club – deprecated, only for existing partners)
+
+
+            Jcb (JCB – deprecated, only for existing partners)
+
+
+            UnionPay (UnionPay – deprecated, only for existing partners)
+
+
+            Twint (TWINT)
+
+
+            Reka (Reka)
+
+
+            LoyaltyCard (Loyalty card)
+
+
+            PosDiningAndSpaReward (POS Dining & Spa Reward)
+
+
+            DirectDebit (Direct debit)
+
+
+            DepositCheck (Deposit - check)
+
+
+            DepositCash (Deposit - cash)
+
+
+            DepositCreditCard (Deposit - credit card – deprecated, only for existing partners)
+
+
+            DepositWireTransfer (Deposit - wire transfer)'
+        ExternalIdentifier:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the payment from external system.
+        Notes:
+          type:
+          - string
+          - 'null'
+          description: Additional payment notes.
       additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
+      x-schema-id: ExternalPaymentParameters
     PaymentRefundResult:
       title: PaymentRefundResult
       required:
@@ -869,115 +1419,158 @@ components:
           - ''
       additionalProperties: false
       x-schema-id: PaymentRefundResult
-    SepaDirectDebitData:
-      title: SEPA Direct Debit data
+    PaymentOriginEnum:
+      title: Payment origin
+      enum:
+      - Other
+      - System
+      - Operations
+      - AutomaticPayment
+      - PaymentRequest
+      - BookingEngine
+      - Api
+      - Terminal
+      - ChannelManager
+      - OnlineCheckout
+      - BillBalancing
+      - OnlineCheckin
+      - PointOfSales
+      - PaymentToInvoiceLinking
+      type: string
+      description: '
+
+
+        Other (Fallback value unmapped in the current version of the API.)
+
+
+        System
+
+
+        Operations
+
+
+        AutomaticPayment
+
+
+        PaymentRequest
+
+
+        BookingEngine
+
+
+        Api (Connector API.)
+
+
+        Terminal
+
+
+        ChannelManager
+
+
+        OnlineCheckout
+
+
+        BillBalancing
+
+
+        OnlineCheckin
+
+
+        PointOfSales
+
+
+        PaymentToInvoiceLinking'
+      x-enumNames:
+      - Other
+      - System
+      - Operations
+      - AutomaticPayment
+      - PaymentRequest
+      - BookingEngine
+      - Api
+      - Terminal
+      - ChannelManager
+      - OnlineCheckout
+      - BillBalancing
+      - OnlineCheckin
+      - PointOfSales
+      - PaymentToInvoiceLinking
+      x-enumDescriptions:
+      - Fallback value unmapped in the current version of the API.
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - Connector API.
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    CreditCardParameters:
+      title: Credit card parameters
       required:
-      - Email
-      - Iban
       - Name
-      - RemoteIpAddress
-      - UserAgent
+      - Number
+      - Type
       type: object
       properties:
-        Iban:
+        Type:
           minLength: 1
           type: string
-          description: The customer's bank account number in IBAN format.
+          description: 'Type of the credit card, one of: `Visa`, `MasterCard`, `Amex`, `Discover`, `DinersClub`, `Jcb`, `EnRoute`, `Maestro`, `UnionPay`.'
+        Number:
+          minLength: 1
+          type: string
+          description: Obfuscated credit card number. At most first six digits and last four digits can be specified, the digits in between should be replaced with `*`. It is possible to provide even more obfuscated number or just last four digits. **Never provide full credit card number**. For example `411111******1111`.
+        Expiration:
+          type:
+          - string
+          - 'null'
+          description: Expiration of the credit card in format `MM/YYYY`, e.g. `12/2016` or `04/2017`.
         Name:
           minLength: 1
           type: string
-          description: Full name of the customer.
-        Email:
-          minLength: 1
-          type: string
-          description: Email address of the customer.
-          format: email
-        UserAgent:
-          minLength: 1
-          type: string
-          description: The user agent of the browser from which the Mandate was accepted by the customer.
-        RemoteIpAddress:
-          minLength: 1
-          type: string
-          description: The IP address from which the Mandate was accepted by the customer.
+          description: Name of the card holder.
       additionalProperties: false
-      x-schema-id: SepaDirectDebitData
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    Amount:
-      title: Amount
+      description: ''
+      x-schema-id: CreditCardParameters
+    ExtendedAmountParameters:
+      title: Amount parameters
       required:
-      - Breakdown
       - Currency
-      - GrossValue
-      - NetValue
-      - TaxValues
       type: object
       properties:
         Currency:
           minLength: 1
           type: string
-          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          description: ISO-4217 code of the `Currency`.
           format: currency
+        TaxCodes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The tax values applied.
         NetValue:
-          type: number
-          description: Net value without taxes.
+          type:
+          - number
+          - 'null'
+          description: Net value in case the item is taxed.
           format: double
         GrossValue:
-          type: number
+          type:
+          - number
+          - 'null'
           description: Gross value including all taxes.
           format: double
-        TaxValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxValue'
-          description: The tax values applied.
-        Breakdown:
-          title: Tax breakdown
-          allOf:
-          - $ref: '#/components/schemas/TaxBreakdown'
-          description: Information about individual tax amounts.
       additionalProperties: false
       description: ''
-      x-schema-id: Amount
-    NextAction:
-      title: Alternative payment next action
-      required:
-      - Discriminator
-      - Value
-      type: object
-      properties:
-        Discriminator:
-          title: Payment next action discriminator
-          allOf:
-          - $ref: '#/components/schemas/NextActionTypeEnum'
-          description: 'Determines type of value.
-
-
-            RedirectToUrl (Redirect customer to a URL where they can complete their payment.)'
-          x-enumNames:
-          - RedirectToUrl
-          x-enumDescriptions:
-          - Redirect customer to a URL where they can complete their payment.
-        Value:
-          minLength: 1
-          type: string
-          description: String value depending on `Type`.
-      additionalProperties: false
-      x-schema-id: NextAction
+      x-schema-id: ExtendedAmountParameters
     Limitation:
       title: Limitation
       required:
@@ -995,40 +1588,383 @@ components:
       additionalProperties: false
       description: Limitation on the quantity of data returned.
       x-schema-id: Limitation
-    AccountingState:
-      title: Order item accounting state
+    ExternalPaymentTypeEnum:
+      title: External payment type
       enum:
-      - Open
-      - Closed
-      - Inactive
-      - Canceled
+      - Unspecified
+      - BadDebts
+      - Bacs
+      - WireTransfer
+      - Invoice
+      - ExchangeRateDifference
+      - Complimentary
+      - Reseller
+      - ExchangeRoundingDifference
+      - Barter
+      - Commission
+      - BankCharges
+      - CrossSettlement
+      - Cash
+      - CreditCard
+      - Prepayment
+      - Cheque
+      - Bancontact
+      - IDeal
+      - PayPal
+      - GiftCard
+      - LoyaltyPoints
+      - ChequeVacances
+      - OnlinePayment
+      - CardCheck
+      - PaymentHubRedirection
+      - Voucher
+      - MasterCard
+      - Visa
+      - Amex
+      - Discover
+      - DinersClub
+      - Jcb
+      - UnionPay
+      - Twint
+      - Reka
+      - LoyaltyCard
+      - PosDiningAndSpaReward
+      - DirectDebit
+      - DepositCheck
+      - DepositCash
+      - DepositCreditCard
+      - DepositWireTransfer
       type: string
+      description: '
+
+
+        Unspecified (Unspecified (unavailable in French Legal Environment))
+
+
+        BadDebts (Bad debts)
+
+
+        Bacs (Bacs payment)
+
+
+        WireTransfer (Wire transfer)
+
+
+        Invoice (Invoice)
+
+
+        ExchangeRateDifference (Exchange rate difference)
+
+
+        Complimentary (Complimentary)
+
+
+        Reseller (Reseller)
+
+
+        ExchangeRoundingDifference (Exchange rounding difference)
+
+
+        Barter (Barter)
+
+
+        Commission (Commission)
+
+
+        BankCharges (Bank charges)
+
+
+        CrossSettlement (Cross settlement)
+
+
+        Cash (Cash)
+
+
+        CreditCard (Credit card – deprecated, only for existing partners)
+
+
+        Prepayment (Prepayment)
+
+
+        Cheque (Cheque)
+
+
+        Bancontact (Bancontact)
+
+
+        IDeal (iDeal – deprecated, only for existing partners)
+
+
+        PayPal (PayPal – deprecated, only for existing partners)
+
+
+        GiftCard (Gift card)
+
+
+        LoyaltyPoints (Loyalty points)
+
+
+        ChequeVacances (Chèque-Vacances)
+
+
+        OnlinePayment (Online payment – deprecated, only for existing partners)
+
+
+        CardCheck (Card check)
+
+
+        PaymentHubRedirection (Payment hub redirection)
+
+
+        Voucher (Voucher)
+
+
+        MasterCard (MasterCard – deprecated, only for existing partners)
+
+
+        Visa (Visa – deprecated, only for existing partners)
+
+
+        Amex (American Express – deprecated, only for existing partners)
+
+
+        Discover (Discover – deprecated, only for existing partners)
+
+
+        DinersClub (Diners Club – deprecated, only for existing partners)
+
+
+        Jcb (JCB – deprecated, only for existing partners)
+
+
+        UnionPay (UnionPay – deprecated, only for existing partners)
+
+
+        Twint (TWINT)
+
+
+        Reka (Reka)
+
+
+        LoyaltyCard (Loyalty card)
+
+
+        PosDiningAndSpaReward (POS Dining & Spa Reward)
+
+
+        DirectDebit (Direct debit)
+
+
+        DepositCheck (Deposit - check)
+
+
+        DepositCash (Deposit - cash)
+
+
+        DepositCreditCard (Deposit - credit card – deprecated, only for existing partners)
+
+
+        DepositWireTransfer (Deposit - wire transfer)'
+      x-enumNames:
+      - Unspecified
+      - BadDebts
+      - Bacs
+      - WireTransfer
+      - Invoice
+      - ExchangeRateDifference
+      - Complimentary
+      - Reseller
+      - ExchangeRoundingDifference
+      - Barter
+      - Commission
+      - BankCharges
+      - CrossSettlement
+      - Cash
+      - CreditCard
+      - Prepayment
+      - Cheque
+      - Bancontact
+      - IDeal
+      - PayPal
+      - GiftCard
+      - LoyaltyPoints
+      - ChequeVacances
+      - OnlinePayment
+      - CardCheck
+      - PaymentHubRedirection
+      - Voucher
+      - MasterCard
+      - Visa
+      - Amex
+      - Discover
+      - DinersClub
+      - Jcb
+      - UnionPay
+      - Twint
+      - Reka
+      - LoyaltyCard
+      - PosDiningAndSpaReward
+      - DirectDebit
+      - DepositCheck
+      - DepositCash
+      - DepositCreditCard
+      - DepositWireTransfer
       x-enumDescriptions:
-      - Order items which carry a non-zero value, are open, and have not been closed on a bill or invoice.
-      - Order items which carry a non-zero value and have been closed on a bill or invoice.
-      - Order items which are either of zero value and have not been canceled, if the state of the payment item is Pending or Failed, or items of optional reservations. Until the reservation is confirmed, all its accounting items are Inactive.
-      - Order items which have been canceled, regardless of whether the item is of zero value.
-    PaymentGhostData:
-      title: Ghost payment data
-      required:
-      - OriginalPaymentId
-      type: object
-      properties:
-        OriginalPaymentId:
-          type: string
-          description: Unique identifier of the original payment.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: PaymentGhostData
-    CreditCardPaymentParameters:
-      title: CreditCardPaymentParameters
+      - Unspecified (unavailable in French Legal Environment)
+      - Bad debts
+      - Bacs payment
+      - Wire transfer
+      - Invoice
+      - Exchange rate difference
+      - Complimentary
+      - Reseller
+      - Exchange rounding difference
+      - Barter
+      - Commission
+      - Bank charges
+      - Cross settlement
+      - Cash
+      - Credit card – deprecated, only for existing partners
+      - Prepayment
+      - Cheque
+      - Bancontact
+      - iDeal – deprecated, only for existing partners
+      - PayPal – deprecated, only for existing partners
+      - Gift card
+      - Loyalty points
+      - Chèque-Vacances
+      - Online payment – deprecated, only for existing partners
+      - Card check
+      - Payment hub redirection
+      - Voucher
+      - MasterCard – deprecated, only for existing partners
+      - Visa – deprecated, only for existing partners
+      - American Express – deprecated, only for existing partners
+      - Discover – deprecated, only for existing partners
+      - Diners Club – deprecated, only for existing partners
+      - JCB – deprecated, only for existing partners
+      - UnionPay – deprecated, only for existing partners
+      - TWINT
+      - Reka
+      - Loyalty card
+      - POS Dining & Spa Reward
+      - Direct debit
+      - Deposit - check
+      - Deposit - cash
+      - Deposit - credit card – deprecated, only for existing partners
+      - Deposit - wire transfer
+    PaymentKindEnum:
+      title: Payment kind
+      enum:
+      - Payment
+      - Chargeback
+      - ChargebackReversal
+      - Refund
+      type: string
+      description: '
+
+
+        Payment
+
+
+        Chargeback
+
+
+        ChargebackReversal
+
+
+        Refund'
+      x-enumNames:
+      - Payment
+      - Chargeback
+      - ChargebackReversal
+      - Refund
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+    InvoicePaymentTypeEnum:
+      title: Invoice payment type
+      enum:
+      - Receivable
+      - Balancing
+      - UnderpaymentBalancingReceivable
+      - OverpaymentBalancingReceivable
+      - Overpayment
+      type: string
+      description: '
+
+
+        Receivable
+
+
+        Balancing
+
+
+        UnderpaymentBalancingReceivable
+
+
+        OverpaymentBalancingReceivable
+
+
+        Overpayment'
+      x-enumNames:
+      - Receivable
+      - Balancing
+      - UnderpaymentBalancingReceivable
+      - OverpaymentBalancingReceivable
+      - Overpayment
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    PaymentDataDiscriminatorEnum:
+      title: Payment data discriminator
+      enum:
+      - CreditCard
+      - Invoice
+      - External
+      - Ghost
+      - Alternative
+      type: string
+      description: '
+
+
+        CreditCard
+
+
+        Invoice
+
+
+        External
+
+
+        Ghost
+
+
+        Alternative'
+      x-enumNames:
+      - CreditCard
+      - Invoice
+      - External
+      - Ghost
+      - Alternative
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    PaymentFilterParameters:
+      title: PaymentFilterParameters
       required:
       - AccessToken
-      - Amount
       - Client
       - ClientToken
-      - CreditCard
-      - CustomerId
+      - Limitation
       type: object
       properties:
         ClientToken:
@@ -1043,67 +1979,403 @@ components:
           minLength: 1
           type: string
           description: Name and version of the client application.
-        BillId:
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        PaymentIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of specific `Payment` items. Required if no other filter is provided.
+        AccountIds:
+          maxItems: 100
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of specific `Accounts` to which payments belong. Required if no other filter is provided.
+        BillIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of specific `Bill` items to which payments are assigned. Required if no other filter is provided.
+        ReservationIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of specific `Reservations` to which payments belong. Required if no other filter is provided.
+        CreatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Time interval during which the `Payment` was created. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Time interval during which the `Payment` was updated. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        ChargedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Time interval during which the `Payment` was charged. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        ClosedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Time interval during which the `Payment` was closed. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        SettlementUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the `Payments` were settled.
+          x-max-interval-in-months: 3
+        Currency:
           type:
           - string
           - 'null'
-          description: Unique identifier of an open bill of the customer where to assign the payment.
+          description: ISO-4217 code of the `Currency` the item costs should be converted to.
+          format: currency
+        AccountingStates:
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AccountingState'
+          description: Accounting state of the item.
+        States:
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PaymentState'
+          description: Payment state of the item.
+        Type:
+          allOf:
+          - $ref: '#/components/schemas/PaymentDiscriminatorEnum'
+          description: 'Payment state of the item.
+
+
+            Payment
+
+
+            CreditCardPayment
+
+
+            AlternativePayment
+
+
+            CashPayment
+
+
+            InvoicePayment
+
+
+            ExternalPayment
+
+
+            GhostPayment
+
+
+            TaxDeductedPayment'
+      additionalProperties: false
+      x-schema-id: PaymentFilterParameters
+    PaymentDiscriminatorEnum:
+      title: Payment type
+      enum:
+      - Payment
+      - CreditCardPayment
+      - AlternativePayment
+      - CashPayment
+      - InvoicePayment
+      - ExternalPayment
+      - GhostPayment
+      - TaxDeductedPayment
+      type: string
+      description: '
+
+
+        Payment
+
+
+        CreditCardPayment
+
+
+        AlternativePayment
+
+
+        CashPayment
+
+
+        InvoicePayment
+
+
+        ExternalPayment
+
+
+        GhostPayment
+
+
+        TaxDeductedPayment'
+      x-enumNames:
+      - Payment
+      - CreditCardPayment
+      - AlternativePayment
+      - CashPayment
+      - InvoicePayment
+      - ExternalPayment
+      - GhostPayment
+      - TaxDeductedPayment
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    AddExternalPaymentResult:
+      title: AddExternalPaymentResult
+      type: object
+      properties:
+        ExternalPaymentId:
+          type: string
+          description: Unique identifier of the [Payment item](https://mews-systems.gitbook.io/connector-api/operations/accountingitems/#payment-item).
           format: uuid
-        AccountingCategoryId:
+      additionalProperties: false
+      x-schema-id: AddExternalPaymentResult
+    PaymentData:
+      title: Payment data
+      required:
+      - Discriminator
+      type: object
+      properties:
+        Discriminator:
+          title: Payment data discriminator
+          allOf:
+          - $ref: '#/components/schemas/PaymentDataDiscriminatorEnum'
+          description: 'Discriminator pointing to the fields within this object that contains additional data.
+
+
+            CreditCard
+
+
+            Invoice
+
+
+            External
+
+
+            Ghost
+
+
+            Alternative'
+          readOnly: true
+          x-enumNames:
+          - CreditCard
+          - Invoice
+          - External
+          - Ghost
+          - Alternative
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          - ''
+          - ''
+        CreditCard:
+          title: Credit card payment data
+          allOf:
+          - $ref: '#/components/schemas/PaymentCreditCardData'
+          description: Contains additional data in the case of a card payment.
+        Invoice:
+          title: Invoice payment data
+          allOf:
+          - $ref: '#/components/schemas/PaymentInvoiceData'
+          description: Contains additional data in the case of an invoice payment.
+          readOnly: true
+        External:
+          title: External payment data
+          allOf:
+          - $ref: '#/components/schemas/PaymentExternalData'
+          description: Contains additional data in the case of an external payment.
+          readOnly: true
+        Ghost:
+          title: Ghost payment data
+          allOf:
+          - $ref: '#/components/schemas/PaymentGhostData'
+          description: Contains additional data in the case of a ghost payment.
+          readOnly: true
+        Alternative:
+          title: Alternative payment data
+          allOf:
+          - $ref: '#/components/schemas/PaymentAlternativeData'
+          description: Contains additional data in the case of an alternative payment.
+          readOnly: true
+      additionalProperties: false
+      x-schema-id: PaymentData
+    PaymentGhostData:
+      title: Ghost payment data
+      required:
+      - OriginalPaymentId
+      type: object
+      properties:
+        OriginalPaymentId:
+          type: string
+          description: Unique identifier of the original payment.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: PaymentGhostData
+    AccountingStateEnum:
+      title: Order item accounting state
+      enum:
+      - Open
+      - Closed
+      - Inactive
+      - Canceled
+      type: string
+      description: '
+
+
+        Open (Order items which carry a non-zero value, are open, and have not been closed on a bill or invoice.)
+
+
+        Closed (Order items which carry a non-zero value and have been closed on a bill or invoice.)
+
+
+        Inactive (Order items which are either of zero value and have not been canceled, if the state of the payment item is Pending or Failed, or items of optional reservations. Until the reservation is confirmed, all its accounting items are Inactive.)
+
+
+        Canceled (Order items which have been canceled, regardless of whether the item is of zero value.)'
+      x-enumNames:
+      - Open
+      - Closed
+      - Inactive
+      - Canceled
+      x-enumDescriptions:
+      - Order items which carry a non-zero value, are open, and have not been closed on a bill or invoice.
+      - Order items which carry a non-zero value and have been closed on a bill or invoice.
+      - Order items which are either of zero value and have not been canceled, if the state of the payment item is Pending or Failed, or items of optional reservations. Until the reservation is confirmed, all its accounting items are Inactive.
+      - Order items which have been canceled, regardless of whether the item is of zero value.
+    AlternativePaymentParameters:
+      title: AlternativePaymentParameters
+      required:
+      - AccessToken
+      - Amount
+      - Client
+      - ClientToken
+      - CustomerId
+      - Data
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        CustomerId:
+          type: string
+          description: Unique identifier of the [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer).
+          format: uuid
+        Amount:
+          title: Amount parameters
+          allOf:
+          - $ref: '#/components/schemas/AmountParameters'
+          description: Price of the product that overrides the price defined in Mews.
+        Method:
+          anyOf:
+          - $ref: '#/components/schemas/AlternativePaymentMethodDeprecated'
+          description: Payment method to use for the alternative payment.
+          deprecated: true
+          x-deprecatedMessage: Use `Data` instead.
+        RedirectUrl:
           type:
           - string
           - 'null'
-          description: Unique identifier of an [Accounting category](https://mews-systems.gitbook.io/connector-api/operations/accountingcategories/#accounting-category) to be assigned to the credit card payment.
-          format: uuid
+          description: URL where the customer will be redirected after completing their payment.
+          format: uri
+          deprecated: true
+          x-deprecatedMessage: Pass redirect URL to relevant method in `Data` instead.
         ReservationId:
           type:
           - string
           - 'null'
           description: Unique identifier of the reservation the payment belongs to.
           format: uuid
-        Amount:
-          title: Amount parameters
+        Data:
+          title: Alternative payment method data
           allOf:
-          - $ref: '#/components/schemas/ExtendedAmountParameters'
-          description: Amount of the credit card payment.
-        Notes:
-          type:
-          - string
-          - 'null'
-          description: Additional payment notes.
-        CustomerId:
-          type: string
-          description: Unique identifier of the [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer).
-          format: uuid
-        CreditCard:
-          title: Credit card parameters
-          allOf:
-          - $ref: '#/components/schemas/CreditCardParameters'
-          description: ''
-        ReceiptIdentifier:
-          type:
-          - string
-          - 'null'
-          description: Identifier of the payment receipt.
+          - $ref: '#/components/schemas/AlternativePaymentsData'
+          description: Data specific to particular alternative payment method.
       additionalProperties: false
-      x-schema-id: CreditCardPaymentParameters
-    TaxValue:
-      title: Tax value
-      required:
-      - Value
+      x-schema-id: AlternativePaymentParameters
+    AlternativePaymentMethodDeprecated:
+      title: Alternative payment methods
+      enum:
+      - Ideal
+      - ApplePay
+      - GooglePay
+      type: string
+    PaymentCreditCardData:
+      title: Credit card payment data
       type: object
       properties:
-        Code:
+        CreditCardId:
           type:
           - string
           - 'null'
-          description: Code corresponding to tax type.
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
+          description: Unique identifier of the payment card.
+          format: uuid
+        Transaction:
+          title: Credit card transaction
+          allOf:
+          - $ref: '#/components/schemas/CreditCardTransaction'
+          description: The credit card payment transaction.
       additionalProperties: false
-      x-schema-id: TaxValue
+      x-schema-id: PaymentCreditCardData
     Payment:
       title: Payment
       required:
@@ -1392,179 +2664,6 @@ components:
             PaymentToInvoiceLinking'
       additionalProperties: false
       x-schema-id: Payment
-    PaymentRefundParameters:
-      title: PaymentRefundParameters
-      required:
-      - AccessToken
-      - AccountId
-      - Client
-      - ClientToken
-      - PaymentId
-      - Reason
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        PaymentId:
-          type: string
-          description: Unique identifier of specific [Payment](https://mews-systems.gitbook.io/connector-api/operations/payments/#payment).
-          format: uuid
-        AccountId:
-          type: string
-          description: Unique identifier of the account (for example [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer)) the payment belongs to.
-          format: uuid
-        Reason:
-          minLength: 1
-          type: string
-          description: Refund reason.
-        ValueToRefund:
-          type:
-          - number
-          - 'null'
-          description: Refund amount. If not provided, the whole payment will be refunded.
-          format: double
-      additionalProperties: false
-      x-schema-id: PaymentRefundParameters
-    AccountingStateEnum:
-      title: Order item accounting state
-      enum:
-      - Open
-      - Closed
-      - Inactive
-      - Canceled
-      type: string
-      description: '
-
-
-        Open (Order items which carry a non-zero value, are open, and have not been closed on a bill or invoice.)
-
-
-        Closed (Order items which carry a non-zero value and have been closed on a bill or invoice.)
-
-
-        Inactive (Order items which are either of zero value and have not been canceled, if the state of the payment item is Pending or Failed, or items of optional reservations. Until the reservation is confirmed, all its accounting items are Inactive.)
-
-
-        Canceled (Order items which have been canceled, regardless of whether the item is of zero value.)'
-      x-enumNames:
-      - Open
-      - Closed
-      - Inactive
-      - Canceled
-      x-enumDescriptions:
-      - Order items which carry a non-zero value, are open, and have not been closed on a bill or invoice.
-      - Order items which carry a non-zero value and have been closed on a bill or invoice.
-      - Order items which are either of zero value and have not been canceled, if the state of the payment item is Pending or Failed, or items of optional reservations. Until the reservation is confirmed, all its accounting items are Inactive.
-      - Order items which have been canceled, regardless of whether the item is of zero value.
-    AmountParameters:
-      title: Amount parameters
-      required:
-      - Currency
-      - TaxCodes
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          format: currency
-        TaxCodes:
-          type: array
-          items:
-            type: string
-        NetValue:
-          type:
-          - number
-          - 'null'
-          format: double
-        GrossValue:
-          type:
-          - number
-          - 'null'
-          format: double
-      additionalProperties: false
-      description: Price of the product that overrides the price defined in Mews.
-      x-schema-id: AmountParameters
-    PaymentKindEnum:
-      title: Payment kind
-      enum:
-      - Payment
-      - Chargeback
-      - ChargebackReversal
-      - Refund
-      type: string
-      description: '
-
-
-        Payment
-
-
-        Chargeback
-
-
-        ChargebackReversal
-
-
-        Refund'
-      x-enumNames:
-      - Payment
-      - Chargeback
-      - ChargebackReversal
-      - Refund
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-    AlternativePaymentResult:
-      title: AlternativePaymentResult
-      required:
-      - PaymentId
-      type: object
-      properties:
-        PaymentId:
-          type: string
-          description: Unique identifier of the created payment.
-          format: uuid
-        NextAction:
-          title: Alternative payment next action
-          allOf:
-          - $ref: '#/components/schemas/NextAction'
-          description: Next action to take in order to complete the payment.
-      additionalProperties: false
-      x-schema-id: AlternativePaymentResult
-    PaymentCreditCardData:
-      title: Credit card payment data
-      type: object
-      properties:
-        CreditCardId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the payment card.
-          format: uuid
-        Transaction:
-          title: Credit card transaction
-          allOf:
-          - $ref: '#/components/schemas/CreditCardTransaction'
-          description: The credit card payment transaction.
-      additionalProperties: false
-      x-schema-id: PaymentCreditCardData
     AlternativePaymentMethodEnum:
       title: Alternative payment method data discriminator
       enum:
@@ -1597,6 +2696,66 @@ components:
       - No additional data.
       - SEPA Direct Debit data.
       x-extensible: true
+    PaymentAlternativeData:
+      title: Alternative payment data
+      required:
+      - Type
+      type: object
+      properties:
+        Type:
+          title: Alternative payment method type
+          allOf:
+          - $ref: '#/components/schemas/AlternativePaymentMethodTypeEnum'
+          description: 'Type of the alternative payment method.
+
+
+            Ideal (iDEAL)
+
+
+            ApplePay (Apple Pay)
+
+
+            GooglePay (Google Pay)
+
+
+            SepaDirectDebit (SEPA Direct Debit)
+
+
+            PayPal (PayPal)
+
+
+            WireTransfer (Wire transfer)'
+          x-enumNames:
+          - Ideal
+          - ApplePay
+          - GooglePay
+          - SepaDirectDebit
+          - PayPal
+          - WireTransfer
+          x-enumDescriptions:
+          - iDEAL
+          - Apple Pay
+          - Google Pay
+          - SEPA Direct Debit
+          - PayPal
+          - Wire transfer
+      additionalProperties: false
+      x-schema-id: PaymentAlternativeData
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     AddCreditCardResult:
       title: AddCreditCardResult
       type: object
@@ -1607,15 +2766,45 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: AddCreditCardResult
-    PaymentState:
-      title: Payment state
+    IdealData:
+      title: iDEAL data
+      required:
+      - RedirectUrl
+      type: object
+      properties:
+        RedirectUrl:
+          minLength: 1
+          type: string
+          description: URL where the customer will be redirected after completing their iDEAL payment.
+          format: uri
+      additionalProperties: false
+      x-schema-id: IdealData
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
+    NextActionTypeEnum:
+      title: Payment next action discriminator
       enum:
-      - Charged
-      - Canceled
-      - Pending
-      - Failed
-      - Verifying
+      - RedirectToUrl
       type: string
+      description: '
+
+
+        RedirectToUrl (Redirect customer to a URL where they can complete their payment.)'
+      x-enumNames:
+      - RedirectToUrl
+      x-enumDescriptions:
+      - Redirect customer to a URL where they can complete their payment.
     PaymentExternalData:
       title: External payment data
       required:
@@ -1851,844 +3040,6 @@ components:
           description: Identifier of the payment from external system.
       additionalProperties: false
       x-schema-id: PaymentExternalData
-    PaymentResult:
-      title: PaymentResult
-      required:
-      - Payments
-      type: object
-      properties:
-        Payments:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/Payment'
-          description: The list of filtered payments.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the last and hence oldest payment returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of payments.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: PaymentResult
-    CurrencyValue:
-      title: Currency value (ver 2023-02-02)
-      required:
-      - Currency
-      - Value
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          description: ISO-4217 code of the `Currency`.
-          format: currency
-        Value:
-          type: number
-          description: Amount in the currency.
-          format: double
-      additionalProperties: false
-      description: Absolute value of the fee.
-      x-schema-id: CurrencyValue
-    PaymentFilterParameters:
-      title: PaymentFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        PaymentIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of specific `Payment` items. Required if no other filter is provided.
-        AccountIds:
-          maxItems: 100
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of specific `Accounts` to which payments belong. Required if no other filter is provided.
-        BillIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of specific `Bill` items to which payments are assigned. Required if no other filter is provided.
-        ReservationIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of specific `Reservations` to which payments belong. Required if no other filter is provided.
-        CreatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Time interval during which the `Payment` was created. Required if no other filter is provided.
-          x-max-interval-in-months: 3
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Time interval during which the `Payment` was updated. Required if no other filter is provided.
-          x-max-interval-in-months: 3
-        ChargedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Time interval during which the `Payment` was charged. Required if no other filter is provided.
-          x-max-interval-in-months: 3
-        ClosedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Time interval during which the `Payment` was closed. Required if no other filter is provided.
-          x-max-interval-in-months: 3
-        SettlementUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the `Payments` were settled.
-          x-max-interval-in-months: 3
-        Currency:
-          type:
-          - string
-          - 'null'
-          description: ISO-4217 code of the `Currency` the item costs should be converted to.
-          format: currency
-        AccountingStates:
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/AccountingState'
-          description: Accounting state of the item.
-        States:
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/PaymentState'
-          description: Payment state of the item.
-        Type:
-          allOf:
-          - $ref: '#/components/schemas/PaymentDiscriminatorEnum'
-          description: 'Payment state of the item.
-
-
-            Payment
-
-
-            CreditCardPayment
-
-
-            AlternativePayment
-
-
-            CashPayment
-
-
-            InvoicePayment
-
-
-            ExternalPayment
-
-
-            GhostPayment
-
-
-            TaxDeductedPayment'
-      additionalProperties: false
-      x-schema-id: PaymentFilterParameters
-    PaymentOriginEnum:
-      title: Payment origin
-      enum:
-      - Other
-      - System
-      - Operations
-      - AutomaticPayment
-      - PaymentRequest
-      - BookingEngine
-      - Api
-      - Terminal
-      - ChannelManager
-      - OnlineCheckout
-      - BillBalancing
-      - OnlineCheckin
-      - PointOfSales
-      - PaymentToInvoiceLinking
-      type: string
-      description: '
-
-
-        Other (Fallback value unmapped in the current version of the API.)
-
-
-        System
-
-
-        Operations
-
-
-        AutomaticPayment
-
-
-        PaymentRequest
-
-
-        BookingEngine
-
-
-        Api (Connector API.)
-
-
-        Terminal
-
-
-        ChannelManager
-
-
-        OnlineCheckout
-
-
-        BillBalancing
-
-
-        OnlineCheckin
-
-
-        PointOfSales
-
-
-        PaymentToInvoiceLinking'
-      x-enumNames:
-      - Other
-      - System
-      - Operations
-      - AutomaticPayment
-      - PaymentRequest
-      - BookingEngine
-      - Api
-      - Terminal
-      - ChannelManager
-      - OnlineCheckout
-      - BillBalancing
-      - OnlineCheckin
-      - PointOfSales
-      - PaymentToInvoiceLinking
-      x-enumDescriptions:
-      - Fallback value unmapped in the current version of the API.
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - Connector API.
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-    PaymentData:
-      title: Payment data
-      required:
-      - Discriminator
-      type: object
-      properties:
-        Discriminator:
-          title: Payment data discriminator
-          allOf:
-          - $ref: '#/components/schemas/PaymentDataDiscriminatorEnum'
-          description: 'Discriminator pointing to the fields within this object that contains additional data.
-
-
-            CreditCard
-
-
-            Invoice
-
-
-            External
-
-
-            Ghost
-
-
-            Alternative'
-          readOnly: true
-          x-enumNames:
-          - CreditCard
-          - Invoice
-          - External
-          - Ghost
-          - Alternative
-          x-enumDescriptions:
-          - ''
-          - ''
-          - ''
-          - ''
-          - ''
-        CreditCard:
-          title: Credit card payment data
-          allOf:
-          - $ref: '#/components/schemas/PaymentCreditCardData'
-          description: Contains additional data in the case of a card payment.
-        Invoice:
-          title: Invoice payment data
-          allOf:
-          - $ref: '#/components/schemas/PaymentInvoiceData'
-          description: Contains additional data in the case of an invoice payment.
-          readOnly: true
-        External:
-          title: External payment data
-          allOf:
-          - $ref: '#/components/schemas/PaymentExternalData'
-          description: Contains additional data in the case of an external payment.
-          readOnly: true
-        Ghost:
-          title: Ghost payment data
-          allOf:
-          - $ref: '#/components/schemas/PaymentGhostData'
-          description: Contains additional data in the case of a ghost payment.
-          readOnly: true
-        Alternative:
-          title: Alternative payment data
-          allOf:
-          - $ref: '#/components/schemas/PaymentAlternativeData'
-          description: Contains additional data in the case of an alternative payment.
-          readOnly: true
-      additionalProperties: false
-      x-schema-id: PaymentData
-    ExtendedAmountParameters:
-      title: Amount parameters
-      required:
-      - Currency
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          description: ISO-4217 code of the `Currency`.
-          format: currency
-        TaxCodes:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: The tax values applied.
-        NetValue:
-          type:
-          - number
-          - 'null'
-          description: Net value in case the item is taxed.
-          format: double
-        GrossValue:
-          type:
-          - number
-          - 'null'
-          description: Gross value including all taxes.
-          format: double
-      additionalProperties: false
-      description: ''
-      x-schema-id: ExtendedAmountParameters
-    TaxBreakdown:
-      title: Tax breakdown
-      required:
-      - Items
-      type: object
-      properties:
-        Items:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxBreakdownItem'
-          description: Tax breakdown items per each tax rate applied.
-      additionalProperties: false
-      x-schema-id: TaxBreakdown
-    PaymentDiscriminatorEnum:
-      title: Payment type
-      enum:
-      - Payment
-      - CreditCardPayment
-      - AlternativePayment
-      - CashPayment
-      - InvoicePayment
-      - ExternalPayment
-      - GhostPayment
-      - TaxDeductedPayment
-      type: string
-      description: '
-
-
-        Payment
-
-
-        CreditCardPayment
-
-
-        AlternativePayment
-
-
-        CashPayment
-
-
-        InvoicePayment
-
-
-        ExternalPayment
-
-
-        GhostPayment
-
-
-        TaxDeductedPayment'
-      x-enumNames:
-      - Payment
-      - CreditCardPayment
-      - AlternativePayment
-      - CashPayment
-      - InvoicePayment
-      - ExternalPayment
-      - GhostPayment
-      - TaxDeductedPayment
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-    AlternativePaymentParameters:
-      title: AlternativePaymentParameters
-      required:
-      - AccessToken
-      - Amount
-      - Client
-      - ClientToken
-      - CustomerId
-      - Data
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        CustomerId:
-          type: string
-          description: Unique identifier of the [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer).
-          format: uuid
-        Amount:
-          title: Amount parameters
-          allOf:
-          - $ref: '#/components/schemas/AmountParameters'
-          description: Price of the product that overrides the price defined in Mews.
-        Method:
-          anyOf:
-          - $ref: '#/components/schemas/AlternativePaymentMethodDeprecated'
-          description: Payment method to use for the alternative payment.
-          deprecated: true
-          x-deprecatedMessage: Use `Data` instead.
-        RedirectUrl:
-          type:
-          - string
-          - 'null'
-          description: URL where the customer will be redirected after completing their payment.
-          format: uri
-          deprecated: true
-          x-deprecatedMessage: Pass redirect URL to relevant method in `Data` instead.
-        ReservationId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the reservation the payment belongs to.
-          format: uuid
-        Data:
-          title: Alternative payment method data
-          allOf:
-          - $ref: '#/components/schemas/AlternativePaymentsData'
-          description: Data specific to particular alternative payment method.
-      additionalProperties: false
-      x-schema-id: AlternativePaymentParameters
-    ExternalPaymentTypeEnum:
-      title: External payment type
-      enum:
-      - Unspecified
-      - BadDebts
-      - Bacs
-      - WireTransfer
-      - Invoice
-      - ExchangeRateDifference
-      - Complimentary
-      - Reseller
-      - ExchangeRoundingDifference
-      - Barter
-      - Commission
-      - BankCharges
-      - CrossSettlement
-      - Cash
-      - CreditCard
-      - Prepayment
-      - Cheque
-      - Bancontact
-      - IDeal
-      - PayPal
-      - GiftCard
-      - LoyaltyPoints
-      - ChequeVacances
-      - OnlinePayment
-      - CardCheck
-      - PaymentHubRedirection
-      - Voucher
-      - MasterCard
-      - Visa
-      - Amex
-      - Discover
-      - DinersClub
-      - Jcb
-      - UnionPay
-      - Twint
-      - Reka
-      - LoyaltyCard
-      - PosDiningAndSpaReward
-      - DirectDebit
-      - DepositCheck
-      - DepositCash
-      - DepositCreditCard
-      - DepositWireTransfer
-      type: string
-      description: '
-
-
-        Unspecified (Unspecified (unavailable in French Legal Environment))
-
-
-        BadDebts (Bad debts)
-
-
-        Bacs (Bacs payment)
-
-
-        WireTransfer (Wire transfer)
-
-
-        Invoice (Invoice)
-
-
-        ExchangeRateDifference (Exchange rate difference)
-
-
-        Complimentary (Complimentary)
-
-
-        Reseller (Reseller)
-
-
-        ExchangeRoundingDifference (Exchange rounding difference)
-
-
-        Barter (Barter)
-
-
-        Commission (Commission)
-
-
-        BankCharges (Bank charges)
-
-
-        CrossSettlement (Cross settlement)
-
-
-        Cash (Cash)
-
-
-        CreditCard (Credit card – deprecated, only for existing partners)
-
-
-        Prepayment (Prepayment)
-
-
-        Cheque (Cheque)
-
-
-        Bancontact (Bancontact)
-
-
-        IDeal (iDeal – deprecated, only for existing partners)
-
-
-        PayPal (PayPal – deprecated, only for existing partners)
-
-
-        GiftCard (Gift card)
-
-
-        LoyaltyPoints (Loyalty points)
-
-
-        ChequeVacances (Chèque-Vacances)
-
-
-        OnlinePayment (Online payment – deprecated, only for existing partners)
-
-
-        CardCheck (Card check)
-
-
-        PaymentHubRedirection (Payment hub redirection)
-
-
-        Voucher (Voucher)
-
-
-        MasterCard (MasterCard – deprecated, only for existing partners)
-
-
-        Visa (Visa – deprecated, only for existing partners)
-
-
-        Amex (American Express – deprecated, only for existing partners)
-
-
-        Discover (Discover – deprecated, only for existing partners)
-
-
-        DinersClub (Diners Club – deprecated, only for existing partners)
-
-
-        Jcb (JCB – deprecated, only for existing partners)
-
-
-        UnionPay (UnionPay – deprecated, only for existing partners)
-
-
-        Twint (TWINT)
-
-
-        Reka (Reka)
-
-
-        LoyaltyCard (Loyalty card)
-
-
-        PosDiningAndSpaReward (POS Dining & Spa Reward)
-
-
-        DirectDebit (Direct debit)
-
-
-        DepositCheck (Deposit - check)
-
-
-        DepositCash (Deposit - cash)
-
-
-        DepositCreditCard (Deposit - credit card – deprecated, only for existing partners)
-
-
-        DepositWireTransfer (Deposit - wire transfer)'
-      x-enumNames:
-      - Unspecified
-      - BadDebts
-      - Bacs
-      - WireTransfer
-      - Invoice
-      - ExchangeRateDifference
-      - Complimentary
-      - Reseller
-      - ExchangeRoundingDifference
-      - Barter
-      - Commission
-      - BankCharges
-      - CrossSettlement
-      - Cash
-      - CreditCard
-      - Prepayment
-      - Cheque
-      - Bancontact
-      - IDeal
-      - PayPal
-      - GiftCard
-      - LoyaltyPoints
-      - ChequeVacances
-      - OnlinePayment
-      - CardCheck
-      - PaymentHubRedirection
-      - Voucher
-      - MasterCard
-      - Visa
-      - Amex
-      - Discover
-      - DinersClub
-      - Jcb
-      - UnionPay
-      - Twint
-      - Reka
-      - LoyaltyCard
-      - PosDiningAndSpaReward
-      - DirectDebit
-      - DepositCheck
-      - DepositCash
-      - DepositCreditCard
-      - DepositWireTransfer
-      x-enumDescriptions:
-      - Unspecified (unavailable in French Legal Environment)
-      - Bad debts
-      - Bacs payment
-      - Wire transfer
-      - Invoice
-      - Exchange rate difference
-      - Complimentary
-      - Reseller
-      - Exchange rounding difference
-      - Barter
-      - Commission
-      - Bank charges
-      - Cross settlement
-      - Cash
-      - Credit card – deprecated, only for existing partners
-      - Prepayment
-      - Cheque
-      - Bancontact
-      - iDeal – deprecated, only for existing partners
-      - PayPal – deprecated, only for existing partners
-      - Gift card
-      - Loyalty points
-      - Chèque-Vacances
-      - Online payment – deprecated, only for existing partners
-      - Card check
-      - Payment hub redirection
-      - Voucher
-      - MasterCard – deprecated, only for existing partners
-      - Visa – deprecated, only for existing partners
-      - American Express – deprecated, only for existing partners
-      - Discover – deprecated, only for existing partners
-      - Diners Club – deprecated, only for existing partners
-      - JCB – deprecated, only for existing partners
-      - UnionPay – deprecated, only for existing partners
-      - TWINT
-      - Reka
-      - Loyalty card
-      - POS Dining & Spa Reward
-      - Direct debit
-      - Deposit - check
-      - Deposit - cash
-      - Deposit - credit card – deprecated, only for existing partners
-      - Deposit - wire transfer
-    NextActionTypeEnum:
-      title: Payment next action discriminator
-      enum:
-      - RedirectToUrl
-      type: string
-      description: '
-
-
-        RedirectToUrl (Redirect customer to a URL where they can complete their payment.)'
-      x-enumNames:
-      - RedirectToUrl
-      x-enumDescriptions:
-      - Redirect customer to a URL where they can complete their payment.
-    AlternativePaymentMethodTypeEnum:
-      title: Alternative payment method type
-      enum:
-      - Ideal
-      - ApplePay
-      - GooglePay
-      - SepaDirectDebit
-      - PayPal
-      - WireTransfer
-      type: string
-      description: '
-
-
-        Ideal (iDEAL)
-
-
-        ApplePay (Apple Pay)
-
-
-        GooglePay (Google Pay)
-
-
-        SepaDirectDebit (SEPA Direct Debit)
-
-
-        PayPal (PayPal)
-
-
-        WireTransfer (Wire transfer)'
-      x-enumNames:
-      - Ideal
-      - ApplePay
-      - GooglePay
-      - SepaDirectDebit
-      - PayPal
-      - WireTransfer
-      x-enumDescriptions:
-      - iDEAL
-      - Apple Pay
-      - Google Pay
-      - SEPA Direct Debit
-      - PayPal
-      - Wire transfer
     CreditCardTransaction:
       title: Credit card transaction
       required:
@@ -2733,430 +3084,79 @@ components:
           description: Settled amount of the transaction.
       additionalProperties: false
       x-schema-id: CreditCardTransaction
-    AlternativePaymentsData:
-      title: Alternative payment method data
+    ExtendedAmount:
+      title: Extended amount
       required:
-      - Discriminator
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
       type: object
       properties:
-        Discriminator:
-          title: Alternative payment method data discriminator
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
           allOf:
-          - $ref: '#/components/schemas/AlternativePaymentMethodEnum'
-          description: 'Type of alternative payment method (e.g. `Ideal`).
-
-
-            Ideal (iDEAL data.)
-
-
-            ApplePay (No additional data.)
-
-
-            GooglePay (No additional data.)
-
-
-            SepaDirectDebit (SEPA Direct Debit data.)'
-          x-enumNames:
-          - Ideal
-          - ApplePay
-          - GooglePay
-          - SepaDirectDebit
-          x-enumDescriptions:
-          - iDEAL data.
-          - No additional data.
-          - No additional data.
-          - SEPA Direct Debit data.
-          x-extensible: true
-        SepaDirectDebit:
-          title: SEPA Direct Debit data
-          allOf:
-          - $ref: '#/components/schemas/SepaDirectDebitData'
-          description: SEPA Direct Debit payment method data. Required when `Discriminator` is `SepaDirectDebit`.
-        Ideal:
-          title: iDEAL data
-          allOf:
-          - $ref: '#/components/schemas/IdealData'
-          description: iDEAL payment method data. Required when `Discriminator` is `Ideal`.
-      additionalProperties: false
-      x-schema-id: AlternativePaymentsData
-    ExternalPaymentParameters:
-      title: ExternalPaymentParameters
-      required:
-      - AccessToken
-      - AccountId
-      - Amount
-      - Client
-      - ClientToken
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+        Value:
           type:
-          - string
+          - number
           - 'null'
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        AccountId:
-          type: string
-          description: Unique identifier of the [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) or [Company](https://mews-systems.gitbook.io/connector-api/operations/companies/#company). Company billing may not be enabled for your integration.
-          format: uuid
-        CustomerId:
+          format: double
+        Net:
           type:
-          - string
+          - number
           - 'null'
-          description: Unique identifier of the [Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer). **Deprecated!**
-          format: uuid
-          deprecated: true
-          x-deprecatedMessage: Use `AccountId`.
-        BillId:
+          format: double
+        Tax:
           type:
-          - string
+          - number
           - 'null'
-          description: Unique identifier of an open bill of the customer where to assign the payment.
-          format: uuid
-        AccountingCategoryId:
+          format: double
+        TaxRate:
           type:
-          - string
+          - number
           - 'null'
-          description: Unique identifier of an [Accounting category](https://mews-systems.gitbook.io/connector-api/operations/accountingcategories/#accounting-category) to be assigned to the external payment.
-          format: uuid
-        ReservationId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the reservation the payment belongs to.
-          format: uuid
-        Amount:
-          title: Amount parameters
-          allOf:
-          - $ref: '#/components/schemas/ExtendedAmountParameters'
-          description: Amount of the external card payment.
-        Type:
-          allOf:
-          - $ref: '#/components/schemas/ExternalPaymentTypeEnum'
-          description: 'Type of the external payment. (Required for the enterprises based in the French Legal Environment where `Unspecified` is considered as fraud.)
-
-
-            Unspecified (Unspecified (unavailable in French Legal Environment))
-
-
-            BadDebts (Bad debts)
-
-
-            Bacs (Bacs payment)
-
-
-            WireTransfer (Wire transfer)
-
-
-            Invoice (Invoice)
-
-
-            ExchangeRateDifference (Exchange rate difference)
-
-
-            Complimentary (Complimentary)
-
-
-            Reseller (Reseller)
-
-
-            ExchangeRoundingDifference (Exchange rounding difference)
-
-
-            Barter (Barter)
-
-
-            Commission (Commission)
-
-
-            BankCharges (Bank charges)
-
-
-            CrossSettlement (Cross settlement)
-
-
-            Cash (Cash)
-
-
-            CreditCard (Credit card – deprecated, only for existing partners)
-
-
-            Prepayment (Prepayment)
-
-
-            Cheque (Cheque)
-
-
-            Bancontact (Bancontact)
-
-
-            IDeal (iDeal – deprecated, only for existing partners)
-
-
-            PayPal (PayPal – deprecated, only for existing partners)
-
-
-            GiftCard (Gift card)
-
-
-            LoyaltyPoints (Loyalty points)
-
-
-            ChequeVacances (Chèque-Vacances)
-
-
-            OnlinePayment (Online payment – deprecated, only for existing partners)
-
-
-            CardCheck (Card check)
-
-
-            PaymentHubRedirection (Payment hub redirection)
-
-
-            Voucher (Voucher)
-
-
-            MasterCard (MasterCard – deprecated, only for existing partners)
-
-
-            Visa (Visa – deprecated, only for existing partners)
-
-
-            Amex (American Express – deprecated, only for existing partners)
-
-
-            Discover (Discover – deprecated, only for existing partners)
-
-
-            DinersClub (Diners Club – deprecated, only for existing partners)
-
-
-            Jcb (JCB – deprecated, only for existing partners)
-
-
-            UnionPay (UnionPay – deprecated, only for existing partners)
-
-
-            Twint (TWINT)
-
-
-            Reka (Reka)
-
-
-            LoyaltyCard (Loyalty card)
-
-
-            PosDiningAndSpaReward (POS Dining & Spa Reward)
-
-
-            DirectDebit (Direct debit)
-
-
-            DepositCheck (Deposit - check)
-
-
-            DepositCash (Deposit - cash)
-
-
-            DepositCreditCard (Deposit - credit card – deprecated, only for existing partners)
-
-
-            DepositWireTransfer (Deposit - wire transfer)'
-        ExternalIdentifier:
-          type:
-          - string
-          - 'null'
-          description: Identifier of the payment from external system.
-        Notes:
-          type:
-          - string
-          - 'null'
-          description: Additional payment notes.
-      additionalProperties: false
-      x-schema-id: ExternalPaymentParameters
-    InvoicePaymentTypeEnum:
-      title: Invoice payment type
-      enum:
-      - Receivable
-      - Balancing
-      - UnderpaymentBalancingReceivable
-      - OverpaymentBalancingReceivable
-      - Overpayment
-      type: string
-      description: '
-
-
-        Receivable
-
-
-        Balancing
-
-
-        UnderpaymentBalancingReceivable
-
-
-        OverpaymentBalancingReceivable
-
-
-        Overpayment'
-      x-enumNames:
-      - Receivable
-      - Balancing
-      - UnderpaymentBalancingReceivable
-      - OverpaymentBalancingReceivable
-      - Overpayment
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-    CreditCardParameters:
-      title: Credit card parameters
-      required:
-      - Name
-      - Number
-      - Type
-      type: object
-      properties:
-        Type:
-          minLength: 1
-          type: string
-          description: 'Type of the credit card, one of: `Visa`, `MasterCard`, `Amex`, `Discover`, `DinersClub`, `Jcb`, `EnRoute`, `Maestro`, `UnionPay`.'
-        Number:
-          minLength: 1
-          type: string
-          description: Obfuscated credit card number. At most first six digits and last four digits can be specified, the digits in between should be replaced with `*`. It is possible to provide even more obfuscated number or just last four digits. **Never provide full credit card number**. For example `411111******1111`.
-        Expiration:
-          type:
-          - string
-          - 'null'
-          description: Expiration of the credit card in format `MM/YYYY`, e.g. `12/2016` or `04/2017`.
-        Name:
-          minLength: 1
-          type: string
-          description: Name of the card holder.
+          format: double
       additionalProperties: false
       description: ''
-      x-schema-id: CreditCardParameters
-    PaymentStateEnum:
-      title: Payment state
+      x-schema-id: ExtendedAmount
+    AccountType:
+      title: Account type
       enum:
-      - Charged
+      - Company
+      - Customer
+      type: string
+      description: A discriminator specifying the account type, e.g. `Customer` or `Company`
+    AccountingState:
+      title: Order item accounting state
+      enum:
+      - Open
+      - Closed
+      - Inactive
       - Canceled
-      - Pending
-      - Failed
-      - Verifying
       type: string
-      description: '
-
-
-        Charged
-
-
-        Canceled
-
-
-        Pending
-
-
-        Failed
-
-
-        Verifying'
-      x-enumNames:
-      - Charged
-      - Canceled
-      - Pending
-      - Failed
-      - Verifying
       x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-    AlternativePaymentMethodDeprecated:
-      title: Alternative payment methods
-      enum:
-      - Ideal
-      - ApplePay
-      - GooglePay
-      type: string
-    RefundTypeEnum:
-      title: Refund type
-      enum:
-      - CreditCardPayment
-      - AlternativePayment
-      type: string
-      description: '
-
-
-        CreditCardPayment
-
-
-        AlternativePayment'
-      x-enumNames:
-      - CreditCardPayment
-      - AlternativePayment
-      x-enumDescriptions:
-      - ''
-      - ''
-    PaymentAlternativeData:
-      title: Alternative payment data
-      required:
-      - Type
-      type: object
-      properties:
-        Type:
-          title: Alternative payment method type
-          allOf:
-          - $ref: '#/components/schemas/AlternativePaymentMethodTypeEnum'
-          description: 'Type of the alternative payment method.
-
-
-            Ideal (iDEAL)
-
-
-            ApplePay (Apple Pay)
-
-
-            GooglePay (Google Pay)
-
-
-            SepaDirectDebit (SEPA Direct Debit)
-
-
-            PayPal (PayPal)
-
-
-            WireTransfer (Wire transfer)'
-          x-enumNames:
-          - Ideal
-          - ApplePay
-          - GooglePay
-          - SepaDirectDebit
-          - PayPal
-          - WireTransfer
-          x-enumDescriptions:
-          - iDEAL
-          - Apple Pay
-          - Google Pay
-          - SEPA Direct Debit
-          - PayPal
-          - Wire transfer
-      additionalProperties: false
-      x-schema-id: PaymentAlternativeData
+      - Order items which carry a non-zero value, are open, and have not been closed on a bill or invoice.
+      - Order items which carry a non-zero value and have been closed on a bill or invoice.
+      - Order items which are either of zero value and have not been canceled, if the state of the payment item is Pending or Failed, or items of optional reservations. Until the reservation is confirmed, all its accounting items are Inactive.
+      - Order items which have been canceled, regardless of whether the item is of zero value.

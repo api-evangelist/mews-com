@@ -146,6 +146,186 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TaxBreakdownItem:
+      title: Tax breakdown item
+      required:
+      - NetValue
+      - TaxValue
+      type: object
+      properties:
+        TaxRateCode:
+          type:
+          - string
+          - 'null'
+          description: Tax rate code for the item. `null` for untaxed amounts.
+        NetValue:
+          type: number
+          description: The net value that the tax is calculated from.
+          format: double
+        TaxValue:
+          type: number
+          description: The value of the tax.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxBreakdownItem
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    OutletItemResult:
+      title: OutletItemResult
+      required:
+      - OutletBills
+      - OutletItems
+      type: object
+      properties:
+        OutletItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutletItem'
+          description: The outlet items.
+        OutletBills:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutletBill'
+          description: The outlet bills of the items.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest outlet item returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older outlet items.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: OutletItemResult
+    OutletItem:
+      title: Outlet item
+      required:
+      - BillId
+      - ConsumedUtc
+      - CreatedUtc
+      - EnterpriseId
+      - Id
+      - Type
+      - UnitAmount
+      - UnitCount
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the item.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/enterprises/#enterprise).
+          format: uuid
+        BillId:
+          type: string
+          description: Unique identifier of the [Outlet bill](https://mews-systems.gitbook.io/connector-api/operations/#outlet-bill) the item belongs to.
+          format: uuid
+        AccountingCategoryId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the [Accounting category](https://mews-systems.gitbook.io/connector-api/operations/accountingcategories/#accounting-category) the item belongs to.
+          format: uuid
+        Type:
+          $ref: '#/components/schemas/OutletItemType'
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name of the item.
+        UnitCount:
+          type: integer
+          description: Unit count of the item.
+          format: int32
+        UnitAmount:
+          title: Amount
+          allOf:
+          - $ref: '#/components/schemas/Amount'
+          description: Unit amount of the item.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the item creation in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the item in UTC timezone in ISO 8601 format.
+          format: date-time
+        ConsumedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the item consumption in UTC timezone in ISO 8601 format.
+          format: date-time
+        ExternalIdentifier:
+          type:
+          - string
+          - 'null'
+          description: An identifier of this item from another system.
+        Notes:
+          type:
+          - string
+          - 'null'
+          description: Additional notes.
+        PaymentCardPaymentId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the payment card `Payment` this item is linked to. This is only applicable to items where `Type` is `Payment`.
+          format: uuid
+        UnitCost:
+          title: Currency value (ver 2018-06-07)
+          allOf:
+          - $ref: '#/components/schemas/CurrencyValueOld'
+          description: Total price of the reservation.
+          deprecated: true
+          x-deprecatedMessage: Use `UnitAmount` instead.
+      additionalProperties: false
+      x-schema-id: OutletItem
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
     OutletItemsFilterParameters:
       title: OutletItemsFilterParameters
       required:
@@ -217,151 +397,6 @@ components:
           format: currency
       additionalProperties: false
       x-schema-id: OutletItemsFilterParameters
-    TaxValue:
-      title: Tax value
-      required:
-      - Value
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Code corresponding to tax type.
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxValue
-    OutletItemResult:
-      title: OutletItemResult
-      required:
-      - OutletBills
-      - OutletItems
-      type: object
-      properties:
-        OutletItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/OutletItem'
-          description: The outlet items.
-        OutletBills:
-          type: array
-          items:
-            $ref: '#/components/schemas/OutletBill'
-          description: The outlet bills of the items.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the last and hence oldest outlet item returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older outlet items.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: OutletItemResult
-    TaxBreakdownItem:
-      title: Tax breakdown item
-      required:
-      - NetValue
-      - TaxValue
-      type: object
-      properties:
-        TaxRateCode:
-          type:
-          - string
-          - 'null'
-          description: Tax rate code for the item. `null` for untaxed amounts.
-        NetValue:
-          type: number
-          description: The net value that the tax is calculated from.
-          format: double
-        TaxValue:
-          type: number
-          description: The value of the tax.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxBreakdownItem
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    TaxBreakdown:
-      title: Tax breakdown
-      required:
-      - Items
-      type: object
-      properties:
-        Items:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxBreakdownItem'
-          description: Tax breakdown items per each tax rate applied.
-      additionalProperties: false
-      x-schema-id: TaxBreakdown
-    Amount:
-      title: Amount
-      required:
-      - Breakdown
-      - Currency
-      - GrossValue
-      - NetValue
-      - TaxValues
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
-          format: currency
-        NetValue:
-          type: number
-          description: Net value without taxes.
-          format: double
-        GrossValue:
-          type: number
-          description: Gross value including all taxes.
-          format: double
-        TaxValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxValue'
-          description: The tax values applied.
-        Breakdown:
-          title: Tax breakdown
-          allOf:
-          - $ref: '#/components/schemas/TaxBreakdown'
-          description: Information about individual tax amounts.
-      additionalProperties: false
-      description: ''
-      x-schema-id: Amount
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     OutletBill:
       title: Outlet bill
       required:
@@ -467,91 +502,56 @@ components:
       - Payment
       type: string
       description: Type of the outlet item.
-    OutletItem:
-      title: Outlet item
-      required:
-      - BillId
-      - ConsumedUtc
-      - CreatedUtc
-      - EnterpriseId
-      - Id
-      - Type
-      - UnitAmount
-      - UnitCount
-      - UpdatedUtc
+    TimeFilterInterval:
+      title: Time interval
       type: object
       properties:
-        Id:
-          type: string
-          description: Unique identifier of the item.
-          format: uuid
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/enterprises/#enterprise).
-          format: uuid
-        BillId:
-          type: string
-          description: Unique identifier of the [Outlet bill](https://mews-systems.gitbook.io/connector-api/operations/#outlet-bill) the item belongs to.
-          format: uuid
-        AccountingCategoryId:
+        StartUtc:
           type:
           - string
           - 'null'
-          description: Unique identifier of the [Accounting category](https://mews-systems.gitbook.io/connector-api/operations/accountingcategories/#accounting-category) the item belongs to.
-          format: uuid
-        Type:
-          $ref: '#/components/schemas/OutletItemType'
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Name of the item.
-        UnitCount:
-          type: integer
-          description: Unit count of the item.
-          format: int32
-        UnitAmount:
-          title: Amount
-          allOf:
-          - $ref: '#/components/schemas/Amount'
-          description: Unit amount of the item.
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Date and time of the item creation in UTC timezone in ISO 8601 format.
           format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the item in UTC timezone in ISO 8601 format.
+        EndUtc:
+          type:
+          - string
+          - 'null'
           format: date-time
-        ConsumedUtc:
-          minLength: 1
-          type: string
-          description: Date and time of the item consumption in UTC timezone in ISO 8601 format.
-          format: date-time
-        ExternalIdentifier:
-          type:
-          - string
-          - 'null'
-          description: An identifier of this item from another system.
-        Notes:
-          type:
-          - string
-          - 'null'
-          description: Additional notes.
-        PaymentCardPaymentId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the payment card `Payment` this item is linked to. This is only applicable to items where `Type` is `Payment`.
-          format: uuid
-        UnitCost:
-          title: Currency value (ver 2018-06-07)
-          allOf:
-          - $ref: '#/components/schemas/CurrencyValueOld'
-          description: Total price of the reservation.
-          deprecated: true
-          x-deprecatedMessage: Use `UnitAmount` instead.
       additionalProperties: false
-      x-schema-id: OutletItem
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount

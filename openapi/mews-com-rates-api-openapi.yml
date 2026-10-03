@@ -718,22 +718,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    RateAddPricingDataParameters:
-      title: Rate add pricing data parameters
-      type: object
-      properties:
-        BaseRatePricing:
-          title: Base rate pricing parameters (with occupancy adjustments)
-          allOf:
-          - $ref: '#/components/schemas/BaseRatePricingParametersWithOccupancyAdjustments'
-          description: 'Additional data for rates with base rate pricing. Used when `PricingType` is `BaseRatePricing`. Defaults are applied if not specified: amount is set to 10000 in default Enterprise''s currency and with its default accommodation tax rate code.'
-        DependentRatePricing:
-          title: Dependent rate pricing parameters
-          allOf:
-          - $ref: '#/components/schemas/DependentRatePricingParameters'
-          description: Additional data for rate with dependent rate pricing. Required when `PricingType` is `DependentRatePricing`.
-      additionalProperties: false
-      x-schema-id: RateAddPricingDataParameters
     TaxBreakdownItem:
       title: Tax breakdown item
       required:
@@ -756,6 +740,398 @@ components:
           format: double
       additionalProperties: false
       x-schema-id: TaxBreakdownItem
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue
+    AmountParameters:
+      title: Amount parameters
+      required:
+      - Currency
+      - TaxCodes
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        TaxCodes:
+          type: array
+          items:
+            type: string
+        NetValue:
+          type:
+          - number
+          - 'null'
+          format: double
+        GrossValue:
+          type:
+          - number
+          - 'null'
+          format: double
+      additionalProperties: false
+      description: Price of the product that overrides the price defined in Mews.
+      x-schema-id: AmountParameters
+    RatePricing:
+      title: Rate pricing
+      required:
+      - AgeCategoryAdjustments
+      - BaseAmountPrices
+      - BasePrices
+      - CategoryAdjustments
+      - CategoryPrices
+      - Currency
+      - TimeUnitStartsUtc
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+        DatesUtc:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          deprecated: true
+          x-deprecatedMessage: Use `TimeUnitStartsUtc` instead.
+        TimeUnitStartsUtc:
+          type: array
+          items:
+            type: string
+          description: Set of all time units covered by the time interval; expressed in UTC timezone ISO 8601 format.
+        BasePrices:
+          type: array
+          items:
+            type: number
+            format: double
+          deprecated: true
+          x-deprecatedMessage: Use `BaseAmountPrices` instead.
+        BaseAmountPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Amount'
+          description: Base prices of the rates for each time unit covered by the time interval.
+        CategoryPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryPricing'
+          description: Resource category prices.
+        CategoryAdjustments:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryAdjustment'
+          description: Resource category adjustments.
+        AgeCategoryAdjustments:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgeCategoryAdjustment'
+          description: Assigns different pricing or occupancy based on the guest's age.
+        RelativeAdjustment:
+          type: number
+          description: Specific amount which shows the difference between this rate and the base rate.
+          format: double
+        AbsoluteAdjustment:
+          type: number
+          description: Relative amount which shows the difference between this rate and the base rate.
+          format: double
+        EmptyUnitAdjustment:
+          type: number
+          description: Price adjustment for when the resource booked with this rate is not full to capacity.
+          format: double
+        ExtraUnitAdjustment:
+          type: number
+          description: Price adjustment for when the resource booked with this rate exceeds capacity.
+          format: double
+      additionalProperties: false
+      x-schema-id: RatePricing
+    RateGroupOld:
+      title: Rate group (ver 2017-04-12)
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the rate group.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of the Service that the rate group belongs to.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the rate group is still active.
+        Name:
+          type:
+          - string
+          - 'null'
+          description: Name of the rate group.
+        ExternalIdentifier:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: External identifier of the rate group.
+      additionalProperties: false
+      x-schema-id: RateGroupOld
+    RateAddData:
+      title: Rate parameters
+      required:
+      - Names
+      - PricingType
+      - RateGroupId
+      - ServiceId
+      type: object
+      properties:
+        ServiceId:
+          minLength: 1
+          type: string
+          description: Unique identifier of the service.
+          x-schema-id: HybridIdentifier
+        RateGroupId:
+          minLength: 1
+          type: string
+          description: Unique identifier of the rate group under which rate is assigned.
+          x-schema-id: HybridIdentifier
+        IsEnabled:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the rate is available to customers. `false` will be used as a default when not provided.
+        Type:
+          title: Rate Add Type
+          allOf:
+          - $ref: '#/components/schemas/RateAddTypeEnum'
+          description: 'Type of the rate.
+
+
+            Public
+
+
+            Private'
+          x-enumNames:
+          - Public
+          - Private
+          x-enumDescriptions:
+          - ''
+          - ''
+        AccountingCategoryId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the accounting category the rate belongs to.
+          format: uuid
+        BusinessSegmentId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the business segment.
+          format: uuid
+        Names:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the name of the rate.
+          x-schema-id: LocalizedStrings
+        ShortNames:
+          title: Localized text
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: All translations of the short name of the rate.
+          x-schema-id: LocalizedStrings
+        ExternalNames:
+          title: Localized text
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: All translations of the external name of the rate.
+          x-schema-id: LocalizedStrings
+        Descriptions:
+          title: Localized text
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: All translations of the description.
+          x-schema-id: LocalizedStrings
+        PricingType:
+          title: Rate pricing discriminator
+          allOf:
+          - $ref: '#/components/schemas/RatePricingDiscriminatorEnum'
+          description: 'Discriminator in which field inside `Pricing` contains additional data.
+
+
+            BaseRatePricing
+
+
+            DependentRatePricing'
+          x-enumNames:
+          - BaseRatePricing
+          - DependentRatePricing
+          x-enumDescriptions:
+          - ''
+          - ''
+        ExternalIdentifier:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: Identifier of the rate from external system.
+        Pricing:
+          title: Rate add pricing data parameters
+          allOf:
+          - $ref: '#/components/schemas/RateAddPricingDataParameters'
+          description: Contains additional data about pricing of the rate.
+      additionalProperties: false
+      x-schema-id: RateAddData
+    MultipleRateCapacityOffsetUpdateParameters:
+      title: MultipleRateCapacityOffsetUpdateParameters
+      required:
+      - AccessToken
+      - CapacityOffsetUpdates
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        CapacityOffsetUpdates:
+          maxItems: 50
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/RateCapacityOffsetUpdateParameters'
+          description: A list of rate capacity offset updates to apply.
+      additionalProperties: false
+      description: Parameters for updating rate capacity offsets in an enterprise.
+      x-schema-id: MultipleRateCapacityOffsetUpdateParameters
+    RatePriceUpdate:
+      title: Rate price update
+      type: object
+      properties:
+        CategoryId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the Resource category whose prices to update. If not specified, base price is updated.
+          format: uuid
+        Value:
+          type:
+          - number
+          - 'null'
+          description: New value of the rate on the interval. If not specified, removes all adjustments within the interval.
+          format: double
+        FirstTimeUnitStartUtc:
+          type:
+          - string
+          - 'null'
+          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format.
+          format: date-time
+        LastTimeUnitStartUtc:
+          type:
+          - string
+          - 'null'
+          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s time unit: 367 hours if hours, 367 days if days, or 24 months if months.'
+          format: date-time
+      additionalProperties: false
+      x-schema-id: RatePriceUpdate
+    TaxExemptionReasonTypeEnum:
+      title: Tax exemption reason type
+      enum:
+      - Unknown
+      - IT_N1
+      - IT_N2_2
+      - IT_N3_5
+      - IT_N4
+      - IT_N5
+      - PL_ZW
+      - PL_NP
+      - DE_NATO
+      type: string
+      description: '
+
+
+        Unknown (Unknown tax exemption reason)
+
+
+        IT_N1 (N1 - Escluse ex art.15)
+
+
+        IT_N2_2 (N2.2 - Non soggette – altri casi)
+
+
+        IT_N3_5 (N3.5 - Non imponibili – a seguito di dichiarazioni d’intento)
+
+
+        IT_N4 (N4 - Esenti)
+
+
+        IT_N5 (N5 - Regime del margine / IVA non esposta in fattura)
+
+
+        PL_ZW (ZW - Zwolniony)
+
+
+        PL_NP (NP - Nie podlega)
+
+
+        DE_NATO (NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen)'
+      x-enumNames:
+      - Unknown
+      - IT_N1
+      - IT_N2_2
+      - IT_N3_5
+      - IT_N4
+      - IT_N5
+      - PL_ZW
+      - PL_NP
+      - DE_NATO
+      x-enumDescriptions:
+      - Unknown tax exemption reason
+      - N1 - Escluse ex art.15
+      - N2.2 - Non soggette – altri casi
+      - N3.5 - Non imponibili – a seguito di dichiarazioni d’intento
+      - N4 - Esenti
+      - N5 - Regime del margine / IVA non esposta in fattura
+      - ZW - Zwolniony
+      - NP - Nie podlega
+      - NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen
     TimeFilterInterval:
       title: Time interval
       type: object
@@ -773,6 +1149,1013 @@ components:
       additionalProperties: false
       description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
       x-schema-id: TimeFilterInterval
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount
+    AgeCategoryAdjustment:
+      title: Age category adjustment
+      required:
+      - AbsoluteValue
+      - AgeCategoryId
+      - Type
+      type: object
+      properties:
+        AgeCategoryId:
+          type: string
+          description: Unique identifier of the age category.
+          format: uuid
+        AbsoluteValue:
+          type: number
+          description: Absolute value of the adjustment (e.g. `50` represents 50 EUR in case the rate currency is `EUR`).
+          format: double
+        Type:
+          title: Age category adjustment type
+          allOf:
+          - $ref: '#/components/schemas/AgeCategoryAdjustmentTypeEnum'
+          description: 'Age category adjustment type
+
+
+            ExtraOccupancyAdjustment
+
+
+            NegativeOccupancyAdjustment
+
+
+            StandardOccupancyAdjustment'
+          x-enumNames:
+          - ExtraOccupancyAdjustment
+          - NegativeOccupancyAdjustment
+          - StandardOccupancyAdjustment
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+      additionalProperties: false
+      x-schema-id: AgeCategoryAdjustment
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    RateExtent:
+      title: Rate extent
+      type: object
+      properties:
+        Rates:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain rates.
+        RateGroups:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain rate groups.
+          deprecated: true
+          x-deprecatedMessage: Use `rateGroups/getAll`
+        AvailabilityBlockAssignments:
+          type: boolean
+          description: Whether the response should contain availability block assignments.
+      additionalProperties: false
+      description: Extent of data to be returned.
+      x-schema-id: RateExtent
+    AgeCategoryAdjustmentTypeEnum:
+      title: Age category adjustment type
+      enum:
+      - ExtraOccupancyAdjustment
+      - NegativeOccupancyAdjustment
+      - StandardOccupancyAdjustment
+      type: string
+      description: '
+
+
+        ExtraOccupancyAdjustment
+
+
+        NegativeOccupancyAdjustment
+
+
+        StandardOccupancyAdjustment'
+      x-enumNames:
+      - ExtraOccupancyAdjustment
+      - NegativeOccupancyAdjustment
+      - StandardOccupancyAdjustment
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    RateTypeEnum:
+      title: Rate type
+      enum:
+      - Public
+      - Private
+      - AvailabilityBlock
+      type: string
+      description: '
+
+
+        Public
+
+
+        Private
+
+
+        AvailabilityBlock'
+      x-enumNames:
+      - Public
+      - Private
+      - AvailabilityBlock
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+    Unit:
+      type: object
+      additionalProperties: false
+    BaseRatePricingParametersWithOccupancyAdjustments:
+      title: Base rate pricing parameters (with occupancy adjustments)
+      required:
+      - Amount
+      type: object
+      properties:
+        Amount:
+          title: Amount parameters
+          allOf:
+          - $ref: '#/components/schemas/AmountParameters'
+          description: Price of the product that overrides the price defined in Mews.
+        NegativeOccupancyAdjustment:
+          type: number
+          description: This is the amount added to the price when occupancy of the space is less than the Space Category Capacity. To provide a discount price for under-occupancy, simply use a negative value.
+          format: double
+        ExtraOccupancyAdjustment:
+          type: number
+          description: This is the amount added to the price when the Space Category Capacity is exceeded.
+          format: double
+      additionalProperties: false
+      x-schema-id: BaseRatePricingParametersWithOccupancyAdjustments
+    RateDeleteParameters:
+      title: RateDeleteParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - RateIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        RateIds:
+          maxItems: 10
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: Unique identifiers of the rates to be deleted.
+          x-schema-id: HybridIdentifier
+      additionalProperties: false
+      x-schema-id: RateDeleteParameters
+    RateAddTypeEnum:
+      title: Rate Add Type
+      enum:
+      - Public
+      - Private
+      type: string
+      description: '
+
+
+        Public
+
+
+        Private'
+      x-enumNames:
+      - Public
+      - Private
+      x-enumDescriptions:
+      - ''
+      - ''
+    RateRestrictionResult:
+      title: Rate restriction result
+      required:
+      - DateRestrictions
+      - EarlinessRestrictions
+      - LengthRestrictions
+      type: object
+      properties:
+        DateRestrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DateRestriction'
+          description: Date restrictions for the rate.
+        EarlinessRestrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/EarlinessRestriction'
+          description: Earliness restrictions for the rates that are only available up to before arrival.
+        LengthRestrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LengthRestriction'
+          description: Length restrictions for the rate.
+      additionalProperties: false
+      x-schema-id: RateRestrictionResult
+    RateAddPricingDataParameters:
+      title: Rate add pricing data parameters
+      type: object
+      properties:
+        BaseRatePricing:
+          title: Base rate pricing parameters (with occupancy adjustments)
+          allOf:
+          - $ref: '#/components/schemas/BaseRatePricingParametersWithOccupancyAdjustments'
+          description: 'Additional data for rates with base rate pricing. Used when `PricingType` is `BaseRatePricing`. Defaults are applied if not specified: amount is set to 10000 in default Enterprise''s currency and with its default accommodation tax rate code.'
+        DependentRatePricing:
+          title: Dependent rate pricing parameters
+          allOf:
+          - $ref: '#/components/schemas/DependentRatePricingParameters'
+          description: Additional data for rate with dependent rate pricing. Required when `PricingType` is `DependentRatePricing`.
+      additionalProperties: false
+      x-schema-id: RateAddPricingDataParameters
+    RateSetResult:
+      title: Rate set result
+      type: object
+      properties:
+        Rates:
+          maxItems: 1000
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Rate'
+          description: Rates that were added or updated.
+      additionalProperties: false
+      x-schema-id: RateSetResult
+    RatePricingDiscriminatorEnum:
+      title: Rate pricing discriminator
+      enum:
+      - BaseRatePricing
+      - DependentRatePricing
+      type: string
+      description: '
+
+
+        BaseRatePricing
+
+
+        DependentRatePricing'
+      x-enumNames:
+      - BaseRatePricing
+      - DependentRatePricing
+      x-enumDescriptions:
+      - ''
+      - ''
+    DateRestriction:
+      title: Date restriction
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the rate restriction.
+          format: uuid
+        RateId:
+          type: string
+          description: Unique identifier of the rate.
+          format: uuid
+        IsInherited:
+          type: boolean
+          description: Whether the rate restriction is inherited from the parent rate.
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          description: Start of the rate restriction in UTC timezone in ISO 8601 format.
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          description: End of the rate restriction in UTC timezone in ISO 8601 format.
+        Days:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The restricted days of week.
+        ExternalIdentifier:
+          type:
+          - string
+          - 'null'
+          description: Identifiers of from external systems.
+      additionalProperties: false
+      x-schema-id: DateRestriction
+    RateSetData:
+      title: Set rate parameters
+      required:
+      - Names
+      - PricingType
+      - ServiceId
+      - Type
+      type: object
+      properties:
+        Id:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the rate. If it matches an existing rate, that rate will be updated. If no match is found, an error will be returned.
+          format: uuid
+        ExternalIdentifier:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the rate in the external system. If `Id` is not provided and `ExternalIdentifier` matches an existing rate, the corresponding rate will be updated. If no match is found, a new rate will be created.
+        ServiceId:
+          minLength: 1
+          type: string
+          description: Unique identifier of the service. Ignored in case of updating an existing rate.
+          x-schema-id: HybridIdentifier
+        RateGroupId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the rate group under which rate is assigned. Empty value means that rate is added to a default group or the current group is kept for update, respectively.
+          x-schema-id: HybridIdentifier
+        IsEnabled:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the rate is available to customers. `true` will be used as a default if not provided.
+        Type:
+          title: Rate Add Type
+          allOf:
+          - $ref: '#/components/schemas/RateAddTypeEnum'
+          description: 'Type of the rate. `Private` will be used as a default if not provided.
+
+
+            Public
+
+
+            Private'
+        Names:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the name of the rate.
+          x-schema-id: LocalizedStrings
+        Descriptions:
+          title: Localized text
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          description: All translations of the description.
+          x-schema-id: LocalizedStrings
+        PricingType:
+          title: Rate pricing discriminator
+          allOf:
+          - $ref: '#/components/schemas/RatePricingDiscriminatorEnum'
+          description: 'Rate pricing type. Must match existing pricing type in case of update.
+
+
+            BaseRatePricing
+
+
+            DependentRatePricing'
+          x-enumNames:
+          - BaseRatePricing
+          - DependentRatePricing
+          x-enumDescriptions:
+          - ''
+          - ''
+        Pricing:
+          title: Rate set pricing data parameters
+          allOf:
+          - $ref: '#/components/schemas/RateSetPricingDataParameters'
+          description: Contains additional data about pricing of the rate.
+      additionalProperties: false
+      x-schema-id: RateSetData
+    RatePriceUpdateParameters:
+      title: Rate price update parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - PriceUpdates
+      - RateId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        RateId:
+          minLength: 1
+          type: string
+          description: Unique identifier of the `Rate`.
+          x-schema-id: HybridIdentifier
+        ProductId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `Product`.
+          format: uuid
+        PriceUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/RatePriceUpdate'
+          description: Price adjustments for specific time intervals.
+      additionalProperties: false
+      x-schema-id: RatePriceUpdateParameters
+    CategoryAdjustment:
+      title: Resource category adjustment
+      required:
+      - AbsoluteValue
+      - CategoryId
+      - RelativeValue
+      type: object
+      properties:
+        CategoryId:
+          type: string
+          description: Unique identifier of the adjustment category.
+          format: uuid
+        ParentCategoryId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the parent category that serves as a base price for the current category.
+          format: uuid
+        AbsoluteValue:
+          type: number
+          description: Absolute value of the adjustment (e.g. `50` represents 50 EUR in case the rate currency is `EUR`).
+          format: double
+        RelativeValue:
+          type: number
+          description: Relative value of the adjustment (e.g. `0.5` represents 50% increase).
+          format: double
+      additionalProperties: false
+      x-schema-id: CategoryAdjustment
+    EarlinessRestriction:
+      title: Earliness restriction
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the rate restriction.
+          format: uuid
+        RateId:
+          type: string
+          description: Unique identifier of the rate.
+          format: uuid
+        IsInherited:
+          type: boolean
+          description: Whether the rate restriction is inherited from the parent rate.
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          description: Start of the rate restriction in UTC timezone in ISO 8601 format.
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          description: End of the rate restriction in UTC timezone in ISO 8601 format.
+        Days:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The restricted days of week.
+        ExternalIdentifier:
+          type:
+          - string
+          - 'null'
+          description: Identifiers of from external systems.
+        MinAdvance:
+          type:
+          - string
+          - 'null'
+          description: The minimum time before the reservation starts, you can reserve in ISO 8601 duration format.
+        MaxAdvance:
+          type:
+          - string
+          - 'null'
+          description: The maximum time before the reservation starts, you can reserve in ISO 8601 duration format.
+      additionalProperties: false
+      x-schema-id: EarlinessRestriction
+    CategoryPricing:
+      title: Resource category pricing
+      required:
+      - AmountPrices
+      - CategoryId
+      - Prices
+      type: object
+      properties:
+        CategoryId:
+          type: string
+          description: Unique identifier of the category.
+          format: uuid
+        Prices:
+          type: array
+          items:
+            type: number
+            format: double
+          description: Prices of the rate for the resource category in the covered dates.
+          deprecated: true
+          x-deprecatedMessage: Use `AmountPrices` instead.
+        AmountPrices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Amount'
+          description: Prices of the rate for the resource category in the covered dates.
+      additionalProperties: false
+      x-schema-id: CategoryPricing
+    RateAddParameters:
+      title: Rate add parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Rates
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        Rates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/RateAddData'
+          description: Information about rates to be created.
+      additionalProperties: false
+      x-schema-id: RateAddParameters
+    LengthRestriction:
+      title: Length restriction
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the rate restriction.
+          format: uuid
+        RateId:
+          type: string
+          description: Unique identifier of the rate.
+          format: uuid
+        IsInherited:
+          type: boolean
+          description: Whether the rate restriction is inherited from the parent rate.
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          description: Start of the rate restriction in UTC timezone in ISO 8601 format.
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          description: End of the rate restriction in UTC timezone in ISO 8601 format.
+        Days:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: The restricted days of week.
+        ExternalIdentifier:
+          type:
+          - string
+          - 'null'
+          description: Identifiers of from external systems.
+        MinLength:
+          type:
+          - string
+          - 'null'
+          description: Minimal reservation length in ISO 8601 duration format.
+        MaxLength:
+          type:
+          - string
+          - 'null'
+          description: Maximal reservation length in ISO 8601 duration format.
+      additionalProperties: false
+      x-schema-id: LengthRestriction
+    RateSetPricingDataParameters:
+      title: Rate set pricing data parameters
+      type: object
+      properties:
+        BaseRatePricing:
+          title: Base rate pricing parameters (without occupancy adjustments)
+          allOf:
+          - $ref: '#/components/schemas/BaseRatePricingWithoutAdjustmentsParameters'
+          description: 'Additional data for rates with base rate pricing. Used when `PricingType` is `BaseRatePricing`. Defaults are applied if not specified: amount is set to 10000 in default Enterprise''s currency and with its default accommodation tax rate code.'
+        DependentRatePricing:
+          title: Dependent rate pricing parameters
+          allOf:
+          - $ref: '#/components/schemas/DependentRatePricingParameters'
+          description: Additional data for rate with dependent rate pricing. Required when `PricingType` is `DependentRatePricing`.
+      additionalProperties: false
+      x-schema-id: RateSetPricingDataParameters
+    RateCapacityOffsetUpdateParameters:
+      title: RateCapacityOffsetUpdateParameters
+      required:
+      - RateId
+      type: object
+      properties:
+        RateId:
+          type: string
+          description: The unique identifier of the `Rate` to update.
+          format: uuid
+        NegativeOccupancyAdjustment:
+          title: Decimal update value
+          allOf:
+          - $ref: '#/components/schemas/DecimalUpdateValue'
+          description: Amount added to the price when occupancy is less than the Space Category Capacity. Use a negative value to provide a discount for under-occupancy. Set to 'null' if not updated.
+        ExtraOccupancyAdjustment:
+          title: Decimal update value
+          allOf:
+          - $ref: '#/components/schemas/DecimalUpdateValue'
+          description: Amount added to the price when the Space Category Capacity is exceeded.
+      additionalProperties: false
+      x-schema-id: RateCapacityOffsetUpdateParameters
+    DecimalUpdateValue:
+      title: Decimal update value
+      type: object
+      properties:
+        Value:
+          type: number
+          description: Value which is to be updated.
+          format: double
+      additionalProperties: false
+      x-schema-id: DecimalUpdateValue
+    RateResult:
+      title: Rate result
+      required:
+      - RateGroups
+      - RateRestrictions
+      - Rates
+      type: object
+      properties:
+        Rates:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/Rate'
+          description: Rates of the default service.
+        RateGroups:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/RateGroupOld'
+          description: Rate groups of the default service.
+          deprecated: true
+          x-deprecatedMessage: Use [rateGroups/getAll](https://mews-systems.gitbook.io/connector-api/operations/rategroups#request).
+        RateRestrictions:
+          title: Rate restriction result
+          allOf:
+          - $ref: '#/components/schemas/RateRestrictionResult'
+          deprecated: true
+          x-deprecatedMessage: Use [restrictions/getAll](https://mews-systems.gitbook.io/connector-api/operations/restrictions#request).
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: RateResult
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    RateSetParameters:
+      title: Set rates parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Rates
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        Rates:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/RateSetData'
+          description: Rates to be added or updated.
+      additionalProperties: false
+      x-schema-id: RateSetParameters
+    TaxBreakdown:
+      title: Tax breakdown
+      required:
+      - Items
+      type: object
+      properties:
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxBreakdownItem'
+          description: Tax breakdown items per each tax rate applied.
+      additionalProperties: false
+      x-schema-id: TaxBreakdown
+    RateFilterParameters:
+      title: Rate filter parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ServiceIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        Extent:
+          title: Rate extent
+          allOf:
+          - $ref: '#/components/schemas/RateExtent'
+          description: Extent of data to be returned. If not specified, both `Rates` and `RateGroups` will be included.
+        RateIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the requested [Rates](https://mews-systems.gitbook.io/connector-api/operations/rates/#rate).
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which `Rate` was updated.
+          x-max-interval-in-months: 3
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Services](https://mews-systems.gitbook.io/connector-api/operations/services/#service) from which the rates are requested.
+        ExternalIdentifiers:
+          maxItems: 1000
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Identifiers of [Rate](https://mews-systems.gitbook.io/connector-api/operations/#rate) from external systems.
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted, or both types of record. If not specified, both active and deleted will be returned.
+      additionalProperties: false
+      x-schema-id: RateFilterParameters
+    DependentRatePricingParameters:
+      title: Dependent rate pricing parameters
+      required:
+      - BaseRateId
+      type: object
+      properties:
+        BaseRateId:
+          minLength: 1
+          type: string
+          description: Unique identifier of the base rate.
+          x-schema-id: HybridIdentifier
+        RelativeAdjustment:
+          type: number
+          description: Relative amount which shows the difference between this rate and the base rate.
+          format: double
+        AbsoluteAdjustment:
+          type: number
+          description: Specific amount which shows the difference between this rate and the base rate.
+          format: double
+      additionalProperties: false
+      x-schema-id: DependentRatePricingParameters
+    RatePricingFilterParameters:
+      title: Rate pricing filter parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - FirstTimeUnitStartUtc
+      - LastTimeUnitStartUtc
+      - RateId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        RateId:
+          type: string
+          description: Unique identifier of the `Rate`.
+          format: uuid
+        ProductId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `Product`.
+          format: uuid
+        FirstTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format.
+          format: date-time
+        LastTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s time unit: 367 hours if hours, 367 days if days, or 24 months if months.'
+          format: date-time
+      additionalProperties: false
+      x-schema-id: RatePricingFilterParameters
+    RateAddResult:
+      title: Rate add result
+      type: object
+      properties:
+        Rates:
+          maxItems: 1000
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Rate'
+          description: Rates that have been added.
+      additionalProperties: false
+      x-schema-id: RateAddResult
+    BaseRatePricingWithoutAdjustmentsParameters:
+      title: Base rate pricing parameters (without occupancy adjustments)
+      required:
+      - Amount
+      type: object
+      properties:
+        Amount:
+          title: Amount parameters
+          allOf:
+          - $ref: '#/components/schemas/AmountParameters'
+          description: Price of the product that overrides the price defined in Mews.
+      additionalProperties: false
+      x-schema-id: BaseRatePricingWithoutAdjustmentsParameters
     Rate:
       title: Rate
       required:
@@ -936,1386 +2319,3 @@ components:
           description: Legal reference that states why this rate is exempt from tax.
       additionalProperties: false
       x-schema-id: Rate
-    DateRestriction:
-      title: Date restriction
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the rate restriction.
-          format: uuid
-        RateId:
-          type: string
-          description: Unique identifier of the rate.
-          format: uuid
-        IsInherited:
-          type: boolean
-          description: Whether the rate restriction is inherited from the parent rate.
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          description: Start of the rate restriction in UTC timezone in ISO 8601 format.
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          description: End of the rate restriction in UTC timezone in ISO 8601 format.
-        Days:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: The restricted days of week.
-        ExternalIdentifier:
-          type:
-          - string
-          - 'null'
-          description: Identifiers of from external systems.
-      additionalProperties: false
-      x-schema-id: DateRestriction
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    Amount:
-      title: Amount
-      required:
-      - Breakdown
-      - Currency
-      - GrossValue
-      - NetValue
-      - TaxValues
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
-          format: currency
-        NetValue:
-          type: number
-          description: Net value without taxes.
-          format: double
-        GrossValue:
-          type: number
-          description: Gross value including all taxes.
-          format: double
-        TaxValues:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxValue'
-          description: The tax values applied.
-        Breakdown:
-          title: Tax breakdown
-          allOf:
-          - $ref: '#/components/schemas/TaxBreakdown'
-          description: Information about individual tax amounts.
-      additionalProperties: false
-      description: ''
-      x-schema-id: Amount
-    RateExtent:
-      title: Rate extent
-      type: object
-      properties:
-        Rates:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain rates.
-        RateGroups:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain rate groups.
-          deprecated: true
-          x-deprecatedMessage: Use `rateGroups/getAll`
-        AvailabilityBlockAssignments:
-          type: boolean
-          description: Whether the response should contain availability block assignments.
-      additionalProperties: false
-      description: Extent of data to be returned.
-      x-schema-id: RateExtent
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
-          format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    ActivityStates:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: Activity states used for filtering.
-    RateAddResult:
-      title: Rate add result
-      type: object
-      properties:
-        Rates:
-          maxItems: 1000
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Rate'
-          description: Rates that have been added.
-      additionalProperties: false
-      x-schema-id: RateAddResult
-    RateGroupOld:
-      title: Rate group (ver 2017-04-12)
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the rate group.
-          format: uuid
-        ServiceId:
-          type: string
-          description: Unique identifier of the Service that the rate group belongs to.
-          format: uuid
-        IsActive:
-          type: boolean
-          description: Whether the rate group is still active.
-        Name:
-          type:
-          - string
-          - 'null'
-          description: Name of the rate group.
-        ExternalIdentifier:
-          maxLength: 255
-          type:
-          - string
-          - 'null'
-          description: External identifier of the rate group.
-      additionalProperties: false
-      x-schema-id: RateGroupOld
-    RateFilterParameters:
-      title: Rate filter parameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      - ServiceIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        Extent:
-          title: Rate extent
-          allOf:
-          - $ref: '#/components/schemas/RateExtent'
-          description: Extent of data to be returned. If not specified, both `Rates` and `RateGroups` will be included.
-        RateIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the requested [Rates](https://mews-systems.gitbook.io/connector-api/operations/rates/#rate).
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which `Rate` was updated.
-          x-max-interval-in-months: 3
-        ServiceIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the [Services](https://mews-systems.gitbook.io/connector-api/operations/services/#service) from which the rates are requested.
-        ExternalIdentifiers:
-          maxItems: 1000
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Identifiers of [Rate](https://mews-systems.gitbook.io/connector-api/operations/#rate) from external systems.
-        ActivityStates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted, or both types of record. If not specified, both active and deleted will be returned.
-      additionalProperties: false
-      x-schema-id: RateFilterParameters
-    TaxValue:
-      title: Tax value
-      required:
-      - Value
-      type: object
-      properties:
-        Code:
-          type:
-          - string
-          - 'null'
-          description: Code corresponding to tax type.
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
-      additionalProperties: false
-      x-schema-id: TaxValue
-    RateRestrictionResult:
-      title: Rate restriction result
-      required:
-      - DateRestrictions
-      - EarlinessRestrictions
-      - LengthRestrictions
-      type: object
-      properties:
-        DateRestrictions:
-          type: array
-          items:
-            $ref: '#/components/schemas/DateRestriction'
-          description: Date restrictions for the rate.
-        EarlinessRestrictions:
-          type: array
-          items:
-            $ref: '#/components/schemas/EarlinessRestriction'
-          description: Earliness restrictions for the rates that are only available up to before arrival.
-        LengthRestrictions:
-          type: array
-          items:
-            $ref: '#/components/schemas/LengthRestriction'
-          description: Length restrictions for the rate.
-      additionalProperties: false
-      x-schema-id: RateRestrictionResult
-    AmountParameters:
-      title: Amount parameters
-      required:
-      - Currency
-      - TaxCodes
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          format: currency
-        TaxCodes:
-          type: array
-          items:
-            type: string
-        NetValue:
-          type:
-          - number
-          - 'null'
-          format: double
-        GrossValue:
-          type:
-          - number
-          - 'null'
-          format: double
-      additionalProperties: false
-      description: Price of the product that overrides the price defined in Mews.
-      x-schema-id: AmountParameters
-    RateAddData:
-      title: Rate parameters
-      required:
-      - Names
-      - PricingType
-      - RateGroupId
-      - ServiceId
-      type: object
-      properties:
-        ServiceId:
-          minLength: 1
-          type: string
-          description: Unique identifier of the service.
-          x-schema-id: HybridIdentifier
-        RateGroupId:
-          minLength: 1
-          type: string
-          description: Unique identifier of the rate group under which rate is assigned.
-          x-schema-id: HybridIdentifier
-        IsEnabled:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the rate is available to customers. `false` will be used as a default when not provided.
-        Type:
-          title: Rate Add Type
-          allOf:
-          - $ref: '#/components/schemas/RateAddTypeEnum'
-          description: 'Type of the rate.
-
-
-            Public
-
-
-            Private'
-          x-enumNames:
-          - Public
-          - Private
-          x-enumDescriptions:
-          - ''
-          - ''
-        AccountingCategoryId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the accounting category the rate belongs to.
-          format: uuid
-        BusinessSegmentId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the business segment.
-          format: uuid
-        Names:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of the name of the rate.
-          x-schema-id: LocalizedStrings
-        ShortNames:
-          title: Localized text
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: string
-          description: All translations of the short name of the rate.
-          x-schema-id: LocalizedStrings
-        ExternalNames:
-          title: Localized text
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: string
-          description: All translations of the external name of the rate.
-          x-schema-id: LocalizedStrings
-        Descriptions:
-          title: Localized text
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: string
-          description: All translations of the description.
-          x-schema-id: LocalizedStrings
-        PricingType:
-          title: Rate pricing discriminator
-          allOf:
-          - $ref: '#/components/schemas/RatePricingDiscriminatorEnum'
-          description: 'Discriminator in which field inside `Pricing` contains additional data.
-
-
-            BaseRatePricing
-
-
-            DependentRatePricing'
-          x-enumNames:
-          - BaseRatePricing
-          - DependentRatePricing
-          x-enumDescriptions:
-          - ''
-          - ''
-        ExternalIdentifier:
-          maxLength: 255
-          type:
-          - string
-          - 'null'
-          description: Identifier of the rate from external system.
-        Pricing:
-          title: Rate add pricing data parameters
-          allOf:
-          - $ref: '#/components/schemas/RateAddPricingDataParameters'
-          description: Contains additional data about pricing of the rate.
-      additionalProperties: false
-      x-schema-id: RateAddData
-    RatePricingFilterParameters:
-      title: Rate pricing filter parameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - FirstTimeUnitStartUtc
-      - LastTimeUnitStartUtc
-      - RateId
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        RateId:
-          type: string
-          description: Unique identifier of the `Rate`.
-          format: uuid
-        ProductId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the `Product`.
-          format: uuid
-        FirstTimeUnitStartUtc:
-          minLength: 1
-          type: string
-          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format.
-          format: date-time
-        LastTimeUnitStartUtc:
-          minLength: 1
-          type: string
-          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s time unit: 367 hours if hours, 367 days if days, or 24 months if months.'
-          format: date-time
-      additionalProperties: false
-      x-schema-id: RatePricingFilterParameters
-    RateDeleteParameters:
-      title: RateDeleteParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - RateIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        RateIds:
-          maxItems: 10
-          minItems: 1
-          type: array
-          items:
-            type: string
-          description: Unique identifiers of the rates to be deleted.
-          x-schema-id: HybridIdentifier
-      additionalProperties: false
-      x-schema-id: RateDeleteParameters
-    MultipleRateCapacityOffsetUpdateParameters:
-      title: MultipleRateCapacityOffsetUpdateParameters
-      required:
-      - AccessToken
-      - CapacityOffsetUpdates
-      - Client
-      - ClientToken
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        CapacityOffsetUpdates:
-          maxItems: 50
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/RateCapacityOffsetUpdateParameters'
-          description: A list of rate capacity offset updates to apply.
-      additionalProperties: false
-      description: Parameters for updating rate capacity offsets in an enterprise.
-      x-schema-id: MultipleRateCapacityOffsetUpdateParameters
-    RateTypeEnum:
-      title: Rate type
-      enum:
-      - Public
-      - Private
-      - AvailabilityBlock
-      type: string
-      description: '
-
-
-        Public
-
-
-        Private
-
-
-        AvailabilityBlock'
-      x-enumNames:
-      - Public
-      - Private
-      - AvailabilityBlock
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-    AgeCategoryAdjustmentTypeEnum:
-      title: Age category adjustment type
-      enum:
-      - ExtraOccupancyAdjustment
-      - NegativeOccupancyAdjustment
-      - StandardOccupancyAdjustment
-      type: string
-      description: '
-
-
-        ExtraOccupancyAdjustment
-
-
-        NegativeOccupancyAdjustment
-
-
-        StandardOccupancyAdjustment'
-      x-enumNames:
-      - ExtraOccupancyAdjustment
-      - NegativeOccupancyAdjustment
-      - StandardOccupancyAdjustment
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-    BaseRatePricingParametersWithOccupancyAdjustments:
-      title: Base rate pricing parameters (with occupancy adjustments)
-      required:
-      - Amount
-      type: object
-      properties:
-        Amount:
-          title: Amount parameters
-          allOf:
-          - $ref: '#/components/schemas/AmountParameters'
-          description: Price of the product that overrides the price defined in Mews.
-        NegativeOccupancyAdjustment:
-          type: number
-          description: This is the amount added to the price when occupancy of the space is less than the Space Category Capacity. To provide a discount price for under-occupancy, simply use a negative value.
-          format: double
-        ExtraOccupancyAdjustment:
-          type: number
-          description: This is the amount added to the price when the Space Category Capacity is exceeded.
-          format: double
-      additionalProperties: false
-      x-schema-id: BaseRatePricingParametersWithOccupancyAdjustments
-    RateResult:
-      title: Rate result
-      required:
-      - RateGroups
-      - RateRestrictions
-      - Rates
-      type: object
-      properties:
-        Rates:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/Rate'
-          description: Rates of the default service.
-        RateGroups:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/RateGroupOld'
-          description: Rate groups of the default service.
-          deprecated: true
-          x-deprecatedMessage: Use [rateGroups/getAll](https://mews-systems.gitbook.io/connector-api/operations/rategroups#request).
-        RateRestrictions:
-          title: Rate restriction result
-          allOf:
-          - $ref: '#/components/schemas/RateRestrictionResult'
-          deprecated: true
-          x-deprecatedMessage: Use [restrictions/getAll](https://mews-systems.gitbook.io/connector-api/operations/restrictions#request).
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: RateResult
-    RateSetPricingDataParameters:
-      title: Rate set pricing data parameters
-      type: object
-      properties:
-        BaseRatePricing:
-          title: Base rate pricing parameters (without occupancy adjustments)
-          allOf:
-          - $ref: '#/components/schemas/BaseRatePricingWithoutAdjustmentsParameters'
-          description: 'Additional data for rates with base rate pricing. Used when `PricingType` is `BaseRatePricing`. Defaults are applied if not specified: amount is set to 10000 in default Enterprise''s currency and with its default accommodation tax rate code.'
-        DependentRatePricing:
-          title: Dependent rate pricing parameters
-          allOf:
-          - $ref: '#/components/schemas/DependentRatePricingParameters'
-          description: Additional data for rate with dependent rate pricing. Required when `PricingType` is `DependentRatePricing`.
-      additionalProperties: false
-      x-schema-id: RateSetPricingDataParameters
-    RateAddTypeEnum:
-      title: Rate Add Type
-      enum:
-      - Public
-      - Private
-      type: string
-      description: '
-
-
-        Public
-
-
-        Private'
-      x-enumNames:
-      - Public
-      - Private
-      x-enumDescriptions:
-      - ''
-      - ''
-    RatePriceUpdateParameters:
-      title: Rate price update parameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - PriceUpdates
-      - RateId
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        RateId:
-          minLength: 1
-          type: string
-          description: Unique identifier of the `Rate`.
-          x-schema-id: HybridIdentifier
-        ProductId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the `Product`.
-          format: uuid
-        PriceUpdates:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/RatePriceUpdate'
-          description: Price adjustments for specific time intervals.
-      additionalProperties: false
-      x-schema-id: RatePriceUpdateParameters
-    RateCapacityOffsetUpdateParameters:
-      title: RateCapacityOffsetUpdateParameters
-      required:
-      - RateId
-      type: object
-      properties:
-        RateId:
-          type: string
-          description: The unique identifier of the `Rate` to update.
-          format: uuid
-        NegativeOccupancyAdjustment:
-          title: Decimal update value
-          allOf:
-          - $ref: '#/components/schemas/DecimalUpdateValue'
-          description: Amount added to the price when occupancy is less than the Space Category Capacity. Use a negative value to provide a discount for under-occupancy. Set to 'null' if not updated.
-        ExtraOccupancyAdjustment:
-          title: Decimal update value
-          allOf:
-          - $ref: '#/components/schemas/DecimalUpdateValue'
-          description: Amount added to the price when the Space Category Capacity is exceeded.
-      additionalProperties: false
-      x-schema-id: RateCapacityOffsetUpdateParameters
-    RatePriceUpdate:
-      title: Rate price update
-      type: object
-      properties:
-        CategoryId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the Resource category whose prices to update. If not specified, base price is updated.
-          format: uuid
-        Value:
-          type:
-          - number
-          - 'null'
-          description: New value of the rate on the interval. If not specified, removes all adjustments within the interval.
-          format: double
-        FirstTimeUnitStartUtc:
-          type:
-          - string
-          - 'null'
-          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format.
-          format: date-time
-        LastTimeUnitStartUtc:
-          type:
-          - string
-          - 'null'
-          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s time unit: 367 hours if hours, 367 days if days, or 24 months if months.'
-          format: date-time
-      additionalProperties: false
-      x-schema-id: RatePriceUpdate
-    RateSetResult:
-      title: Rate set result
-      type: object
-      properties:
-        Rates:
-          maxItems: 1000
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Rate'
-          description: Rates that were added or updated.
-      additionalProperties: false
-      x-schema-id: RateSetResult
-    CategoryAdjustment:
-      title: Resource category adjustment
-      required:
-      - AbsoluteValue
-      - CategoryId
-      - RelativeValue
-      type: object
-      properties:
-        CategoryId:
-          type: string
-          description: Unique identifier of the adjustment category.
-          format: uuid
-        ParentCategoryId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the parent category that serves as a base price for the current category.
-          format: uuid
-        AbsoluteValue:
-          type: number
-          description: Absolute value of the adjustment (e.g. `50` represents 50 EUR in case the rate currency is `EUR`).
-          format: double
-        RelativeValue:
-          type: number
-          description: Relative value of the adjustment (e.g. `0.5` represents 50% increase).
-          format: double
-      additionalProperties: false
-      x-schema-id: CategoryAdjustment
-    RateSetParameters:
-      title: Set rates parameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Rates
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        Rates:
-          maxItems: 100
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/RateSetData'
-          description: Rates to be added or updated.
-      additionalProperties: false
-      x-schema-id: RateSetParameters
-    TaxBreakdown:
-      title: Tax breakdown
-      required:
-      - Items
-      type: object
-      properties:
-        Items:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxBreakdownItem'
-          description: Tax breakdown items per each tax rate applied.
-      additionalProperties: false
-      x-schema-id: TaxBreakdown
-    DependentRatePricingParameters:
-      title: Dependent rate pricing parameters
-      required:
-      - BaseRateId
-      type: object
-      properties:
-        BaseRateId:
-          minLength: 1
-          type: string
-          description: Unique identifier of the base rate.
-          x-schema-id: HybridIdentifier
-        RelativeAdjustment:
-          type: number
-          description: Relative amount which shows the difference between this rate and the base rate.
-          format: double
-        AbsoluteAdjustment:
-          type: number
-          description: Specific amount which shows the difference between this rate and the base rate.
-          format: double
-      additionalProperties: false
-      x-schema-id: DependentRatePricingParameters
-    Unit:
-      type: object
-      additionalProperties: false
-    AgeCategoryAdjustment:
-      title: Age category adjustment
-      required:
-      - AbsoluteValue
-      - AgeCategoryId
-      - Type
-      type: object
-      properties:
-        AgeCategoryId:
-          type: string
-          description: Unique identifier of the age category.
-          format: uuid
-        AbsoluteValue:
-          type: number
-          description: Absolute value of the adjustment (e.g. `50` represents 50 EUR in case the rate currency is `EUR`).
-          format: double
-        Type:
-          title: Age category adjustment type
-          allOf:
-          - $ref: '#/components/schemas/AgeCategoryAdjustmentTypeEnum'
-          description: 'Age category adjustment type
-
-
-            ExtraOccupancyAdjustment
-
-
-            NegativeOccupancyAdjustment
-
-
-            StandardOccupancyAdjustment'
-          x-enumNames:
-          - ExtraOccupancyAdjustment
-          - NegativeOccupancyAdjustment
-          - StandardOccupancyAdjustment
-          x-enumDescriptions:
-          - ''
-          - ''
-          - ''
-      additionalProperties: false
-      x-schema-id: AgeCategoryAdjustment
-    CategoryPricing:
-      title: Resource category pricing
-      required:
-      - AmountPrices
-      - CategoryId
-      - Prices
-      type: object
-      properties:
-        CategoryId:
-          type: string
-          description: Unique identifier of the category.
-          format: uuid
-        Prices:
-          type: array
-          items:
-            type: number
-            format: double
-          description: Prices of the rate for the resource category in the covered dates.
-          deprecated: true
-          x-deprecatedMessage: Use `AmountPrices` instead.
-        AmountPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Amount'
-          description: Prices of the rate for the resource category in the covered dates.
-      additionalProperties: false
-      x-schema-id: CategoryPricing
-    RateAddParameters:
-      title: Rate add parameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Rates
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the enterprise. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        Rates:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/RateAddData'
-          description: Information about rates to be created.
-      additionalProperties: false
-      x-schema-id: RateAddParameters
-    DecimalUpdateValue:
-      title: Decimal update value
-      type: object
-      properties:
-        Value:
-          type: number
-          description: Value which is to be updated.
-          format: double
-      additionalProperties: false
-      x-schema-id: DecimalUpdateValue
-    RatePricing:
-      title: Rate pricing
-      required:
-      - AgeCategoryAdjustments
-      - BaseAmountPrices
-      - BasePrices
-      - CategoryAdjustments
-      - CategoryPrices
-      - Currency
-      - TimeUnitStartsUtc
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
-        DatesUtc:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          deprecated: true
-          x-deprecatedMessage: Use `TimeUnitStartsUtc` instead.
-        TimeUnitStartsUtc:
-          type: array
-          items:
-            type: string
-          description: Set of all time units covered by the time interval; expressed in UTC timezone ISO 8601 format.
-        BasePrices:
-          type: array
-          items:
-            type: number
-            format: double
-          deprecated: true
-          x-deprecatedMessage: Use `BaseAmountPrices` instead.
-        BaseAmountPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Amount'
-          description: Base prices of the rates for each time unit covered by the time interval.
-        CategoryPrices:
-          type: array
-          items:
-            $ref: '#/components/schemas/CategoryPricing'
-          description: Resource category prices.
-        CategoryAdjustments:
-          type: array
-          items:
-            $ref: '#/components/schemas/CategoryAdjustment'
-          description: Resource category adjustments.
-        AgeCategoryAdjustments:
-          type: array
-          items:
-            $ref: '#/components/schemas/AgeCategoryAdjustment'
-          description: Assigns different pricing or occupancy based on the guest's age.
-        RelativeAdjustment:
-          type: number
-          description: Specific amount which shows the difference between this rate and the base rate.
-          format: double
-        AbsoluteAdjustment:
-          type: number
-          description: Relative amount which shows the difference between this rate and the base rate.
-          format: double
-        EmptyUnitAdjustment:
-          type: number
-          description: Price adjustment for when the resource booked with this rate is not full to capacity.
-          format: double
-        ExtraUnitAdjustment:
-          type: number
-          description: Price adjustment for when the resource booked with this rate exceeds capacity.
-          format: double
-      additionalProperties: false
-      x-schema-id: RatePricing
-    LengthRestriction:
-      title: Length restriction
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the rate restriction.
-          format: uuid
-        RateId:
-          type: string
-          description: Unique identifier of the rate.
-          format: uuid
-        IsInherited:
-          type: boolean
-          description: Whether the rate restriction is inherited from the parent rate.
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          description: Start of the rate restriction in UTC timezone in ISO 8601 format.
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          description: End of the rate restriction in UTC timezone in ISO 8601 format.
-        Days:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: The restricted days of week.
-        ExternalIdentifier:
-          type:
-          - string
-          - 'null'
-          description: Identifiers of from external systems.
-        MinLength:
-          type:
-          - string
-          - 'null'
-          description: Minimal reservation length in ISO 8601 duration format.
-        MaxLength:
-          type:
-          - string
-          - 'null'
-          description: Maximal reservation length in ISO 8601 duration format.
-      additionalProperties: false
-      x-schema-id: LengthRestriction
-    BaseRatePricingWithoutAdjustmentsParameters:
-      title: Base rate pricing parameters (without occupancy adjustments)
-      required:
-      - Amount
-      type: object
-      properties:
-        Amount:
-          title: Amount parameters
-          allOf:
-          - $ref: '#/components/schemas/AmountParameters'
-          description: Price of the product that overrides the price defined in Mews.
-      additionalProperties: false
-      x-schema-id: BaseRatePricingWithoutAdjustmentsParameters
-    RatePricingDiscriminatorEnum:
-      title: Rate pricing discriminator
-      enum:
-      - BaseRatePricing
-      - DependentRatePricing
-      type: string
-      description: '
-
-
-        BaseRatePricing
-
-
-        DependentRatePricing'
-      x-enumNames:
-      - BaseRatePricing
-      - DependentRatePricing
-      x-enumDescriptions:
-      - ''
-      - ''
-    RateSetData:
-      title: Set rate parameters
-      required:
-      - Names
-      - PricingType
-      - ServiceId
-      - Type
-      type: object
-      properties:
-        Id:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the rate. If it matches an existing rate, that rate will be updated. If no match is found, an error will be returned.
-          format: uuid
-        ExternalIdentifier:
-          maxLength: 255
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the rate in the external system. If `Id` is not provided and `ExternalIdentifier` matches an existing rate, the corresponding rate will be updated. If no match is found, a new rate will be created.
-        ServiceId:
-          minLength: 1
-          type: string
-          description: Unique identifier of the service. Ignored in case of updating an existing rate.
-          x-schema-id: HybridIdentifier
-        RateGroupId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the rate group under which rate is assigned. Empty value means that rate is added to a default group or the current group is kept for update, respectively.
-          x-schema-id: HybridIdentifier
-        IsEnabled:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the rate is available to customers. `true` will be used as a default if not provided.
-        Type:
-          title: Rate Add Type
-          allOf:
-          - $ref: '#/components/schemas/RateAddTypeEnum'
-          description: 'Type of the rate. `Private` will be used as a default if not provided.
-
-
-            Public
-
-
-            Private'
-        Names:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of the name of the rate.
-          x-schema-id: LocalizedStrings
-        Descriptions:
-          title: Localized text
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: string
-          description: All translations of the description.
-          x-schema-id: LocalizedStrings
-        PricingType:
-          title: Rate pricing discriminator
-          allOf:
-          - $ref: '#/components/schemas/RatePricingDiscriminatorEnum'
-          description: 'Rate pricing type. Must match existing pricing type in case of update.
-
-
-            BaseRatePricing
-
-
-            DependentRatePricing'
-          x-enumNames:
-          - BaseRatePricing
-          - DependentRatePricing
-          x-enumDescriptions:
-          - ''
-          - ''
-        Pricing:
-          title: Rate set pricing data parameters
-          allOf:
-          - $ref: '#/components/schemas/RateSetPricingDataParameters'
-          description: Contains additional data about pricing of the rate.
-      additionalProperties: false
-      x-schema-id: RateSetData
-    TaxExemptionReasonTypeEnum:
-      title: Tax exemption reason type
-      enum:
-      - Unknown
-      - IT_N1
-      - IT_N2_2
-      - IT_N3_5
-      - IT_N4
-      - IT_N5
-      - PL_ZW
-      - PL_NP
-      - DE_NATO
-      type: string
-      description: '
-
-
-        Unknown (Unknown tax exemption reason)
-
-
-        IT_N1 (N1 - Escluse ex art.15)
-
-
-        IT_N2_2 (N2.2 - Non soggette – altri casi)
-
-
-        IT_N3_5 (N3.5 - Non imponibili – a seguito di dichiarazioni d’intento)
-
-
-        IT_N4 (N4 - Esenti)
-
-
-        IT_N5 (N5 - Regime del margine / IVA non esposta in fattura)
-
-
-        PL_ZW (ZW - Zwolniony)
-
-
-        PL_NP (NP - Nie podlega)
-
-
-        DE_NATO (NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen)'
-      x-enumNames:
-      - Unknown
-      - IT_N1
-      - IT_N2_2
-      - IT_N3_5
-      - IT_N4
-      - IT_N5
-      - PL_ZW
-      - PL_NP
-      - DE_NATO
-      x-enumDescriptions:
-      - Unknown tax exemption reason
-      - N1 - Escluse ex art.15
-      - N2.2 - Non soggette – altri casi
-      - N3.5 - Non imponibili – a seguito di dichiarazioni d’intento
-      - N4 - Esenti
-      - N5 - Regime del margine / IVA non esposta in fattura
-      - ZW - Zwolniony
-      - NP - Nie podlega
-      - NATO-ZAbk - Umsatzsteuerbefreiung gemäß Artikel 67(3) NATO-Zusatzabkommen
-    EarlinessRestriction:
-      title: Earliness restriction
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the rate restriction.
-          format: uuid
-        RateId:
-          type: string
-          description: Unique identifier of the rate.
-          format: uuid
-        IsInherited:
-          type: boolean
-          description: Whether the rate restriction is inherited from the parent rate.
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          description: Start of the rate restriction in UTC timezone in ISO 8601 format.
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          description: End of the rate restriction in UTC timezone in ISO 8601 format.
-        Days:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: The restricted days of week.
-        ExternalIdentifier:
-          type:
-          - string
-          - 'null'
-          description: Identifiers of from external systems.
-        MinAdvance:
-          type:
-          - string
-          - 'null'
-          description: The minimum time before the reservation starts, you can reserve in ISO 8601 duration format.
-        MaxAdvance:
-          type:
-          - string
-          - 'null'
-          description: The maximum time before the reservation starts, you can reserve in ISO 8601 duration format.
-      additionalProperties: false
-      x-schema-id: EarlinessRestriction

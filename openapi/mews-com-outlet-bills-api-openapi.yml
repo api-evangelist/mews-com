@@ -107,6 +107,88 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    OutletBillParameters:
+      title: Outlet bill parameters
+      required:
+      - ClosedUtc
+      - Items
+      - Number
+      - OutletId
+      type: object
+      properties:
+        OutletId:
+          type: string
+          description: Unique identifier of the `Outlet` where the bill was issued.
+          format: uuid
+        Number:
+          minLength: 1
+          type: string
+          description: Number of the bill.
+        ClosedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the bill closure in UTC timezone in ISO 8601 format.
+        Items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutletItemParameters'
+          description: The items on the bill.
+        AccountId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `Account` to be assigned to the bill.
+          format: uuid
+        Notes:
+          type:
+          - string
+          - 'null'
+          description: Additional notes on the bill.
+      additionalProperties: false
+      x-schema-id: OutletBillParameters
+    AmountParameters:
+      title: Amount parameters
+      required:
+      - Currency
+      - TaxCodes
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          format: currency
+        TaxCodes:
+          type: array
+          items:
+            type: string
+        NetValue:
+          type:
+          - number
+          - 'null'
+          format: double
+        GrossValue:
+          type:
+          - number
+          - 'null'
+          format: double
+      additionalProperties: false
+      description: Price of the product that overrides the price defined in Mews.
+      x-schema-id: AmountParameters
     AddOutletBillsResult:
       title: AddOutletBillsResult
       required:
@@ -151,88 +233,6 @@ components:
           description: The new outlet bills.
       additionalProperties: false
       x-schema-id: AddOutletBillsParameters
-    AmountParameters:
-      title: Amount parameters
-      required:
-      - Currency
-      - TaxCodes
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          format: currency
-        TaxCodes:
-          type: array
-          items:
-            type: string
-        NetValue:
-          type:
-          - number
-          - 'null'
-          format: double
-        GrossValue:
-          type:
-          - number
-          - 'null'
-          format: double
-      additionalProperties: false
-      description: Price of the product that overrides the price defined in Mews.
-      x-schema-id: AmountParameters
-    OutletBillParameters:
-      title: Outlet bill parameters
-      required:
-      - ClosedUtc
-      - Items
-      - Number
-      - OutletId
-      type: object
-      properties:
-        OutletId:
-          type: string
-          description: Unique identifier of the `Outlet` where the bill was issued.
-          format: uuid
-        Number:
-          minLength: 1
-          type: string
-          description: Number of the bill.
-        ClosedUtc:
-          minLength: 1
-          type: string
-          description: Date and time of the bill closure in UTC timezone in ISO 8601 format.
-        Items:
-          type: array
-          items:
-            $ref: '#/components/schemas/OutletItemParameters'
-          description: The items on the bill.
-        AccountId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the `Account` to be assigned to the bill.
-          format: uuid
-        Notes:
-          type:
-          - string
-          - 'null'
-          description: Additional notes on the bill.
-      additionalProperties: false
-      x-schema-id: OutletBillParameters
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     OutletItemType:
       title: Outlet item type
       enum:

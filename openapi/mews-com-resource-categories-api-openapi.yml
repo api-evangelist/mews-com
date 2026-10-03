@@ -324,199 +324,21 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ResourceCategoryAssignmentResult:
-      title: ResourceCategoryAssignmentResult
-      required:
-      - ResourceCategoryAssignments
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        ResourceCategoryAssignments:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceCategoryAssignment'
-          description: Resource category assignments.
-        Cursor:
+        Message:
           type:
           - string
           - 'null'
-          description: Unique identifier of the last and hence oldest resource category assignment returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older resource category assignments.
-          format: uuid
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      x-schema-id: ResourceCategoryAssignmentResult
-    ResourceCategoryAssignmentFilterParameters:
-      title: ResourceCategoryAssignmentFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      - ResourceCategoryIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        ResourceCategoryAssignmentIds:
-          maxItems: 1000
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Resource category assignment](https://mews-systems.gitbook.io/connector-api/operations/resourcecategories/#resource-category-assignment).
-        ResourceCategoryIds:
-          maxItems: 1000
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Resource categories](https://mews-systems.gitbook.io/connector-api/operations/#resource-category) to which the resource category assignment belong.
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the resource category assignments were updated.
-        ActivityStates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted or both records. The `ActivityState` filter applies only to record’s own status. The `IsActive` response property also considers the parent’s status, so some returned records may have `IsActive = false` if their parent is deleted.
-        ResourceIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of resources to which the resource category assignments belong.
-      additionalProperties: false
-      x-schema-id: ResourceCategoryAssignmentFilterParameters
-    ResourceCategoryImageAssignmentFilterParameters:
-      title: ResourceCategoryImageAssignmentFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      - ResourceCategoryIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        ResourceCategoryImageAssignmentIds:
-          maxItems: 1000
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Resource category image assignments](https://mews-systems.gitbook.io/connector-api/operations/resourcecategories/#resource-category-image-assignment).
-        ResourceCategoryIds:
-          maxItems: 1000
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Resource categories](https://mews-systems.gitbook.io/connector-api/operations/resources/#resource-category) to which the resource category image assignments belong.
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the resource category image assignments were updated.
-        ActivityStates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted or both records.
-      additionalProperties: false
-      x-schema-id: ResourceCategoryImageAssignmentFilterParameters
-    ResourceCategoryType:
-      title: Resource category type
-      enum:
-      - Room
-      - Bed
-      - Dorm
-      - Apartment
-      - Suite
-      - Villa
-      - Site
-      - Office
-      - MeetingRoom
-      - ParkingSpot
-      - Desk
-      - TeamArea
-      - Membership
-      - Tent
-      - CaravanOrRV
-      - UnequippedCampsite
-      - Bike
-      - ExtraBed
-      - Cot
-      - Crib
-      - ConferenceRoom
-      - Rooftop
-      - Garden
-      - Restaurant
-      - Amphitheater
-      - PrivateSpaces
-      type: string
-      description: Type of the category.
+      x-schema-id: ConnectorApiExceptionResult
     ResourceCategoryFilterParameters:
       title: ResourceCategoryFilterParameters
       required:
@@ -586,44 +408,37 @@ components:
           description: Whether to return only active, only deleted or both records.
       additionalProperties: false
       x-schema-id: ResourceCategoryFilterParameters
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    ResourceClassification:
-      title: Resource classification
+    ResourceCategoryType:
+      title: Resource category type
       enum:
-      - StandardSingle
-      - StandardDouble
-      - SuperiorTwin
-      - SuperiorDouble
-      - JuniorSuite
-      - SharedOrDorm
-      - Other
-      - SuperiorSingle
-      - Triple
-      - Family
-      - StandardTwin
-      - Studio
-      - SuperiorTripleRoom
-      - OneBedroomApartment
-      - ThreeBedroomsApartment
-      - TwoBedroomsApartment
+      - Room
+      - Bed
+      - Dorm
+      - Apartment
+      - Suite
+      - Villa
+      - Site
+      - Office
+      - MeetingRoom
+      - ParkingSpot
+      - Desk
+      - TeamArea
+      - Membership
+      - Tent
+      - CaravanOrRV
+      - UnequippedCampsite
+      - Bike
+      - ExtraBed
+      - Cot
+      - Crib
+      - ConferenceRoom
+      - Rooftop
+      - Garden
+      - Restaurant
+      - Amphitheater
+      - PrivateSpaces
       type: string
-      description: Classification of the resource category.
+      description: Type of the category.
     ActivityStates:
       title: Activity state
       enum:
@@ -631,119 +446,6 @@ components:
       - Active
       type: string
       description: Activity states used for filtering.
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
-          format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    ResourceCategoryImageAssignment:
-      title: Resource category image assignment
-      required:
-      - CategoryId
-      - CreatedUtc
-      - Id
-      - ImageId
-      - IsActive
-      - Ordering
-      - UpdatedUtc
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the assignment.
-          format: uuid
-        IsActive:
-          type: boolean
-          description: Whether the assignment is still active.
-        CategoryId:
-          type: string
-          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/#resource-category).
-          format: uuid
-        ImageId:
-          type: string
-          description: Unique identifier of the image assigned to the Resource category.
-          format: uuid
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the assignment in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the assignment in UTC timezone in ISO 8601 format.
-          format: date-time
-        Ordering:
-          type: integer
-          description: Ordering of the image in the resource category.
-          format: int32
-      additionalProperties: false
-      x-schema-id: ResourceCategoryImageAssignment
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    ResourceCategoryAssignment:
-      title: Resource category assignment
-      required:
-      - CategoryId
-      - CreatedUtc
-      - Id
-      - IsActive
-      - ResourceId
-      - UpdatedUtc
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the assignment.
-          format: uuid
-        IsActive:
-          type: boolean
-          description: Whether the assignment is still active.
-        ResourceId:
-          type: string
-          description: Unique identifier of the [Resource](https://mews-systems.gitbook.io/connector-api/operations/#resource) assigned to the Resource category.
-          format: uuid
-        CategoryId:
-          type: string
-          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/#resource-category).
-          format: uuid
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the assignment in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the assignment in UTC timezone in ISO 8601 format.
-          format: date-time
-      additionalProperties: false
-      x-schema-id: ResourceCategoryAssignment
     ResourceCategoryImageAssignmentResult:
       title: ResourceCategoryImageAssignmentResult
       required:
@@ -784,6 +486,61 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: ResourceCategoryResult
+    ResourceCategoryAssignment:
+      title: Resource category assignment
+      required:
+      - CategoryId
+      - CreatedUtc
+      - Id
+      - IsActive
+      - ResourceId
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the assignment.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the assignment is still active.
+        ResourceId:
+          type: string
+          description: Unique identifier of the [Resource](https://mews-systems.gitbook.io/connector-api/operations/#resource) assigned to the Resource category.
+          format: uuid
+        CategoryId:
+          type: string
+          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/#resource-category).
+          format: uuid
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the assignment in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the assignment in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: ResourceCategoryAssignment
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
     ResourceCategory:
       title: Resource category
       required:
@@ -867,3 +624,246 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: ResourceCategory
+    ResourceClassification:
+      title: Resource classification
+      enum:
+      - StandardSingle
+      - StandardDouble
+      - SuperiorTwin
+      - SuperiorDouble
+      - JuniorSuite
+      - SharedOrDorm
+      - Other
+      - SuperiorSingle
+      - Triple
+      - Family
+      - StandardTwin
+      - Studio
+      - SuperiorTripleRoom
+      - OneBedroomApartment
+      - ThreeBedroomsApartment
+      - TwoBedroomsApartment
+      type: string
+      description: Classification of the resource category.
+    ResourceCategoryImageAssignment:
+      title: Resource category image assignment
+      required:
+      - CategoryId
+      - CreatedUtc
+      - Id
+      - ImageId
+      - IsActive
+      - Ordering
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the assignment.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the assignment is still active.
+        CategoryId:
+          type: string
+          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/#resource-category).
+          format: uuid
+        ImageId:
+          type: string
+          description: Unique identifier of the image assigned to the Resource category.
+          format: uuid
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the assignment in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the assignment in UTC timezone in ISO 8601 format.
+          format: date-time
+        Ordering:
+          type: integer
+          description: Ordering of the image in the resource category.
+          format: int32
+      additionalProperties: false
+      x-schema-id: ResourceCategoryImageAssignment
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ResourceCategoryAssignmentFilterParameters:
+      title: ResourceCategoryAssignmentFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ResourceCategoryIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        ResourceCategoryAssignmentIds:
+          maxItems: 1000
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Resource category assignment](https://mews-systems.gitbook.io/connector-api/operations/resourcecategories/#resource-category-assignment).
+        ResourceCategoryIds:
+          maxItems: 1000
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Resource categories](https://mews-systems.gitbook.io/connector-api/operations/#resource-category) to which the resource category assignment belong.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource category assignments were updated.
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records. The `ActivityState` filter applies only to record’s own status. The `IsActive` response property also considers the parent’s status, so some returned records may have `IsActive = false` if their parent is deleted.
+        ResourceIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of resources to which the resource category assignments belong.
+      additionalProperties: false
+      x-schema-id: ResourceCategoryAssignmentFilterParameters
+    ResourceCategoryAssignmentResult:
+      title: ResourceCategoryAssignmentResult
+      required:
+      - ResourceCategoryAssignments
+      type: object
+      properties:
+        ResourceCategoryAssignments:
+          maxItems: 1000
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceCategoryAssignment'
+          description: Resource category assignments.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest resource category assignment returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older resource category assignments.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ResourceCategoryAssignmentResult
+    ResourceCategoryImageAssignmentFilterParameters:
+      title: ResourceCategoryImageAssignmentFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ResourceCategoryIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        ResourceCategoryImageAssignmentIds:
+          maxItems: 1000
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Resource category image assignments](https://mews-systems.gitbook.io/connector-api/operations/resourcecategories/#resource-category-image-assignment).
+        ResourceCategoryIds:
+          maxItems: 1000
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Resource categories](https://mews-systems.gitbook.io/connector-api/operations/resources/#resource-category) to which the resource category image assignments belong.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resource category image assignments were updated.
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+      additionalProperties: false
+      x-schema-id: ResourceCategoryImageAssignmentFilterParameters

@@ -348,6 +348,54 @@ paths:
       x-restricted: true
 components:
   schemas:
+    ResourceCategoryType:
+      title: Resource category type
+      enum:
+      - Room
+      - Bed
+      - Dorm
+      - Apartment
+      - Suite
+      - Villa
+      - Site
+      - Office
+      - MeetingRoom
+      - ParkingSpot
+      - Desk
+      - TeamArea
+      - Membership
+      - Tent
+      - CaravanOrRV
+      - UnequippedCampsite
+      - Bike
+      - ExtraBed
+      - Cot
+      - Crib
+      - ConferenceRoom
+      - Rooftop
+      - Garden
+      - Restaurant
+      - Amphitheater
+      - PrivateSpaces
+      type: string
+      description: Type of the category.
+    SpaceData:
+      title: Space resource data
+      required:
+      - FloorNumber
+      type: object
+      properties:
+        FloorNumber:
+          minLength: 1
+          type: string
+          description: Number of the floor the space is on.
+        LocationNotes:
+          type:
+          - string
+          - 'null'
+          description: Location notes for the space. It can be, for example, Building number the space is located in or the Parking area the particular parking space is at.
+      additionalProperties: false
+      x-schema-id: SpaceData
     ResourceFeatureAssignment:
       title: Resource feature assignment
       required:
@@ -386,19 +434,65 @@ components:
           format: date-time
       additionalProperties: false
       x-schema-id: ResourceFeatureAssignment
-    ResourcesOccupancyStateResult:
-      title: ResourcesOccupancyStateResult
+    ResourceClassification:
+      title: Resource classification
+      enum:
+      - StandardSingle
+      - StandardDouble
+      - SuperiorTwin
+      - SuperiorDouble
+      - JuniorSuite
+      - SharedOrDorm
+      - Other
+      - SuperiorSingle
+      - Triple
+      - Family
+      - StandardTwin
+      - Studio
+      - SuperiorTripleRoom
+      - OneBedroomApartment
+      - ThreeBedroomsApartment
+      - TwoBedroomsApartment
+      type: string
+      description: Classification of the resource category.
+    ResourceCategoryAssignment:
+      title: Resource category assignment
       required:
-      - ResourceCategoryOccupancyStates
+      - CategoryId
+      - CreatedUtc
+      - Id
+      - IsActive
+      - ResourceId
+      - UpdatedUtc
       type: object
       properties:
-        ResourceCategoryOccupancyStates:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceCategoryOccupancyState'
-          description: The resource categories.
+        Id:
+          type: string
+          description: Unique identifier of the assignment.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the assignment is still active.
+        ResourceId:
+          type: string
+          description: Unique identifier of the [Resource](https://mews-systems.gitbook.io/connector-api/operations/#resource) assigned to the Resource category.
+          format: uuid
+        CategoryId:
+          type: string
+          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/#resource-category).
+          format: uuid
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the assignment in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the assignment in UTC timezone in ISO 8601 format.
+          format: date-time
       additionalProperties: false
-      x-schema-id: ResourcesOccupancyStateResult
+      x-schema-id: ResourceCategoryAssignment
     TimeFilterInterval:
       title: Time interval
       type: object
@@ -416,139 +510,133 @@ components:
       additionalProperties: false
       description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
       x-schema-id: TimeFilterInterval
-    ResourceResult:
-      title: ResourceResult
+    ResourceState:
+      title: Resource state
+      enum:
+      - Dirty
+      - Clean
+      - Inspected
+      - OutOfService
+      - OutOfOrder
+      type: string
+      description: 'State of the resource.
+
+
+        Dirty
+
+
+        Clean
+
+
+        Inspected
+
+
+        OutOfService
+
+
+        OutOfOrder'
+      x-enumNames:
+      - Dirty
+      - Clean
+      - Inspected
+      - OutOfService
+      - OutOfOrder
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      x-schema-id: ResourceState
+    Resource:
+      title: Resource
+      required:
+      - CreatedUtc
+      - Data
+      - Descriptions
+      - Directions
+      - EnterpriseId
+      - ExternalNames
+      - Id
+      - IsActive
+      - Name
+      - State
+      - UpdatedUtc
       type: object
       properties:
-        Resources:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/Resource'
-          description: The resources of the enterprise.
-        ResourceCategories:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ResourceCategory'
-          description: Categories of resources in the enterprise.
-          deprecated: true
-        ResourceCategoryAssignments:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ResourceCategoryAssignment'
-          description: Assignments of resources to categories.
-          deprecated: true
-        ResourceCategoryImageAssignments:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ResourceCategoryImageAssignment'
-          description: Assignments of images to categories.
-          deprecated: true
-        ResourceFeatures:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ResourceFeature'
-          description: Features of resources in the enterprise.
-          deprecated: true
-        ResourceFeatureAssignments:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ResourceFeatureAssignment'
-          description: Assignments of resource features to resources.
-          deprecated: true
-        Cursor:
+        Id:
+          type: string
+          description: Unique identifier of the resource.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the `Enterprise`.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the resource is still active.
+        ParentResourceId:
           type:
           - string
           - 'null'
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. `null`, then the latest or most recent items will be returned.
+          description: Identifier of the parent `Resource` (e.g. room of a bed).
           format: uuid
-      additionalProperties: false
-      x-schema-id: ResourceResult
-    ResourceFilterParameters:
-      title: ResourceFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Extent
-      - Limitation
-      type: object
-      properties:
-        ClientToken:
+        Name:
           minLength: 1
           type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
+          description: Name of the resource (e.g. room number).
+        State:
+          $ref: '#/components/schemas/ResourceState'
+        Descriptions:
+          title: Localized text
+          type: object
+          additionalProperties:
             type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        ResourceIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the requested resources.
-        Names:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: Names of the requested resources.
-        Extent:
-          title: Resource extent
-          allOf:
-          - $ref: '#/components/schemas/ResourceExtent'
-          description: Extent of data to be returned.
+          description: All translations of the description.
+          x-schema-id: LocalizedStrings
         CreatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the resources were created.
-          x-max-interval-in-months: 3
+          minLength: 1
+          type: string
+          description: Creation date and time of the resource in UTC timezone in ISO 8601 format.
         UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the resources were updated.
-          x-max-interval-in-months: 3
+          minLength: 1
+          type: string
+          description: Last update date and time of the resource in UTC timezone in ISO 8601 format.
+        Data:
+          title: Resource data
+          type: object
+          properties:
+            Discriminator:
+              $ref: '#/components/schemas/ResourceDataDiscriminator'
+            Value:
+              oneOf:
+              - $ref: '#/components/schemas/SpaceData'
+              - title: Object resource data
+                type: object
+                additionalProperties: false
+              - title: Person resource data
+                type: object
+                additionalProperties: false
+              description: Based on `Discriminator`. Currently present only for `Space` resources with [Space resource data](https://mews-systems.gitbook.io/connector-api/operations/resources#space-resource-data).
+          description: Additional data of the resource.
+          x-coproduct: true
+          x-schema-id: ResourceDataCoproductOfResourceDataDiscriminator
+        ExternalNames:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of external name.
+          x-schema-id: LocalizedStrings
+        Directions:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of direction.
+          x-schema-id: LocalizedStrings
       additionalProperties: false
-      x-schema-id: ResourceFilterParameters
+      x-schema-id: Resource
     ResourceUpdateParameters:
       title: Resource update
       required:
@@ -602,21 +690,6 @@ components:
           description: New reason for the state of the resource.
       additionalProperties: false
       x-schema-id: ResourceUpdateParameters
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     Limitation:
       title: Limitation
       required:
@@ -634,183 +707,6 @@ components:
       additionalProperties: false
       description: Limitation on the quantity of data returned.
       x-schema-id: Limitation
-    ResourceCategoryOccupancyState:
-      title: Resource category occupancy state
-      required:
-      - ResourceCategoryId
-      - ResourceOccupancyStates
-      type: object
-      properties:
-        ResourceCategoryId:
-          type: string
-          description: Unique identifier of the 'Resource category'.
-          format: uuid
-        ResourceOccupancyStates:
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceOccupancyState'
-          description: The resource occupancy states.
-      additionalProperties: false
-      description: The list of `ResourceOccupancyState`s grouped by resource category.
-      x-schema-id: ResourceCategoryOccupancyState
-    SpaceData:
-      title: Space resource data
-      required:
-      - FloorNumber
-      type: object
-      properties:
-        FloorNumber:
-          minLength: 1
-          type: string
-          description: Number of the floor the space is on.
-        LocationNotes:
-          type:
-          - string
-          - 'null'
-          description: Location notes for the space. It can be, for example, Building number the space is located in or the Parking area the particular parking space is at.
-      additionalProperties: false
-      x-schema-id: SpaceData
-    ResourcesOccupancyStateFilterParameters:
-      title: ResourcesOccupancyStateFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - ResourceCategoryIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ResourceCategoryIds:
-          maxItems: 5
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the `ResourceCategory`.
-        ResourceStates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ResourceState'
-          description: States of the `Resource`
-        OccupancyStates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/OccupancyStateEnum'
-          description: Occupancy states of the `Resource`.
-      additionalProperties: false
-      x-schema-id: ResourcesOccupancyStateFilterParameters
-    SpaceDataUpdateParameters:
-      title: Space resource data update
-      type: object
-      properties:
-        FloorNumber:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: New number of the floor the space is on.
-        LocationNotes:
-          title: String update value
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: New location notes for the space.
-      additionalProperties: false
-      x-schema-id: SpaceDataUpdateParameters
-    ResourceFeature:
-      title: Resource feature
-      required:
-      - Classification
-      - CreatedUtc
-      - Descriptions
-      - Id
-      - IsActive
-      - Names
-      - ServiceId
-      - ShortNames
-      - UpdatedUtc
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of `ResourceFeature`.
-          format: uuid
-        ServiceId:
-          type: string
-          description: Unique identifier of `Service` the resource feature belongs to.
-          format: uuid
-        IsActive:
-          type: boolean
-          description: Whether the `ResourceFeature` is active.
-        Classification:
-          $ref: '#/components/schemas/ResourceFeatureClassification'
-        Names:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of the name.
-          x-schema-id: LocalizedStrings
-        ShortNames:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of the short name.
-          x-schema-id: LocalizedStrings
-        Descriptions:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of the description.
-          x-schema-id: LocalizedStrings
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the resource feature in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the resource feature in UTC timezone in ISO 8601 format.
-          format: date-time
-      additionalProperties: false
-      x-schema-id: ResourceFeature
-    ResourceClassification:
-      title: Resource classification
-      enum:
-      - StandardSingle
-      - StandardDouble
-      - SuperiorTwin
-      - SuperiorDouble
-      - JuniorSuite
-      - SharedOrDorm
-      - Other
-      - SuperiorSingle
-      - Triple
-      - Family
-      - StandardTwin
-      - Studio
-      - SuperiorTripleRoom
-      - OneBedroomApartment
-      - ThreeBedroomsApartment
-      - TwoBedroomsApartment
-      type: string
-      description: Classification of the resource category.
     ResourceCategoryImageAssignment:
       title: Resource category image assignment
       required:
@@ -854,14 +750,20 @@ components:
           format: int32
       additionalProperties: false
       x-schema-id: ResourceCategoryImageAssignment
-    ResourceDataDiscriminator:
-      title: Resource data discriminator
-      enum:
-      - Space
-      - Object
-      - Person
-      type: string
-      description: Whether the resource is space, object, or person.
+    StringUpdateValue:
+      title: String update value
+      type: object
+      properties:
+        Value:
+          type:
+          - string
+          - 'null'
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: StringUpdateValue
+    Unit:
+      type: object
+      additionalProperties: false
     GuidNullableUpdateValue:
       title: Guid update value
       type: object
@@ -874,193 +776,6 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: GuidNullableUpdateValue
-    ResourceExtent:
-      title: Resource extent
-      type: object
-      properties:
-        Resources:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain resources.
-        ResourceCategories:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain categories.
-          deprecated: true
-          x-deprecatedMessage: Use [Get all resource categories](https://mews-systems.gitbook.io/connector-api/operations/resourcecategories#get-all-resource-categories)
-        ResourceCategoryAssignments:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain assignments of the resources to categories.
-          deprecated: true
-          x-deprecatedMessage: Use [Get all resource category assignments](https://mews-systems.gitbook.io/connector-api/operations/resourcecategories#get-all-resource-category-assignments)
-        ResourceCategoryImageAssignments:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain assignments of the images to categories.
-          deprecated: true
-          x-deprecatedMessage: Use [Get all resource category image assignments](https://mews-systems.gitbook.io/connector-api/operations/resourcecategories#get-all-resource-category-image-assignments)
-        ResourceFeatures:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain resource features.
-          deprecated: true
-          x-deprecatedMessage: Use [Get all resource features](https://mews-systems.gitbook.io/connector-api/operations/resourcefeatures#get-all-resource-features)
-        ResourceFeatureAssignments:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain assignments of the resources to features.
-          deprecated: true
-          x-deprecatedMessage: Use [Get all resource feature assignments](https://mews-systems.gitbook.io/connector-api/operations/resourcefeatures#get-all-resource-feature-assignments)
-        Inactive:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the response should contain inactive entities.
-      additionalProperties: false
-      description: ''
-      x-schema-id: ResourceExtent
-    ResourceCategoryType:
-      title: Resource category type
-      enum:
-      - Room
-      - Bed
-      - Dorm
-      - Apartment
-      - Suite
-      - Villa
-      - Site
-      - Office
-      - MeetingRoom
-      - ParkingSpot
-      - Desk
-      - TeamArea
-      - Membership
-      - Tent
-      - CaravanOrRV
-      - UnequippedCampsite
-      - Bike
-      - ExtraBed
-      - Cot
-      - Crib
-      - ConferenceRoom
-      - Rooftop
-      - Garden
-      - Restaurant
-      - Amphitheater
-      - PrivateSpaces
-      type: string
-      description: Type of the category.
-    ResourceFeatureClassification:
-      title: Resource feature classification
-      enum:
-      - SeaView
-      - RiverView
-      - OceanView
-      - TwinBeds
-      - DoubleBed
-      - RollawayBed
-      - UpperBed
-      - LowerBed
-      - Balcony
-      - AccessibleBathroom
-      - AccessibleRoom
-      - ElevatorAccess
-      - HighFloor
-      - Kitchenette
-      - AirConditioning
-      - PrivateJacuzzi
-      - PrivateSauna
-      - EnsuiteRoom
-      - PrivateBathroom
-      - SharedBathroom
-      type: string
-      description: Classification of `ResourceFeature`.
-    Unit:
-      type: object
-      additionalProperties: false
-    ResourceState:
-      title: Resource state
-      enum:
-      - Dirty
-      - Clean
-      - Inspected
-      - OutOfService
-      - OutOfOrder
-      type: string
-      description: 'State of the resource.
-
-
-        Dirty
-
-
-        Clean
-
-
-        Inspected
-
-
-        OutOfService
-
-
-        OutOfOrder'
-      x-enumNames:
-      - Dirty
-      - Clean
-      - Inspected
-      - OutOfService
-      - OutOfOrder
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      x-schema-id: ResourceState
-    ResourceCategoryAssignment:
-      title: Resource category assignment
-      required:
-      - CategoryId
-      - CreatedUtc
-      - Id
-      - IsActive
-      - ResourceId
-      - UpdatedUtc
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the assignment.
-          format: uuid
-        IsActive:
-          type: boolean
-          description: Whether the assignment is still active.
-        ResourceId:
-          type: string
-          description: Unique identifier of the [Resource](https://mews-systems.gitbook.io/connector-api/operations/#resource) assigned to the Resource category.
-          format: uuid
-        CategoryId:
-          type: string
-          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/#resource-category).
-          format: uuid
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the assignment in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the assignment in UTC timezone in ISO 8601 format.
-          format: date-time
-      additionalProperties: false
-      x-schema-id: ResourceCategoryAssignment
     MultipleResourceUpdateParameters:
       title: MultipleResourceUpdateParameters
       required:
@@ -1171,143 +886,6 @@ components:
       additionalProperties: false
       description: The occupancy state of a `Resource`.
       x-schema-id: ResourceOccupancyState
-    StringUpdateValue:
-      title: String update value
-      type: object
-      properties:
-        Value:
-          type:
-          - string
-          - 'null'
-          description: Value which is to be updated.
-      additionalProperties: false
-      x-schema-id: StringUpdateValue
-    OccupancyStateEnum:
-      title: Occupancy state
-      enum:
-      - Vacant
-      - ReservedLocked
-      - Reserved
-      - InternalUse
-      - OutOfOrder
-      type: string
-      description: 'Occupancy states of the `Resource`.
-
-
-        Vacant
-
-
-        ReservedLocked
-
-
-        Reserved
-
-
-        InternalUse
-
-
-        OutOfOrder'
-      x-enumNames:
-      - Vacant
-      - ReservedLocked
-      - Reserved
-      - InternalUse
-      - OutOfOrder
-      x-enumDescriptions:
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-    Resource:
-      title: Resource
-      required:
-      - CreatedUtc
-      - Data
-      - Descriptions
-      - Directions
-      - EnterpriseId
-      - ExternalNames
-      - Id
-      - IsActive
-      - Name
-      - State
-      - UpdatedUtc
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the resource.
-          format: uuid
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the `Enterprise`.
-          format: uuid
-        IsActive:
-          type: boolean
-          description: Whether the resource is still active.
-        ParentResourceId:
-          type:
-          - string
-          - 'null'
-          description: Identifier of the parent `Resource` (e.g. room of a bed).
-          format: uuid
-        Name:
-          minLength: 1
-          type: string
-          description: Name of the resource (e.g. room number).
-        State:
-          $ref: '#/components/schemas/ResourceState'
-        Descriptions:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of the description.
-          x-schema-id: LocalizedStrings
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the resource in UTC timezone in ISO 8601 format.
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the resource in UTC timezone in ISO 8601 format.
-        Data:
-          title: Resource data
-          type: object
-          properties:
-            Discriminator:
-              $ref: '#/components/schemas/ResourceDataDiscriminator'
-            Value:
-              oneOf:
-              - $ref: '#/components/schemas/SpaceData'
-              - title: Object resource data
-                type: object
-                additionalProperties: false
-              - title: Person resource data
-                type: object
-                additionalProperties: false
-              description: Based on `Discriminator`. Currently present only for `Space` resources with [Space resource data](https://mews-systems.gitbook.io/connector-api/operations/resources#space-resource-data).
-          description: Additional data of the resource.
-          x-coproduct: true
-          x-schema-id: ResourceDataCoproductOfResourceDataDiscriminator
-        ExternalNames:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of external name.
-          x-schema-id: LocalizedStrings
-        Directions:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of direction.
-          x-schema-id: LocalizedStrings
-      additionalProperties: false
-      x-schema-id: Resource
     ResourceCategory:
       title: Resource category
       required:
@@ -1391,3 +969,425 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: ResourceCategory
+    OccupancyStateEnum:
+      title: Occupancy state
+      enum:
+      - Vacant
+      - ReservedLocked
+      - Reserved
+      - InternalUse
+      - OutOfOrder
+      type: string
+      description: 'Occupancy states of the `Resource`.
+
+
+        Vacant
+
+
+        ReservedLocked
+
+
+        Reserved
+
+
+        InternalUse
+
+
+        OutOfOrder'
+      x-enumNames:
+      - Vacant
+      - ReservedLocked
+      - Reserved
+      - InternalUse
+      - OutOfOrder
+      x-enumDescriptions:
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    ResourceDataDiscriminator:
+      title: Resource data discriminator
+      enum:
+      - Space
+      - Object
+      - Person
+      type: string
+      description: Whether the resource is space, object, or person.
+    ResourceFeatureClassification:
+      title: Resource feature classification
+      enum:
+      - SeaView
+      - RiverView
+      - OceanView
+      - TwinBeds
+      - DoubleBed
+      - RollawayBed
+      - UpperBed
+      - LowerBed
+      - Balcony
+      - AccessibleBathroom
+      - AccessibleRoom
+      - ElevatorAccess
+      - HighFloor
+      - Kitchenette
+      - AirConditioning
+      - PrivateJacuzzi
+      - PrivateSauna
+      - EnsuiteRoom
+      - PrivateBathroom
+      - SharedBathroom
+      type: string
+      description: Classification of `ResourceFeature`.
+    ResourcesOccupancyStateResult:
+      title: ResourcesOccupancyStateResult
+      required:
+      - ResourceCategoryOccupancyStates
+      type: object
+      properties:
+        ResourceCategoryOccupancyStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceCategoryOccupancyState'
+          description: The resource categories.
+      additionalProperties: false
+      x-schema-id: ResourcesOccupancyStateResult
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ResourceCategoryOccupancyState:
+      title: Resource category occupancy state
+      required:
+      - ResourceCategoryId
+      - ResourceOccupancyStates
+      type: object
+      properties:
+        ResourceCategoryId:
+          type: string
+          description: Unique identifier of the 'Resource category'.
+          format: uuid
+        ResourceOccupancyStates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceOccupancyState'
+          description: The resource occupancy states.
+      additionalProperties: false
+      description: The list of `ResourceOccupancyState`s grouped by resource category.
+      x-schema-id: ResourceCategoryOccupancyState
+    ResourcesOccupancyStateFilterParameters:
+      title: ResourcesOccupancyStateFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - ResourceCategoryIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ResourceCategoryIds:
+          maxItems: 5
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `ResourceCategory`.
+        ResourceStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ResourceState'
+          description: States of the `Resource`
+        OccupancyStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/OccupancyStateEnum'
+          description: Occupancy states of the `Resource`.
+      additionalProperties: false
+      x-schema-id: ResourcesOccupancyStateFilterParameters
+    ResourceExtent:
+      title: Resource extent
+      type: object
+      properties:
+        Resources:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain resources.
+        ResourceCategories:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain categories.
+          deprecated: true
+          x-deprecatedMessage: Use [Get all resource categories](https://mews-systems.gitbook.io/connector-api/operations/resourcecategories#get-all-resource-categories)
+        ResourceCategoryAssignments:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain assignments of the resources to categories.
+          deprecated: true
+          x-deprecatedMessage: Use [Get all resource category assignments](https://mews-systems.gitbook.io/connector-api/operations/resourcecategories#get-all-resource-category-assignments)
+        ResourceCategoryImageAssignments:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain assignments of the images to categories.
+          deprecated: true
+          x-deprecatedMessage: Use [Get all resource category image assignments](https://mews-systems.gitbook.io/connector-api/operations/resourcecategories#get-all-resource-category-image-assignments)
+        ResourceFeatures:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain resource features.
+          deprecated: true
+          x-deprecatedMessage: Use [Get all resource features](https://mews-systems.gitbook.io/connector-api/operations/resourcefeatures#get-all-resource-features)
+        ResourceFeatureAssignments:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain assignments of the resources to features.
+          deprecated: true
+          x-deprecatedMessage: Use [Get all resource feature assignments](https://mews-systems.gitbook.io/connector-api/operations/resourcefeatures#get-all-resource-feature-assignments)
+        Inactive:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the response should contain inactive entities.
+      additionalProperties: false
+      description: ''
+      x-schema-id: ResourceExtent
+    SpaceDataUpdateParameters:
+      title: Space resource data update
+      type: object
+      properties:
+        FloorNumber:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: New number of the floor the space is on.
+        LocationNotes:
+          title: String update value
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: New location notes for the space.
+      additionalProperties: false
+      x-schema-id: SpaceDataUpdateParameters
+    ResourceResult:
+      title: ResourceResult
+      type: object
+      properties:
+        Resources:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/Resource'
+          description: The resources of the enterprise.
+        ResourceCategories:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ResourceCategory'
+          description: Categories of resources in the enterprise.
+          deprecated: true
+        ResourceCategoryAssignments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ResourceCategoryAssignment'
+          description: Assignments of resources to categories.
+          deprecated: true
+        ResourceCategoryImageAssignments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ResourceCategoryImageAssignment'
+          description: Assignments of images to categories.
+          deprecated: true
+        ResourceFeatures:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ResourceFeature'
+          description: Features of resources in the enterprise.
+          deprecated: true
+        ResourceFeatureAssignments:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ResourceFeatureAssignment'
+          description: Assignments of resource features to resources.
+          deprecated: true
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. `null`, then the latest or most recent items will be returned.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ResourceResult
+    ResourceFeature:
+      title: Resource feature
+      required:
+      - Classification
+      - CreatedUtc
+      - Descriptions
+      - Id
+      - IsActive
+      - Names
+      - ServiceId
+      - ShortNames
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of `ResourceFeature`.
+          format: uuid
+        ServiceId:
+          type: string
+          description: Unique identifier of `Service` the resource feature belongs to.
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the `ResourceFeature` is active.
+        Classification:
+          $ref: '#/components/schemas/ResourceFeatureClassification'
+        Names:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the name.
+          x-schema-id: LocalizedStrings
+        ShortNames:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the short name.
+          x-schema-id: LocalizedStrings
+        Descriptions:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the description.
+          x-schema-id: LocalizedStrings
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the resource feature in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the resource feature in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: ResourceFeature
+    ResourceFilterParameters:
+      title: ResourceFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Extent
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        ResourceIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the requested resources.
+        Names:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Names of the requested resources.
+        Extent:
+          title: Resource extent
+          allOf:
+          - $ref: '#/components/schemas/ResourceExtent'
+          description: Extent of data to be returned.
+        CreatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resources were created.
+          x-max-interval-in-months: 3
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the resources were updated.
+          x-max-interval-in-months: 3
+      additionalProperties: false
+      x-schema-id: ResourceFilterParameters

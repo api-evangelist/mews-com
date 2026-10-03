@@ -188,6 +188,21 @@ paths:
       x-restricted: true
 components:
   schemas:
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     SourceAssignmentResult:
       title: SourceAssignmentResult
       required:
@@ -259,70 +274,25 @@ components:
           x-max-interval-in-months: 3
       additionalProperties: false
       x-schema-id: SourceAssignmentFilterParameters
-    SourceAssignmentV20240920:
-      title: Source assignments (ver 2024-09-20)
+    SourceAssignmentResultV20240920:
+      title: SourceAssignmentResultV20240920
       required:
-      - Id
-      - IsPrimary
-      - ReservationId
-      - SourceId
-      - UpdatedUtc
+      - SourceAssignments
       type: object
       properties:
-        Id:
-          type: string
-          description: Unique identifier of the source assignment.
-          format: uuid
-        ReservationId:
-          type: string
-          description: Unique identifier of the `Reservation`.
-          format: uuid
-        SourceId:
-          type: string
-          description: Unique identifier of the `Source`.
-          format: uuid
-        IsPrimary:
-          type: boolean
-          description: Specifies whether the source is primary for the `Reservation`.
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Date and time of the source assignment last update in UTC timezone in ISO 8601 format.
-          format: date-time
+        SourceAssignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceAssignmentV20240920'
+          description: Assignments between `Reservation` and `Source`.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Opaque pagination cursor which can be used in `Limitation` to fetch newer source assignments.
+          format: string
       additionalProperties: false
-      x-schema-id: SourceAssignmentV20240920
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
+      x-schema-id: SourceAssignmentResultV20240920
     SourceAssignmentFilterParametersV20240920:
       title: SourceAssignmentFilterParametersV20240920
       required:
@@ -393,25 +363,6 @@ components:
       additionalProperties: false
       description: Limitation on the quantity of data returned.
       x-schema-id: Limitation
-    SourceAssignmentResultV20240920:
-      title: SourceAssignmentResultV20240920
-      required:
-      - SourceAssignments
-      type: object
-      properties:
-        SourceAssignments:
-          type: array
-          items:
-            $ref: '#/components/schemas/SourceAssignmentV20240920'
-          description: Assignments between `Reservation` and `Source`.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Opaque pagination cursor which can be used in `Limitation` to fetch newer source assignments.
-          format: string
-      additionalProperties: false
-      x-schema-id: SourceAssignmentResultV20240920
     SourceAssignment:
       title: Source assignment
       required:
@@ -438,3 +389,52 @@ components:
           description: Specifies the primary source for the [Reservation group](https://mews-systems.gitbook.io/connector-api/operations/reservations/#reservation-group).
       additionalProperties: false
       x-schema-id: SourceAssignment
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    SourceAssignmentV20240920:
+      title: Source assignments (ver 2024-09-20)
+      required:
+      - Id
+      - IsPrimary
+      - ReservationId
+      - SourceId
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the source assignment.
+          format: uuid
+        ReservationId:
+          type: string
+          description: Unique identifier of the `Reservation`.
+          format: uuid
+        SourceId:
+          type: string
+          description: Unique identifier of the `Source`.
+          format: uuid
+        IsPrimary:
+          type: boolean
+          description: Specifies whether the source is primary for the `Reservation`.
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Date and time of the source assignment last update in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      x-schema-id: SourceAssignmentV20240920

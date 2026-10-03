@@ -171,28 +171,35 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    MessageThreadAddParameters:
-      title: MessageThreadAddParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - OriginalSender
-      - Subject
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        ClientToken:
-          minLength: 1
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    MessageThread:
+      title: Message thread
+      required:
+      - CreatedUtc
+      - Id
+      - OriginalSender
+      - Subject
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
           type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
+          description: Unique identifier of the message thread.
+          format: uuid
         OriginalSender:
           minLength: 1
           type: string
@@ -201,8 +208,34 @@ components:
           minLength: 1
           type: string
           description: Subject of the message thread.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the message thread in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the message thread in UTC timezone in ISO 8601 format.
+          format: date-time
+        IsResolved:
+          type: boolean
+          description: Whether the message thread is resolved.
       additionalProperties: false
-      x-schema-id: MessageThreadAddParameters
+      x-schema-id: MessageThread
+    MessageThreadAddResult:
+      title: MessageThreadAddResult
+      required:
+      - MessageThreads
+      type: object
+      properties:
+        MessageThreads:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageThread'
+          description: The created message threads.
+      additionalProperties: false
+      x-schema-id: MessageThreadAddResult
     MessageThreadResult:
       title: MessageThreadResult
       required:
@@ -222,51 +255,6 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: MessageThreadResult
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    MessageThreadAddResult:
-      title: MessageThreadAddResult
-      required:
-      - MessageThreads
-      type: object
-      properties:
-        MessageThreads:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageThread'
-          description: The created message threads.
-      additionalProperties: false
-      x-schema-id: MessageThreadAddResult
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     MessageThreadFilterParameters:
       title: MessageThreadFilterParameters
       required:
@@ -343,20 +331,45 @@ components:
       additionalProperties: false
       description: Limitation on the quantity of data returned.
       x-schema-id: Limitation
-    MessageThread:
-      title: Message thread
-      required:
-      - CreatedUtc
-      - Id
-      - OriginalSender
-      - Subject
-      - UpdatedUtc
+    TimeFilterInterval:
+      title: Time interval
       type: object
       properties:
-        Id:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    MessageThreadAddParameters:
+      title: MessageThreadAddParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - OriginalSender
+      - Subject
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
           type: string
-          description: Unique identifier of the message thread.
-          format: uuid
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
         OriginalSender:
           minLength: 1
           type: string
@@ -365,18 +378,5 @@ components:
           minLength: 1
           type: string
           description: Subject of the message thread.
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the message thread in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the message thread in UTC timezone in ISO 8601 format.
-          format: date-time
-        IsResolved:
-          type: boolean
-          description: Whether the message thread is resolved.
       additionalProperties: false
-      x-schema-id: MessageThread
+      x-schema-id: MessageThreadAddParameters
