@@ -168,6 +168,72 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    LanguageResult:
+      title: LanguageResult
+      required:
+      - Languages
+      type: object
+      properties:
+        Languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Language'
+          description: The supported languages.
+      additionalProperties: false
+      x-schema-id: LanguageResult
+    LanguageTextParameters:
+      title: LanguageTextParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - LanguageCodes
+      - Scope
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        LanguageCodes:
+          type: array
+          items:
+            type: string
+          description: Language-culture codes of the `Languages` whose texts to return.
+        Scope:
+          minLength: 1
+          type: string
+          description: Scope of texts to return.
+      additionalProperties: false
+      x-schema-id: LanguageTextParameters
+    LanguageTexts:
+      title: Language texts
+      required:
+      - LanguageCode
+      - Texts
+      type: object
+      properties:
+        LanguageCode:
+          minLength: 1
+          type: string
+          description: Language-culture code of the `Language`.
+        Texts:
+          title: Dictionary
+          type: object
+          additionalProperties:
+            type: string
+          description: Texts in the specified language by their keys.
+          x-schema-id: Dictionary
+      additionalProperties: false
+      x-schema-id: LanguageTexts
     Parameters:
       title: Parameters
       required:
@@ -245,69 +311,3 @@ components:
           description: Local name of the language.
       additionalProperties: false
       x-schema-id: Language
-    LanguageTextParameters:
-      title: LanguageTextParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - LanguageCodes
-      - Scope
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        LanguageCodes:
-          type: array
-          items:
-            type: string
-          description: Language-culture codes of the `Languages` whose texts to return.
-        Scope:
-          minLength: 1
-          type: string
-          description: Scope of texts to return.
-      additionalProperties: false
-      x-schema-id: LanguageTextParameters
-    LanguageTexts:
-      title: Language texts
-      required:
-      - LanguageCode
-      - Texts
-      type: object
-      properties:
-        LanguageCode:
-          minLength: 1
-          type: string
-          description: Language-culture code of the `Language`.
-        Texts:
-          title: Dictionary
-          type: object
-          additionalProperties:
-            type: string
-          description: Texts in the specified language by their keys.
-          x-schema-id: Dictionary
-      additionalProperties: false
-      x-schema-id: LanguageTexts
-    LanguageResult:
-      title: LanguageResult
-      required:
-      - Languages
-      type: object
-      properties:
-        Languages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Language'
-          description: The supported languages.
-      additionalProperties: false
-      x-schema-id: LanguageResult

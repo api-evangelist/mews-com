@@ -457,70 +457,304 @@ paths:
       x-restricted: true
 components:
   schemas:
-    ServiceAvailabilityFilterParametersV20240122:
-      title: ServiceAvailabilityFilterParametersV20240122
+    ResourceCategoryAvailabilityV20240122:
+      title: Resource category availability (ver 2024-01-22)
       required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - FirstTimeUnitStartUtc
-      - LastTimeUnitStartUtc
       - Metrics
-      - ServiceId
+      - ResourceCategoryId
       type: object
       properties:
-        ClientToken:
-          minLength: 1
+        ResourceCategoryId:
           type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ServiceId:
-          type: string
-          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service) whose availability should be returned.
+          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/resources#resource-category).
           format: uuid
+        Metrics:
+          title: ResourceAvailabilityMetricTypeInt32IEnumerableIDictionary
+          type: object
+          properties:
+            OutOfOrderBlocks:
+              type: array
+              items:
+                type: integer
+                format: int32
+            PublicAvailabilityAdjustment:
+              type: array
+              items:
+                type: integer
+                format: int32
+            OtherServiceReservationCount:
+              type: array
+              items:
+                type: integer
+                format: int32
+            Occupied:
+              type: array
+              items:
+                type: integer
+                format: int32
+            ConfirmedReservations:
+              type: array
+              items:
+                type: integer
+                format: int32
+            OptionalReservations:
+              type: array
+              items:
+                type: integer
+                format: int32
+            BlockAvailability:
+              type: array
+              items:
+                type: integer
+                format: int32
+            AllocatedBlockAvailability:
+              type: array
+              items:
+                type: integer
+                format: int32
+            UsableResources:
+              type: array
+              items:
+                type: integer
+                format: int32
+            ActiveResources:
+              type: array
+              items:
+                type: integer
+                format: int32
+            HouseUse:
+              type: array
+              items:
+                type: integer
+                format: int32
+          additionalProperties: false
+          description: Dictionary keys are names of [Service availability metrics](https://mews-systems.gitbook.io/connector-api/operations/services#service-availability-metrics), values are arrays of integers with metric values for corresponding time unit in `TimeUnitStartsUtc`.
+          x-schema-id: ResourceAvailabilityMetricTypeInt32IEnumerableIDictionary
+      additionalProperties: false
+      x-schema-id: ResourceCategoryAvailabilityV20240122
+    PaxCount:
+      title: PaxCount
+      required:
+      - PersonCount
+      - UnitCount
+      type: object
+      properties:
+        PersonCount:
+          type: integer
+          description: Predicted guest count that will be assigned to the Resource. The guest count must fit within the Resource Category maximum capacity.
+          format: int32
+        UnitCount:
+          type: integer
+          description: Positive number of adjustments that are assigned to `PersonCount`. The sum of all `UnitCount` in `PaxCounts` should match the adjustment value applied to the interval.
+          format: int32
+      additionalProperties: false
+      x-schema-id: PaxCount
+    Unit:
+      type: object
+      additionalProperties: false
+    Int32NullableUpdateValue:
+      title: Int32 update value
+      type: object
+      properties:
+        Value:
+          type:
+          - integer
+          - 'null'
+          description: Value which is to be updated.
+          format: int32
+      additionalProperties: false
+      x-schema-id: Int32NullableUpdateValue
+    BookableServiceData:
+      title: Bookable service data
+      required:
+      - EndOffset
+      - OccupancyEndOffset
+      - OccupancyStartOffset
+      - StartOffset
+      - TimeUnit
+      - TimeUnitPeriod
+      type: object
+      properties:
+        StartOffset:
+          minLength: 1
+          type: string
+          description: Offset from the start of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the default start of the service; expressed in ISO 8601 duration format.
+        EndOffset:
+          minLength: 1
+          type: string
+          description: Offset from the end of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the default end of the service; expressed in ISO 8601 duration format.
+        OccupancyStartOffset:
+          minLength: 1
+          type: string
+          description: Offset from the start of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the occupancy start of the service; expressed in ISO 8601 duration format. 'Occupancy start' is used for availability and reporting purposes, it implies the time at which the booked resource is considered occupied.
+        OccupancyEndOffset:
+          minLength: 1
+          type: string
+          description: Offset from the end of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the occupancy end of the service; expressed in ISO 8601 duration format. 'Occupancy end' is used for availability and reporting purposes, it implies the time at which the booked resource is no longer considered occupied.
+        TimeUnit:
+          title: Time unit period
+          allOf:
+          - $ref: '#/components/schemas/TimeUnitPeriodEnum'
+          description: '
+
+
+            Day
+
+
+            Month
+
+
+            Hour'
+          deprecated: true
+          x-enumNames:
+          - Day
+          - Month
+          - Hour
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          x-deprecatedMessage: Use `TimeUnitPeriod` instead.
+        TimeUnitPeriod:
+          title: Time unit period
+          allOf:
+          - $ref: '#/components/schemas/TimeUnitPeriodEnum'
+          description: 'The length of time or period represented by a [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/), for which the service can be booked.
+
+
+            Day
+
+
+            Month
+
+
+            Hour'
+          x-enumNames:
+          - Day
+          - Month
+          - Hour
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+      additionalProperties: false
+      x-schema-id: BookableServiceData
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ServiceOptions:
+      title: Service options
+      required:
+      - BillAsPackage
+      type: object
+      properties:
+        BillAsPackage:
+          type: boolean
+          description: Products should be displayed as a single package instead of individual items.
+      additionalProperties: false
+      description: Options of the service.
+      x-schema-id: ServiceOptions
+    ServiceAvailabilityUpdateData:
+      title: Availability update
+      required:
+      - FirstTimeUnitStartUtc
+      - LastTimeUnitStartUtc
+      - ResourceCategoryId
+      - UnitCountAdjustment
+      type: object
+      properties:
         FirstTimeUnitStartUtc:
           minLength: 1
           type: string
-          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/), in UTC timezone ISO 8601 format.
+          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format.
           format: date-time
         LastTimeUnitStartUtc:
           minLength: 1
           type: string
-          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/): 367 hours if hours, 367 days if days, or 60 months if months.'
+          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units): 367 hours if hours, 367 days if days, or 60 months if months.'
           format: date-time
-        Metrics:
-          minItems: 1
-          uniqueItems: true
-          type: array
-          items:
-            $ref: '#/components/schemas/ResourceAvailabilityMetricTypeEnum'
-          description: Set of [Service availability metrics](https://mews-systems.gitbook.io/connector-api/operations/services/#service-availability-metrics) to be returned.
-      additionalProperties: false
-      x-schema-id: ServiceAvailabilityFilterParametersV20240122
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
         StartUtc:
           type:
           - string
           - 'null'
           format: date-time
+          deprecated: true
         EndUtc:
           type:
           - string
           - 'null'
           format: date-time
+          deprecated: true
+        ResourceCategoryId:
+          type: string
+          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/resources#resource-category) whose availability to update.
+          format: uuid
+        UnitCountAdjustment:
+          title: Int32 update value
+          allOf:
+          - $ref: '#/components/schemas/Int32NullableUpdateValue'
+          description: Adjustment value to be applied on the interval, can be both positive and negative (relative adjustment, not an absolute number). If specified without `Value` parameter, removes all adjustments within the interval.
+        AvailabilityBlockId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the [Availability block](https://mews-systems.gitbook.io/connector-api/operations/availabilityblocks#availability-block) whose availability to update.
+          format: uuid
+        PaxCounts:
+          maxItems: 5
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/PaxCount'
+          description: Collection of predicted occupancy of availability adjustments. Relates how many adjustments are assigned to each count of guests.
       additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
+      x-schema-id: ServiceAvailabilityUpdateData
+    ServiceResult:
+      title: ServiceResult
+      required:
+      - Services
+      type: object
+      properties:
+        Services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+          description: Services offered by the enterprise.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ServiceResult
+    AdditionalServiceData:
+      title: Additional service data
+      required:
+      - Promotions
+      type: object
+      properties:
+        Promotions:
+          allOf:
+          - $ref: '#/components/schemas/Promotions'
+          description: Promotions of the service.
+      additionalProperties: false
+      x-schema-id: AdditionalServiceData
     ServiceAvailabilityResultV20240122:
       title: ServiceAvailabilityResultV20240122
       required:
@@ -541,6 +775,184 @@ components:
           description: Resource category availabilities. Can be empty if no resource categories are assigned to the service.
       additionalProperties: false
       x-schema-id: ServiceAvailabilityResultV20240122
+    ServiceAvailabilityFilterParameters:
+      title: ServiceAvailabilityFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - FirstTimeUnitStartUtc
+      - LastTimeUnitStartUtc
+      - ServiceId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ServiceId:
+          type: string
+          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/#service) whose availability should be returned.
+          format: uuid
+        FirstTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/), in UTC timezone ISO 8601 format.
+          format: date-time
+        LastTimeUnitStartUtc:
+          minLength: 1
+          type: string
+          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/): 367 hours if hours, 367 days if days, or 60 months if months.'
+          format: date-time
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          deprecated: true
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          deprecated: true
+      additionalProperties: false
+      x-schema-id: ServiceAvailabilityFilterParameters
+    Promotions:
+      title: Promotions
+      required:
+      - AfterCheckIn
+      - AfterCheckOut
+      - BeforeCheckIn
+      - BeforeCheckOut
+      - DuringCheckOut
+      - DuringStay
+      type: object
+      properties:
+        BeforeCheckIn:
+          type: boolean
+          description: Whether it can be promoted before check-in.
+        AfterCheckIn:
+          type: boolean
+          description: Whether it can be promoted after check-in.
+        DuringStay:
+          type: boolean
+          description: Whether it can be promoted during stay.
+        BeforeCheckOut:
+          type: boolean
+          description: Whether it can be promoted before check-out.
+        AfterCheckOut:
+          type: boolean
+          description: Whether it can be promoted after check-out.
+        DuringCheckOut:
+          type: boolean
+          description: Whether it can be promoted during check-out.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Promotions
+    CategoryAvailability:
+      title: Resource category availability
+      required:
+      - Adjustments
+      - Availabilities
+      - CategoryId
+      type: object
+      properties:
+        CategoryId:
+          type: string
+          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/resources#resource-category).
+          format: uuid
+        Availabilities:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: Absolute availabilities of the resource category in the covered dates.
+        Adjustments:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: Relative availability adjustments set for resource category in the covered dates.
+      additionalProperties: false
+      x-schema-id: CategoryAvailability
+    ServiceAvailabilityUpdateParameters:
+      title: ServiceAvailabilityUpdateParameters
+      required:
+      - AccessToken
+      - AvailabilityUpdates
+      - Client
+      - ClientToken
+      - ServiceId
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ServiceId:
+          type: string
+          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/#service) to update.
+          format: uuid
+        AvailabilityUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceAvailabilityUpdateData'
+          description: Availability updates.
+      additionalProperties: false
+      x-schema-id: ServiceAvailabilityUpdateParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    ServiceDataDiscriminatorEnum:
+      title: Service data discriminator
+      enum:
+      - Bookable
+      - Additional
+      type: string
+      description: '
+
+
+        Bookable
+
+
+        Additional'
+      x-enumNames:
+      - Bookable
+      - Additional
+      x-enumDescriptions:
+      - ''
+      - ''
     Service:
       title: Service
       required:
@@ -668,132 +1080,6 @@ components:
           description: Resource category availabilities.
       additionalProperties: false
       x-schema-id: ServiceAvailabilityResult
-    PaxCount:
-      title: PaxCount
-      required:
-      - PersonCount
-      - UnitCount
-      type: object
-      properties:
-        PersonCount:
-          type: integer
-          description: Predicted guest count that will be assigned to the Resource. The guest count must fit within the Resource Category maximum capacity.
-          format: int32
-        UnitCount:
-          type: integer
-          description: Positive number of adjustments that are assigned to `PersonCount`. The sum of all `UnitCount` in `PaxCounts` should match the adjustment value applied to the interval.
-          format: int32
-      additionalProperties: false
-      x-schema-id: PaxCount
-    ServiceAvailabilityUpdateParameters:
-      title: ServiceAvailabilityUpdateParameters
-      required:
-      - AccessToken
-      - AvailabilityUpdates
-      - Client
-      - ClientToken
-      - ServiceId
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ServiceId:
-          type: string
-          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/#service) to update.
-          format: uuid
-        AvailabilityUpdates:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceAvailabilityUpdateData'
-          description: Availability updates.
-      additionalProperties: false
-      x-schema-id: ServiceAvailabilityUpdateParameters
-    CategoryAvailability:
-      title: Resource category availability
-      required:
-      - Adjustments
-      - Availabilities
-      - CategoryId
-      type: object
-      properties:
-        CategoryId:
-          type: string
-          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/resources#resource-category).
-          format: uuid
-        Availabilities:
-          type: array
-          items:
-            type: integer
-            format: int32
-          description: Absolute availabilities of the resource category in the covered dates.
-        Adjustments:
-          type: array
-          items:
-            type: integer
-            format: int32
-          description: Relative availability adjustments set for resource category in the covered dates.
-      additionalProperties: false
-      x-schema-id: CategoryAvailability
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
-          format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    Int32NullableUpdateValue:
-      title: Int32 update value
-      type: object
-      properties:
-        Value:
-          type:
-          - integer
-          - 'null'
-          description: Value which is to be updated.
-          format: int32
-      additionalProperties: false
-      x-schema-id: Int32NullableUpdateValue
-    ServiceDataDiscriminatorEnum:
-      title: Service data discriminator
-      enum:
-      - Bookable
-      - Additional
-      type: string
-      description: '
-
-
-        Bookable
-
-
-        Additional'
-      x-enumNames:
-      - Bookable
-      - Additional
-      x-enumDescriptions:
-      - ''
-      - ''
     TimeUnitPeriodEnum:
       title: Time unit period
       enum:
@@ -819,321 +1105,12 @@ components:
       - ''
       - ''
       - ''
-    Unit:
-      type: object
-      additionalProperties: false
-    ResourceCategoryAvailabilityV20240122:
-      title: Resource category availability (ver 2024-01-22)
-      required:
-      - Metrics
-      - ResourceCategoryId
-      type: object
-      properties:
-        ResourceCategoryId:
-          type: string
-          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/resources#resource-category).
-          format: uuid
-        Metrics:
-          title: ResourceAvailabilityMetricTypeInt32IEnumerableIDictionary
-          type: object
-          properties:
-            OutOfOrderBlocks:
-              type: array
-              items:
-                type: integer
-                format: int32
-            PublicAvailabilityAdjustment:
-              type: array
-              items:
-                type: integer
-                format: int32
-            OtherServiceReservationCount:
-              type: array
-              items:
-                type: integer
-                format: int32
-            Occupied:
-              type: array
-              items:
-                type: integer
-                format: int32
-            ConfirmedReservations:
-              type: array
-              items:
-                type: integer
-                format: int32
-            OptionalReservations:
-              type: array
-              items:
-                type: integer
-                format: int32
-            BlockAvailability:
-              type: array
-              items:
-                type: integer
-                format: int32
-            AllocatedBlockAvailability:
-              type: array
-              items:
-                type: integer
-                format: int32
-            UsableResources:
-              type: array
-              items:
-                type: integer
-                format: int32
-            ActiveResources:
-              type: array
-              items:
-                type: integer
-                format: int32
-            HouseUse:
-              type: array
-              items:
-                type: integer
-                format: int32
-          additionalProperties: false
-          description: Dictionary keys are names of [Service availability metrics](https://mews-systems.gitbook.io/connector-api/operations/services#service-availability-metrics), values are arrays of integers with metric values for corresponding time unit in `TimeUnitStartsUtc`.
-          x-schema-id: ResourceAvailabilityMetricTypeInt32IEnumerableIDictionary
-      additionalProperties: false
-      x-schema-id: ResourceCategoryAvailabilityV20240122
-    AdditionalServiceData:
-      title: Additional service data
-      required:
-      - Promotions
-      type: object
-      properties:
-        Promotions:
-          allOf:
-          - $ref: '#/components/schemas/Promotions'
-          description: Promotions of the service.
-      additionalProperties: false
-      x-schema-id: AdditionalServiceData
-    ServiceOptions:
-      title: Service options
-      required:
-      - BillAsPackage
-      type: object
-      properties:
-        BillAsPackage:
-          type: boolean
-          description: Products should be displayed as a single package instead of individual items.
-      additionalProperties: false
-      description: Options of the service.
-      x-schema-id: ServiceOptions
-    BookableServiceData:
-      title: Bookable service data
-      required:
-      - EndOffset
-      - OccupancyEndOffset
-      - OccupancyStartOffset
-      - StartOffset
-      - TimeUnit
-      - TimeUnitPeriod
-      type: object
-      properties:
-        StartOffset:
-          minLength: 1
-          type: string
-          description: Offset from the start of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the default start of the service; expressed in ISO 8601 duration format.
-        EndOffset:
-          minLength: 1
-          type: string
-          description: Offset from the end of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the default end of the service; expressed in ISO 8601 duration format.
-        OccupancyStartOffset:
-          minLength: 1
-          type: string
-          description: Offset from the start of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the occupancy start of the service; expressed in ISO 8601 duration format. 'Occupancy start' is used for availability and reporting purposes, it implies the time at which the booked resource is considered occupied.
-        OccupancyEndOffset:
-          minLength: 1
-          type: string
-          description: Offset from the end of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the occupancy end of the service; expressed in ISO 8601 duration format. 'Occupancy end' is used for availability and reporting purposes, it implies the time at which the booked resource is no longer considered occupied.
-        TimeUnit:
-          title: Time unit period
-          allOf:
-          - $ref: '#/components/schemas/TimeUnitPeriodEnum'
-          description: '
-
-
-            Day
-
-
-            Month
-
-
-            Hour'
-          deprecated: true
-          x-enumNames:
-          - Day
-          - Month
-          - Hour
-          x-enumDescriptions:
-          - ''
-          - ''
-          - ''
-          x-deprecatedMessage: Use `TimeUnitPeriod` instead.
-        TimeUnitPeriod:
-          title: Time unit period
-          allOf:
-          - $ref: '#/components/schemas/TimeUnitPeriodEnum'
-          description: 'The length of time or period represented by a [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/), for which the service can be booked.
-
-
-            Day
-
-
-            Month
-
-
-            Hour'
-          x-enumNames:
-          - Day
-          - Month
-          - Hour
-          x-enumDescriptions:
-          - ''
-          - ''
-          - ''
-      additionalProperties: false
-      x-schema-id: BookableServiceData
-    ServiceResult:
-      title: ServiceResult
-      required:
-      - Services
-      type: object
-      properties:
-        Services:
-          type: array
-          items:
-            $ref: '#/components/schemas/Service'
-          description: Services offered by the enterprise.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: ServiceResult
-    ServiceAvailabilityUpdateData:
-      title: Availability update
-      required:
-      - FirstTimeUnitStartUtc
-      - LastTimeUnitStartUtc
-      - ResourceCategoryId
-      - UnitCountAdjustment
-      type: object
-      properties:
-        FirstTimeUnitStartUtc:
-          minLength: 1
-          type: string
-          description: Start of the time interval, expressed as the timestamp for the start of the first [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format.
-          format: date-time
-        LastTimeUnitStartUtc:
-          minLength: 1
-          type: string
-          description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units): 367 hours if hours, 367 days if days, or 60 months if months.'
-          format: date-time
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          deprecated: true
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          deprecated: true
-        ResourceCategoryId:
-          type: string
-          description: Unique identifier of the [Resource category](https://mews-systems.gitbook.io/connector-api/operations/resources#resource-category) whose availability to update.
-          format: uuid
-        UnitCountAdjustment:
-          title: Int32 update value
-          allOf:
-          - $ref: '#/components/schemas/Int32NullableUpdateValue'
-          description: Adjustment value to be applied on the interval, can be both positive and negative (relative adjustment, not an absolute number). If specified without `Value` parameter, removes all adjustments within the interval.
-        AvailabilityBlockId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the [Availability block](https://mews-systems.gitbook.io/connector-api/operations/availabilityblocks#availability-block) whose availability to update.
-          format: uuid
-        PaxCounts:
-          maxItems: 5
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/PaxCount'
-          description: Collection of predicted occupancy of availability adjustments. Relates how many adjustments are assigned to each count of guests.
-      additionalProperties: false
-      x-schema-id: ServiceAvailabilityUpdateData
-    ServiceFilterParameters:
-      title: ServiceFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        ServiceIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Services](https://mews-systems.gitbook.io/connector-api/operations/services/#service).
-        ServiceType:
-          allOf:
-          - $ref: '#/components/schemas/ServiceDataDiscriminatorEnum'
-          description: 'Filter services by type.
-
-
-            Bookable
-
-
-            Additional'
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which `Services` were updated.
-          x-max-interval-in-months: 3
-      additionalProperties: false
-      x-schema-id: ServiceFilterParameters
+    ServiceDataDiscriminator:
+      title: Service data discriminator
+      enum:
+      - Bookable
+      - Additional
+      type: string
     ResourceAvailabilityMetricTypeEnum:
       title: Service availability metrics
       enum:
@@ -1207,61 +1184,32 @@ components:
       - Number of usable resources (i.e. which are not out of order).
       - Number of active resources.
       - Number of resources marked as house use (internal use).
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
+    TimeFilterInterval:
+      title: Time interval
       type: object
       properties:
-        Message:
+        StartUtc:
           type:
           - string
           - 'null'
-        RequestId:
+          format: date-time
+        EndUtc:
           type:
           - string
           - 'null'
-        Details: {}
+          format: date-time
       additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    Promotions:
-      title: Promotions
-      required:
-      - AfterCheckIn
-      - AfterCheckOut
-      - BeforeCheckIn
-      - BeforeCheckOut
-      - DuringCheckOut
-      - DuringStay
-      type: object
-      properties:
-        BeforeCheckIn:
-          type: boolean
-          description: Whether it can be promoted before check-in.
-        AfterCheckIn:
-          type: boolean
-          description: Whether it can be promoted after check-in.
-        DuringStay:
-          type: boolean
-          description: Whether it can be promoted during stay.
-        BeforeCheckOut:
-          type: boolean
-          description: Whether it can be promoted before check-out.
-        AfterCheckOut:
-          type: boolean
-          description: Whether it can be promoted after check-out.
-        DuringCheckOut:
-          type: boolean
-          description: Whether it can be promoted during check-out.
-      additionalProperties: false
-      description: ''
-      x-schema-id: Promotions
-    ServiceAvailabilityFilterParameters:
-      title: ServiceAvailabilityFilterParameters
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    ServiceAvailabilityFilterParametersV20240122:
+      title: ServiceAvailabilityFilterParametersV20240122
       required:
       - AccessToken
       - Client
       - ClientToken
       - FirstTimeUnitStartUtc
       - LastTimeUnitStartUtc
+      - Metrics
       - ServiceId
       type: object
       properties:
@@ -1279,7 +1227,7 @@ components:
           description: Name and version of the client application.
         ServiceId:
           type: string
-          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/#service) whose availability should be returned.
+          description: Unique identifier of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service) whose availability should be returned.
           format: uuid
         FirstTimeUnitStartUtc:
           minLength: 1
@@ -1291,23 +1239,75 @@ components:
           type: string
           description: 'End of the time interval, expressed as the timestamp for the start of the last [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/), in UTC timezone ISO 8601 format. The maximum size of time interval depends on the service''s [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/): 367 hours if hours, 367 days if days, or 60 months if months.'
           format: date-time
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          deprecated: true
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          deprecated: true
+        Metrics:
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceAvailabilityMetricTypeEnum'
+          description: Set of [Service availability metrics](https://mews-systems.gitbook.io/connector-api/operations/services/#service-availability-metrics) to be returned.
       additionalProperties: false
-      x-schema-id: ServiceAvailabilityFilterParameters
-    ServiceDataDiscriminator:
-      title: Service data discriminator
-      enum:
-      - Bookable
-      - Additional
-      type: string
+      x-schema-id: ServiceAvailabilityFilterParametersV20240122
+    ServiceFilterParameters:
+      title: ServiceFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        ServiceIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Services](https://mews-systems.gitbook.io/connector-api/operations/services/#service).
+        ServiceType:
+          allOf:
+          - $ref: '#/components/schemas/ServiceDataDiscriminatorEnum'
+          description: 'Filter services by type.
+
+
+            Bookable
+
+
+            Additional'
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which `Services` were updated.
+          x-max-interval-in-months: 3
+      additionalProperties: false
+      x-schema-id: ServiceFilterParameters

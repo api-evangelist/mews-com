@@ -100,65 +100,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    Parameters:
-      title: Parameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-      additionalProperties: false
-      x-schema-id: Parameters
-    Country:
-      title: Country
-      required:
-      - Code
-      - EnglishName
-      - SovereignCountryCode
-      type: object
-      properties:
-        Code:
-          minLength: 1
-          type: string
-          description: ISO 3166-1 alpha-2 code, e.g. `CZ` or `SK`.
-        SovereignCountryCode:
-          minLength: 1
-          type: string
-          description: ISO 3166-1 alpha-2 code of the sovereign country. May differ from `Code` for dependent territories.
-        EnglishName:
-          minLength: 1
-          type: string
-          description: English name of the country.
-      additionalProperties: false
-      x-schema-id: Country
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     CountryGroup:
       title: Country group
       required:
@@ -182,38 +123,43 @@ components:
           description: Codes of countries included in the group, in ISO 3166-1 alpha-2 format.
       additionalProperties: false
       x-schema-id: CountryGroup
-    CountryResult:
-      title: CountryResult
+    Parameters:
+      title: Parameters
       required:
-      - Countries
-      - CountryGroups
-      - CountryRules
-      - CountrySubdivisions
+      - AccessToken
+      - Client
+      - ClientToken
       type: object
       properties:
-        Countries:
-          type: array
-          items:
-            $ref: '#/components/schemas/Country'
-          description: The supported countries.
-        CountrySubdivisions:
-          type: array
-          items:
-            $ref: '#/components/schemas/CountrySubdivision'
-          description: The supported country subdivisions.
-        CountryRules:
-          type: array
-          items:
-            $ref: '#/components/schemas/CountryRule'
-          description: Country-specific rules
-        CountryGroups:
-          title: Country group
-          type: array
-          items:
-            $ref: '#/components/schemas/CountryGroup'
-          description: The supported country groups.
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
       additionalProperties: false
-      x-schema-id: CountryResult
+      x-schema-id: Parameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     CountrySubdivision:
       title: Country subdivision
       required:
@@ -257,3 +203,57 @@ components:
       additionalProperties: false
       description: Country-specific rules
       x-schema-id: CountryRule
+    CountryResult:
+      title: CountryResult
+      required:
+      - Countries
+      - CountryGroups
+      - CountryRules
+      - CountrySubdivisions
+      type: object
+      properties:
+        Countries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Country'
+          description: The supported countries.
+        CountrySubdivisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountrySubdivision'
+          description: The supported country subdivisions.
+        CountryRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryRule'
+          description: Country-specific rules
+        CountryGroups:
+          title: Country group
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryGroup'
+          description: The supported country groups.
+      additionalProperties: false
+      x-schema-id: CountryResult
+    Country:
+      title: Country
+      required:
+      - Code
+      - EnglishName
+      - SovereignCountryCode
+      type: object
+      properties:
+        Code:
+          minLength: 1
+          type: string
+          description: ISO 3166-1 alpha-2 code, e.g. `CZ` or `SK`.
+        SovereignCountryCode:
+          minLength: 1
+          type: string
+          description: ISO 3166-1 alpha-2 code of the sovereign country. May differ from `Code` for dependent territories.
+        EnglishName:
+          minLength: 1
+          type: string
+          description: English name of the country.
+      additionalProperties: false
+      x-schema-id: Country

@@ -87,21 +87,19 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
+    ExchangeRateResult:
+      title: ExchangeRateResult
+      required:
+      - ExchangeRates
       type: object
       properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
+        ExchangeRates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExchangeRate'
+          description: The available exchange rates.
       additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
+      x-schema-id: ExchangeRateResult
     ExchangeRate:
       title: Exchange rate
       required:
@@ -136,19 +134,6 @@ components:
           format: double
       additionalProperties: false
       x-schema-id: ExchangeRate
-    ExchangeRateResult:
-      title: ExchangeRateResult
-      required:
-      - ExchangeRates
-      type: object
-      properties:
-        ExchangeRates:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExchangeRate'
-          description: The available exchange rates.
-      additionalProperties: false
-      x-schema-id: ExchangeRateResult
     CurrencyAcceptanceFilterParameters:
       title: CurrencyAcceptanceFilterParameters
       required:
@@ -187,3 +172,18 @@ components:
           description: Unique identifiers of the [Enterprises](https://mews-systems.gitbook.io/connector-api/operations/configuration/#enterprise). If not specified, the operation returns the exchange rates for all enterprises within scope of the Access Token.
       additionalProperties: false
       x-schema-id: CurrencyAcceptanceFilterParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult

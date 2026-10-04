@@ -85,6 +85,19 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    CurrencyResult:
+      title: CurrencyResult
+      required:
+      - Currencies
+      type: object
+      properties:
+        Currencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Currency'
+          description: The supported currencies.
+      additionalProperties: false
+      x-schema-id: CurrencyResult
     Parameters:
       title: Parameters
       required:
@@ -107,6 +120,21 @@ components:
           description: Name and version of the client application.
       additionalProperties: false
       x-schema-id: Parameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     Currency:
       title: Currency
       required:
@@ -124,31 +152,3 @@ components:
           format: int32
       additionalProperties: false
       x-schema-id: Currency
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    CurrencyResult:
-      title: CurrencyResult
-      required:
-      - Currencies
-      type: object
-      properties:
-        Currencies:
-          type: array
-          items:
-            $ref: '#/components/schemas/Currency'
-          description: The supported currencies.
-      additionalProperties: false
-      x-schema-id: CurrencyResult

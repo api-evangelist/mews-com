@@ -178,18 +178,326 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    EnterpriseSubscription:
-      title: Enterprise subscription
+    PricingModeEnum:
+      title: Pricing
+      enum:
+      - Gross
+      - Net
+      type: string
+      description: '
+
+
+        Gross (The enterprise shows amount with gross prices.)
+
+
+        Net (The enterprise shows amount with net prices.)'
+      x-enumNames:
+      - Gross
+      - Net
+      x-enumDescriptions:
+      - The enterprise shows amount with gross prices.
+      - The enterprise shows amount with net prices.
+    PaymentCardStorage:
+      title: Payment card storage
+      required:
+      - PublicKey
       type: object
       properties:
-        TaxIdentifier:
+        PublicKey:
+          minLength: 1
+          type: string
+          description: Key for accessing PCI proxy storage.
+      additionalProperties: false
+      description: ''
+      x-schema-id: PaymentCardStorage
+    BookableServiceData:
+      title: Bookable service data
+      required:
+      - EndOffset
+      - OccupancyEndOffset
+      - OccupancyStartOffset
+      - StartOffset
+      - TimeUnit
+      - TimeUnitPeriod
+      type: object
+      properties:
+        StartOffset:
+          minLength: 1
+          type: string
+          description: Offset from the start of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the default start of the service; expressed in ISO 8601 duration format.
+        EndOffset:
+          minLength: 1
+          type: string
+          description: Offset from the end of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the default end of the service; expressed in ISO 8601 duration format.
+        OccupancyStartOffset:
+          minLength: 1
+          type: string
+          description: Offset from the start of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the occupancy start of the service; expressed in ISO 8601 duration format. 'Occupancy start' is used for availability and reporting purposes, it implies the time at which the booked resource is considered occupied.
+        OccupancyEndOffset:
+          minLength: 1
+          type: string
+          description: Offset from the end of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the occupancy end of the service; expressed in ISO 8601 duration format. 'Occupancy end' is used for availability and reporting purposes, it implies the time at which the booked resource is no longer considered occupied.
+        TimeUnit:
+          title: Time unit period
+          allOf:
+          - $ref: '#/components/schemas/TimeUnitPeriodEnum'
+          description: '
+
+
+            Day
+
+
+            Month
+
+
+            Hour'
+          deprecated: true
+          x-enumNames:
+          - Day
+          - Month
+          - Hour
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+          x-deprecatedMessage: Use `TimeUnitPeriod` instead.
+        TimeUnitPeriod:
+          title: Time unit period
+          allOf:
+          - $ref: '#/components/schemas/TimeUnitPeriodEnum'
+          description: 'The length of time or period represented by a [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/), for which the service can be booked.
+
+
+            Day
+
+
+            Month
+
+
+            Hour'
+          x-enumNames:
+          - Day
+          - Month
+          - Hour
+          x-enumDescriptions:
+          - ''
+          - ''
+          - ''
+      additionalProperties: false
+      x-schema-id: BookableServiceData
+    ConfigurationFilterParameters:
+      title: ConfigurationFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        EnterpriseId:
           type:
           - string
           - 'null'
-          description: Tax identifier of the `Enterprise`.
+          description: Unique identifier of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/#enterprise), defaults to the enterprise associated with the given access token.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: ConfigurationFilterParameters
+    AccountingConfiguration:
+      title: Accounting configuration
+      required:
+      - EnabledExternalPaymentTypes
+      - Options
+      - SurchargeConfiguration
+      type: object
+      properties:
+        AdditionalTaxIdentifier:
+          maxLength: 50
+          type:
+          - string
+          - 'null'
+          description: Organization number.
+        CompanyName:
+          maxLength: 100
+          type:
+          - string
+          - 'null'
+          description: Legal name of the company.
+        BankAccountNumber:
+          maxLength: 50
+          type:
+          - string
+          - 'null'
+          description: Bank account number.
+        BankName:
+          maxLength: 100
+          type:
+          - string
+          - 'null'
+          description: Name of the bank.
+        Iban:
+          maxLength: 40
+          type:
+          - string
+          - 'null'
+          description: International Bank Account Number.
+        Bic:
+          maxLength: 11
+          type:
+          - string
+          - 'null'
+          description: Business Identification Code.
+        SurchargeConfiguration:
+          title: Surcharging fees configuration
+          allOf:
+          - $ref: '#/components/schemas/SurchargeConfiguration'
+          description: Configuration for surcharging fees.
+        EnabledExternalPaymentTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalPaymentTypeEnum'
+          description: External payment types that are enabled for the enterprise and can be used in `payments/addExternal`.
+        Options:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingConfigurationOptionEnum'
+          description: Accounting configuration options.
+      additionalProperties: false
+      x-schema-id: AccountingConfiguration
+    ServiceOptions:
+      title: Service options
+      required:
+      - BillAsPackage
+      type: object
+      properties:
+        BillAsPackage:
+          type: boolean
+          description: Products should be displayed as a single package instead of individual items.
+      additionalProperties: false
+      description: Options of the service.
+      x-schema-id: ServiceOptions
+    AdditionalServiceData:
+      title: Additional service data
+      required:
+      - Promotions
+      type: object
+      properties:
+        Promotions:
+          allOf:
+          - $ref: '#/components/schemas/Promotions'
+          description: Promotions of the service.
+      additionalProperties: false
+      x-schema-id: AdditionalServiceData
+    AccountingConfigurationOptionEnum:
+      title: Accounting configuration option
+      enum:
+      - OptionalCreditCardPaymentDetails
+      - ReceivableTrackingEnabled
+      - SeparateDepositsOnBill
+      - AllowModifyingClosedBills
+      - RequireAccountingCategorySetup
+      - GroupTaxesOnBill
+      - DisplayEmployeeNameOnBill
+      - TaxDeclarationOnDeposit
+      - SplitVatByClassificationOnBill
+      - EmailClosedBillsAfterCheckout
+      type: string
+      description: '
+
+
+        OptionalCreditCardPaymentDetails (Optional credit card payment details)
+
+
+        ReceivableTrackingEnabled (Receivable tracking enabled)
+
+
+        SeparateDepositsOnBill (Separate deposits on bill)
+
+
+        AllowModifyingClosedBills (Allow modifying closed bills)
+
+
+        RequireAccountingCategorySetup (Require accounting category setup)
+
+
+        GroupTaxesOnBill (Group taxes on bill)
+
+
+        DisplayEmployeeNameOnBill (Display employee name on bill)
+
+
+        TaxDeclarationOnDeposit (Tax declaration on deposit)
+
+
+        SplitVatByClassificationOnBill (Split VAT by classification on bill)
+
+
+        EmailClosedBillsAfterCheckout (Send system closed bills automatically after checkout)'
+      x-enumNames:
+      - OptionalCreditCardPaymentDetails
+      - ReceivableTrackingEnabled
+      - SeparateDepositsOnBill
+      - AllowModifyingClosedBills
+      - RequireAccountingCategorySetup
+      - GroupTaxesOnBill
+      - DisplayEmployeeNameOnBill
+      - TaxDeclarationOnDeposit
+      - SplitVatByClassificationOnBill
+      - EmailClosedBillsAfterCheckout
+      x-enumDescriptions:
+      - Optional credit card payment details
+      - Receivable tracking enabled
+      - Separate deposits on bill
+      - Allow modifying closed bills
+      - Require accounting category setup
+      - Group taxes on bill
+      - Display employee name on bill
+      - Tax declaration on deposit
+      - Split VAT by classification on bill
+      - Send system closed bills automatically after checkout
+      x-extensible: true
+    Promotions:
+      title: Promotions
+      required:
+      - AfterCheckIn
+      - AfterCheckOut
+      - BeforeCheckIn
+      - BeforeCheckOut
+      - DuringCheckOut
+      - DuringStay
+      type: object
+      properties:
+        BeforeCheckIn:
+          type: boolean
+          description: Whether it can be promoted before check-in.
+        AfterCheckIn:
+          type: boolean
+          description: Whether it can be promoted after check-in.
+        DuringStay:
+          type: boolean
+          description: Whether it can be promoted during stay.
+        BeforeCheckOut:
+          type: boolean
+          description: Whether it can be promoted before check-out.
+        AfterCheckOut:
+          type: boolean
+          description: Whether it can be promoted after check-out.
+        DuringCheckOut:
+          type: boolean
+          description: Whether it can be promoted during check-out.
       additionalProperties: false
       description: ''
-      x-schema-id: EnterpriseSubscription
+      x-schema-id: Promotions
     SurchargeConfiguration:
       title: Surcharging fees configuration
       required:
@@ -294,536 +602,6 @@ components:
           description: Surcharging fee `TaxCode`.
       additionalProperties: false
       x-schema-id: SurchargeConfiguration
-    PricingModeEnum:
-      title: Pricing
-      enum:
-      - Gross
-      - Net
-      type: string
-      description: '
-
-
-        Gross (The enterprise shows amount with gross prices.)
-
-
-        Net (The enterprise shows amount with net prices.)'
-      x-enumNames:
-      - Gross
-      - Net
-      x-enumDescriptions:
-      - The enterprise shows amount with gross prices.
-      - The enterprise shows amount with net prices.
-    Enterprise:
-      title: Enterprise
-      required:
-      - AccommodationEnvironmentCode
-      - AccountingEditableHistoryInterval
-      - AccountingEnvironmentCode
-      - Address
-      - AddressId
-      - ChainId
-      - ChainName
-      - CreatedUtc
-      - Currencies
-      - DefaultLanguageCode
-      - EditableHistoryInterval
-      - GroupNames
-      - Id
-      - LegalEnvironmentCode
-      - Name
-      - OperationalEditableHistoryInterval
-      - Pricing
-      - Subscription
-      - TaxEnvironmentCode
-      - TimeZoneIdentifier
-      - UpdatedUtc
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the enterprise.
-          format: uuid
-        ExternalIdentifier:
-          maxLength: 255
-          type:
-          - string
-          - 'null'
-          description: Identifier of the enterprise from external system.
-        HoldingKey:
-          maxLength: 255
-          type:
-          - string
-          - 'null'
-          description: Identifies an enterprise in the external system of a holding company. The holding company may administer multiple portfolios.
-        ChainId:
-          type: string
-          description: Unique identifier of the chain to which the enterprise belongs.
-          format: uuid
-        ChainName:
-          minLength: 1
-          type: string
-          description: Name of the `Chain` to which the enterprise belongs.
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the enterprise in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the enterprise in UTC timezone in ISO 8601 format.
-          format: date-time
-        Name:
-          minLength: 1
-          type: string
-          description: Name of the enterprise.
-        ShortName:
-          maxLength: 11
-          type:
-          - string
-          - 'null'
-          description: Short name of the enterprise used in Manager Report exports.
-        TimeZoneIdentifier:
-          minLength: 1
-          type: string
-          description: IANA timezone identifier of the enterprise.
-        LegalEnvironmentCode:
-          minLength: 1
-          type: string
-          description: Unique identifier of the legal environment where the enterprise resides.
-        AccommodationEnvironmentCode:
-          minLength: 1
-          type: string
-          description: Unique code of the accommodation environment where the enterprise resides.
-        AccountingEnvironmentCode:
-          minLength: 1
-          type: string
-          description: Unique code of the accounting environment where the enterprise resides.
-        TaxEnvironmentCode:
-          minLength: 1
-          type: string
-          description: Unique code of the tax environment where the enterprise resides.
-        DefaultLanguageCode:
-          minLength: 1
-          type: string
-          description: Language-culture codes of the enterprise default `Language`.
-        EditableHistoryInterval:
-          minLength: 1
-          type: string
-          deprecated: true
-          x-deprecatedMessage: Use `AccountingEditableHistoryInterval` and `OperationalEditableHistoryInterval` instead.
-        AccountingEditableHistoryInterval:
-          minLength: 1
-          type: string
-          description: Editable history interval for accounting data in ISO 8601 duration format.
-        OperationalEditableHistoryInterval:
-          minLength: 1
-          type: string
-          description: Editable history interval for operational data in ISO 8601 duration format.
-        BusinessDayClosingOffset:
-          type:
-          - string
-          - 'null'
-          description: The offset value for the business day closing time, in ISO 8601 duration format.
-        WebsiteUrl:
-          type:
-          - string
-          - 'null'
-          description: URL of the enterprise website.
-          format: uri
-        Email:
-          type:
-          - string
-          - 'null'
-          description: Email address of the enterprise.
-          format: email
-        Phone:
-          type:
-          - string
-          - 'null'
-          description: Phone number of the enterprise.
-          format: tel
-        LogoImageId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the `Image` of the enterprise logo.
-          format: uuid
-        CoverImageId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the `Image` of the enterprise cover.
-          format: uuid
-        Pricing:
-          title: Pricing
-          allOf:
-          - $ref: '#/components/schemas/PricingModeEnum'
-          description: 'Pricing of the enterprise.
-
-
-            Gross (The enterprise shows amount with gross prices.)
-
-
-            Net (The enterprise shows amount with net prices.)'
-          x-enumNames:
-          - Gross
-          - Net
-          x-enumDescriptions:
-          - The enterprise shows amount with gross prices.
-          - The enterprise shows amount with net prices.
-        TaxPrecision:
-          type:
-          - integer
-          - 'null'
-          description: Tax precision used for financial calculations in the enterprise. If `null`, `Currency` precision is used.
-          format: int32
-        AddressId:
-          type: string
-          description: Unique identifier of the `Address` of the enterprise.
-          format: uuid
-        Address:
-          title: Address
-          allOf:
-          - $ref: '#/components/schemas/OldAddress'
-          description: Address of the enterprise.
-        GroupNames:
-          type: array
-          items:
-            type: string
-          description: A list of the group names of the enterprise.
-        Subscription:
-          title: Enterprise subscription
-          allOf:
-          - $ref: '#/components/schemas/EnterpriseSubscription'
-          description: Subscription information of the enterprise.
-        Currencies:
-          type: array
-          items:
-            $ref: '#/components/schemas/CurrencyAcceptance'
-          description: Currencies accepted by the enterprise.
-        AccountingConfiguration:
-          title: Accounting configuration
-          allOf:
-          - $ref: '#/components/schemas/AccountingConfiguration'
-          description: Configuration information containing financial information about the property.
-        IsPortfolio:
-          type: boolean
-          description: Whether the enterprise is a Portfolio enterprise (see [Multi-property guidelines](https://mews-systems.gitbook.io/connector-api/guidelines/multi-property)).
-      additionalProperties: false
-      description: ''
-      x-schema-id: Enterprise
-    AccountingConfiguration:
-      title: Accounting configuration
-      required:
-      - EnabledExternalPaymentTypes
-      - Options
-      - SurchargeConfiguration
-      type: object
-      properties:
-        AdditionalTaxIdentifier:
-          maxLength: 50
-          type:
-          - string
-          - 'null'
-          description: Organization number.
-        CompanyName:
-          maxLength: 100
-          type:
-          - string
-          - 'null'
-          description: Legal name of the company.
-        BankAccountNumber:
-          maxLength: 50
-          type:
-          - string
-          - 'null'
-          description: Bank account number.
-        BankName:
-          maxLength: 100
-          type:
-          - string
-          - 'null'
-          description: Name of the bank.
-        Iban:
-          maxLength: 40
-          type:
-          - string
-          - 'null'
-          description: International Bank Account Number.
-        Bic:
-          maxLength: 11
-          type:
-          - string
-          - 'null'
-          description: Business Identification Code.
-        SurchargeConfiguration:
-          title: Surcharging fees configuration
-          allOf:
-          - $ref: '#/components/schemas/SurchargeConfiguration'
-          description: Configuration for surcharging fees.
-        EnabledExternalPaymentTypes:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExternalPaymentTypeEnum'
-          description: External payment types that are enabled for the enterprise and can be used in `payments/addExternal`.
-        Options:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountingConfigurationOptionEnum'
-          description: Accounting configuration options.
-      additionalProperties: false
-      x-schema-id: AccountingConfiguration
-    OldAddress:
-      title: Address
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the address.
-          format: uuid
-        Line1:
-          type:
-          - string
-          - 'null'
-          description: First line of the address.
-        Line2:
-          type:
-          - string
-          - 'null'
-          description: Second line of the address.
-        City:
-          type:
-          - string
-          - 'null'
-          description: The city.
-        PostalCode:
-          type:
-          - string
-          - 'null'
-          description: Postal code.
-        CountryCode:
-          type:
-          - string
-          - 'null'
-          description: ISO 3166-1 code of the `Country`.
-        CountrySubdivisionCode:
-          type:
-          - string
-          - 'null'
-          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
-        Latitude:
-          type:
-          - number
-          - 'null'
-          description: The latitude.
-          format: double
-        Longitude:
-          type:
-          - number
-          - 'null'
-          description: The longitude.
-          format: double
-      additionalProperties: false
-      description: ''
-      x-schema-id: OldAddress
-    ConfigurationFilterParameters:
-      title: ConfigurationFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        EnterpriseId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/#enterprise), defaults to the enterprise associated with the given access token.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: ConfigurationFilterParameters
-    Service:
-      title: Service
-      required:
-      - CreatedUtc
-      - Data
-      - EnterpriseId
-      - Id
-      - IsActive
-      - Name
-      - Names
-      - Options
-      - Ordering
-      - UpdatedUtc
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the service.
-          format: uuid
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/enterprises/#enterprise).
-          format: uuid
-        IsActive:
-          type: boolean
-          description: Whether the service is still active.
-        Name:
-          minLength: 1
-          type: string
-          description: Name of the service.
-          deprecated: true
-          x-deprecatedMessage: Use `Names` instead
-        Names:
-          title: Localized text
-          type: object
-          additionalProperties:
-            type: string
-          description: All translations of the name.
-          x-schema-id: LocalizedStrings
-        StartTime:
-          type:
-          - string
-          - 'null'
-          deprecated: true
-        EndTime:
-          type:
-          - string
-          - 'null'
-          deprecated: true
-        Options:
-          title: Service options
-          allOf:
-          - $ref: '#/components/schemas/ServiceOptions'
-          description: Options of the service.
-        Promotions:
-          allOf:
-          - $ref: '#/components/schemas/Promotions'
-          description: ''
-          deprecated: true
-          x-deprecatedMessage: Use `Promotions` in `Data` instead.
-        Type:
-          type:
-          - string
-          - 'null'
-          deprecated: true
-        Ordering:
-          type: integer
-          description: Order value for presentation purposes.
-          format: int32
-        Data:
-          title: Service data
-          type: object
-          properties:
-            Discriminator:
-              $ref: '#/components/schemas/ServiceDataDiscriminator'
-            Value:
-              oneOf:
-              - $ref: '#/components/schemas/BookableServiceData'
-              - $ref: '#/components/schemas/AdditionalServiceData'
-          description: Additional information about the specific service.
-          x-coproduct: true
-          x-schema-id: ServiceDataCoproductOfServiceDataDiscriminator
-        ExternalIdentifier:
-          maxLength: 255
-          type:
-          - string
-          - 'null'
-          description: Identifier of the service from external system.
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the service in UTC timezone in ISO 8601 format.
-          format: date-time
-        UpdatedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the service in UTC timezone in ISO 8601 format.
-          format: date-time
-      additionalProperties: false
-      description: ''
-      x-schema-id: Service
-    AccountingConfigurationOptionEnum:
-      title: Accounting configuration option
-      enum:
-      - OptionalCreditCardPaymentDetails
-      - ReceivableTrackingEnabled
-      - SeparateDepositsOnBill
-      - AllowModifyingClosedBills
-      - RequireAccountingCategorySetup
-      - GroupTaxesOnBill
-      - DisplayEmployeeNameOnBill
-      - TaxDeclarationOnDeposit
-      - SplitVatByClassificationOnBill
-      - EmailClosedBillsAfterCheckout
-      type: string
-      description: '
-
-
-        OptionalCreditCardPaymentDetails (Optional credit card payment details)
-
-
-        ReceivableTrackingEnabled (Receivable tracking enabled)
-
-
-        SeparateDepositsOnBill (Separate deposits on bill)
-
-
-        AllowModifyingClosedBills (Allow modifying closed bills)
-
-
-        RequireAccountingCategorySetup (Require accounting category setup)
-
-
-        GroupTaxesOnBill (Group taxes on bill)
-
-
-        DisplayEmployeeNameOnBill (Display employee name on bill)
-
-
-        TaxDeclarationOnDeposit (Tax declaration on deposit)
-
-
-        SplitVatByClassificationOnBill (Split VAT by classification on bill)
-
-
-        EmailClosedBillsAfterCheckout (Send system closed bills automatically after checkout)'
-      x-enumNames:
-      - OptionalCreditCardPaymentDetails
-      - ReceivableTrackingEnabled
-      - SeparateDepositsOnBill
-      - AllowModifyingClosedBills
-      - RequireAccountingCategorySetup
-      - GroupTaxesOnBill
-      - DisplayEmployeeNameOnBill
-      - TaxDeclarationOnDeposit
-      - SplitVatByClassificationOnBill
-      - EmailClosedBillsAfterCheckout
-      x-enumDescriptions:
-      - Optional credit card payment details
-      - Receivable tracking enabled
-      - Separate deposits on bill
-      - Allow modifying closed bills
-      - Require accounting category setup
-      - Group taxes on bill
-      - Display employee name on bill
-      - Tax declaration on deposit
-      - Split VAT by classification on bill
-      - Send system closed bills automatically after checkout
-      x-extensible: true
     ExternalPaymentTypeEnum:
       title: External payment type
       enum:
@@ -1089,6 +867,408 @@ components:
       - Deposit - cash
       - Deposit - credit card – deprecated, only for existing partners
       - Deposit - wire transfer
+    EnterpriseSubscription:
+      title: Enterprise subscription
+      type: object
+      properties:
+        TaxIdentifier:
+          type:
+          - string
+          - 'null'
+          description: Tax identifier of the `Enterprise`.
+      additionalProperties: false
+      description: ''
+      x-schema-id: EnterpriseSubscription
+    OldAddress:
+      title: Address
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the address.
+          format: uuid
+        Line1:
+          type:
+          - string
+          - 'null'
+          description: First line of the address.
+        Line2:
+          type:
+          - string
+          - 'null'
+          description: Second line of the address.
+        City:
+          type:
+          - string
+          - 'null'
+          description: The city.
+        PostalCode:
+          type:
+          - string
+          - 'null'
+          description: Postal code.
+        CountryCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-1 code of the `Country`.
+        CountrySubdivisionCode:
+          type:
+          - string
+          - 'null'
+          description: ISO 3166-2 code of the administrative division, e.g. `DE-BW`.
+        Latitude:
+          type:
+          - number
+          - 'null'
+          description: The latitude.
+          format: double
+        Longitude:
+          type:
+          - number
+          - 'null'
+          description: The longitude.
+          format: double
+      additionalProperties: false
+      description: ''
+      x-schema-id: OldAddress
+    CurrencyAcceptance:
+      title: Accepted currency
+      required:
+      - Currency
+      - IsDefault
+      - IsEnabled
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the `Currency`.
+          format: currency
+        IsDefault:
+          type: boolean
+          description: Whether the currency is a default accounting currency.
+        IsEnabled:
+          type: boolean
+          description: Whether the currency is enabled for usage.
+      additionalProperties: false
+      x-schema-id: CurrencyAcceptance
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    Service:
+      title: Service
+      required:
+      - CreatedUtc
+      - Data
+      - EnterpriseId
+      - Id
+      - IsActive
+      - Name
+      - Names
+      - Options
+      - Ordering
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the service.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the [Enterprise](https://mews-systems.gitbook.io/connector-api/operations/enterprises/#enterprise).
+          format: uuid
+        IsActive:
+          type: boolean
+          description: Whether the service is still active.
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the service.
+          deprecated: true
+          x-deprecatedMessage: Use `Names` instead
+        Names:
+          title: Localized text
+          type: object
+          additionalProperties:
+            type: string
+          description: All translations of the name.
+          x-schema-id: LocalizedStrings
+        StartTime:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+        EndTime:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+        Options:
+          title: Service options
+          allOf:
+          - $ref: '#/components/schemas/ServiceOptions'
+          description: Options of the service.
+        Promotions:
+          allOf:
+          - $ref: '#/components/schemas/Promotions'
+          description: ''
+          deprecated: true
+          x-deprecatedMessage: Use `Promotions` in `Data` instead.
+        Type:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+        Ordering:
+          type: integer
+          description: Order value for presentation purposes.
+          format: int32
+        Data:
+          title: Service data
+          type: object
+          properties:
+            Discriminator:
+              $ref: '#/components/schemas/ServiceDataDiscriminator'
+            Value:
+              oneOf:
+              - $ref: '#/components/schemas/BookableServiceData'
+              - $ref: '#/components/schemas/AdditionalServiceData'
+          description: Additional information about the specific service.
+          x-coproduct: true
+          x-schema-id: ServiceDataCoproductOfServiceDataDiscriminator
+        ExternalIdentifier:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: Identifier of the service from external system.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the service in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the service in UTC timezone in ISO 8601 format.
+          format: date-time
+      additionalProperties: false
+      description: ''
+      x-schema-id: Service
+    Enterprise:
+      title: Enterprise
+      required:
+      - AccommodationEnvironmentCode
+      - AccountingEditableHistoryInterval
+      - AccountingEnvironmentCode
+      - Address
+      - AddressId
+      - ChainId
+      - ChainName
+      - CreatedUtc
+      - Currencies
+      - DefaultLanguageCode
+      - EditableHistoryInterval
+      - GroupNames
+      - Id
+      - LegalEnvironmentCode
+      - Name
+      - OperationalEditableHistoryInterval
+      - Pricing
+      - Subscription
+      - TaxEnvironmentCode
+      - TimeZoneIdentifier
+      - UpdatedUtc
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the enterprise.
+          format: uuid
+        ExternalIdentifier:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: Identifier of the enterprise from external system.
+        HoldingKey:
+          maxLength: 255
+          type:
+          - string
+          - 'null'
+          description: Identifies an enterprise in the external system of a holding company. The holding company may administer multiple portfolios.
+        ChainId:
+          type: string
+          description: Unique identifier of the chain to which the enterprise belongs.
+          format: uuid
+        ChainName:
+          minLength: 1
+          type: string
+          description: Name of the `Chain` to which the enterprise belongs.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the enterprise in UTC timezone in ISO 8601 format.
+          format: date-time
+        UpdatedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the enterprise in UTC timezone in ISO 8601 format.
+          format: date-time
+        Name:
+          minLength: 1
+          type: string
+          description: Name of the enterprise.
+        ShortName:
+          maxLength: 11
+          type:
+          - string
+          - 'null'
+          description: Short name of the enterprise used in Manager Report exports.
+        TimeZoneIdentifier:
+          minLength: 1
+          type: string
+          description: IANA timezone identifier of the enterprise.
+        LegalEnvironmentCode:
+          minLength: 1
+          type: string
+          description: Unique identifier of the legal environment where the enterprise resides.
+        AccommodationEnvironmentCode:
+          minLength: 1
+          type: string
+          description: Unique code of the accommodation environment where the enterprise resides.
+        AccountingEnvironmentCode:
+          minLength: 1
+          type: string
+          description: Unique code of the accounting environment where the enterprise resides.
+        TaxEnvironmentCode:
+          minLength: 1
+          type: string
+          description: Unique code of the tax environment where the enterprise resides.
+        DefaultLanguageCode:
+          minLength: 1
+          type: string
+          description: Language-culture codes of the enterprise default `Language`.
+        EditableHistoryInterval:
+          minLength: 1
+          type: string
+          deprecated: true
+          x-deprecatedMessage: Use `AccountingEditableHistoryInterval` and `OperationalEditableHistoryInterval` instead.
+        AccountingEditableHistoryInterval:
+          minLength: 1
+          type: string
+          description: Editable history interval for accounting data in ISO 8601 duration format.
+        OperationalEditableHistoryInterval:
+          minLength: 1
+          type: string
+          description: Editable history interval for operational data in ISO 8601 duration format.
+        BusinessDayClosingOffset:
+          type:
+          - string
+          - 'null'
+          description: The offset value for the business day closing time, in ISO 8601 duration format.
+        WebsiteUrl:
+          type:
+          - string
+          - 'null'
+          description: URL of the enterprise website.
+          format: uri
+        Email:
+          type:
+          - string
+          - 'null'
+          description: Email address of the enterprise.
+          format: email
+        Phone:
+          type:
+          - string
+          - 'null'
+          description: Phone number of the enterprise.
+          format: tel
+        LogoImageId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `Image` of the enterprise logo.
+          format: uuid
+        CoverImageId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the `Image` of the enterprise cover.
+          format: uuid
+        Pricing:
+          title: Pricing
+          allOf:
+          - $ref: '#/components/schemas/PricingModeEnum'
+          description: 'Pricing of the enterprise.
+
+
+            Gross (The enterprise shows amount with gross prices.)
+
+
+            Net (The enterprise shows amount with net prices.)'
+          x-enumNames:
+          - Gross
+          - Net
+          x-enumDescriptions:
+          - The enterprise shows amount with gross prices.
+          - The enterprise shows amount with net prices.
+        TaxPrecision:
+          type:
+          - integer
+          - 'null'
+          description: Tax precision used for financial calculations in the enterprise. If `null`, `Currency` precision is used.
+          format: int32
+        AddressId:
+          type: string
+          description: Unique identifier of the `Address` of the enterprise.
+          format: uuid
+        Address:
+          title: Address
+          allOf:
+          - $ref: '#/components/schemas/OldAddress'
+          description: Address of the enterprise.
+        GroupNames:
+          type: array
+          items:
+            type: string
+          description: A list of the group names of the enterprise.
+        Subscription:
+          title: Enterprise subscription
+          allOf:
+          - $ref: '#/components/schemas/EnterpriseSubscription'
+          description: Subscription information of the enterprise.
+        Currencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/CurrencyAcceptance'
+          description: Currencies accepted by the enterprise.
+        AccountingConfiguration:
+          title: Accounting configuration
+          allOf:
+          - $ref: '#/components/schemas/AccountingConfiguration'
+          description: Configuration information containing financial information about the property.
+        IsPortfolio:
+          type: boolean
+          description: Whether the enterprise is a Portfolio enterprise (see [Multi-property guidelines](https://mews-systems.gitbook.io/connector-api/guidelines/multi-property)).
+      additionalProperties: false
+      description: ''
+      x-schema-id: Enterprise
     TimeUnitPeriodEnum:
       title: Time unit period
       enum:
@@ -1114,139 +1294,12 @@ components:
       - ''
       - ''
       - ''
-    AdditionalServiceData:
-      title: Additional service data
-      required:
-      - Promotions
-      type: object
-      properties:
-        Promotions:
-          allOf:
-          - $ref: '#/components/schemas/Promotions'
-          description: Promotions of the service.
-      additionalProperties: false
-      x-schema-id: AdditionalServiceData
-    ServiceOptions:
-      title: Service options
-      required:
-      - BillAsPackage
-      type: object
-      properties:
-        BillAsPackage:
-          type: boolean
-          description: Products should be displayed as a single package instead of individual items.
-      additionalProperties: false
-      description: Options of the service.
-      x-schema-id: ServiceOptions
-    BookableServiceData:
-      title: Bookable service data
-      required:
-      - EndOffset
-      - OccupancyEndOffset
-      - OccupancyStartOffset
-      - StartOffset
-      - TimeUnit
-      - TimeUnitPeriod
-      type: object
-      properties:
-        StartOffset:
-          minLength: 1
-          type: string
-          description: Offset from the start of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the default start of the service; expressed in ISO 8601 duration format.
-        EndOffset:
-          minLength: 1
-          type: string
-          description: Offset from the end of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the default end of the service; expressed in ISO 8601 duration format.
-        OccupancyStartOffset:
-          minLength: 1
-          type: string
-          description: Offset from the start of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the occupancy start of the service; expressed in ISO 8601 duration format. 'Occupancy start' is used for availability and reporting purposes, it implies the time at which the booked resource is considered occupied.
-        OccupancyEndOffset:
-          minLength: 1
-          type: string
-          description: Offset from the end of the [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/) which defines the occupancy end of the service; expressed in ISO 8601 duration format. 'Occupancy end' is used for availability and reporting purposes, it implies the time at which the booked resource is no longer considered occupied.
-        TimeUnit:
-          title: Time unit period
-          allOf:
-          - $ref: '#/components/schemas/TimeUnitPeriodEnum'
-          description: '
-
-
-            Day
-
-
-            Month
-
-
-            Hour'
-          deprecated: true
-          x-enumNames:
-          - Day
-          - Month
-          - Hour
-          x-enumDescriptions:
-          - ''
-          - ''
-          - ''
-          x-deprecatedMessage: Use `TimeUnitPeriod` instead.
-        TimeUnitPeriod:
-          title: Time unit period
-          allOf:
-          - $ref: '#/components/schemas/TimeUnitPeriodEnum'
-          description: 'The length of time or period represented by a [time unit](https://mews-systems.gitbook.io/connector-api/concepts/time-units/), for which the service can be booked.
-
-
-            Day
-
-
-            Month
-
-
-            Hour'
-          x-enumNames:
-          - Day
-          - Month
-          - Hour
-          x-enumDescriptions:
-          - ''
-          - ''
-          - ''
-      additionalProperties: false
-      x-schema-id: BookableServiceData
-    CurrencyAcceptance:
-      title: Accepted currency
-      required:
-      - Currency
-      - IsDefault
-      - IsEnabled
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          description: ISO-4217 code of the `Currency`.
-          format: currency
-        IsDefault:
-          type: boolean
-          description: Whether the currency is a default accounting currency.
-        IsEnabled:
-          type: boolean
-          description: Whether the currency is enabled for usage.
-      additionalProperties: false
-      x-schema-id: CurrencyAcceptance
-    PaymentCardStorage:
-      title: Payment card storage
-      required:
-      - PublicKey
-      type: object
-      properties:
-        PublicKey:
-          minLength: 1
-          type: string
-          description: Key for accessing PCI proxy storage.
-      additionalProperties: false
-      description: ''
-      x-schema-id: PaymentCardStorage
+    ServiceDataDiscriminator:
+      title: Service data discriminator
+      enum:
+      - Bookable
+      - Additional
+      type: string
     Configuration:
       title: Configuration
       required:
@@ -1278,56 +1331,3 @@ components:
           description: Whether the identity documents for this enterprise include the value of identity document number as required by the legal environment. When `false`, the number is not required, and an empty string can be used in write operations. In read operations, an empty string is returned when an empty string was provided for the number.
       additionalProperties: false
       x-schema-id: Configuration
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    Promotions:
-      title: Promotions
-      required:
-      - AfterCheckIn
-      - AfterCheckOut
-      - BeforeCheckIn
-      - BeforeCheckOut
-      - DuringCheckOut
-      - DuringStay
-      type: object
-      properties:
-        BeforeCheckIn:
-          type: boolean
-          description: Whether it can be promoted before check-in.
-        AfterCheckIn:
-          type: boolean
-          description: Whether it can be promoted after check-in.
-        DuringStay:
-          type: boolean
-          description: Whether it can be promoted during stay.
-        BeforeCheckOut:
-          type: boolean
-          description: Whether it can be promoted before check-out.
-        AfterCheckOut:
-          type: boolean
-          description: Whether it can be promoted after check-out.
-        DuringCheckOut:
-          type: boolean
-          description: Whether it can be promoted during check-out.
-      additionalProperties: false
-      description: ''
-      x-schema-id: Promotions
-    ServiceDataDiscriminator:
-      title: Service data discriminator
-      enum:
-      - Bookable
-      - Additional
-      type: string

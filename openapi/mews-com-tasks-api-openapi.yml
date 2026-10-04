@@ -246,74 +246,6 @@ paths:
       x-restricted: true
 components:
   schemas:
-    Unit:
-      type: object
-      additionalProperties: false
-    CloseTaskParameters:
-      title: CloseTaskParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - TaskIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        TaskIds:
-          maxItems: 100
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Tasks to be closed.
-      additionalProperties: false
-      x-schema-id: CloseTaskParameters
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    TaskResult:
-      title: TaskResult
-      required:
-      - Tasks
-      type: object
-      properties:
-        Tasks:
-          type: array
-          items:
-            $ref: '#/components/schemas/Task'
-          description: The filtered tasks.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: TaskResult
     TaskAddParameters:
       title: TaskAddParameters
       required:
@@ -364,16 +296,134 @@ components:
           format: date-time
       additionalProperties: false
       x-schema-id: TaskAddParameters
-    AddTaskResult:
-      title: AddTaskResult
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        TaskId:
-          type: string
-          description: Unique identifier of added task.
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    TaskResult:
+      title: TaskResult
+      required:
+      - Tasks
+      type: object
+      properties:
+        Tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+          description: The filtered tasks.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
           format: uuid
       additionalProperties: false
-      x-schema-id: AddTaskResult
+      x-schema-id: TaskResult
+    Task:
+      title: Task
+      required:
+      - ClosedUtc
+      - CreatedUtc
+      - DeadlineUtc
+      - Name
+      - State
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the task.
+          format: uuid
+        EnterpriseId:
+          type: string
+          description: Unique identifier of the enterprise. Required when using Portfolio Access Tokens, ignored otherwise.
+          format: uuid
+        Name:
+          minLength: 1
+          type: string
+          description: Name (or title) of the task.
+        State:
+          minLength: 1
+          type: string
+          description: State of the task.
+        Description:
+          type:
+          - string
+          - 'null'
+          description: Further description of the task.
+        DepartmentId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the Department the task is addressed to.
+          format: uuid
+        ServiceOrderId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the service order (reservation or product service order) the task is linked with.
+          format: uuid
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the task in UTC timezone in ISO 8601 format.
+        DeadlineUtc:
+          minLength: 1
+          type: string
+          description: Deadline date and time of the task in UTC timezone in ISO 8601 format.
+        ClosedUtc:
+          minLength: 1
+          type: string
+          description: Last update date and time of the task in UTC timezone in ISO 8601 format.
+      additionalProperties: false
+      x-schema-id: Task
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    Unit:
+      type: object
+      additionalProperties: false
     TaskFilterParameters:
       title: TaskFilterParameters
       required:
@@ -459,94 +509,44 @@ components:
           description: Unique identifiers of service orders (reservations or product service orders).
       additionalProperties: false
       x-schema-id: TaskFilterParameters
-    Limitation:
-      title: Limitation
+    AddTaskResult:
+      title: AddTaskResult
+      type: object
+      properties:
+        TaskId:
+          type: string
+          description: Unique identifier of added task.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: AddTaskResult
+    CloseTaskParameters:
+      title: CloseTaskParameters
       required:
-      - Count
+      - AccessToken
+      - Client
+      - ClientToken
+      - TaskIds
       type: object
       properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
-          format: uuid
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        TaskIds:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Tasks to be closed.
       additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    TimeFilterInterval:
-      title: Time interval
-      type: object
-      properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-      additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    Task:
-      title: Task
-      required:
-      - ClosedUtc
-      - CreatedUtc
-      - DeadlineUtc
-      - Name
-      - State
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the task.
-          format: uuid
-        EnterpriseId:
-          type: string
-          description: Unique identifier of the enterprise. Required when using Portfolio Access Tokens, ignored otherwise.
-          format: uuid
-        Name:
-          minLength: 1
-          type: string
-          description: Name (or title) of the task.
-        State:
-          minLength: 1
-          type: string
-          description: State of the task.
-        Description:
-          type:
-          - string
-          - 'null'
-          description: Further description of the task.
-        DepartmentId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the Department the task is addressed to.
-          format: uuid
-        ServiceOrderId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the service order (reservation or product service order) the task is linked with.
-          format: uuid
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the task in UTC timezone in ISO 8601 format.
-        DeadlineUtc:
-          minLength: 1
-          type: string
-          description: Deadline date and time of the task in UTC timezone in ISO 8601 format.
-        ClosedUtc:
-          minLength: 1
-          type: string
-          description: Last update date and time of the task in UTC timezone in ISO 8601 format.
-      additionalProperties: false
-      x-schema-id: Task
+      x-schema-id: CloseTaskParameters

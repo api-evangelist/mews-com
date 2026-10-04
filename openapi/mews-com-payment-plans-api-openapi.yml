@@ -97,6 +97,18 @@ paths:
       x-restricted: true
 components:
   schemas:
+    PaymentPlanAddResult:
+      title: PaymentPlanAddResult
+      required:
+      - PaymentRequestUrl
+      type: object
+      properties:
+        PaymentRequestUrl:
+          minLength: 1
+          type: string
+          description: Payment request URL associated with the created payment plan.
+      additionalProperties: false
+      x-schema-id: PaymentPlanAddResult
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
@@ -209,18 +221,6 @@ components:
           description: Specifies the month when the payment plan begins collecting payments, in the 'YYYY-MM' format. The month must be in the future. If a value is not set, it'll start with the earliest available bill created from billing automation.
       additionalProperties: false
       x-schema-id: BillingAutomationPaymentPlanAddParameters
-    PaymentPlanAddResult:
-      title: PaymentPlanAddResult
-      required:
-      - PaymentRequestUrl
-      type: object
-      properties:
-        PaymentRequestUrl:
-          minLength: 1
-          type: string
-          description: Payment request URL associated with the created payment plan.
-      additionalProperties: false
-      x-schema-id: PaymentPlanAddResult
     PaymentMethodsEnum:
       title: Available payment plan payment methods
       enum:

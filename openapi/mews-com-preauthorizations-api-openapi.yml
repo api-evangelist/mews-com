@@ -122,52 +122,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    MultipleCustomerParameters:
-      title: MultipleCustomerParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - CustomerIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        CustomerIds:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Customer`.
-      additionalProperties: false
-      x-schema-id: MultipleCustomerParameters
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     TaxBreakdownItem:
       title: Tax breakdown item
       required:
@@ -190,23 +144,34 @@ components:
           format: double
       additionalProperties: false
       x-schema-id: TaxBreakdownItem
-    TaxValue:
-      title: Tax value
-      required:
-      - Value
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        Code:
+        Message:
           type:
           - string
           - 'null'
-          description: Code corresponding to tax type.
-        Value:
-          type: number
-          description: Amount of tax applied.
-          format: double
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      x-schema-id: TaxValue
+      x-schema-id: ConnectorApiExceptionResult
+    PreauthorizationResult:
+      title: PreauthorizationResult
+      required:
+      - Preauthorizations
+      type: object
+      properties:
+        Preauthorizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Preauthorization'
+          description: Preauthorizations of the specified `Customer`.
+      additionalProperties: false
+      x-schema-id: PreauthorizationResult
     TaxBreakdown:
       title: Tax breakdown
       required:
@@ -220,6 +185,60 @@ components:
           description: Tax breakdown items per each tax rate applied.
       additionalProperties: false
       x-schema-id: TaxBreakdown
+    Amount:
+      title: Amount
+      required:
+      - Breakdown
+      - Currency
+      - GrossValue
+      - NetValue
+      - TaxValues
+      type: object
+      properties:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
+          format: currency
+        NetValue:
+          type: number
+          description: Net value without taxes.
+          format: double
+        GrossValue:
+          type: number
+          description: Gross value including all taxes.
+          format: double
+        TaxValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxValue'
+          description: The tax values applied.
+        Breakdown:
+          title: Tax breakdown
+          allOf:
+          - $ref: '#/components/schemas/TaxBreakdown'
+          description: Information about individual tax amounts.
+      additionalProperties: false
+      description: ''
+      x-schema-id: Amount
+    PreauthorizationState:
+      title: Preauthorization state
+      enum:
+      - Chargeable
+      - Expired
+      - Cancelled
+      - Charged
+      - Pending
+      - Failed
+      type: string
+      description: State of the preauthorization.
+      x-enumDescriptions:
+      - Created and prepared for the charging.
+      - A preauthorization that is not charged and expired.
+      - A preauthorization that was canceled before charging.
+      - Charged preauthorization.
+      - A preauthorization that is waiting for the charge to be processed.
+      - A preauthorization that failed to be charged.
     Preauthorization:
       title: Preauthorization
       required:
@@ -264,70 +283,51 @@ components:
           description: Whether the preauthorization is active.
       additionalProperties: false
       x-schema-id: Preauthorization
-    PreauthorizationState:
-      title: Preauthorization state
-      enum:
-      - Chargeable
-      - Expired
-      - Cancelled
-      - Charged
-      - Pending
-      - Failed
-      type: string
-      description: State of the preauthorization.
-      x-enumDescriptions:
-      - Created and prepared for the charging.
-      - A preauthorization that is not charged and expired.
-      - A preauthorization that was canceled before charging.
-      - Charged preauthorization.
-      - A preauthorization that is waiting for the charge to be processed.
-      - A preauthorization that failed to be charged.
-    PreauthorizationResult:
-      title: PreauthorizationResult
+    MultipleCustomerParameters:
+      title: MultipleCustomerParameters
       required:
-      - Preauthorizations
+      - AccessToken
+      - Client
+      - ClientToken
+      - CustomerIds
       type: object
       properties:
-        Preauthorizations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Preauthorization'
-          description: Preauthorizations of the specified `Customer`.
-      additionalProperties: false
-      x-schema-id: PreauthorizationResult
-    Amount:
-      title: Amount
-      required:
-      - Breakdown
-      - Currency
-      - GrossValue
-      - NetValue
-      - TaxValues
-      type: object
-      properties:
-        Currency:
+        ClientToken:
           minLength: 1
           type: string
-          description: ISO-4217 code of the [Currency](https://mews-systems.gitbook.io/connector-api/operations/currencies/#currency).
-          format: currency
-        NetValue:
-          type: number
-          description: Net value without taxes.
-          format: double
-        GrossValue:
-          type: number
-          description: Gross value including all taxes.
-          format: double
-        TaxValues:
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        CustomerIds:
+          maxItems: 1000
+          minItems: 1
           type: array
           items:
-            $ref: '#/components/schemas/TaxValue'
-          description: The tax values applied.
-        Breakdown:
-          title: Tax breakdown
-          allOf:
-          - $ref: '#/components/schemas/TaxBreakdown'
-          description: Information about individual tax amounts.
+            type: string
+            format: uuid
+          description: Unique identifiers of `Customer`.
       additionalProperties: false
-      description: ''
-      x-schema-id: Amount
+      x-schema-id: MultipleCustomerParameters
+    TaxValue:
+      title: Tax value
+      required:
+      - Value
+      type: object
+      properties:
+        Code:
+          type:
+          - string
+          - 'null'
+          description: Code corresponding to tax type.
+        Value:
+          type: number
+          description: Amount of tax applied.
+          format: double
+      additionalProperties: false
+      x-schema-id: TaxValue

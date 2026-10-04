@@ -95,6 +95,18 @@ paths:
       x-restricted: true
 components:
   schemas:
+    PaymentMethodRequestAdditionResult:
+      title: Payment method request addition result
+      required:
+      - PaymentMethodRequestId
+      type: object
+      properties:
+        PaymentMethodRequestId:
+          type: string
+          description: Unique identifier of the created payment method request.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: PaymentMethodRequestAdditionResult
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
@@ -110,50 +122,6 @@ components:
         Details: {}
       additionalProperties: false
       x-schema-id: ConnectorApiExceptionResult
-    PaymentMethodRequestAdditionResult:
-      title: Payment method request addition result
-      required:
-      - PaymentMethodRequestId
-      type: object
-      properties:
-        PaymentMethodRequestId:
-          type: string
-          description: Unique identifier of the created payment method request.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: PaymentMethodRequestAdditionResult
-    PaymentMethodRequestEmailTypesEnum:
-      title: Supported email types
-      enum:
-      - PaymentMethodRequestAdded
-      type: string
-      description: '
-
-
-        PaymentMethodRequestAdded'
-      x-enumNames:
-      - PaymentMethodRequestAdded
-      x-enumDescriptions:
-      - ''
-    PaymentMethodRequestPaymentMethodsEnum:
-      title: Acceptable payment methods
-      enum:
-      - PaymentCard
-      - SepaDirectDebit
-      type: string
-      description: '
-
-
-        PaymentCard
-
-
-        SepaDirectDebit'
-      x-enumNames:
-      - PaymentCard
-      - SepaDirectDebit
-      x-enumDescriptions:
-      - ''
-      - ''
     PaymentMethodRequestAddParameters:
       title: Payment method request parameters
       required:
@@ -228,3 +196,35 @@ components:
           description: Email notifications to send. If not specified, all emails will be sent. To disable all emails send an empty list. Additional email types may be added in the future.
       additionalProperties: false
       x-schema-id: PaymentMethodRequestAddParameters
+    PaymentMethodRequestPaymentMethodsEnum:
+      title: Acceptable payment methods
+      enum:
+      - PaymentCard
+      - SepaDirectDebit
+      type: string
+      description: '
+
+
+        PaymentCard
+
+
+        SepaDirectDebit'
+      x-enumNames:
+      - PaymentCard
+      - SepaDirectDebit
+      x-enumDescriptions:
+      - ''
+      - ''
+    PaymentMethodRequestEmailTypesEnum:
+      title: Supported email types
+      enum:
+      - PaymentMethodRequestAdded
+      type: string
+      description: '
+
+
+        PaymentMethodRequestAdded'
+      x-enumNames:
+      - PaymentMethodRequestAdded
+      x-enumDescriptions:
+      - ''

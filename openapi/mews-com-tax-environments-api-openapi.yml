@@ -112,28 +112,19 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    Parameters:
-      title: Parameters
+    TaxEnvironmentResult:
+      title: TaxEnvironmentResult
       required:
-      - AccessToken
-      - Client
-      - ClientToken
+      - TaxEnvironments
       type: object
       properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
+        TaxEnvironments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxEnvironment'
+          description: The supported tax environments.
       additionalProperties: false
-      x-schema-id: Parameters
+      x-schema-id: TaxEnvironmentResult
     TaxEnvironment:
       title: Tax environment
       required:
@@ -168,6 +159,28 @@ components:
       additionalProperties: false
       description: Tax environment represents set of `Taxation` together with optional validity interval.
       x-schema-id: TaxEnvironment
+    Parameters:
+      title: Parameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+      additionalProperties: false
+      x-schema-id: Parameters
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
@@ -183,16 +196,3 @@ components:
         Details: {}
       additionalProperties: false
       x-schema-id: ConnectorApiExceptionResult
-    TaxEnvironmentResult:
-      title: TaxEnvironmentResult
-      required:
-      - TaxEnvironments
-      type: object
-      properties:
-        TaxEnvironments:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxEnvironment'
-          description: The supported tax environments.
-      additionalProperties: false
-      x-schema-id: TaxEnvironmentResult

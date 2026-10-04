@@ -383,23 +383,93 @@ components:
       - Static
       - Integration
       type: string
-    TimeFilterInterval:
-      title: Time interval
+    StringUpdateValue:
+      title: String update value
       type: object
       properties:
-        StartUtc:
+        Value:
           type:
           - string
           - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
+          description: Value which is to be updated.
       additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
+      x-schema-id: StringUpdateValue
+    AccountNoteAdditionResult:
+      title: AccountNoteAdditionResult
+      required:
+      - AccountNotes
+      type: object
+      properties:
+        AccountNotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNote'
+          description: Added account notes.
+      additionalProperties: false
+      x-schema-id: AccountNoteAdditionResult
+    MultipleAccountNoteUpdateParameters:
+      title: MultipleAccountNoteUpdateParameters
+      required:
+      - AccessToken
+      - AccountNoteUpdates
+      - Client
+      - ClientToken
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ChainId:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
+          format: uuid
+        AccountNoteUpdates:
+          maxItems: 1000
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNoteUpdateParameters'
+          description: Account notes to be updated.
+      additionalProperties: false
+      x-schema-id: MultipleAccountNoteUpdateParameters
+    Unit:
+      type: object
+      additionalProperties: false
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
     MultipleAccountNoteDeleteParameters:
       title: MultipleAccountNoteDeleteParameters
       required:
@@ -437,32 +507,47 @@ components:
           description: Unique identifiers of the account notes to be deleted.
       additionalProperties: false
       x-schema-id: MultipleAccountNoteDeleteParameters
-    AccountNoteResult:
-      title: AccountNoteResult
+    ProfileData:
+      title: Profile data
       required:
-      - AccountNotes
+      - Discriminator
       type: object
       properties:
-        AccountNotes:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountNote'
-          description: The set of requested account notes.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
-          format: uuid
+        Discriminator:
+          $ref: '#/components/schemas/ProfileDataDiscriminator'
+        EnterpriseProfile:
+          title: Enterprise profile data
+          allOf:
+          - $ref: '#/components/schemas/EnterpriseProfileData'
+          description: Enterprise profile data.
       additionalProperties: false
-      x-schema-id: AccountNoteResult
-    ActivityStates:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: Activity states used for filtering.
+      description: The profile data of the user who created or last updated the record.
+      x-schema-id: ProfileData
+    AccountNoteUpdateParameters:
+      title: Account note update parameters
+      required:
+      - AccountNoteId
+      - Classifications
+      type: object
+      properties:
+        AccountNoteId:
+          type: string
+          description: Unique identifier of the account note.
+          format: uuid
+        Content:
+          title: String update value
+          maxLength: 1000
+          minLength: 1
+          allOf:
+          - $ref: '#/components/schemas/StringUpdateValue'
+          description: Content of the account note (or `null` if the content should not be updated).
+        Classifications:
+          title: Account note update classifications
+          allOf:
+          - $ref: '#/components/schemas/AccountNoteUpdateClassifications'
+          description: Classification of the account note.
+      additionalProperties: false
+      x-schema-id: AccountNoteUpdateParameters
     AccountNoteAddParameters:
       title: Account note parameters
       required:
@@ -489,362 +574,6 @@ components:
           description: Specifying the classifications of the note based on account type.
       additionalProperties: false
       x-schema-id: AccountNoteAddParameters
-    MultipleAccountNoteAddParameters:
-      title: MultipleAccountNoteAddParameters
-      required:
-      - AccessToken
-      - AccountNotes
-      - Client
-      - ClientToken
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ChainId:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
-          format: uuid
-        AccountNotes:
-          maxItems: 1000
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountNoteAddParameters'
-          description: Account notes to be added.
-      additionalProperties: false
-      x-schema-id: MultipleAccountNoteAddParameters
-    Limitation:
-      title: Limitation
-      required:
-      - Count
-      type: object
-      properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
-          type:
-          - string
-          - 'null'
-          format: uuid
-      additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
-    AccountNoteUpdateClassifications:
-      title: Account note update classifications
-      type: object
-      properties:
-        General:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: 'Company and Customer: Boolean value defining the general classification for the account note (or `null` if the value should not be updated).'
-        FoodAndBeverage:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: 'Customer only: Boolean value defining the food and beverage classification for the account note (or `null` if the value should not be updated).'
-        FrontOffice:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: 'Customer only: Boolean value defining the front office classification for the account note (or `null` if the value should not be updated).'
-        Reservations:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: 'Customer only: Boolean value defining the reservations classification for the account note (or `null` if the value should not be updated).'
-        Housekeeping:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: 'Customer only: Boolean value defining the housekeeping classification for the account note (or `null` if the value should not be updated).'
-        Maintenance:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: 'Customer only: Boolean value defining the maintenance classification for the account note (or `null` if the value should not be updated).'
-        PreviousStay:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: 'Customer only: Boolean value defining the previous stay classification for the account note (or `null` if the value should not be updated).'
-        FamilyRelations:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: 'Customer only: Boolean value defining the family relations classification for the account note (or `null` if the value should not be updated).'
-        Gifts:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: 'Customer only: Boolean value defining the gifts classification for the account note (or `null` if the value should not be updated).'
-        Accounting:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: 'Customer only: Boolean value defining the accounting classification for the account note (or `null` if the value should not be updated).'
-        Complaints:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: 'Customer only: Boolean value defining the complaints classification for the account note (or `null` if the value should not be updated).'
-        Other:
-          title: Boolean update value
-          allOf:
-          - $ref: '#/components/schemas/BooleanUpdateValue'
-          description: 'Customer only: Boolean value defining the other classification for the account note (or `null` if the value should not be updated).'
-      additionalProperties: false
-      x-schema-id: AccountNoteUpdateClassifications
-    StringUpdateValue:
-      title: String update value
-      type: object
-      properties:
-        Value:
-          type:
-          - string
-          - 'null'
-          description: Value which is to be updated.
-      additionalProperties: false
-      x-schema-id: StringUpdateValue
-    Unit:
-      type: object
-      additionalProperties: false
-    AccountNote:
-      title: Account note
-      required:
-      - AccountId
-      - AccountType
-      - Classifications
-      - Content
-      - CreatorProfile
-      - Id
-      - IsActive
-      - UpdaterProfile
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the account note.
-          format: uuid
-        AccountId:
-          type: string
-          description: Unique identifier of the account.
-          format: uuid
-        Content:
-          minLength: 1
-          type: string
-          description: The content of the account note.
-        AccountType:
-          title: Account type
-          allOf:
-          - $ref: '#/components/schemas/AccountTypeEnum'
-          description: 'Specifying type of associated account.
-
-
-            Company
-
-
-            Customer'
-          x-enumNames:
-          - Company
-          - Customer
-          x-enumDescriptions:
-          - ''
-          - ''
-        Classifications:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountNoteClassificationEnum'
-          description: Specifying the classifications of the note based on account type.
-        IsActive:
-          type: boolean
-          description: Whether the account note is still active.
-        CreatorProfile:
-          title: Profile data
-          allOf:
-          - $ref: '#/components/schemas/ProfileData'
-          description: The profile data of the user who created the account note.
-        UpdaterProfile:
-          title: Profile data
-          allOf:
-          - $ref: '#/components/schemas/ProfileData'
-          description: The profile data of the user who updated the account note.
-      additionalProperties: false
-      x-schema-id: AccountNote
-    AccountTypeEnum:
-      title: Account type
-      enum:
-      - Company
-      - Customer
-      type: string
-      description: 'A discriminator specifying the account type, e.g. `Customer` or `Company`
-
-
-        Company
-
-
-        Customer'
-      x-enumNames:
-      - Company
-      - Customer
-      x-enumDescriptions:
-      - ''
-      - ''
-    AccountNoteUpdateParameters:
-      title: Account note update parameters
-      required:
-      - AccountNoteId
-      - Classifications
-      type: object
-      properties:
-        AccountNoteId:
-          type: string
-          description: Unique identifier of the account note.
-          format: uuid
-        Content:
-          title: String update value
-          maxLength: 1000
-          minLength: 1
-          allOf:
-          - $ref: '#/components/schemas/StringUpdateValue'
-          description: Content of the account note (or `null` if the content should not be updated).
-        Classifications:
-          title: Account note update classifications
-          allOf:
-          - $ref: '#/components/schemas/AccountNoteUpdateClassifications'
-          description: Classification of the account note.
-      additionalProperties: false
-      x-schema-id: AccountNoteUpdateParameters
-    BooleanUpdateValue:
-      title: Boolean update value
-      type: object
-      properties:
-        Value:
-          type: boolean
-          description: Value which is to be updated.
-      additionalProperties: false
-      x-schema-id: BooleanUpdateValue
-    AccountNoteFilterParameters:
-      title: AccountNoteFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        ChainIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
-        AccountNoteIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of [Account note](https://mews-systems.gitbook.io/connector-api/operations/#account-note).
-        AccountIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the accounts ([Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) or [Company](https://mews-systems.gitbook.io/connector-api/operations/companies/#company)).
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval of Account note's last update date and time.
-          x-max-interval-in-months: 3
-        ActivityStates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted or both records.
-      additionalProperties: false
-      x-schema-id: AccountNoteFilterParameters
-    AccountNoteAdditionResult:
-      title: AccountNoteAdditionResult
-      required:
-      - AccountNotes
-      type: object
-      properties:
-        AccountNotes:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountNote'
-          description: Added account notes.
-      additionalProperties: false
-      x-schema-id: AccountNoteAdditionResult
-    EnterpriseProfileData:
-      title: Enterprise profile data
-      required:
-      - ProfileId
-      type: object
-      properties:
-        ProfileId:
-          type: string
-          description: Unique identifier of the profile.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: EnterpriseProfileData
-    AccountNoteUpdateResult:
-      title: AccountNoteUpdateResult
-      required:
-      - AccountNotes
-      type: object
-      properties:
-        AccountNotes:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountNote'
-          description: Updated account notes.
-      additionalProperties: false
-      x-schema-id: AccountNoteUpdateResult
     AccountNoteClassificationEnum:
       title: Account note classification
       enum:
@@ -925,6 +654,18 @@ components:
       - Only Customer
       - Only Customer
       x-extensible: true
+    EnterpriseProfileData:
+      title: Enterprise profile data
+      required:
+      - ProfileId
+      type: object
+      properties:
+        ProfileId:
+          type: string
+          description: Unique identifier of the profile.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: EnterpriseProfileData
     ConnectorApiExceptionResult:
       title: ConnectorApiExceptionResult
       type: object
@@ -940,11 +681,73 @@ components:
         Details: {}
       additionalProperties: false
       x-schema-id: ConnectorApiExceptionResult
-    MultipleAccountNoteUpdateParameters:
-      title: MultipleAccountNoteUpdateParameters
+    AccountNote:
+      title: Account note
+      required:
+      - AccountId
+      - AccountType
+      - Classifications
+      - Content
+      - CreatorProfile
+      - Id
+      - IsActive
+      - UpdaterProfile
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Unique identifier of the account note.
+          format: uuid
+        AccountId:
+          type: string
+          description: Unique identifier of the account.
+          format: uuid
+        Content:
+          minLength: 1
+          type: string
+          description: The content of the account note.
+        AccountType:
+          title: Account type
+          allOf:
+          - $ref: '#/components/schemas/AccountTypeEnum'
+          description: 'Specifying type of associated account.
+
+
+            Company
+
+
+            Customer'
+          x-enumNames:
+          - Company
+          - Customer
+          x-enumDescriptions:
+          - ''
+          - ''
+        Classifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNoteClassificationEnum'
+          description: Specifying the classifications of the note based on account type.
+        IsActive:
+          type: boolean
+          description: Whether the account note is still active.
+        CreatorProfile:
+          title: Profile data
+          allOf:
+          - $ref: '#/components/schemas/ProfileData'
+          description: The profile data of the user who created the account note.
+        UpdaterProfile:
+          title: Profile data
+          allOf:
+          - $ref: '#/components/schemas/ProfileData'
+          description: The profile data of the user who updated the account note.
+      additionalProperties: false
+      x-schema-id: AccountNote
+    MultipleAccountNoteAddParameters:
+      title: MultipleAccountNoteAddParameters
       required:
       - AccessToken
-      - AccountNoteUpdates
+      - AccountNotes
       - Client
       - ClientToken
       type: object
@@ -967,28 +770,225 @@ components:
           - 'null'
           description: Unique identifier of the chain. Required when using [Portfolio Access Tokens](https://mews-systems.gitbook.io/connector-api/concepts/multi-property), ignored otherwise.
           format: uuid
-        AccountNoteUpdates:
+        AccountNotes:
           maxItems: 1000
           minItems: 1
           type: array
           items:
-            $ref: '#/components/schemas/AccountNoteUpdateParameters'
-          description: Account notes to be updated.
+            $ref: '#/components/schemas/AccountNoteAddParameters'
+          description: Account notes to be added.
       additionalProperties: false
-      x-schema-id: MultipleAccountNoteUpdateParameters
-    ProfileData:
-      title: Profile data
+      x-schema-id: MultipleAccountNoteAddParameters
+    AccountNoteUpdateResult:
+      title: AccountNoteUpdateResult
       required:
-      - Discriminator
+      - AccountNotes
       type: object
       properties:
-        Discriminator:
-          $ref: '#/components/schemas/ProfileDataDiscriminator'
-        EnterpriseProfile:
-          title: Enterprise profile data
-          allOf:
-          - $ref: '#/components/schemas/EnterpriseProfileData'
-          description: Enterprise profile data.
+        AccountNotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNote'
+          description: Updated account notes.
       additionalProperties: false
-      description: The profile data of the user who created or last updated the record.
-      x-schema-id: ProfileData
+      x-schema-id: AccountNoteUpdateResult
+    AccountNoteUpdateClassifications:
+      title: Account note update classifications
+      type: object
+      properties:
+        General:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Company and Customer: Boolean value defining the general classification for the account note (or `null` if the value should not be updated).'
+        FoodAndBeverage:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the food and beverage classification for the account note (or `null` if the value should not be updated).'
+        FrontOffice:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the front office classification for the account note (or `null` if the value should not be updated).'
+        Reservations:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the reservations classification for the account note (or `null` if the value should not be updated).'
+        Housekeeping:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the housekeeping classification for the account note (or `null` if the value should not be updated).'
+        Maintenance:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the maintenance classification for the account note (or `null` if the value should not be updated).'
+        PreviousStay:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the previous stay classification for the account note (or `null` if the value should not be updated).'
+        FamilyRelations:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the family relations classification for the account note (or `null` if the value should not be updated).'
+        Gifts:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the gifts classification for the account note (or `null` if the value should not be updated).'
+        Accounting:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the accounting classification for the account note (or `null` if the value should not be updated).'
+        Complaints:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the complaints classification for the account note (or `null` if the value should not be updated).'
+        Other:
+          title: Boolean update value
+          allOf:
+          - $ref: '#/components/schemas/BooleanUpdateValue'
+          description: 'Customer only: Boolean value defining the other classification for the account note (or `null` if the value should not be updated).'
+      additionalProperties: false
+      x-schema-id: AccountNoteUpdateClassifications
+    AccountNoteFilterParameters:
+      title: AccountNoteFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        ChainIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of `Chain`. If not specified, the operation returns data for all chains within scope of the Access Token.
+        AccountNoteIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of [Account note](https://mews-systems.gitbook.io/connector-api/operations/#account-note).
+        AccountIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the accounts ([Customer](https://mews-systems.gitbook.io/connector-api/operations/customers/#customer) or [Company](https://mews-systems.gitbook.io/connector-api/operations/companies/#company)).
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval of Account note's last update date and time.
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted or both records.
+      additionalProperties: false
+      x-schema-id: AccountNoteFilterParameters
+    BooleanUpdateValue:
+      title: Boolean update value
+      type: object
+      properties:
+        Value:
+          type: boolean
+          description: Value which is to be updated.
+      additionalProperties: false
+      x-schema-id: BooleanUpdateValue
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    AccountNoteResult:
+      title: AccountNoteResult
+      required:
+      - AccountNotes
+      type: object
+      properties:
+        AccountNotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountNote'
+          description: The set of requested account notes.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the item one newer in time order than the items to be returned. If Cursor is not specified, i.e. null, then the latest or most recent items will be returned.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: AccountNoteResult
+    AccountTypeEnum:
+      title: Account type
+      enum:
+      - Company
+      - Customer
+      type: string
+      description: 'A discriminator specifying the account type, e.g. `Customer` or `Company`
+
+
+        Company
+
+
+        Customer'
+      x-enumNames:
+      - Company
+      - Customer
+      x-enumDescriptions:
+      - ''
+      - ''

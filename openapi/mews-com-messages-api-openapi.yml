@@ -198,21 +198,6 @@ components:
           description: Message that was added to the `MessageThread`.
       additionalProperties: false
       x-schema-id: AddedMessage
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     SenderDiscriminatorEnum:
       title: Sender discriminator
       enum:
@@ -232,54 +217,6 @@ components:
       x-enumDescriptions:
       - The message was created by an employee of the enterprise.
       - The message was created by the third party application.
-    MultipleMessageAddParameters:
-      title: MultipleMessageAddParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Messages
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Messages:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageAddParameters'
-          description: Messages to be added.
-      additionalProperties: false
-      x-schema-id: MultipleMessageAddParameters
-    MessageResult:
-      title: MessageResult
-      required:
-      - Messages
-      type: object
-      properties:
-        Messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Message'
-          description: The filtered messages.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the last and hence oldest message returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older messages.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: MessageResult
     SenderCoproduct:
       title: Sender
       required:
@@ -307,45 +244,74 @@ components:
           description: Additional information about the sender. Currently not used and always `null`.
       additionalProperties: false
       x-schema-id: SenderCoproduct
-    TimeFilterInterval:
-      title: Time interval
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        StartUtc:
+        Message:
           type:
           - string
           - 'null'
-          format: date-time
-        EndUtc:
+        RequestId:
           type:
           - string
           - 'null'
-          format: date-time
+        Details: {}
       additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    MessageAddParameters:
-      title: Message parameters
+      x-schema-id: ConnectorApiExceptionResult
+    MessageResult:
+      title: MessageResult
       required:
+      - Messages
+      type: object
+      properties:
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          description: The filtered messages.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest message returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older messages.
+          format: uuid
+      additionalProperties: false
+      x-schema-id: MessageResult
+    Message:
+      title: Message
+      required:
+      - CreatedUtc
+      - Id
       - MessageThreadId
+      - Sender
       - Text
       type: object
       properties:
+        Id:
+          type: string
+          description: Unique identifier of the message.
+          format: uuid
         MessageThreadId:
           type: string
-          description: Unique identifier of the `MessageThread` to which the message should be added.
+          description: Unique identifier of the `MessageThread` to which the message belongs to.
           format: uuid
         Text:
           minLength: 1
           type: string
           description: Text of the message.
-        Identifier:
-          type:
-          - string
-          - 'null'
-          description: Identifier of the message to be created.
+        Sender:
+          title: Sender
+          allOf:
+          - $ref: '#/components/schemas/SenderCoproduct'
+          description: The sender of the message.
+        CreatedUtc:
+          minLength: 1
+          type: string
+          description: Creation date and time of the message in UTC timezone in ISO 8601 format.
+          format: date-time
       additionalProperties: false
-      x-schema-id: MessageAddParameters
+      x-schema-id: Message
     MessageFilterParameters:
       title: MessageFilterParameters
       required:
@@ -398,6 +364,58 @@ components:
           x-max-interval-in-months: 1
       additionalProperties: false
       x-schema-id: MessageFilterParameters
+    TimeFilterInterval:
+      title: Time interval
+      type: object
+      properties:
+        StartUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        EndUtc:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      additionalProperties: false
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
+    AddedMessageResult:
+      title: AddedMessageResult
+      required:
+      - Messages
+      type: object
+      properties:
+        Messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddedMessage'
+          description: Collection of created messages.
+      additionalProperties: false
+      x-schema-id: AddedMessageResult
+    MessageAddParameters:
+      title: Message parameters
+      required:
+      - MessageThreadId
+      - Text
+      type: object
+      properties:
+        MessageThreadId:
+          type: string
+          description: Unique identifier of the `MessageThread` to which the message should be added.
+          format: uuid
+        Text:
+          minLength: 1
+          type: string
+          description: Text of the message.
+        Identifier:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the message to be created.
+      additionalProperties: false
+      x-schema-id: MessageAddParameters
     Limitation:
       title: Limitation
       required:
@@ -415,50 +433,32 @@ components:
       additionalProperties: false
       description: Limitation on the quantity of data returned.
       x-schema-id: Limitation
-    Message:
-      title: Message
+    MultipleMessageAddParameters:
+      title: MultipleMessageAddParameters
       required:
-      - CreatedUtc
-      - Id
-      - MessageThreadId
-      - Sender
-      - Text
-      type: object
-      properties:
-        Id:
-          type: string
-          description: Unique identifier of the message.
-          format: uuid
-        MessageThreadId:
-          type: string
-          description: Unique identifier of the `MessageThread` to which the message belongs to.
-          format: uuid
-        Text:
-          minLength: 1
-          type: string
-          description: Text of the message.
-        Sender:
-          title: Sender
-          allOf:
-          - $ref: '#/components/schemas/SenderCoproduct'
-          description: The sender of the message.
-        CreatedUtc:
-          minLength: 1
-          type: string
-          description: Creation date and time of the message in UTC timezone in ISO 8601 format.
-          format: date-time
-      additionalProperties: false
-      x-schema-id: Message
-    AddedMessageResult:
-      title: AddedMessageResult
-      required:
+      - AccessToken
+      - Client
+      - ClientToken
       - Messages
       type: object
       properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
         Messages:
+          maxItems: 1000
           type: array
           items:
-            $ref: '#/components/schemas/AddedMessage'
-          description: Collection of created messages.
+            $ref: '#/components/schemas/MessageAddParameters'
+          description: Messages to be added.
       additionalProperties: false
-      x-schema-id: AddedMessageResult
+      x-schema-id: MultipleMessageAddParameters

@@ -137,6 +137,108 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
+    EnterpriseScopeCounterDiscriminator:
+      title: Counter type discriminator
+      enum:
+      - Counter
+      - AccountingCounter
+      - AvailabilityBlockCounter
+      - BillCounter
+      - BillPreviewCounter
+      - FiscalCounter
+      - ProformaCounter
+      - RegistrationCardCounter
+      - ServiceOrderCounter
+      - CorrectionBillCounter
+      - PaymentConfirmationBillCounter
+      - CreditNoteBillCounter
+      type: string
+      description: Type of the counter.
+      x-enumDescriptions:
+      - Any type of counter.
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    CounterFilterParameters:
+      title: CounterFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        CounterIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the counters. If not specified, the operation returns all counters.
+        Type:
+          anyOf:
+          - $ref: '#/components/schemas/EnterpriseScopeCounterDiscriminator'
+          description: Type of the counter. If not specified, the operation returns all types.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which `Counter` was updated.
+          x-max-interval-in-months: 3
+      additionalProperties: false
+      x-schema-id: CounterFilterParameters
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
     CounterResult:
       title: CounterResult
       required:
@@ -196,51 +298,6 @@ components:
           format: uuid
       additionalProperties: false
       x-schema-id: CounterResult
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
-    EnterpriseScopeCounterDiscriminator:
-      title: Counter type discriminator
-      enum:
-      - Counter
-      - AccountingCounter
-      - AvailabilityBlockCounter
-      - BillCounter
-      - BillPreviewCounter
-      - FiscalCounter
-      - ProformaCounter
-      - RegistrationCardCounter
-      - ServiceOrderCounter
-      - CorrectionBillCounter
-      - PaymentConfirmationBillCounter
-      - CreditNoteBillCounter
-      type: string
-      description: Type of the counter.
-      x-enumDescriptions:
-      - Any type of counter.
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
-      - ''
     TimeFilterInterval:
       title: Time interval
       type: object
@@ -275,63 +332,6 @@ components:
       additionalProperties: false
       description: Limitation on the quantity of data returned.
       x-schema-id: Limitation
-    CounterFilterParameters:
-      title: CounterFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        CounterIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the counters. If not specified, the operation returns all counters.
-        Type:
-          anyOf:
-          - $ref: '#/components/schemas/EnterpriseScopeCounterDiscriminator'
-          description: Type of the counter. If not specified, the operation returns all types.
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which `Counter` was updated.
-          x-max-interval-in-months: 3
-      additionalProperties: false
-      x-schema-id: CounterFilterParameters
     Counter:
       title: Counter
       required:

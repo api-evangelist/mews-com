@@ -88,19 +88,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ImageUrlResult:
-      title: ImageUrlResult
-      required:
-      - ImageUrls
-      type: object
-      properties:
-        ImageUrls:
-          type: array
-          items:
-            $ref: '#/components/schemas/ImageUrl'
-          description: URLs of the images.
-      additionalProperties: false
-      x-schema-id: ImageUrlResult
     ImageResizeModeEnum:
       title: Image resize mode
       enum:
@@ -132,21 +119,23 @@ components:
       - Resize and pad to exactly fit within the specified size.
       - Resize to fit within the specified size, so the result might be smaller than requested.
       - Resize and pad to exactly fit within the specified size.
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
+    ImageUrl:
+      title: Image URL
+      required:
+      - ImageId
+      - Url
       type: object
       properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
+        ImageId:
+          type: string
+          description: Unique identifier of the image.
+          format: uuid
+        Url:
+          minLength: 1
+          type: string
+          description: URL of the image.
       additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
+      x-schema-id: ImageUrl
     ImageSizeParameters:
       title: Image size parameters
       required:
@@ -187,23 +176,34 @@ components:
             FitExact (Resize and pad to exactly fit within the specified size.)'
       additionalProperties: false
       x-schema-id: ImageSizeParameters
-    ImageUrl:
-      title: Image URL
-      required:
-      - ImageId
-      - Url
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        ImageId:
-          type: string
-          description: Unique identifier of the image.
-          format: uuid
-        Url:
-          minLength: 1
-          type: string
-          description: URL of the image.
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      x-schema-id: ImageUrl
+      x-schema-id: ConnectorApiExceptionResult
+    ImageUrlResult:
+      title: ImageUrlResult
+      required:
+      - ImageUrls
+      type: object
+      properties:
+        ImageUrls:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageUrl'
+          description: URLs of the images.
+      additionalProperties: false
+      x-schema-id: ImageUrlResult
     ImageUrlParameters:
       title: ImageUrlParameters
       required:

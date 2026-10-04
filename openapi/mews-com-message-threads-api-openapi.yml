@@ -171,21 +171,6 @@ paths:
                 $ref: '#/components/schemas/ConnectorApiExceptionResult'
 components:
   schemas:
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
-          type:
-          - string
-          - 'null'
-        RequestId:
-          type:
-          - string
-          - 'null'
-        Details: {}
-      additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
     MessageThread:
       title: Message thread
       required:
@@ -223,38 +208,6 @@ components:
           description: Whether the message thread is resolved.
       additionalProperties: false
       x-schema-id: MessageThread
-    MessageThreadAddResult:
-      title: MessageThreadAddResult
-      required:
-      - MessageThreads
-      type: object
-      properties:
-        MessageThreads:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageThread'
-          description: The created message threads.
-      additionalProperties: false
-      x-schema-id: MessageThreadAddResult
-    MessageThreadResult:
-      title: MessageThreadResult
-      required:
-      - MessageThreads
-      type: object
-      properties:
-        MessageThreads:
-          type: array
-          items:
-            $ref: '#/components/schemas/MessageThread'
-          description: The filtered message threads.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the last and hence oldest message thread returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older message threads.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: MessageThreadResult
     MessageThreadFilterParameters:
       title: MessageThreadFilterParameters
       required:
@@ -314,23 +267,40 @@ components:
           x-max-interval-in-months: 3
       additionalProperties: false
       x-schema-id: MessageThreadFilterParameters
-    Limitation:
-      title: Limitation
-      required:
-      - Count
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
       type: object
       properties:
-        Count:
-          type: integer
-          format: int32
+        Message:
+          type:
+          - string
+          - 'null'
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
+      additionalProperties: false
+      x-schema-id: ConnectorApiExceptionResult
+    MessageThreadResult:
+      title: MessageThreadResult
+      required:
+      - MessageThreads
+      type: object
+      properties:
+        MessageThreads:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageThread'
+          description: The filtered message threads.
         Cursor:
           type:
           - string
           - 'null'
+          description: Unique identifier of the last and hence oldest message thread returned. This can be used in `Limitation` in a subsequent request to fetch the next batch of older message threads.
           format: uuid
       additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
+      x-schema-id: MessageThreadResult
     TimeFilterInterval:
       title: Time interval
       type: object
@@ -380,3 +350,33 @@ components:
           description: Subject of the message thread.
       additionalProperties: false
       x-schema-id: MessageThreadAddParameters
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    MessageThreadAddResult:
+      title: MessageThreadAddResult
+      required:
+      - MessageThreads
+      type: object
+      properties:
+        MessageThreads:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageThread'
+          description: The created message threads.
+      additionalProperties: false
+      x-schema-id: MessageThreadAddResult

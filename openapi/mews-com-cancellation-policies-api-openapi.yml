@@ -326,20 +326,136 @@ paths:
       x-restricted: true
 components:
   schemas:
-    CancellationPolicyByRateResult:
-      title: CancellationPolicyByRateResult
+    CancellationFeeExtent:
+      title: Cancellation Fee Extent
+      enum:
+      - TimeUnits
+      - Products
+      type: string
+      description: Extent for the cancellation fee, i.e. what should be in scope for the automatic payment.
+    Limitation:
+      title: Limitation
+      required:
+      - Count
+      type: object
+      properties:
+        Count:
+          type: integer
+          format: int32
+        Cursor:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      additionalProperties: false
+      description: Limitation on the quantity of data returned.
+      x-schema-id: Limitation
+    ActivityStates:
+      title: Activity state
+      enum:
+      - Deleted
+      - Active
+      type: string
+      description: Activity states used for filtering.
+    CancellationPolicyResult:
+      title: CancellationPolicyResult
       required:
       - CancellationPolicies
       type: object
       properties:
         CancellationPolicies:
-          maxItems: 1300
+          maxItems: 1000
           type: array
           items:
-            $ref: '#/components/schemas/CancellationPolicyByRate'
-          description: List of cancellation policies data grouped by rate.
+            $ref: '#/components/schemas/CancellationPolicy'
+          description: The filtered cancellation policies.
+        Cursor:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier of the last and hence oldest cancellation policy returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older cancellation policies.
+          format: uuid
       additionalProperties: false
-      x-schema-id: CancellationPolicyByRateResult
+      x-schema-id: CancellationPolicyResult
+    CancellationPolicyFilterParameters:
+      title: CancellationPolicyFilterParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - Limitation
+      - ServiceIds
+      type: object
+      properties:
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        Limitation:
+          allOf:
+          - $ref: '#/components/schemas/Limitation'
+          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
+        EnterpriseIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
+        ServiceIds:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service).
+        CancellationPolicyIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Cancellation Policy](https://mews-systems.gitbook.io/connector-api/operations/#cancellationpolicy). Required if no other filter is provided.
+        RateGroupIds:
+          maxItems: 1000
+          minItems: 1
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the [Rate group](https://mews-systems.gitbook.io/connector-api/operations/rates/#rategroup). Required if no other filter is provided.
+        UpdatedUtc:
+          title: Time interval
+          allOf:
+          - $ref: '#/components/schemas/TimeFilterInterval'
+          description: Interval in which the Cancellation Policy was updated. Required if no other filter is provided.
+          x-max-interval-in-months: 3
+        ActivityStates:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/ActivityStates'
+          description: Whether to return only active, only deleted, or both types of record. If not specified, only active records will be returned.
+      additionalProperties: false
+      x-schema-id: CancellationPolicyFilterParameters
     CancellationPolicyByReservation:
       title: Cancellation policy data grouped by reservation
       required:
@@ -358,6 +474,20 @@ components:
           description: Collection of cancellation policy data.
       additionalProperties: false
       x-schema-id: CancellationPolicyByReservation
+    CancellationPolicyByReservationResult:
+      title: CancellationPolicyByReservationResult
+      required:
+      - CancellationPolicies
+      type: object
+      properties:
+        CancellationPolicies:
+          maxItems: 1300
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationPolicyByReservation'
+          description: List of cancellation policies data grouped by reservation.
+      additionalProperties: false
+      x-schema-id: CancellationPolicyByReservationResult
     CancellationPolicy:
       title: Cancellation Policy
       required:
@@ -465,45 +595,37 @@ components:
           format: date-time
       additionalProperties: false
       x-schema-id: CancellationPolicyByRateParameters
-    TimeFilterInterval:
-      title: Time interval
+    CancellationPolicyByReservationParameters:
+      title: CancellationPolicyByReservationParameters
+      required:
+      - AccessToken
+      - Client
+      - ClientToken
+      - ReservationIds
       type: object
       properties:
-        StartUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        EndUtc:
-          type:
-          - string
-          - 'null'
-          format: date-time
+        ClientToken:
+          minLength: 1
+          type: string
+          description: Token identifying the client application.
+        AccessToken:
+          minLength: 1
+          type: string
+          description: Access token of the client application.
+        Client:
+          minLength: 1
+          type: string
+          description: Name and version of the client application.
+        ReservationIds:
+          maxItems: 100
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Unique identifiers of the `Reservation`.
       additionalProperties: false
-      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
-      x-schema-id: TimeFilterInterval
-    CancellationFeeExtent:
-      title: Cancellation Fee Extent
-      enum:
-      - TimeUnits
-      - Products
-      type: string
-      description: Extent for the cancellation fee, i.e. what should be in scope for the automatic payment.
-    CancellationPolicyApplicability:
-      title: Cancellation Policy Applicability
-      enum:
-      - Creation
-      - Start
-      - StartDate
-      type: string
-      description: Applicability mode of the cancellation policy.
-    ActivityStates:
-      title: Activity state
-      enum:
-      - Deleted
-      - Active
-      type: string
-      description: Activity states used for filtering.
+      x-schema-id: CancellationPolicyByReservationParameters
     CancellationPolicyByRate:
       title: Cancellation policy data grouped by rate
       required:
@@ -522,23 +644,40 @@ components:
           description: Collection of cancellation policy data.
       additionalProperties: false
       x-schema-id: CancellationPolicyByRate
-    Limitation:
-      title: Limitation
+    CurrencyValue:
+      title: Currency value (ver 2023-02-02)
       required:
-      - Count
+      - Currency
+      - Value
       type: object
       properties:
-        Count:
-          type: integer
-          format: int32
-        Cursor:
+        Currency:
+          minLength: 1
+          type: string
+          description: ISO-4217 code of the `Currency`.
+          format: currency
+        Value:
+          type: number
+          description: Amount in the currency.
+          format: double
+      additionalProperties: false
+      description: Absolute value of the fee.
+      x-schema-id: CurrencyValue
+    ConnectorApiExceptionResult:
+      title: ConnectorApiExceptionResult
+      type: object
+      properties:
+        Message:
           type:
           - string
           - 'null'
-          format: uuid
+        RequestId:
+          type:
+          - string
+          - 'null'
+        Details: {}
       additionalProperties: false
-      description: Limitation on the quantity of data returned.
-      x-schema-id: Limitation
+      x-schema-id: ConnectorApiExceptionResult
     CancellationPolicyApplicabilityEnum:
       title: Cancellation Policy Applicability
       enum:
@@ -564,6 +703,28 @@ components:
       - ''
       - ''
       - ''
+    CancellationPolicyApplicability:
+      title: Cancellation Policy Applicability
+      enum:
+      - Creation
+      - Start
+      - StartDate
+      type: string
+      description: Applicability mode of the cancellation policy.
+    CancellationPolicyByRateResult:
+      title: CancellationPolicyByRateResult
+      required:
+      - CancellationPolicies
+      type: object
+      properties:
+        CancellationPolicies:
+          maxItems: 1300
+          type: array
+          items:
+            $ref: '#/components/schemas/CancellationPolicyByRate'
+          description: List of cancellation policies data grouped by rate.
+      additionalProperties: false
+      x-schema-id: CancellationPolicyByRateResult
     CancellationPolicyData:
       title: Cancellation policy data
       required:
@@ -622,131 +783,23 @@ components:
           format: double
       additionalProperties: false
       x-schema-id: CancellationPolicyData
-    CancellationPolicyByReservationParameters:
-      title: CancellationPolicyByReservationParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - ReservationIds
+    TimeFilterInterval:
+      title: Time interval
       type: object
       properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        ReservationIds:
-          maxItems: 100
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the `Reservation`.
-      additionalProperties: false
-      x-schema-id: CancellationPolicyByReservationParameters
-    CancellationPolicyFilterParameters:
-      title: CancellationPolicyFilterParameters
-      required:
-      - AccessToken
-      - Client
-      - ClientToken
-      - Limitation
-      - ServiceIds
-      type: object
-      properties:
-        ClientToken:
-          minLength: 1
-          type: string
-          description: Token identifying the client application.
-        AccessToken:
-          minLength: 1
-          type: string
-          description: Access token of the client application.
-        Client:
-          minLength: 1
-          type: string
-          description: Name and version of the client application.
-        Limitation:
-          allOf:
-          - $ref: '#/components/schemas/Limitation'
-          description: Limitation on the quantity of data returned and optional Cursor for the starting point of data.
-        EnterpriseIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the Enterprises. If not specified, the operation returns data for all enterprises within scope of the Access Token.
-        ServiceIds:
-          maxItems: 100
-          minItems: 1
-          type: array
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the [Service](https://mews-systems.gitbook.io/connector-api/operations/services/#service).
-        CancellationPolicyIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the [Cancellation Policy](https://mews-systems.gitbook.io/connector-api/operations/#cancellationpolicy). Required if no other filter is provided.
-        RateGroupIds:
-          maxItems: 1000
-          minItems: 1
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-            format: uuid
-          description: Unique identifiers of the [Rate group](https://mews-systems.gitbook.io/connector-api/operations/rates/#rategroup). Required if no other filter is provided.
-        UpdatedUtc:
-          title: Time interval
-          allOf:
-          - $ref: '#/components/schemas/TimeFilterInterval'
-          description: Interval in which the Cancellation Policy was updated. Required if no other filter is provided.
-          x-max-interval-in-months: 3
-        ActivityStates:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/ActivityStates'
-          description: Whether to return only active, only deleted, or both types of record. If not specified, only active records will be returned.
-      additionalProperties: false
-      x-schema-id: CancellationPolicyFilterParameters
-    ConnectorApiExceptionResult:
-      title: ConnectorApiExceptionResult
-      type: object
-      properties:
-        Message:
+        StartUtc:
           type:
           - string
           - 'null'
-        RequestId:
+          format: date-time
+        EndUtc:
           type:
           - string
           - 'null'
-        Details: {}
+          format: date-time
       additionalProperties: false
-      x-schema-id: ConnectorApiExceptionResult
+      description: "When a time interval is used for **filtering** (for example in parameters such as `CreatedUtc.StartUtc` / `CreatedUtc.EndUtc`), the following rules apply:\n\n- **Start equals End (equality mode)**  \n  If `StartUtc` and `EndUtc` are exactly the same timestamp, the filter is treated as an equality check for that precise moment in time:\n  \n  ```\n  CreatedUtc == StartUtc\n  ```\n  \n  This does not represent an interval; only records with `CreatedUtc` equal to that exact instant are returned.\n\n- **Start differs from End (interval mode)**  \n  If `StartUtc` and `EndUtc` are different, the filter is evaluated as a half-open interval:\n  \n  ```\n  StartUtc <= CreatedUtc < EndUtc\n  ```\n  \n  In other words, the start is inclusive and the end is exclusive.\n\nMake sure your integration takes inclusive Start / exclusive End behavior of time intervals into account so that no records at the boundaries are omitted."
+      x-schema-id: TimeFilterInterval
     CancellationFeeExtentEnum:
       title: Cancellation Fee Extent
       enum:
@@ -778,56 +831,3 @@ components:
       - ''
       - ''
       - ''
-    CancellationPolicyByReservationResult:
-      title: CancellationPolicyByReservationResult
-      required:
-      - CancellationPolicies
-      type: object
-      properties:
-        CancellationPolicies:
-          maxItems: 1300
-          type: array
-          items:
-            $ref: '#/components/schemas/CancellationPolicyByReservation'
-          description: List of cancellation policies data grouped by reservation.
-      additionalProperties: false
-      x-schema-id: CancellationPolicyByReservationResult
-    CancellationPolicyResult:
-      title: CancellationPolicyResult
-      required:
-      - CancellationPolicies
-      type: object
-      properties:
-        CancellationPolicies:
-          maxItems: 1000
-          type: array
-          items:
-            $ref: '#/components/schemas/CancellationPolicy'
-          description: The filtered cancellation policies.
-        Cursor:
-          type:
-          - string
-          - 'null'
-          description: Unique identifier of the last and hence oldest cancellation policy returned. This can be used in [Limitation](https://mews-systems.gitbook.io/connector-api/guidelines/pagination/#limitation) in a subsequent request to fetch the next batch of older cancellation policies.
-          format: uuid
-      additionalProperties: false
-      x-schema-id: CancellationPolicyResult
-    CurrencyValue:
-      title: Currency value (ver 2023-02-02)
-      required:
-      - Currency
-      - Value
-      type: object
-      properties:
-        Currency:
-          minLength: 1
-          type: string
-          description: ISO-4217 code of the `Currency`.
-          format: currency
-        Value:
-          type: number
-          description: Amount in the currency.
-          format: double
-      additionalProperties: false
-      description: Absolute value of the fee.
-      x-schema-id: CurrencyValue
